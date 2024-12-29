@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { HStack } from "@chakra-ui/react";
+import { HStack, Button } from "@chakra-ui/react";
 
 export default function Home() {
   return (
@@ -8,7 +7,6 @@ export default function Home() {
       <Button size="sm">Button (sm)</Button>
       <Button size="md">Button (md)</Button>
       <Button size="lg">Button (lg)</Button>
-      <Button size="xl">Button (xl)</Button>
     </HStack>
   );
 }

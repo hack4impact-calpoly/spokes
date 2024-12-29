@@ -1,4 +1,4 @@
-# name of non-profit
+# Spokes
 
 {One sentence description of the project}
 
@@ -21,8 +21,8 @@ The {non-profit name} team consists of {#} Cal Poly students. Over the course of
 
 - [First Last](https://www.linkedin.com/) - Project Manager
 - [First Last](https://www.linkedin.com/) - Designer
-- [First Last](https://www.linkedin.com/) - Tech Lead
-- [First Last](https://www.linkedin.com/) - Tech Lead
+- [Noah Giboney](https://www.linkedin.com/in/noah-giboney-896847261/) - Tech Lead
+- [Shawn Gill](https://www.linkedin.com/in/shawngill404/) - Tech Lead
 - [First Last](https://www.linkedin.com/) - Software Developer
 
 ## Getting Started And Contributing
