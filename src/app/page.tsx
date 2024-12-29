@@ -1,10 +1,12 @@
-import Navbar from "@/components/Navbar";
+import { HStack, Button } from "@chakra-ui/react";
 
 export default function Home() {
   return (
-    <main>
-      <Navbar />
-      <h1>Home</h1>
-    </main>
+    <HStack wrap="wrap" gap="10">
+      <Button size="xs">Button (xs)</Button>
+      <Button size="sm">Button (sm)</Button>
+      <Button size="md">Button (md)</Button>
+      <Button size="lg">Button (lg)</Button>
+    </HStack>
   );
 }
