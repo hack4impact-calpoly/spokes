@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "./ui/providers";
+import { Rubik } from "next/font/google";
+
+const rubik = Rubik({
+  variable: "--font-rubik",
+  subsets: ["latin"],
+  weight: "variable",
+});
 
 //! Update metadata to match your project
 export const metadata: Metadata = {
@@ -11,7 +18,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${rubik.className}`}>
         <Providers>{children}</Providers>
       </body>
     </html>
