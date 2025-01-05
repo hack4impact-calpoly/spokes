@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+const theme = require("./src/styles/theme");
 module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -7,7 +8,9 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: theme.colors, //Added chakra's theme colors
+    },
   },
   plugins: [],
 };

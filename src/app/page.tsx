@@ -1,3 +1,4 @@
+// import JobCard from "@/components/JobCard";
 import { HStack, Button } from "@chakra-ui/react";
 
 export default function Home() {
@@ -8,6 +9,8 @@ export default function Home() {
       <Button size="md">Button (md)</Button>
       <Button size="lg">Button (lg)</Button>
       <p className="text-3xl text-blue-500">Tailwind styled</p>
+      {/* // Uncomment to check the JobCard component rendering */}
+      {/* <JobCard /> */}
     </HStack>
   );
 }
