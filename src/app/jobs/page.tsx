@@ -1,5 +1,7 @@
 import JobCard from "@/components/JobCard";
 import React from "react";
+import JobsFilter from "@/components/JobsFilter";
+import JobsHeader from "@/components/JobsHeader";
 
 // fake data
 const jobs = [
@@ -52,18 +54,27 @@ const jobs = [
 
 export default function JobsPage() {
   return (
-    <div className="container mx-auto px-4 mt-12 flex flex-wrap gap-8 ">
-      {jobs.map((job, index) => (
-        <JobCard
-          key={index}
-          title={job.title}
-          description={job.description}
-          tags={job.tags}
-          companyName={job.companyName}
-          datePosted={job.datePosted}
-          applyUrl={job.applyUrl}
-        />
-      ))}
-    </div>
+    <section className="flex flex-col gap-12 pb-8">
+      <JobsHeader />
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-8 xl:px-12 2xl:px-0 flex flex-col lg:flex-row md:justify-between gap-8">
+        <JobsFilter />
+        <div>
+          <h2 className="text-3xl font-medium mb-6">Jobs</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 flex-wrap gap-8 ">
+            {jobs.map((job, index) => (
+              <JobCard
+                key={index}
+                title={job.title}
+                description={job.description}
+                tags={job.tags}
+                companyName={job.companyName}
+                datePosted={job.datePosted}
+                applyUrl={job.applyUrl}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

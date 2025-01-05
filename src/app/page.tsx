@@ -1,7 +1,4 @@
-import JobCard from "@/components/JobCard";
 import { HStack, Button } from "@chakra-ui/react";
-import { div } from "framer-motion/client";
-import { isPagesAPIRouteMatch } from "next/dist/server/future/route-matches/pages-api-route-match";
 
 export default function Home() {
   return (
