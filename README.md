@@ -23,6 +23,7 @@ The {non-profit name} team consists of {#} Cal Poly students. Over the course of
 - [First Last](https://www.linkedin.com/) - Designer
 - [Noah Giboney](https://www.linkedin.com/in/noah-giboney-896847261/) - Tech Lead
 - [Shawn Gill](https://www.linkedin.com/in/shawngill404/) - Tech Lead
+- [Stearman Rubey](https://www.linkedin.com/in/stearman-rubey-963423309) - Software Developer
 - [First Last](https://www.linkedin.com/) - Software Developer
 
 ## Getting Started And Contributing
