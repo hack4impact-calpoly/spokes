@@ -3,7 +3,6 @@
   "extends": ["next/core-web-vitals", "prettier"],
   "plugins": ["prettier"],
   "rules": {
-    //{"endOfLine": "auto"} fixes random esLint warning about characters
-    "prettier/prettier": ["error", { "endOfLine": "auto" }]
+    "prettier/prettier": "error"
   }
 }
