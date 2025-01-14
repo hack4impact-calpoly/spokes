@@ -26,8 +26,7 @@ The {non-profit name} team consists of {#} Cal Poly students. Over the course of
 - [Stearman Rubey](https://www.linkedin.com/in/stearman-rubey-963423309) - Software Developer
 - [Nolan Knievel](https://www.linkedin.com/in/nolan-knievel-aa8243317) - Software Developer
 - [Ellie Pearson](https://www.linkedin.com/in/ellie-pearson-b21099295/) - Software Developer
-- [First Last](https://www.linkedin.com/) - Software Developer
-
+- [Mark McGuire](https://www.linkedin.com/in/mark-mcguire011/) - Software Developer
 
 ## Getting Started And Contributing
 
