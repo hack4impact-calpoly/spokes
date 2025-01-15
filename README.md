@@ -1,6 +1,6 @@
 # Spokes
 
-{One sentence description of the project}
+Creating a modern, streamlined job board for nonprofits to efficiently post and manage job listings.
 
 ## Table of Contents
 
@@ -13,14 +13,17 @@
 
 ### Purpose
 
-{Short paragraph description of the non-profit mission and the purpose of this project. Who will this project help, why is it necessary. Impact of the project.}
+Spoke's has a mission to guide nonprofits to achieve their goals through support and expert resources. The current process for displaying job listings is time-consuming and involves manual data entry, as job details from form submissions must be transferred manually from Google Sheets to the web display. This method is tedious and limits scalability. The goal is to create an automated job board where nonprofits can post job listings efficiently.
 
 ### Team
 
-The {non-profit name} team consists of {#} Cal Poly students. Over the course of about 9 months, we worked as a team to deploy this web application. The team members are listed below:
+The Spokes team consists of 17 Cal Poly students. Over the course of about 9 months, we worked as a team to deploy this web application. The team members are listed below:
 
-- [First Last](https://www.linkedin.com/) - Project Manager
-- [First Last](https://www.linkedin.com/) - Designer
+- [James Tran](https://www.linkedin.com/in/jameskhaihoantran/) - Project Manager
+- [Jessica Yu](https://www.linkedin.com/in/jessicayuhope/) - Designer
+- [Katie Phan](https://www.linkedin.com/in/katiehuynhphan/) - Designer
+- [Reva Moolky](https://www.linkedin.com/in/reva-moolky/) - Designer
+- [Neal Parthasarathy](https://www.linkedin.com/in/nealparthslo/) - Designer
 - [Noah Giboney](https://www.linkedin.com/in/noah-giboney-896847261/) - Tech Lead
 - [Shawn Gill](https://www.linkedin.com/in/shawngill404/) - Tech Lead
 - [Stearman Rubey](https://www.linkedin.com/in/stearman-rubey-963423309) - Software Developer
