@@ -32,6 +32,7 @@ The Spokes team consists of 17 Cal Poly students. Over the course of about 9 mon
 - [Mark McGuire](https://www.linkedin.com/in/mark-mcguire011/) - Software Developer
 - [John Ieng](https://www.linkedin.com/in/johnieng/) - Software Developer
 - [Matthew Blam](https://www.linkedin.com/in/matthew-blam/) - Software Developer
+- [Kyler Nord](https://www.linkedin.com/in/1kylernord1/) - Software Developer
 
 ## Getting Started And Contributing
 
