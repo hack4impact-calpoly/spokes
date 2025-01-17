@@ -63,8 +63,8 @@ export default function AdminCard() {
             sunt.
           </p>
         </div>
-        <div className="flex justify-between lg:flex-row flex-col gap-2">
-          <div className="flex gap-2">
+        <div className="flex flex-wrap justify-between min-[1000px]:flex-row flex-col min-[1000px]:gap-4 gap-2">
+          <div className="flex flex-wrap gap-2">
             <Badge
               className="text-center"
               rounded="md"
@@ -102,17 +102,19 @@ export default function AdminCard() {
               Full-time
             </Badge>
           </div>
-          <Button
-            px="2"
-            py="1"
-            h="min-content"
-            fontSize="small"
-            fontWeight="normal"
-            variant="outline"
-            borderColor="black"
-          >
-            Edit Application
-          </Button>
+          <div>
+            <Button
+              px="2"
+              py="1"
+              h="min-content"
+              fontSize="small"
+              fontWeight="normal"
+              variant="outline"
+              borderColor="black"
+            >
+              Edit Application
+            </Button>
+          </div>
         </div>
       </div>
     </div>
