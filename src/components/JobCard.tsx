@@ -68,7 +68,16 @@ export default function JobCard() {
           <Button className="lg:w-[50%] w-full" fontWeight="normal" variant="outline" borderColor="black">
             See More
           </Button>
-          <Button className="lg:w-[50%] w-full" fontWeight="normal" variant="outline" bg="black" textColor="white">
+          <Button
+            className="lg:w-[50%] w-full"
+            fontWeight="normal"
+            variant="outline"
+            bg="black"
+            textColor="white"
+            _hover={{
+              bg: "gray.800",
+            }}
+          >
             Apply Now
           </Button>
         </div>
