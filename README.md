@@ -35,6 +35,7 @@ The Spokes team consists of 17 Cal Poly students. Over the course of about 9 mon
 - [Kyler Nord](https://www.linkedin.com/in/1kylernord1/) - Software Developer
 - [Khoa Nguyen](https://www.linkedin.com/in/khoanguyen07/) - Software Developer
 - [Vishnu Alachi](https://www.linkedin.com/in/vishnu-alachi/) - Software Developer
+- [Khushdip Singh](https://www.linkedin.com/in/deep-singh14/) - Software Developer
 
 ## Getting Started And Contributing
 
