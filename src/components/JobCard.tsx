@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { Badge } from "@chakra-ui/react";
+import { Badge, Button } from "@chakra-ui/react";
 import { IJob } from "@/database/jobSchema";
 
 enum BadgeColors {
