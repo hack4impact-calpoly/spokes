@@ -14,6 +14,7 @@ export enum CompensationType {
 
 // Interface for the job object
 export interface IJob {
+  _id: string;
   organizationName: string;
   organizationIndustry: string;
   title: string;

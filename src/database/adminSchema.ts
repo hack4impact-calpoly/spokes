@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 //Admin interface
 interface AdminInterface {
+  _id: String;
   name: String;
   email: String;
   password: String;
