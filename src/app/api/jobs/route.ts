@@ -17,12 +17,12 @@ export async function DELETE(_request: NextRequest, { params }: { params: { _id:
 
     //if id not found
     if (!result) {
-      return NextResponse.json({ error: "Job not found" }, { status: 404 });
+      return NextResponse.json({ error: "ID not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ message: "Job deleted successfully" }, { status: 200 });
+    return NextResponse.json({ message: "Deleted successfully" }, { status: 200 });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "An error occurred while deleting the job" }, { status: 500 });
+    return NextResponse.json({ error: "An error occurred while deleting" }, { status: 500 });
   }
 }
