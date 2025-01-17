@@ -43,6 +43,6 @@ jobs:
           # - Settings -> Secrets and variables -> New repository secret
           MONGO_URI: ${{ secrets.MONGO_URI }}
           # Add additional environment variables here
-      
+
       - name: Run tests
         run: npm test
