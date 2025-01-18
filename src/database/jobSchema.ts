@@ -1,15 +1,23 @@
 import mongoose, { Schema } from "mongoose";
 
-// Enum for the employment type and compensation type
+// The employment type for the job
 export enum EmploymentType {
   partTime = "part-time",
-  fullTime = "full time",
+  fullTime = "full-time",
   volunteer = "volunteer",
 }
 
+// The compensation type for the job
 export enum CompensationType {
   paid = "paid",
   nonPaid = "non-paid",
+}
+
+// The status of the job
+export enum JobStatus {
+  pending = "pending",
+  approved = "approved",
+  rejected = "rejected",
 }
 
 // Interface for the job object
@@ -23,6 +31,7 @@ export interface IJob {
   jobDescription: string;
   employmentType: EmploymentType;
   compensationType: CompensationType;
+  jobStatus: JobStatus;
   url: string;
 }
 
@@ -34,8 +43,9 @@ const JobSchema = new Schema({
   postDate: { type: Date, required: true },
   expireDate: { type: Date, required: true },
   jobDescription: { type: String, required: true },
-  employmentType: { type: EmploymentType, required: true },
-  compensationType: { type: CompensationType, required: true },
+  employmentType: { type: String, enum: Object.values(EmploymentType), required: true },
+  compensationType: { type: String, enum: Object.values(CompensationType), required: true },
+  jobStatus: { type: String, enum: Object.values(JobStatus), required: true },
   url: { type: String, required: true },
 });
 
