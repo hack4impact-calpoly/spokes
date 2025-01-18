@@ -9,12 +9,12 @@ enum BadgeColors {
 
 export default function JobCard() {
   return (
-    <div className="max-w-[30%]">
+    <div className="max-w-[100%]">
       <div className="bg-[#f7f7f7] rounded px-8 pt-6 pb-8 mb-4">
         <div className="mb-2">
           <div className="flex lg:flex-row flex-col lg:gap-10 gap-2 mb-2">
             <h1 className="text-2xl font-bold">Senior Frontend Developer</h1>
-            <p className="my-auto">12/20/24</p>
+            <p className="ml-auto">12/20/24</p>
           </div>
           <p className="text-gray-700 font-semibold">Company Name</p>
         </div>
@@ -30,7 +30,7 @@ export default function JobCard() {
         </div>
         <div className="flex lg:flex-row flex-col gap-2">
           <Badge
-            className="text-center"
+            className="text-center w-fit"
             rounded="md"
             p="1"
             px="2"
@@ -41,7 +41,7 @@ export default function JobCard() {
             Volunteer
           </Badge>
           <Badge
-            className="text-center"
+            className="text-center w-fit"
             rounded="md"
             p="1"
             px="2"
@@ -52,7 +52,7 @@ export default function JobCard() {
             Part-time
           </Badge>
           <Badge
-            className="text-center"
+            className="text-center w-fit"
             rounded="md"
             p="1"
             px="2"
