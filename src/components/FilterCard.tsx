@@ -18,7 +18,7 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(({ childre
       {...props}
     >
       <div>
-        <div className="text-black font-semibold text-lg mb-1">Employment</div>
+        <div className="text-black font-semibold text-lg mb-1 select-none">Employment</div>
         <div className="flex flex-col gap-[2px]">
           <Checkbox
             label="Full-Time"
@@ -39,7 +39,7 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(({ childre
         </div>
       </div>
       <div className="lg:mb-8">
-        <div className="text-black font-semibold text-lg mb-1">Compensation</div>
+        <div className="text-black font-semibold text-lg mb-1 select-none">Compensation</div>
         <div className="flex flex-col gap-[2px]">
           <Checkbox
             label="Paid"

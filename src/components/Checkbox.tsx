@@ -42,7 +42,7 @@ export const Checkbox = forwardRef<HTMLDivElement, CheckboxProps>(
         </label>
         <label
           htmlFor={label + "_checkbox"}
-          className="font-normal cursor-pointer text-base ml-2.5 mt-[0.5px] text-black"
+          className="font-normal cursor-pointer text-base ml-2.5 mt-[0.5px] text-black select-none"
         >
           {label}
         </label>
