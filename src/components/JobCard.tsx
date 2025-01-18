@@ -14,7 +14,7 @@ export default function JobCard() {
         <div className="mb-2">
           <div className="flex lg:flex-row flex-col lg:gap-10 gap-2 mb-2">
             <h1 className="text-2xl font-bold">Senior Frontend Developer</h1>
-            <p className="my-auto">12/20/24</p>
+            <p className="ml-auto">12/20/24</p>
           </div>
           <p className="text-gray-700 font-semibold">Company Name</p>
         </div>
