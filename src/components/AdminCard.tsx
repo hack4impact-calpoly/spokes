@@ -1,4 +1,5 @@
 import { Badge, Button, Icon } from "@chakra-ui/react";
+import { IJob } from "@/database/jobSchema";
 
 enum BadgeColors {
   Volunteer = "#C6D3FF",
@@ -7,9 +8,13 @@ enum BadgeColors {
   Paid = "#BDEABD",
 }
 
-export default function AdminCard() {
+interface JobCardProps {
+  job: IJob;
+}
+
+export default function AdminCard({ job }: JobCardProps) {
   return (
-    <div className="max-w-[30%]">
+    <div className="max-w-[100%]">
       <div className="bg-[#f7f7f7] rounded-lg px-8 pt-2 pb-8 mb-4">
         <div className="my-5">
           <div className="flex flex-row-reverse mb-5">
@@ -51,17 +56,13 @@ export default function AdminCard() {
             <h1 className="text-2xl font-bold">Development Director</h1>
             <p className="my-auto">12/20/24</p>
           </div>
-          <p className="text-gray-700 font-semibold">Company Name</p>
+          <p className="text-gray-700 font-semibold">{job.organizationName}</p>
         </div>
         <div className="mb-4">
-          <p className="text-gray-700 italic">keyword 1, keyword 2</p>
+          <p className="text-gray-700 italic">{job.jobDescription}</p>
         </div>
         <div className="mb-4">
-          <p className="text-gray-700">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio quod perspiciatis est quisquam doloremque
-            quidem vero, veniam quae, nobis, quam nam ratione ducimus minima consequatur illum illo molestias sequi
-            sunt.
-          </p>
+          <p className="text-gray-700">{job.jobDescription}</p>
         </div>
         <div className="flex flex-wrap justify-between min-[1000px]:flex-row flex-col min-[1000px]:gap-4 gap-2">
           <div className="flex flex-wrap gap-2">
