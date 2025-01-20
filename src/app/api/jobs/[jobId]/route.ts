@@ -1,19 +1,19 @@
 import connectDB from "@/database/db";
 import { NextRequest, NextResponse } from "next/server";
-import jobSchema from "@/database/jobSchema";
+import Job from "@/database/jobSchema";
 
-export async function DELETE(_request: NextRequest, { params }: { params: { _id: string } }) {
+export async function DELETE(_request: NextRequest, { params }: { params: { jobId: string } }) {
   try {
     await connectDB();
-    const id = params._id;
+    const { jobId } = params;
 
     //Requires id
-    if (!id) {
+    if (!jobId) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
     //Deleting based on _id
-    const result = await jobSchema.findByIdAndDelete(id);
+    const result = await Job.findByIdAndDelete(jobId);
 
     //if id not found
     if (!result) {
