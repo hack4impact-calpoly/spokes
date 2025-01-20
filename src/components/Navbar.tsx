@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import "./styles.css";
+import Link from "next/link";
 
 const Navbar: React.FC = () => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
@@ -22,13 +23,13 @@ const Navbar: React.FC = () => {
         {" "}
         {/* Toggle class 'show' */}
         <li>
-          <a href="Job_Board">Job Board</a>
+          <Link href="Job_Board">Job Board</Link>
         </li>
         <li>
-          <a href="List_Job">List Job</a>
+          <Link href="List_Job">List Job</Link>
         </li>
         <li>
-          <a href="Login">Login</a>
+          <Link href="Login">Login</Link>
         </li>
       </ul>
 
