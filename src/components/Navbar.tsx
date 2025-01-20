@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import "./styles.css";
+import "src/styles/Navbar.css";
 import Link from "next/link";
 
 const Navbar: React.FC = () => {
