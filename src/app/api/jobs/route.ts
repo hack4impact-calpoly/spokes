@@ -44,6 +44,6 @@ export async function POST(req: NextRequest) {
     }).save();
     return NextResponse.json(newJob, { status: 201 });
   } catch (error) {
-    return NextResponse.json(error, { status: 500 });
+    return NextResponse.json({ message: "Failed to create job." }, { status: 500 });
   }
 }
