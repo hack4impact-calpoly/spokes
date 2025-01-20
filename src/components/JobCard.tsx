@@ -7,26 +7,26 @@ enum BadgeColors {
   FullTime = "#F8B1B8",
 }
 
-export default function JobCard() {
+interface JobCardProps {
+  job: IJob;
+}
+
+export default function JobCard({ job }: JobCardProps) {
   return (
     <div className="max-w-[100%]">
       <div className="bg-[#f7f7f7] rounded px-8 pt-6 pb-8 mb-4">
         <div className="mb-2">
           <div className="flex lg:flex-row flex-col lg:gap-10 gap-2 mb-2">
-            <h1 className="text-2xl font-bold">Senior Frontend Developer</h1>
+            <h1 className="text-2xl font-bold">{job.title}</h1>
             <p className="ml-auto">12/20/24</p>
           </div>
-          <p className="text-gray-700 font-semibold">Company Name</p>
+          <p className="text-gray-700 font-semibold">{job.organizationName}</p>
         </div>
         <div className="mb-4">
-          <p className="text-gray-700 italic">keyword 1, keyword 2</p>
+          <p className="text-gray-700 italic">{job.organizationIndustry}</p>
         </div>
         <div className="mb-4">
-          <p className="text-gray-700">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio quod perspiciatis est quisquam doloremque
-            quidem vero, veniam quae, nobis, quam nam ratione ducimus minima consequatur illum illo molestias sequi
-            sunt.
-          </p>
+          <p className="text-gray-700">{job.jobDescription}</p>
         </div>
         <div className="flex lg:flex-row flex-col gap-2">
           <Badge

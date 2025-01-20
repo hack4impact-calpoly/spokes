@@ -29,9 +29,9 @@ export interface IJob {
   postDate: Date;
   expireDate: Date;
   jobDescription: string;
-  employmentType: EmploymentType;
-  compensationType: CompensationType;
-  jobStatus: JobStatus;
+  employmentType: String;
+  compensationType: String;
+  jobStatus: String;
   url: string;
 }
 
