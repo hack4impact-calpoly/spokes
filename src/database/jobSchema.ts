@@ -34,8 +34,8 @@ const JobSchema = new Schema({
   postDate: { type: Date, required: true },
   expireDate: { type: Date, required: true },
   jobDescription: { type: String, required: true },
-  employmentType: { type: EmploymentType, required: true },
-  compensationType: { type: CompensationType, required: true },
+  employmentType: { type: String, required: true, enum: Object.values(EmploymentType) },
+  compensationType: { type: String, required: true, enum: Object.values(CompensationType) },
   url: { type: String, required: true },
 });
 
