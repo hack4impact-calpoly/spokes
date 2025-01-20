@@ -1,10 +1,7 @@
 import connectDB from "@/database/db";
 import { NextRequest, NextResponse } from "next/server";
 import Job from "@/database/jobSchema";
-/**
- * Example GET API route
- * @returns {message: string}
- */
+
 export async function GET() {
   try {
     await connectDB();
