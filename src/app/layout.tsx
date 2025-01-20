@@ -1,7 +1,9 @@
+// prettier-ignore
+
 import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "./ui/providers";
-
+import Navbar from "@/components/Navbar";
 //! Update metadata to match your project
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -12,6 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
+        <Navbar />
         <Providers>{children}</Providers>
       </body>
     </html>
