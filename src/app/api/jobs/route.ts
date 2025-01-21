@@ -2,7 +2,8 @@ import connectDB from "@/database/db";
 import { NextResponse } from "next/server";
 import { IJob } from "@/database/jobSchema";
 import Job from "@/database/jobSchema";
-
+import { EmploymentType } from "@/database/jobSchema";
+import { CompensationType } from "@/database/jobSchema";
 /**
  * PUT API route
  * accepts a job object and updates the job in the database
@@ -10,9 +11,9 @@ import Job from "@/database/jobSchema";
  */
 export async function PUT(request: Request) {
   await connectDB();
-
+  console.log("connected to database");
   // Get the job object from the request body
-  const { job }: { job: IJob } = await request.json();
+  const job: IJob = await request.json();
 
   // Validate the job object
   if (
@@ -36,6 +37,6 @@ export async function PUT(request: Request) {
   if (!res) {
     return NextResponse.json({ message: "Error updating job" }, { status: 500 });
   } else {
-    return NextResponse.json({ message: "Hello from the API!" });
+    return NextResponse.json({ message: "Job added successfully" });
   }
 }
