@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { twMerge } from "tailwind-merge";
 import JobGrid from "@/components/JobGrid";
 import { IJob } from "@/database/jobSchema";
-import { Spinner } from "@chakra-ui/react";
+import { Loader } from "@/components/Loader";
 
 export default function Jobs() {
   const [tab, setTab] = useState(1);
@@ -64,10 +64,11 @@ export default function Jobs() {
           {jobData ? (
             <JobGrid jobs={jobData} />
           ) : (
-            <div className="grow flex flex-col gap-6 justify-center items-center lg:-mt-28 mt-28">
-              <Spinner className="text-black" size="xl"></Spinner>
-              <div className="text-lg font-medium text-black">Loading Jobs...</div>
-            </div>
+            <Loader
+              size="xl"
+              label="Loading Jobs..."
+              className="grow flex flex-col gap-6 justify-center items-center lg:-mt-28 mt-28"
+            ></Loader>
           )}
         </div>
       </div>
