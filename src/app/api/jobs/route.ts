@@ -32,7 +32,7 @@ export async function PUT(request: Request) {
   }
 
   // Add job to database
-  const res = await Job.updateOne({ _id: job._id }, job);
+  const res = await Job.updateOne({ _id: job._id }, job, { upsert: true });
   if (!res) {
     return NextResponse.json({ message: "Error updating job" }, { status: 500 });
   } else {
