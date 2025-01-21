@@ -1,5 +1,5 @@
 import { twMerge } from "tailwind-merge";
-import { ComponentProps, forwardRef, useState } from "react";
+import { ComponentProps, forwardRef } from "react";
 import { Spinner } from "@chakra-ui/react";
 
 export interface LoaderProps extends ComponentProps<"div"> {
