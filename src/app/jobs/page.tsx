@@ -24,9 +24,9 @@ export default function Jobs() {
   }, []);
 
   return (
-    <div className="w-full h-screen">
+    <div className="w-full h-screen flex flex-col">
       <Navbar></Navbar>
-      <div className="mt-20 px-8 md:px-16 lg:px-20 flex flex-col lg:flex-row gap-16 lg:gap-8">
+      <div className="mt-20 px-8 md:px-16 lg:px-20 flex flex-col lg:flex-row gap-16 lg:gap-8 grow">
         <div className="flex flex-col gap-4 lg:gap-6">
           <div className="text-black font-semibold text-3xl select-none">Filters</div>
           <div>
@@ -64,8 +64,9 @@ export default function Jobs() {
           {jobData ? (
             <JobGrid jobs={jobData} />
           ) : (
-            <div className="grow flex justify-center items-center lg:mt-0 mt-24">
-              <Spinner className="" size="xl"></Spinner>
+            <div className="grow flex flex-col gap-6 justify-center items-center lg:-mt-28 mt-28">
+              <Spinner className="text-black" size="xl"></Spinner>
+              <div className="text-lg font-medium text-black">Loading Jobs...</div>
             </div>
           )}
         </div>
