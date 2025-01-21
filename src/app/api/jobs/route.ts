@@ -2,8 +2,7 @@ import connectDB from "@/database/db";
 import { NextResponse } from "next/server";
 import { IJob } from "@/database/jobSchema";
 import Job from "@/database/jobSchema";
-import { EmploymentType } from "@/database/jobSchema";
-import { CompensationType } from "@/database/jobSchema";
+
 /**
  * PUT API route
  * accepts a job object and updates the job in the database
