@@ -33,30 +33,9 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
-    const {
-      organizationName,
-      organizationIndustry,
-      title,
-      postDate,
-      expireDate,
-      jobDescription,
-      employmentType,
-      compensationType,
-      jobStatus,
-      url,
-    } = await req.json();
-    const newJob = await new Job({
-      organizationName,
-      organizationIndustry,
-      title,
-      postDate,
-      expireDate,
-      jobDescription,
-      employmentType,
-      compensationType,
-      jobStatus,
-      url,
-    }).save();
+    const jobData: IJob = await req.json();
+    console.log(jobData);
+    const newJob = await new Job(jobData).save();
     return NextResponse.json(newJob, { status: 201 });
   } catch (error) {
     return NextResponse.json({ message: "Failed to create job." }, { status: 500 });
