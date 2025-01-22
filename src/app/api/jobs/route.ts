@@ -1,5 +1,5 @@
 import connectDB from "@/database/db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { IJob } from "@/database/jobSchema";
 import Job from "@/database/jobSchema";
 
@@ -18,5 +18,47 @@ export async function PUT(request: Request) {
     return NextResponse.json({ message: "Job updated successfully" });
   } catch (error: any) {
     return NextResponse.json({ message: "Error updating job: ", error }, { status: 500 });
+  }
+}
+export async function GET() {
+  try {
+    await connectDB();
+    const jobs = await Job.find();
+    return NextResponse.json(jobs, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(error, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    await connectDB();
+    const {
+      organizationName,
+      organizationIndustry,
+      title,
+      postDate,
+      expireDate,
+      jobDescription,
+      employmentType,
+      compensationType,
+      jobStatus,
+      url,
+    } = await req.json();
+    const newJob = await new Job({
+      organizationName,
+      organizationIndustry,
+      title,
+      postDate,
+      expireDate,
+      jobDescription,
+      employmentType,
+      compensationType,
+      jobStatus,
+      url,
+    }).save();
+    return NextResponse.json(newJob, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({ message: "Failed to create job." }, { status: 500 });
   }
 }
