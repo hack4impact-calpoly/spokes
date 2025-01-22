@@ -14,23 +14,6 @@ export async function PUT(request: Request) {
   // Get the job object from the request body
   const job: IJob = await request.json();
 
-  // Validate the job object
-  if (
-    !job ||
-    !job.organizationName ||
-    !job.organizationIndustry ||
-    !job.title ||
-    !job.postDate ||
-    !job.expireDate ||
-    !job.jobDescription ||
-    !job.employmentType ||
-    !job.compensationType ||
-    !job.url ||
-    !job._id
-  ) {
-    return NextResponse.json({ message: "Invalid job provided" }, { status: 400 });
-  }
-
   // Add job to database
   const res = await Job.updateOne({ _id: job._id }, job);
   if (!res) {
