@@ -42,6 +42,8 @@ jobs:
           # These env variables must be set in the repository's secrets
           # - Settings -> Secrets and variables -> New repository secret
           MONGO_URI: ${{ secrets.MONGO_URI }}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
           # Add additional environment variables here
       
       - name: Run tests
