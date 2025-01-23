@@ -8,11 +8,12 @@ interface JobGridProps {
 }
 
 export default function JobGrid({ jobs, isAdmin = false }: JobGridProps) {
+  console.log(typeof jobs);
   const CardComponent = isAdmin ? AdminCard : JobCard;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {jobs.map((job) => (
+      {Array.from(jobs).map((job) => (
         <CardComponent key={job._id} job={job} />
       ))}
     </div>
