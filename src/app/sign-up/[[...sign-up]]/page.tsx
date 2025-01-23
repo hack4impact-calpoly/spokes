@@ -3,7 +3,7 @@ import { Center } from "@chakra-ui/react";
 
 export default function Page() {
   return (
-    <Center height="100vh">
+    <Center minHeight="100vh" px={{ base: 4, md: 0 }}>
       <SignUp />
     </Center>
   );
