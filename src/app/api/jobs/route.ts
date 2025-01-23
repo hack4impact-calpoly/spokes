@@ -20,10 +20,13 @@ export async function PUT(request: Request) {
     return NextResponse.json({ message: "Error updating job: ", error }, { status: 500 });
   }
 }
+
 export async function GET() {
   try {
     await connectDB();
-    const jobs = await Job.find();
+
+    const jobs = await Job.find().sort({ postDate: -1 });
+
     return NextResponse.json(jobs, { status: 200 });
   } catch (error) {
     return NextResponse.json(error, { status: 500 });
