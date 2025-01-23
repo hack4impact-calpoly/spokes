@@ -15,6 +15,7 @@
   "dependencies": {
     "@chakra-ui/next-js": "^2.4.2",
     "@chakra-ui/react": "^2.10.4",
+    "@clerk/nextjs": "^6.9.10",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "framer-motion": "^11.15.0",
