@@ -9,12 +9,19 @@ interface JobGridProps {
 
 export default function JobGrid({ jobs, isAdmin = false }: JobGridProps) {
   const CardComponent = isAdmin ? AdminCard : JobCard;
+  console.log(jobs);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {jobs.map((job) => (
-        <CardComponent key={job._id} job={job} />
-      ))}
+      {jobs.length == 0 ? (
+        <div>No Jobs</div>
+      ) : (
+        jobs.map((job) => {
+          if (job) {
+            return <CardComponent key={job._id} job={job} />;
+          }
+        })
+      )}
     </div>
   );
 }
