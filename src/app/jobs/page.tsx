@@ -16,25 +16,15 @@ interface FilterState {
   [key: string]: string[];
 }
 
-const noJobsFound = () => {
-  return (
-    <div className="grow flex flex-col gap-6 justify-center items-center mt-10">
-      <h1 className="text-3xl font-bold">No Jobs Found</h1>
-      <p className="text-lg text-center">Try again with some different filters!</p>
-    </div>
-  );
-};
-
 export default function Jobs() {
   const [tab, setTab] = useState(1);
 
-  const [jobData, setJobData] = useState<IJob[]>([]);
+  const [jobData, setJobData] = useState<null | IJob[]>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch("/api/jobs");
       const result = await response.json();
-      console.log(result);
       setJobData(result);
     };
 
@@ -49,8 +39,8 @@ export default function Jobs() {
 
   // Define filter categories
   const filterCategories: FilterCategories = {
-    employment: ["Full-time", "Part-time"],
-    compensation: ["Paid", "Volunteer"],
+    employment: ["Full-time", "Part-time", "Volunteer"],
+    compensation: ["Paid", "Non-paid"],
   };
 
   const handleFilterChange = (category: string, value: string) => {
@@ -65,11 +55,12 @@ export default function Jobs() {
   };
 
   const filteredJobs =
+    jobData &&
     Array.from(jobData)?.filter(
       (job) =>
         (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
         (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
-    ) || [];
+    );
 
   return (
     <div className="w-full h-screen flex flex-col">
@@ -109,10 +100,9 @@ export default function Jobs() {
             </div>
           </div>
           {/* Conditional rendering for jobData with loader as fallback */}
-          {jobData ? (
+          {filteredJobs ? (
             <div>
               <JobGrid jobs={filteredJobs} />
-              {filteredJobs.length === 0 ? noJobsFound() : null}
             </div>
           ) : (
             <Loader
