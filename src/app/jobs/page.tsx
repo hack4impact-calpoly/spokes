@@ -28,7 +28,7 @@ const noJobsFound = () => {
 export default function Jobs() {
   const [tab, setTab] = useState(1);
 
-  const [jobData, setJobData] = useState<null | IJob[]>(null);
+  const [jobData, setJobData] = useState<IJob[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,7 +65,7 @@ export default function Jobs() {
   };
 
   const filteredJobs =
-    jobData?.filter(
+    Array.from(jobData)?.filter(
       (job) =>
         (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
         (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
