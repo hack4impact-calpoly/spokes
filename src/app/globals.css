@@ -6,3 +6,12 @@ html {
   background-color: white;
   color: black;
 }
+
+.cl-formButtonPrimary {
+  background-color: black;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}

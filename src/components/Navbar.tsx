@@ -23,13 +23,13 @@ const Navbar: React.FC = () => {
         {" "}
         {/* Toggle class 'show' */}
         <li>
-          <Link href="Job_Board">Job Board</Link>
+          <Link href="/">Job Board</Link>
         </li>
         <li>
-          <Link href="List_Job">List Job</Link>
+          <Link href="/jobform">List Job</Link>
         </li>
         <li>
-          <Link href="Login">Login</Link>
+          <Link href="/sign-in">Login</Link>
         </li>
       </ul>
 
