@@ -27,7 +27,7 @@ export default function AdminCard({ job }: JobCardProps) {
         </div>
         <JobCardInformation job={job} />
         <div className="flex flex-wrap justify-between min-[1000px]:flex-row flex-col min-[1000px]:gap-4 gap-2">
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             <JobBadge badgeType={job.employmentType} />
             <JobBadge badgeType={job.compensationType} />
           </div>

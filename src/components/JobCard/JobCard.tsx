@@ -12,7 +12,7 @@ export default function JobCard({ job }: JobCardProps) {
     <div className="max-w-[100%]">
       <div className="bg-[#f7f7f7] rounded px-8 pt-6 pb-8 mb-4">
         <JobCardInformation job={job} />
-        <div className="flex lg:flex-row flex-col gap-2">
+        <div className="flex lg:flex-row flex-col gap-3">
           <JobBadge badgeType={job.employmentType} />
           <JobBadge badgeType={job.compensationType} />
         </div>
