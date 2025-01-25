@@ -4,6 +4,17 @@ type JobBadgeProps = {
   badgeType: String;
 };
 
+interface FormatBadgeName {
+  (badgeName: String): String;
+}
+
+export const formatBadgeName: FormatBadgeName = (badgeName) => {
+  return badgeName
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // capitalize the first letter of each word
+    .join("-");
+};
+
 export default function JobBadge({ badgeType }: JobBadgeProps) {
   let badgeColor;
   // Will need to have a standard typing style for these options or make a parse for it when ready
@@ -12,27 +23,29 @@ export default function JobBadge({ badgeType }: JobBadgeProps) {
       badgeColor = "#FFE297"; // yellow
       break;
     case "volunteer":
-      badgeColor = "#FFE297"; // blue
+      badgeColor = "#C6D3FF"; // blue
       break;
     case "full-time":
       badgeColor = "#F8B1B8"; // red
       break;
     case "paid":
-      badgeColor = "#b1f8bd"; // green
+      badgeColor = "#BDEABD"; // green
       break;
     case "non-paid":
-      badgeColor = "#d2b1f8"; // purple
-      break;
-    case "approved":
-      badgeColor = "#b1f8bd"; // green
-      break;
-    case "pending":
       badgeColor = "#e6e6e6"; // grey
+      break;
+    case "member":
+      badgeColor = "#BDEABD"; // green
+      break;
+    case "non-member":
+      badgeColor = "#F8B1B8"; // red
       break;
     default:
       badgeColor = "#e6e6e6"; // grey
       break;
   }
+
+  const badgeName = formatBadgeName(badgeType);
 
   return (
     <Badge
@@ -44,7 +57,7 @@ export default function JobBadge({ badgeType }: JobBadgeProps) {
       fontWeight="normal"
       bg={badgeColor}
     >
-      {badgeType}
+      {badgeName}
     </Badge>
   );
 }

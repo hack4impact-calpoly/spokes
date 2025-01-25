@@ -1,4 +1,5 @@
 import { Badge } from "@chakra-ui/react";
+import { formatBadgeName } from "@/components/JobBadge";
 
 type AdminJobBadgeProps = {
   jobStatus: String;
@@ -11,7 +12,8 @@ export default function AdminJobBadge({ jobStatus }: AdminJobBadgeProps) {
   // Will need to have a standard typing style for these options or make a parse for it when ready
   switch (jobStatus) {
     case "approved":
-      badgeColor = "#b1f8bd"; // green
+      badgeColor = "#FFFBD4"; // yellow
+      textColor = "#FFC555";
       break;
     case "pending":
       badgeColor = "#E2F5FF"; // blue
@@ -21,6 +23,8 @@ export default function AdminJobBadge({ jobStatus }: AdminJobBadgeProps) {
       badgeColor = "#e6e6e6"; // grey
       break;
   }
+
+  const badgeName = formatBadgeName(jobStatus.toString());
 
   return (
     <Badge
@@ -34,7 +38,7 @@ export default function AdminJobBadge({ jobStatus }: AdminJobBadgeProps) {
       bg={badgeColor}
       color={textColor}
     >
-      {jobStatus.toString()}
+      {badgeName}
     </Badge>
   );
 }
