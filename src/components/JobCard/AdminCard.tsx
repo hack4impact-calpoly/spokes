@@ -1,8 +1,8 @@
 import { Button, Icon } from "@chakra-ui/react";
 import { IJob } from "@/database/jobSchema";
-import AdminJobBadge from "@/components/AdminJobBadge";
-import JobBadge from "@/components/JobBadge";
-import JobCardInformation from "@/components/JobCardInformation";
+import AdminJobBadge from "@/components/JobCard/AdminJobBadge";
+import JobBadge from "@/components/JobCard/JobBadge";
+import JobCardInformation from "@/components/JobCard/JobCardInformation";
 
 interface JobCardProps {
   job: IJob;

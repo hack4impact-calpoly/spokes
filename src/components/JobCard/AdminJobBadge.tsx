@@ -1,5 +1,5 @@
 import { Badge } from "@chakra-ui/react";
-import { formatBadgeName } from "@/components/JobBadge";
+import { formatBadgeName } from "@/components/JobCard/JobBadge";
 
 type AdminJobBadgeProps = {
   jobStatus: String;
