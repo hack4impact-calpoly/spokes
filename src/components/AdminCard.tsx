@@ -1,12 +1,7 @@
-import { Badge, Button, Icon } from "@chakra-ui/react";
+import { Button, Icon } from "@chakra-ui/react";
 import { IJob } from "@/database/jobSchema";
-
-enum BadgeColors {
-  Volunteer = "#C6D3FF",
-  PartTime = "#FFE297",
-  FullTime = "#F8B1B8",
-  Paid = "#BDEABD",
-}
+import AdminJobBadge from "@/components/AdminJobBadge";
+import JobBadge from "@/components/JobBadge";
 
 interface JobCardProps {
   job: IJob;
@@ -19,89 +14,32 @@ export default function AdminCard({ job }: JobCardProps) {
         <div className="my-5">
           <div className="flex flex-row-reverse mb-5">
             <Icon viewBox="0 0 200 200" color="#A1E3CB">
+              {/* This little dot will also need to be made dynamic with member/non-badge member when that is made */}
               <path fill="currentColor" d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0" />
             </Icon>
           </div>
           <div className="flex justify-between">
-            <Badge
-              className="text-center"
-              rounded="xl"
-              p="1"
-              px="2"
-              size="small"
-              h="min-content"
-              textTransform="none"
-              fontWeight="normal"
-              bg="#E2F5FF"
-              color="#59A8D4"
-            >
-              Pending
-            </Badge>
-            <Badge
-              className="text-center"
-              rounded="md"
-              p="1"
-              px="2"
-              h="min-content"
-              textTransform="none"
-              fontWeight="normal"
-              bg={BadgeColors.Paid}
-            >
-              Paid
-            </Badge>
+            <AdminJobBadge jobStatus={job.jobStatus} />
+            {/* Currently dont have member/non-member data. Can add it here once done. Leaving it as jobStatus for now */}
+            <AdminJobBadge jobStatus={job.jobStatus} />
           </div>
         </div>
         <div className="mb-2">
           <div className="flex justify-between lg:flex-row flex-col lg:gap-10 gap-2 mb-2">
-            <h1 className="text-2xl font-bold">Development Director</h1>
-            <p className="my-auto">12/20/24</p>
+            <h1 className="text-2xl font-bold">{job.title}</h1>
+            <p className="my-auto">{new Date(job.postDate).toLocaleDateString()}</p>
           </div>
           <p className="text-gray-700 font-semibold">{job.organizationName}</p>
         </div>
         <div className="mb-4">
-          <p className="text-gray-700 italic">{job.jobDescription}</p>
-        </div>
-        <div className="mb-4">
-          <p className="text-gray-700">{job.jobDescription}</p>
+          <p className="text-gray-700 italic h-[80px] h-max-[80px] overflow-scroll no-scrollbar">
+            {job.jobDescription}
+          </p>
         </div>
         <div className="flex flex-wrap justify-between min-[1000px]:flex-row flex-col min-[1000px]:gap-4 gap-2">
           <div className="flex flex-wrap gap-2">
-            <Badge
-              className="text-center"
-              rounded="md"
-              p="1"
-              px="2"
-              h="min-content"
-              textTransform="none"
-              fontWeight="normal"
-              bg={BadgeColors.Volunteer}
-            >
-              Volunteer
-            </Badge>
-            <Badge
-              className="text-center"
-              rounded="md"
-              p="1"
-              px="2"
-              h="min-content"
-              textTransform="none"
-              fontWeight="normal"
-              bg={BadgeColors.PartTime}
-            >
-              Part-time
-            </Badge>
-            <Badge
-              className="text-center"
-              rounded="md"
-              p="1"
-              px="2"
-              h="min-content"
-              textTransform="none"
-              fontWeight="normal"
-              bg={BadgeColors.FullTime}
-            >
-              Full-time
-            </Badge>
+            <JobBadge badgeType={job.employmentType} />
+            <JobBadge badgeType={job.compensationType} />
           </div>
           <div>
             <Button
