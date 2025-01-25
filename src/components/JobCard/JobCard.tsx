@@ -14,8 +14,10 @@ export default function JobCard({ job }: JobCardProps) {
       <div className="bg-[#f7f7f7] rounded-md px-8 pt-5 pb-2 shadow-sm">
         <JobCardInformation job={job} />
         <div className="flex flex-row md:flex-col lg:flex-row gap-2 items-end lg:items-end md:items-start mt-5">
-          <JobBadge badgeType={job.employmentType} />
-          <JobBadge badgeType={job.compensationType} />
+          <div className="flex gap-2">
+            <JobBadge badgeType={job.employmentType} />
+            <JobBadge badgeType={job.compensationType} />
+          </div>
           <JobPostedDate date={job.postDate} />
         </div>
         <div className="flex lg:flex-row flex-col gap-4 my-5">
