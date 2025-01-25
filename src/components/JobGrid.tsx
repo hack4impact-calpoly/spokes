@@ -9,7 +9,7 @@ interface JobGridProps {
 
 const noJobsFound = () => {
   return (
-    <div className="grow flex flex-col gap-6 justify-center justify-self-center items-center mt-10">
+    <div className="grow flex flex-col gap-1 justify-center justify-self-center items-center mt-10">
       <h1 className="text-3xl font-bold">No Jobs Found</h1>
       <p className="text-lg text-center">Try again with some different filters!</p>
     </div>
