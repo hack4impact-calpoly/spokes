@@ -32,7 +32,9 @@ export default function AdminCard({ job }: JobCardProps) {
           <p className="text-gray-700 font-semibold">{job.organizationName}</p>
         </div>
         <div className="mb-4">
-          <p className="text-gray-700 italic h-[80px] h-max-[80px] overflow-scroll">{job.jobDescription}</p>
+          <p className="text-gray-700 italic h-[80px] h-max-[80px] overflow-scroll no-scrollbar">
+            {job.jobDescription}
+          </p>
         </div>
         <div className="flex flex-wrap justify-between min-[1000px]:flex-row flex-col min-[1000px]:gap-4 gap-2">
           <div className="flex flex-wrap gap-2">

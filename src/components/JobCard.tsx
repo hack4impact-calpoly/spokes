@@ -21,7 +21,9 @@ export default function JobCard({ job }: JobCardProps) {
           <p className="text-gray-700 italic">{job.organizationIndustry}</p>
         </div>
         <div className="mb-4">
-          <p className="text-gray-700 overflow:s h-max-[150px] h-[80px] overflow-scroll">{job.jobDescription}</p>
+          <p className="text-gray-700 overflow:s h-max-[150px] h-[80px] overflow-scroll no-scrollbar">
+            {job.jobDescription}
+          </p>
         </div>
         <div className="flex lg:flex-row flex-col gap-2">
           <JobBadge badgeType={job.employmentType} />
