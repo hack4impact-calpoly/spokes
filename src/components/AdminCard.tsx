@@ -2,6 +2,7 @@ import { Button, Icon } from "@chakra-ui/react";
 import { IJob } from "@/database/jobSchema";
 import AdminJobBadge from "@/components/AdminJobBadge";
 import JobBadge from "@/components/JobBadge";
+import JobCardInformation from "@/components/JobCardInformation";
 
 interface JobCardProps {
   job: IJob;
@@ -24,18 +25,7 @@ export default function AdminCard({ job }: JobCardProps) {
             <AdminJobBadge jobStatus={job.jobStatus} />
           </div>
         </div>
-        <div className="mb-2">
-          <div className="flex justify-between lg:flex-row flex-col lg:gap-10 gap-2 mb-2">
-            <h1 className="text-2xl font-bold">{job.title}</h1>
-            <p className="my-auto">{new Date(job.postDate).toLocaleDateString()}</p>
-          </div>
-          <p className="text-gray-700 font-semibold">{job.organizationName}</p>
-        </div>
-        <div className="mb-4">
-          <p className="text-gray-700 italic h-[80px] h-max-[80px] overflow-scroll no-scrollbar">
-            {job.jobDescription}
-          </p>
-        </div>
+        <JobCardInformation job={job} />
         <div className="flex flex-wrap justify-between min-[1000px]:flex-row flex-col min-[1000px]:gap-4 gap-2">
           <div className="flex flex-wrap gap-2">
             <JobBadge badgeType={job.employmentType} />
