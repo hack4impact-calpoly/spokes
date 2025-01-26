@@ -7,6 +7,15 @@ import JobGrid from "@/components/JobGrid";
 import { IJob } from "@/database/jobSchema";
 import { Loader } from "@/components/Loader";
 
+// Interfaces to make TS happy
+interface FilterCategories {
+  [key: string]: string[];
+}
+
+interface FilterState {
+  [key: string]: string[];
+}
+
 export default function Jobs() {
   const [tab, setTab] = useState(1);
 
@@ -22,6 +31,37 @@ export default function Jobs() {
     fetchData();
   }, []);
 
+  // State to manage filters
+  const [filters, setFilters] = useState<FilterState>({
+    employment: [],
+    compensation: [],
+  });
+
+  // Define filter categories
+  const filterCategories: FilterCategories = {
+    employment: ["Full-time", "Part-time", "Volunteer"],
+    compensation: ["Paid", "Non-paid"],
+  };
+
+  const handleFilterChange = (category: string, value: string) => {
+    setFilters((prev) => {
+      const currentFilters = prev[category];
+      const newFilters = currentFilters.includes(value)
+        ? currentFilters.filter((item) => item !== value)
+        : [...currentFilters, value];
+
+      return { ...prev, [category]: newFilters };
+    });
+  };
+
+  const filteredJobs =
+    jobData &&
+    Array.from(jobData)?.filter(
+      (job) =>
+        (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
+        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
+    );
+
   return (
     <div className="w-full h-screen flex flex-col">
       <Navbar></Navbar>
@@ -29,7 +69,7 @@ export default function Jobs() {
         <div className="flex flex-col gap-4 lg:gap-6">
           <div className="text-black font-semibold text-3xl select-none">Filters</div>
           <div>
-            <FilterCard></FilterCard>
+            <FilterCard categories={filterCategories} onFilterChange={handleFilterChange}></FilterCard>
           </div>
         </div>
         <div className="w-full flex flex-col gap-4 lg:gap-6">
@@ -60,8 +100,10 @@ export default function Jobs() {
             </div>
           </div>
           {/* Conditional rendering for jobData with loader as fallback */}
-          {jobData ? (
-            <JobGrid jobs={jobData} />
+          {filteredJobs ? (
+            <div>
+              <JobGrid jobs={filteredJobs} />
+            </div>
           ) : (
             <Loader
               size="xl"

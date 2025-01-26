@@ -1,6 +1,6 @@
 import { IJob } from "@/database/jobSchema";
-import AdminCard from "./AdminCard";
-import JobCard from "./JobCard";
+import AdminCard from "./JobCard/AdminCard";
+import JobCard from "./JobCard/JobCard";
 
 interface JobGridProps {
   jobs: IJob[];
@@ -8,13 +8,29 @@ interface JobGridProps {
 }
 
 export default function JobGrid({ jobs, isAdmin = false }: JobGridProps) {
+  console.log(typeof jobs);
   const CardComponent = isAdmin ? AdminCard : JobCard;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {jobs.map((job) => (
-        <CardComponent key={job._id} job={job} />
-      ))}
+    <>
+      {jobs.length === 0 ? (
+        <NoJobsFound />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
+          {Array.from(jobs).map((job) => (
+            <CardComponent key={job._id} job={job} />
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
+function NoJobsFound() {
+  return (
+    <div className="grow flex flex-col gap-1 justify-center justify-self-center items-center mt-10">
+      <h1 className="text-3xl font-bold">No Jobs Found</h1>
+      <p className="text-lg text-center">Try again with some different filters!</p>
     </div>
   );
 }
