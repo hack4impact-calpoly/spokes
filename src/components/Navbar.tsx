@@ -1,13 +1,11 @@
 "use client";
-
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@chakra-ui/react";
-
 import { extendTheme } from "@chakra-ui/react";
 
-// 2. Update the breakpoints as key-value pairs
+// Update the breakpoints as key-value pairs
 const breakpoints = {
   base: "0px",
   sm: "458px",
@@ -34,22 +32,24 @@ const Navbar: React.FC = () => {
             height={500}
           />
         </Link>
-        <Button
-          className="flex flex-shrink-0 gap-2"
-          fontWeight="medium"
-          size={{ base: "xs", sm: "sm", md: "md" }}
-          colorScheme="blue"
-          bg="#045F87"
-        >
-          <Image
-            className="w-4 h-4 md:w-5 md:h-5"
-            alt="login emblem"
-            width={20}
-            height={20}
-            src="/Spokes Brand/Spokes_login_emblem.svg"
-          ></Image>
-          LOGIN
-        </Button>
+        <Link className="hidden sm:flex" href="/sign-in">
+          <Button
+            className="flex flex-shrink-0 gap-2"
+            fontWeight="medium"
+            size={{ base: "xs", sm: "sm", md: "md" }}
+            colorScheme="blue"
+            bg="#045F87"
+          >
+            <Image
+              className="w-4 h-4 md:w-5 md:h-5"
+              alt="login emblem"
+              width={20}
+              height={20}
+              src="/Spokes Brand/Spokes_login_emblem.svg"
+            ></Image>
+            LOGIN
+          </Button>
+        </Link>
       </div>
 
       <div className="flex justify-between sm:justify-start bg-[#2B2B2B] text-white sm:px-9">
