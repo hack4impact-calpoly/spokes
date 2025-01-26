@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
         </Link>
         <Link
           className="font-medium text-center w-1/2 sm:w-max text-lg py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E]"
-          href="list_job"
+          href="jobform"
         >
           List Job
         </Link>
