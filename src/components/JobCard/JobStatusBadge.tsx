@@ -1,11 +1,11 @@
 import { Badge } from "@chakra-ui/react";
-import { formatBadgeName } from "@/components/JobBadge";
+import { formatBadgeName } from "@/components/JobCard/JobBadge";
 
-type AdminJobBadgeProps = {
+type JobStatusBadgeProps = {
   jobStatus: String;
 };
 
-export default function AdminJobBadge({ jobStatus }: AdminJobBadgeProps) {
+export default function JobStatusBadge({ jobStatus }: JobStatusBadgeProps) {
   let badgeColor;
   let textColor = "black"; // default text color to black
 

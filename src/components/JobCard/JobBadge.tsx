@@ -31,9 +31,6 @@ export default function JobBadge({ badgeType }: JobBadgeProps) {
     case "paid":
       badgeColor = "#BDEABD"; // green
       break;
-    case "non-paid":
-      badgeColor = "#e6e6e6"; // grey
-      break;
     case "member":
       badgeColor = "#BDEABD"; // green
       break;

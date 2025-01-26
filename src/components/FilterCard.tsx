@@ -18,12 +18,14 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
     const [partTimeChecked, setPartTimeChecked] = useState(false);
     const [volunteerChecked, setVolunteerChecked] = useState(false);
     const [paidChecked, setPaidChecked] = useState(false);
-    const [nonPaidChecked, setNonPaidChecked] = useState(false);
     return (
       <div className="sticky top-[150px]">
         <div
           ref={ref}
-          className={twMerge("bg-[#F7F7F7] px-8 py-6 rounded flex lg:flex-col gap-16 lg:gap-4", className)}
+          className={twMerge(
+            "bg-[#F7F7F7] px-8 py-6 rounded flex flex-col gap-2 min-[430px]:flex-row min-[430px]:gap-16 lg:flex-col lg:gap-4",
+            className,
+          )}
           {...props}
         >
           <div>
@@ -67,11 +69,11 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
                 }}
               ></Checkbox>
               <Checkbox
-                label="Non-paid"
-                checked={nonPaidChecked}
+                label="Volunteer"
+                checked={volunteerChecked}
                 changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setNonPaidChecked(event.target.checked);
-                  onFilterChange("compensation", "non-paid");
+                  setVolunteerChecked(event.target.checked);
+                  onFilterChange("compensation", "volunteer");
                 }}
               ></Checkbox>
             </div>
