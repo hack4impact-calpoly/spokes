@@ -47,14 +47,6 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
                   onFilterChange("employment", "part-time");
                 }}
               ></Checkbox>
-              <Checkbox
-                label="Volunteer"
-                checked={volunteerChecked}
-                changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setVolunteerChecked(event.target.checked);
-                  onFilterChange("employment", "volunteer");
-                }}
-              ></Checkbox>
             </div>
           </div>
           <div className="lg:mb-8">
