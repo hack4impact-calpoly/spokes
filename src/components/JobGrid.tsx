@@ -25,7 +25,7 @@ export default function JobGrid({ jobs, isAdmin = false }: JobGridProps) {
       {jobs.length === 0 ? (
         noJobsFound()
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
           {Array.from(jobs).map((job) => (
             <CardComponent key={job._id} job={job} />
           ))}
