@@ -34,5 +34,5 @@ export default function JobPostedDate({ date }: { date: string | Date }) {
     return <p>Invalid date</p>;
   }
 
-  return <p className="text-sm text-gray-500">Posted {timeAgo(new Date(date))}</p>;
+  return <p className="text-sm text-gray-500 self-center">Posted {timeAgo(new Date(date))}</p>;
 }
