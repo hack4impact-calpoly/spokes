@@ -14,7 +14,7 @@ export default function JobConfirmationModal() {
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent
-          className="flex justify-center items-center flex-shrink-0 rounded-lg border border-black overflow-hidden"
+          className="flex justify-center items-center flex-shrink-0 rounded-lg border border-black overflow-hidden text-center"
           sx={{
             width: ["300px", "65vw"],
             maxWidth: ["350px", "65vw"],
@@ -22,16 +22,17 @@ export default function JobConfirmationModal() {
           }}
         >
           <div className="flex flex-col items-start gap-[1vh] w-full h-[250px] sm:w-[65vw] sm:h-[170px] md:h-[180px]">
-            <ModalHeader className="self-stretch text-black font-inter text-[1.3em] sm:text-[1.4em] font-semibold leading-normal">
+            <ModalHeader className="self-stretch text-black font-inter text-[4em] sm:text-[2em]font-semibold leading-normal">
               Job listing successfully submitted
             </ModalHeader>
-            <ModalBody className="self-stretch text-black font-inter text-[1em] sm:text-[1.2em] font-normal leading-normal">
+            <ModalBody className="self-stretch text-black font-inter text-[1em] sm:text-[1.2em] md:text-[1.3em] lg:text-[1.4em] font-normal leading-normal">
               An admin will review this job listing, and you will be notified once it is approved.
             </ModalBody>
             <ModalFooter
               as="a"
               href="/"
-              className="text-black font-inter text-[0.8em] sm:text-[1em] font-normal leading-normal underline"
+              alignSelf={"center"}
+              className="text-black font-inter text-[0.8em] sm:text-[1em] md:text-[1.2em] lg:text-[1.4em] font-normal leading-normal underline"
             >
               Submit new job listing
             </ModalFooter>
