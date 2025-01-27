@@ -16,7 +16,7 @@ export default function SpokesHeader() {
           height={500}
         />
       </Link>
-      <Link className="hidden sm:flex" href="/sign-in">
+      <Link className="sm:flex" href="/sign-in">
         <Button
           className="flex flex-shrink-0 gap-2"
           fontWeight="medium"
