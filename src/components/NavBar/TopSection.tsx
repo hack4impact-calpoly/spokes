@@ -4,7 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@chakra-ui/react";
 
-export default function SpokesHeader() {
+interface TopSectionProps {
+  setPage: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export default function TopSection({ setPage }: TopSectionProps) {
   return (
     <main className="flex justify-between items-center bg-white px-10 sm:px-14 py-7">
       <Link className="flex-shrink-0 max-[458px]:w-[115px] w-[200px]" href="/jobs">
@@ -14,6 +18,7 @@ export default function SpokesHeader() {
           src="/Spokes Brand/Spokes_Logo_PRINT-Transparent-BG-1.jpg"
           width={500}
           height={500}
+          onClick={() => setPage("Job Board")}
         />
       </Link>
       <Link className="sm:flex" href="/sign-in">
