@@ -1,5 +1,4 @@
 "use client";
-import Navbar from "@/components/Navbar";
 import { useState, useEffect } from "react";
 import JobGrid from "@/components/JobGrid";
 import { IJob } from "@/database/jobSchema";
@@ -32,21 +31,8 @@ export default function AdminJobs() {
   }, []);
 
   return (
-    <div className="w-full h-screen">
-      <Navbar></Navbar>
+    <div className="w-full">
       <div className="mt-20 px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
-        <div className="rounded-md bg-[#f1f7fb] px-8 py-10 w-full flex flex-col gap-4 justify-center items-center">
-          <div className="font-semibold text-2xl">Applications</div>
-          <div className="text-center text-sm">
-            Figma ipsum component variant main layer. Arrange stroke subtract opacity distribute. Pen arrow image create
-            export underline arrow. Italic main hand blur group component.Figma ipsum component variant main layer.
-            Arrange stroke subtract opacity distribute. Pen arrow image create export underline arrow. Italic main hand
-            blur group component.Figma ipsum component variant main layer. Arrange stroke subtract opacity distribute.
-            Pen arrow image create export underline arrow. Italic main hand blur group component.Figma ipsum component
-            variant main layer. Arrange stroke subtract opacity distribute. Pen arrow image create export underline
-            arrow. Italic main hand blur group component.
-          </div>
-        </div>
         <div className="flex flex-col gap-16 mb-20">
           <JobSection jobs={incomingJobData} title="Incoming Applications"></JobSection>
           <JobSection jobs={liveJobData} title="Live Applications"></JobSection>
