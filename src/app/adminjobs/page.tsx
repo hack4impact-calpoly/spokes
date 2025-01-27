@@ -7,13 +7,7 @@ import { Loader } from "@/components/Loader";
 
 // Helper function to filter the job data into the three categories
 function filterJobs(jobs: IJob[], filterBy: "pending" | "approved" | "rejected") {
-  return jobs
-    .map((job: IJob) => {
-      if (job.jobStatus == filterBy) return job;
-    })
-    .filter((item: IJob | undefined) => {
-      return item !== undefined;
-    });
+  return jobs.filter((job) => job.jobStatus === filterBy);
 }
 
 export default function AdminJobs() {
