@@ -22,12 +22,12 @@ const RadioCard = (props: RadioCardProps) => {
         py={3}
         bg="#F6F6F6"
         _checked={{
-          bg: "#DADADA",
+          bg: "#BFBFBF",
           color: "black",
           borderColor: "F6F6F6",
         }}
         _hover={{
-          bg: "#DADADA",
+          bg: "#BFBFBF",
           color: "black",
         }}
       >

@@ -1,95 +1,123 @@
-import React from "react";
-import { Box, Button, Flex, Heading, Input, Stack } from "@chakra-ui/react";
+"use client";
+import React, { useState } from "react";
+import {
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  useRadioGroup,
+  Box,
+  Heading,
+  Input,
+  VStack,
+  HStack,
+  Button,
+} from "@chakra-ui/react";
+import RadioCard from "@/components/RadioCard";
 
 const JobFormPage: React.FC = () => {
+  const [input, setInput] = useState("");
+  const [jobType, setJobType] = useState("Full-Time");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Submitted Data");
+  };
+
+  //For custome radio selection buttons, job type field
+  const typeOptions = ["Volunteer", "Full-Time", "Part-Time"];
+  const { getRootProps: getJobRootProps, getRadioProps: getJobRadioProps } = useRadioGroup({
+    name: "jobType",
+    onChange: setJobType,
+  });
+
+  //For custom radio selection buttons, paid member field
+  const memberOptions = ["Yes", "No"];
+  const { getRootProps: getMemberRootProps, getRadioProps: getMemberRadioProps } = useRadioGroup({
+    name: "framework",
+    onChange: console.log,
+  });
+
   return (
-    <Box p={5}>
-      <Heading as="h1" size="xl" mb={4}>
-        <strong>Create new listing</strong>
+    <Box p={10} px={100} mt={100} /*Added extra padding for navbar, might fix later*/>
+      <Heading as="h1" size="xl" fontWeight="bold" mb={6}>
+        Create new listing
       </Heading>
       <Heading as="h2" size="lg" mb={6}>
         Job Information
       </Heading>
-      <Heading as="h2" size="md" mb={2}>
-        Organization name
-      </Heading>
-      <Input placeholder="Enter your response" mb={6} />
-      <Heading as="h2" size="md" mb={2}>
-        Organization Industry
-      </Heading>
-      <Input placeholder="Enter your response" mb={6} />
-      <Heading as="h2" size="md" mb={2}>
-        Job title
-      </Heading>
-      <Input placeholder="Enter your response" mb={6} />
-      <Heading as="h2" size="md" mb={2}>
-        Select all that apply
-      </Heading>
-      <Stack spacing={2} direction="row" mb={4}>
-        <Button bg="green.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Paid
-        </Button>
-        <Button bg="red.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Not Paid
-        </Button>
-        <Button bg="blue.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Volunteer
-        </Button>
-        <Button bg="red.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Part-time
-        </Button>
-        <Button bg="yellow.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Full-time
-        </Button>
-      </Stack>
-      <Flex mb={6}>
-        <Box flex="1" mr={2}>
-          <Heading as="h2" size="md" mb={6}>
-            Posting Date
+      <form onSubmit={handleSubmit}>
+        <VStack spacing={4}>
+          <FormControl isRequired>
+            <FormLabel>Organization Name</FormLabel>
+            <Input type="text" placeholder="Enter your response" bg="#F6F6F6" border="0" />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel>Organization Industry</FormLabel>
+            <Input type="text" placeholder="Enter your response" bg="#F6F6F6" border="0" />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel>Job Title</FormLabel>
+            <Input type="text" placeholder="Enter your response" bg="#F6F6F6" border="0" />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel>Are you a paid member?</FormLabel>
+            <HStack {...getMemberRootProps()}>
+              {memberOptions.map((value) => {
+                const radio = getMemberRadioProps({ value });
+                return (
+                  <RadioCard key={value} value={value} {...radio}>
+                    {value}
+                  </RadioCard>
+                );
+              })}
+            </HStack>
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel>Please select one below for your listing:</FormLabel>
+            <HStack {...getJobRootProps()}>
+              {typeOptions.map((value) => {
+                const radio = getJobRadioProps({ value });
+                return (
+                  <RadioCard key={value} value={value} {...radio}>
+                    {value}
+                  </RadioCard>
+                );
+              })}
+            </HStack>
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel>Job Description</FormLabel>
+            <Input type="text" placeholder="Enter your response" bg="#F6F6F6" border="0" />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel>Link to job listing</FormLabel>
+            <Input type="text" placeholder="Enter your response" bg="#F6F6F6" border="0" />
+            <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
+          </FormControl>
+          <Heading as="h2" size="lg" mb={6} textAlign="left" w="full">
+            Person of Contact - Information
           </Heading>
-          <Input placeholder="xx/xx/xxxx" />
-        </Box>
-        <Box flex="1" ml={2}>
-          <Heading as="h2" size="md" mb={6}>
-            Expiration Date
-          </Heading>
-          <Input placeholder="xx/xx/xxxx" />
-        </Box>
-      </Flex>
-      <Heading as="h2" size="md" mb={2}>
-        Job Description
-      </Heading>
-      <Input placeholder="Enter your response" mb={6} />
-      <Heading as="h2" size="md" mb={2}>
-        Link to job listing
-      </Heading>
-      <Input placeholder="xxxx.com" mb={6} />
-      <Heading as="h2" size="md" mb={6}>
-        Personal Information
-      </Heading>
-      <Flex mb={4}>
-        <Box flex="1" mr={2}>
-          <Heading as="h2" size="md" mb={2}>
-            Name
-          </Heading>
-          <Input placeholder="First and Last Name" mb={6} />
-        </Box>
-        <Box flex="1" ml={2}>
-          <Heading as="h2" size="md" mb={2}>
-            Phone Number
-          </Heading>
-          <Input placeholder="Phone Number" />
-        </Box>
-      </Flex>
-      <Heading as="h2" size="md" mb={2}>
-        Email
-      </Heading>
-      <Input placeholder="xxxxx@example.com" mb={4} />
-      <Flex justify="center" mt={4}>
-        <Button colorScheme="blackAlpha" size="lg">
-          Submit
-        </Button>
-      </Flex>
+          <HStack w="full">
+            <FormControl isRequired pr={3}>
+              <FormLabel>Name</FormLabel>
+              <Input type="text" placeholder="First and Last Name" bg="#F6F6F6" border="0" />
+            </FormControl>
+            <FormControl pl={3}>
+              <FormLabel>Phone Number</FormLabel>
+              <Input type="tel" bg="#F6F6F6" placeholder="xxx-xxx-xxxx" border="0" />
+              <FormErrorMessage>Please enter a valid phone number.</FormErrorMessage>
+            </FormControl>
+          </HStack>
+          <FormControl isRequired>
+            <FormLabel>Email</FormLabel>
+            <Input type="email" placeholder="xxxxx@example.com" bg="#F6F6F6" border="0" />
+            <FormErrorMessage>Please enter a valid email address.</FormErrorMessage>
+          </FormControl>
+          <Button mt={10} type="submit" size="lg" colorScheme="blackAlpha" bg="black" _hover={{ bg: "#5E5E5E" }}>
+            Submit
+          </Button>
+        </VStack>
+      </form>
     </Box>
   );
 };
