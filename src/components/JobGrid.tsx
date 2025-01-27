@@ -8,7 +8,6 @@ interface JobGridProps {
 }
 
 export default function JobGrid({ jobs, isAdmin = false }: JobGridProps) {
-  console.log(typeof jobs);
   const CardComponent = isAdmin ? AdminCard : JobCard;
 
   return (
