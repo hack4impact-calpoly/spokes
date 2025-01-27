@@ -3,8 +3,9 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import Providers from "./ui/providers";
 import { Inter } from "next/font/google";
+import NavBar from "@/components/Nav/NavBar";
+
 const inter = Inter({ subsets: ["latin"] });
-import NavBar from "@/components/NavBar/NavBar";
 
 export const metadata: Metadata = {
   title: "Spokes Job Board",
