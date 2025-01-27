@@ -4,7 +4,8 @@ import "./globals.css";
 import Providers from "./ui/providers";
 import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/NavBar/Navbar";
+import TopHeader from "@/components/NavBar/TopHeader";
 
 export const metadata: Metadata = {
   title: "Spokes Job Board",
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <html lang="en">
         <body className={inter.className}>
           <Providers>
+            <TopHeader />
             <Navbar />
             {children}
           </Providers>
