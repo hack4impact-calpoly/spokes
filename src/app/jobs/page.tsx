@@ -65,7 +65,7 @@ export default function Jobs() {
     <div className="w-full flex flex-col">
       <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col lg:flex-row gap-16 lg:gap-8 grow">
         <div className="flex flex-col gap-4 lg:gap-6">
-          <div className="text-black font-semibold text-3xl select-none sticky top-[110px]">Filters</div>
+          <div className="text-black font-semibold text-3xl select-none lg:sticky lg:top-[110px]">Filters</div>
           <FilterCard categories={filterCategories} onFilterChange={handleFilterChange}></FilterCard>
         </div>
         <div className="w-full flex flex-col gap-4 lg:gap-6">
