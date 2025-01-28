@@ -9,10 +9,11 @@ export interface LoaderProps extends ComponentProps<"div"> {
 }
 
 export const Loader = forwardRef<HTMLDivElement, LoaderProps>(({ children, className, label, size, ...props }, ref) => {
+  const fontSize = `text-${size}`;
   return (
-    <div ref={ref} className={twMerge("flex flex-col gap-6 justify-center items-center", className)} {...props}>
+    <div ref={ref} className={twMerge(className, "flex flex-col gap-6 justify-center items-center")} {...props}>
       <Spinner className="text-black" size={size}></Spinner>
-      {label && <div className="text-lg font-medium text-black">{label}</div>}
+      {label && <div className={twMerge(fontSize, "font-medium text-black")}>{label}</div>}
     </div>
   );
 });
