@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@chakra-ui/react";
+import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Text } from "@chakra-ui/react";
 
 export default function JobConfirmationModal() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,10 +22,10 @@ export default function JobConfirmationModal() {
           }}
         >
           <div className="flex flex-col items-start gap-[1vh] w-full h-[250px] sm:w-[65vw] sm:h-[170px] md:h-[180px]">
-            <ModalHeader className="self-stretch text-black font-inter text-[4em] sm:text-[2em]font-semibold leading-normal">
-              Job listing successfully submitted
+            <ModalHeader className="self-stretch text-black font-inter font-semibold leading-normal">
+              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">Job listing successfully submitted</p>
             </ModalHeader>
-            <ModalBody className="self-stretch text-black font-inter text-[1em] sm:text-[1.2em] md:text-[1.3em] lg:text-[1.4em] font-normal leading-normal">
+            <ModalBody className="self-stretch text-black font-inter text-md sm:text-lg md:text-xl lg:text-2xl font-normal leading-normal">
               An admin will review this job listing, and you will be notified once it is approved.
             </ModalBody>
             <ModalFooter
