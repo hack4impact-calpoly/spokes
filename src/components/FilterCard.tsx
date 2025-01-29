@@ -18,61 +18,58 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
     const [partTimeChecked, setPartTimeChecked] = useState(false);
     const [volunteerChecked, setVolunteerChecked] = useState(false);
     const [paidChecked, setPaidChecked] = useState(false);
-    const [nonPaidChecked, setNonPaidChecked] = useState(false);
+
     return (
-      <div
-        ref={ref}
-        className={twMerge("bg-[#F7F7F7] px-8 py-6 rounded flex lg:flex-col gap-16 lg:gap-4", className)}
-        {...props}
-      >
-        <div>
-          <div className="text-black font-semibold text-lg mb-1 select-none">Employment</div>
-          <div className="flex flex-col gap-[2px]">
-            <Checkbox
-              label="Full-time"
-              checked={fullTimeChecked}
-              changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setFullTimeChecked(event.target.checked);
-                onFilterChange("employment", "full-time");
-              }}
-            ></Checkbox>
-            <Checkbox
-              label="Part-time"
-              checked={partTimeChecked}
-              changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setPartTimeChecked(event.target.checked);
-                onFilterChange("employment", "part-time");
-              }}
-            ></Checkbox>
-            <Checkbox
-              label="Volunteer"
-              checked={volunteerChecked}
-              changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setVolunteerChecked(event.target.checked);
-                onFilterChange("employment", "volunteer");
-              }}
-            ></Checkbox>
+      <div className="sticky top-[155px]">
+        <div
+          ref={ref}
+          className={twMerge(
+            "bg-[#F7F7F7] px-8 py-6 rounded flex flex-col gap-2 min-[430px]:flex-row min-[430px]:gap-16 lg:flex-col lg:gap-4",
+            className,
+          )}
+          {...props}
+        >
+          <div>
+            <div className="text-black font-semibold text-lg mb-1 select-none">Employment</div>
+            <div className="flex flex-col gap-[2px]">
+              <Checkbox
+                label="Full-time"
+                checked={fullTimeChecked}
+                changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setFullTimeChecked(event.target.checked);
+                  onFilterChange("employment", "full-time");
+                }}
+              ></Checkbox>
+              <Checkbox
+                label="Part-time"
+                checked={partTimeChecked}
+                changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setPartTimeChecked(event.target.checked);
+                  onFilterChange("employment", "part-time");
+                }}
+              ></Checkbox>
+            </div>
           </div>
-        </div>
-        <div className="lg:mb-8">
-          <div className="text-black font-semibold text-lg mb-1 select-none">Compensation</div>
-          <div className="flex flex-col gap-[2px]">
-            <Checkbox
-              label="Paid"
-              checked={paidChecked}
-              changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setPaidChecked(event.target.checked);
-                onFilterChange("compensation", "paid");
-              }}
-            ></Checkbox>
-            <Checkbox
-              label="Non-paid"
-              checked={nonPaidChecked}
-              changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setNonPaidChecked(event.target.checked);
-                onFilterChange("compensation", "non-paid");
-              }}
-            ></Checkbox>
+          <div className="lg:mb-8">
+            <div className="text-black font-semibold text-lg mb-1 select-none">Compensation</div>
+            <div className="flex flex-col gap-[2px]">
+              <Checkbox
+                label="Paid"
+                checked={paidChecked}
+                changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setPaidChecked(event.target.checked);
+                  onFilterChange("compensation", "paid");
+                }}
+              ></Checkbox>
+              <Checkbox
+                label="Volunteer"
+                checked={volunteerChecked}
+                changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setVolunteerChecked(event.target.checked);
+                  onFilterChange("compensation", "volunteer");
+                }}
+              ></Checkbox>
+            </div>
           </div>
         </div>
       </div>
