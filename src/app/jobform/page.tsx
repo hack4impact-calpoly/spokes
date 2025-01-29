@@ -17,13 +17,25 @@ import RadioCard from "@/components/RadioCard";
 const JobFormPage: React.FC = () => {
   const [input, setInput] = useState("");
   const [jobType, setJobType] = useState("Full-Time");
+  const [phoneInput, setPhoneInput] = useState("");
+
+  const formatPhoneNumber = (value: string): string => {
+    const cleaned = value.replace(/\D/g, "");
+    const match = cleaned.match(/^(\d{3})(\d{0,3})(\d{0,4})$/);
+    if (!match) return value;
+    return [match[1], match[2], match[3]].filter(Boolean).join("-");
+  };
+
+  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPhoneInput(formatPhoneNumber(event.target.value));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Submitted Data");
   };
 
-  //For custome radio selection buttons, job type field
+  //For custom radio selection buttons, job type field
   const typeOptions = ["Volunteer", "Full-Time", "Part-Time"];
   const { getRootProps: getJobRootProps, getRadioProps: getJobRadioProps } = useRadioGroup({
     name: "jobType",
@@ -104,7 +116,15 @@ const JobFormPage: React.FC = () => {
             </FormControl>
             <FormControl pl={3}>
               <FormLabel>Phone Number</FormLabel>
-              <Input type="tel" bg="#F6F6F6" placeholder="xxx-xxx-xxxx" border="0" />
+              <Input
+                type="tel"
+                bg="#F6F6F6"
+                placeholder="xxx-xxx-xxxx"
+                border="0"
+                value={phoneInput}
+                onChange={handlePhoneChange}
+                maxLength={12}
+              />
               <FormErrorMessage>Please enter a valid phone number.</FormErrorMessage>
             </FormControl>
           </HStack>
