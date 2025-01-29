@@ -53,7 +53,7 @@ export default function AdminJobs() {
 
       const updatedJob = {
         ...job, // "spreads"/ copy existing information
-        JobStatus: status,
+        jobStatus: status,
         approvedDate: approvedDate ? approvedDate.toISOString() : job.approvedDate,
       };
 
@@ -71,9 +71,9 @@ export default function AdminJobs() {
 
       //Update frontend imediately so user doesnt have to refresh
       // If the job._id matches jobId used to update the job -> Replace it with updatedJob
-      setIncomingJobData((prev) => prev?.map((job) => (job._id === jobId ? updatedJob : job)) || null);
-      setLiveJobData((prev) => prev?.map((job) => (job._id === jobId ? updatedJob : job)) || null);
-      setCompleteJobData((prev) => prev?.map((job) => (job._id === jobId ? updatedJob : job)) || null);
+      setIncomingJobData((prev) => prev?.filter((job) => job._id !== jobId) || null);
+      setLiveJobData((prev) => (status === "approved" ? [...(prev || []), updatedJob] : prev));
+      setCompleteJobData((prev) => (status === "rejected" ? [...(prev || []), updatedJob] : prev));
       setExpiredJobData((prev) => prev?.filter((job) => job._id !== jobId) || null);
     } catch (error) {
       console.error("Error updating job status:", error);
