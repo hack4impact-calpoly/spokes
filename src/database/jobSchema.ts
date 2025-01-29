@@ -21,12 +21,12 @@ export enum JobStatus {
 
 // Interface for the job object
 export interface IJob {
+  approvedDate: Date;
   _id: string;
   organizationName: string;
   organizationIndustry: string;
   title: string;
   postDate: Date;
-  expireDate: Date;
   jobDescription: string;
   employmentType: string;
   compensationType: string;
@@ -40,7 +40,7 @@ const JobSchema = new Schema({
   organizationIndustry: { type: String, required: true },
   title: { type: String, required: true },
   postDate: { type: Date, required: true },
-  expireDate: { type: Date, required: true },
+  approvedDate: { type: Date, required: true },
   jobDescription: { type: String, required: true },
   employmentType: { type: String, enum: Object.values(EmploymentType), required: true },
   compensationType: { type: String, enum: Object.values(CompensationType), required: true },
