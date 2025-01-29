@@ -7,9 +7,13 @@ import JobPostedDate from "@/components/JobCard/JobPostedDate";
 
 interface JobCardProps {
   job: IJob;
+  onUpdateJob?: (jobId: string, status: "approved" | "rejected", approvedDate?: Date) => void;
 }
 
-export default function AdminCard({ job }: JobCardProps) {
+export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
+  const isExpired =
+    job.approvedDate && new Date(job.approvedDate) < new Date(new Date().setDate(new Date().getDate() - 30));
+
   return (
     <div className="max-w-[100%]">
       <div className="bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm">
@@ -36,6 +40,44 @@ export default function AdminCard({ job }: JobCardProps) {
             </Button>
           </div>
         </div>
+
+        <div className="flex flex-wrap gap-2 mt-4">
+          {job.jobStatus === "pending" && (
+            <>
+              <Button
+                px="20"
+                fontSize="small"
+                fontWeight="normal"
+                variant="outline"
+                borderColor="black"
+                onClick={() => onUpdateJob?.(job._id, "approved", new Date())}
+              >
+                Approve
+              </Button>
+              <Button
+                px="20"
+                fontSize="small"
+                fontWeight="normal"
+                variant="outline"
+                borderColor="black"
+                onClick={() => onUpdateJob?.(job._id, "rejected")}
+              >
+                Deny
+              </Button>
+            </>
+          )}
+
+          {isExpired && (
+            <Button
+              //colorScheme="blue"
+              size="sm"
+              onClick={() => onUpdateJob?.(job._id, "approved", new Date())}
+            >
+              Renew
+            </Button>
+          )}
+        </div>
+
         <div className="mt-5">
           <JobPostedDate date={job.postDate} />
         </div>
