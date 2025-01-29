@@ -8,6 +8,7 @@ import {
   Box,
   Heading,
   Input,
+  Stack,
   VStack,
   HStack,
   Button,
@@ -50,7 +51,7 @@ const JobFormPage: React.FC = () => {
   });
 
   return (
-    <Box p={10} px={100} mt={100} /*Added extra padding for navbar, might fix later*/>
+    <Box mx={10} p={10}>
       <Heading as="h1" size="xl" fontWeight="bold" mb={6}>
         Create new listing
       </Heading>
@@ -60,19 +61,19 @@ const JobFormPage: React.FC = () => {
       <form onSubmit={handleSubmit}>
         <VStack spacing={4}>
           <FormControl isRequired>
-            <FormLabel>Organization Name</FormLabel>
+            <FormLabel requiredIndicator>Organization Name</FormLabel>
             <Input type="text" placeholder="Enter your response" bg="#F6F6F6" border="0" />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel>Organization Industry</FormLabel>
+            <FormLabel requiredIndicator>Organization Industry</FormLabel>
             <Input type="text" placeholder="Enter your response" bg="#F6F6F6" border="0" />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel>Job Title</FormLabel>
+            <FormLabel requiredIndicator>Job Title</FormLabel>
             <Input type="text" placeholder="Enter your response" bg="#F6F6F6" border="0" />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel>Are you a paid member?</FormLabel>
+            <FormLabel requiredIndicator>Are you a paid member?</FormLabel>
             <HStack {...getMemberRootProps()}>
               {memberOptions.map((value) => {
                 const radio = getMemberRadioProps({ value });
@@ -85,8 +86,8 @@ const JobFormPage: React.FC = () => {
             </HStack>
           </FormControl>
           <FormControl isRequired>
-            <FormLabel>Please select one below for your listing:</FormLabel>
-            <HStack {...getJobRootProps()}>
+            <FormLabel requiredIndicator>Please select one below for your listing:</FormLabel>
+            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getJobRootProps()}>
               {typeOptions.map((value) => {
                 const radio = getJobRadioProps({ value });
                 return (
@@ -95,26 +96,26 @@ const JobFormPage: React.FC = () => {
                   </RadioCard>
                 );
               })}
-            </HStack>
+            </Stack>
           </FormControl>
           <FormControl isRequired>
-            <FormLabel>Job Description</FormLabel>
+            <FormLabel requiredIndicator>Job Description</FormLabel>
             <Input type="text" placeholder="Enter your response" bg="#F6F6F6" border="0" />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel>Link to job listing</FormLabel>
+            <FormLabel requiredIndicator>Link to job listing</FormLabel>
             <Input type="text" placeholder="Enter your response" bg="#F6F6F6" border="0" />
             <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
           </FormControl>
           <Heading as="h2" size="lg" mb={6} textAlign="left" w="full">
             Person of Contact - Information
           </Heading>
-          <HStack w="full">
-            <FormControl isRequired pr={3}>
-              <FormLabel>Name</FormLabel>
+          <Stack w="full" direction={{ base: "column", md: "row" }} spacing={{ base: 6, md: 40 }}>
+            <FormControl isRequired>
+              <FormLabel requiredIndicator>Name</FormLabel>
               <Input type="text" placeholder="First and Last Name" bg="#F6F6F6" border="0" />
             </FormControl>
-            <FormControl pl={3}>
+            <FormControl>
               <FormLabel>Phone Number</FormLabel>
               <Input
                 type="tel"
@@ -127,9 +128,9 @@ const JobFormPage: React.FC = () => {
               />
               <FormErrorMessage>Please enter a valid phone number.</FormErrorMessage>
             </FormControl>
-          </HStack>
+          </Stack>
           <FormControl isRequired>
-            <FormLabel>Email</FormLabel>
+            <FormLabel requiredIndicator>Email</FormLabel>
             <Input type="email" placeholder="xxxxx@example.com" bg="#F6F6F6" border="0" />
             <FormErrorMessage>Please enter a valid email address.</FormErrorMessage>
           </FormControl>
