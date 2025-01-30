@@ -2,13 +2,16 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaArrowUp } from "react-icons/fa";
+import { UserResource } from "@clerk/types";
 
 interface BottomSectionProps {
   page: string;
   setPage: React.Dispatch<React.SetStateAction<string>>;
+  user: UserResource | null | undefined;
+  isAdmin: boolean;
 }
 
-export default function BottomSection({ page, setPage }: BottomSectionProps) {
+export default function BottomSection({ page, setPage, user, isAdmin }: BottomSectionProps) {
   const scrollDirection = useScrollDirection();
   const [showScrollToTop, setShowScrollToTop] = useState(false);
 
@@ -46,6 +49,15 @@ export default function BottomSection({ page, setPage }: BottomSectionProps) {
       >
         List Job
       </Link>
+      {user && isAdmin && (
+        <Link
+          className={`font-medium text-center w-1/2 sm:w-max text-lg py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E] ${page == "View Applications" ? "border-b-[#C3412E]" : ""}`}
+          href="admin-jobs"
+          onClick={() => setPage("View Applications")}
+        >
+          View Applications
+        </Link>
+      )}
 
       {page === "Job Board" && showScrollToTop && (
         <div
