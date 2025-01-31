@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaArrowUp } from "react-icons/fa";
 import { UserResource } from "@clerk/types";
-import { usePathname } from "next/navigation"; // Import usePathname
+import { usePathname } from "next/navigation";
 
 interface BottomSectionProps {
   page: string;
@@ -15,7 +15,7 @@ interface BottomSectionProps {
 export default function BottomSection({ page, setPage, user, isAdmin }: BottomSectionProps) {
   const scrollDirection = useScrollDirection();
   const [showScrollToTop, setShowScrollToTop] = useState(false);
-  const pathname = usePathname(); // Get current pathname from next/navigation
+  const pathname = usePathname();
 
   // Show Up Arrow after 300 pixels
   useEffect(() => {
@@ -33,9 +33,7 @@ export default function BottomSection({ page, setPage, user, isAdmin }: BottomSe
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Determine if a specific link is active based on pathname
   const isActive = (path: string) => {
-    // Only apply the active class if the pathname includes the relevant path
     return pathname?.startsWith(path);
   };
 
