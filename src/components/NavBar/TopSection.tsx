@@ -7,27 +7,25 @@ import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter } f
 import { useClerk } from "@clerk/nextjs";
 
 interface TopSectionProps {
-  setPage: React.Dispatch<React.SetStateAction<string>>;
   user: UserResource | null | undefined;
 }
 
-export default function TopSection({ setPage, user }: TopSectionProps) {
+export default function TopSection({ user }: TopSectionProps) {
   const { signOut } = useClerk();
-  const testUser = { ...user, firstName: "Matt" }; // Remove this later
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
   return (
     <>
       <main className="flex justify-between items-center bg-white px-10 sm:px-14 py-7">
-        <Link className="flex-shrink-0 max-[458px]:w-[115px] w-[200px]" href="/jobs">
+        <Link href="/jobs" className="flex-shrink-0 max-[458px]:w-[115px] w-[200px]">
           <Image
             className="h-auto"
             alt="spokes logo"
             src="/Spokes Brand/Spokes_Logo_PRINT-Transparent-BG-1.jpg"
             width={500}
             height={500}
-            onClick={() => setPage("Job Board")}
           />
         </Link>
         {user ? (
@@ -45,11 +43,11 @@ export default function TopSection({ setPage, user }: TopSectionProps) {
               width={20}
               height={20}
               src="/Spokes Brand/Spokes_login_emblem.svg"
-            ></Image>
-            {/* Later replae testUser with user*/ testUser.firstName}
+            />
+            {user.firstName}
           </Button>
         ) : (
-          <Link className="sm:flex" href="/sign-in">
+          <Link href="/sign-in">
             <Button
               className="flex flex-shrink-0 gap-2"
               fontWeight="medium"
@@ -63,18 +61,18 @@ export default function TopSection({ setPage, user }: TopSectionProps) {
                 width={20}
                 height={20}
                 src="/Spokes Brand/Spokes_login_emblem.svg"
-              ></Image>
+              />
               Login
             </Button>
           </Link>
         )}
       </main>
+
       {isModalOpen && (
-        <Modal isCentered={true} isOpen={true} onClose={closeModal}>
+        <Modal isCentered isOpen={true} onClose={closeModal}>
           <ModalOverlay />
           <ModalContent w={"calc(100vw - 80px)"} maxW={"450px"}>
             <ModalHeader pb={0}>Log out from Spokes?</ModalHeader>
-
             <ModalFooter>
               <Button onClick={closeModal} mr={3}>
                 Cancel
@@ -86,9 +84,7 @@ export default function TopSection({ setPage, user }: TopSectionProps) {
                 }}
                 bg="black"
                 textColor="white"
-                _hover={{
-                  bg: "gray.800",
-                }}
+                _hover={{ bg: "gray.800" }}
               >
                 Log Out
               </Button>
