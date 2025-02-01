@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FaArrowUp } from "react-icons/fa";
 import { UserResource } from "@clerk/types";
 import { usePathname } from "next/navigation";
+import path from "path";
 
 interface BottomSectionProps {
   user: UserResource | null | undefined;
@@ -17,14 +18,14 @@ export default function BottomSection({ user, isAdmin }: BottomSectionProps) {
 
   useEffect(() => {
     const handleScroll: EventListener = () => {
-      setShowScrollToTop(window.scrollY > 300);
+      setShowScrollToTop(window.scrollY > 300 && pathname == "/jobs");
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [pathname]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
