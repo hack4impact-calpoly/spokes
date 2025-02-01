@@ -4,7 +4,6 @@ import Link from "next/link";
 import { FaArrowUp } from "react-icons/fa";
 import { UserResource } from "@clerk/types";
 import { usePathname } from "next/navigation";
-import path from "path";
 
 interface BottomSectionProps {
   user: UserResource | null | undefined;
