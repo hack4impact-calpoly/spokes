@@ -22,21 +22,21 @@ export default function AdminJobs() {
   const [completeJobData, setCompleteJobData] = useState<null | IJob[]>(null);
   const [expiredJobData, setExpiredJobData] = useState<null | IJob[]>(null);
 
-  useEffect(() => {
-    // Note: job schema liekly will change and this will need to be adjusted
-    const fetchData = async () => {
-      const response = await fetch("/api/jobs");
-      const result = await response.json();
-      const incoming = filterJobs(result, "pending");
-      const live = filterJobs(result, "approved");
-      const complete = filterJobs(result, "rejected");
-      const expired = filterJobs(result, "expired");
-      setIncomingJobData(incoming);
-      setLiveJobData(live);
-      setCompleteJobData(complete);
-      setExpiredJobData(expired);
-    };
+  // Note: job schema liekly will change and this will need to be adjusted
+  const fetchData = async () => {
+    const response = await fetch("/api/jobs");
+    const result = await response.json();
+    const incoming = filterJobs(result, "pending");
+    const live = filterJobs(result, "approved");
+    const complete = filterJobs(result, "rejected");
+    const expired = filterJobs(result, "expired");
+    setIncomingJobData(incoming);
+    setLiveJobData(live);
+    setCompleteJobData(complete);
+    setExpiredJobData(expired);
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -48,15 +48,35 @@ export default function AdminJobs() {
         console.error("Failed to fetch job data");
         return;
       }
+      if (response.ok) {
+        console.log("Response OK");
+      }
 
-      const job = await response.json();
+      const jobs = await response.json();
+      console.log("Fetched Jobs:", jobs);
+
+      const job = jobs.find((j: IJob) => j._id === jobId);
+      if (!job) {
+        console.error("Job not found");
+        return;
+      }
+      console.log("Target Job:", job);
 
       const updatedJob = {
-        ...job, // "spreads"/ copy existing information
+        //  ...job, // "spreads"/ copy existing information
+        _id: job._id,
+        organizationName: job.organizationName,
+        organizationIndustry: job.organizationIndustry,
+        title: job.title,
+        postDate: job.postDate,
+        jobDescription: job.jobDescription,
+        employmentType: job.employmentType,
+        compensationType: job.compensationType,
         jobStatus: status,
+        url: job.url,
         approvedDate: approvedDate ? approvedDate.toISOString() : job.approvedDate,
       };
-
+      console.log("Sending Updated Job:", updatedJob);
       //Use PUT to update the Job
       const updateResponse = await fetch(`/api/jobs/${jobId}`, {
         method: "PUT",
@@ -65,16 +85,14 @@ export default function AdminJobs() {
       });
 
       if (!updateResponse.ok) {
-        console.error("Failed to update job");
+        console.error("Failed updateResponse");
         return;
       }
 
+      console.log("updateResponse good");
+
       //Update frontend imediately so user doesnt have to refresh
-      // If the job._id matches jobId used to update the job -> Replace it with updatedJob
-      setIncomingJobData((prev) => prev?.filter((job) => job._id !== jobId) || null);
-      setLiveJobData((prev) => (status === "approved" ? [...(prev || []), updatedJob] : prev));
-      setCompleteJobData((prev) => (status === "rejected" ? [...(prev || []), updatedJob] : prev));
-      setExpiredJobData((prev) => prev?.filter((job) => job._id !== jobId) || null);
+      await fetchData();
     } catch (error) {
       console.error("Error updating job status:", error);
     }
@@ -107,18 +125,18 @@ interface JobSectionProps {
   showRenew?: boolean;
 }
 
-const JobSection = ({ title, jobs }: JobSectionProps) => {
+const JobSection = ({ title, jobs, onUpdateJob }: JobSectionProps) => {
   return (
     <div className="flex flex-col gap-8">
       <div className="text-2xl font-semibold">{title}</div>
       {jobs ? (
-        <JobGrid jobs={jobs} isAdmin={true} />
+        <JobGrid jobs={jobs} isAdmin={true} onUpdateJob={onUpdateJob} />
       ) : (
         <Loader
           size="md"
           label="Loading Jobs..."
           className="mt-8 grow flex flex-col gap-6 justify-center items-center"
-        ></Loader>
+        />
       )}
     </div>
   );
