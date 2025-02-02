@@ -18,8 +18,9 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
     const [partTimeChecked, setPartTimeChecked] = useState(false);
     const [volunteerChecked, setVolunteerChecked] = useState(false);
     const [paidChecked, setPaidChecked] = useState(false);
+
     return (
-      <div className="sticky top-[230px]">
+      <div className="sticky top-[155px]">
         <div
           ref={ref}
           className={twMerge(

@@ -1,5 +1,4 @@
 "use client";
-import Navbar from "@/components/Navbar";
 import { FilterCard } from "@/components/FilterCard";
 import { useState, useEffect } from "react";
 import { twMerge } from "tailwind-merge";
@@ -20,6 +19,49 @@ export default function Jobs() {
   const [tab, setTab] = useState(1);
 
   const [jobData, setJobData] = useState<null | IJob[]>(null);
+
+  const [recentJobs, setRecentJobs] = useState<IJob[]>([
+    // Hardcoded recently viewed jobs
+    {
+      _id: "1",
+      organizationName: "Tech Corp",
+      organizationIndustry: "Technology",
+      title: "Software Engineer",
+      postDate: new Date("2024-01-15"),
+      expireDate: new Date("2024-02-15"),
+      jobDescription: "Develop and maintain software solutions.",
+      employmentType: "full-time",
+      compensationType: "paid",
+      jobStatus: "Open",
+      url: "https://techcorp.com/jobs/software-engineer",
+    },
+    {
+      _id: "2",
+      organizationName: "InnovateX",
+      organizationIndustry: "Product Development",
+      title: "Product Manager",
+      postDate: new Date("2024-01-10"),
+      expireDate: new Date("2024-02-10"),
+      jobDescription: "Lead product development initiatives.",
+      employmentType: "part-time",
+      compensationType: "paid",
+      jobStatus: "Open",
+      url: "https://innovatex.com/careers/product-manager",
+    },
+    {
+      _id: "3",
+      organizationName: "Creative Solutions",
+      organizationIndustry: "Design",
+      title: "UX Designer",
+      postDate: new Date("2024-01-20"),
+      expireDate: new Date("2024-03-01"),
+      jobDescription: "Design user experiences and interfaces.",
+      employmentType: "full-time",
+      compensationType: "volunteer",
+      jobStatus: "Open",
+      url: "https://creativesolutions.com/jobs/ux-designer",
+    },
+  ]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,12 +104,19 @@ export default function Jobs() {
         (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
     );
 
+  const filteredRecentJobs =
+    recentJobs &&
+    Array.from(recentJobs)?.filter(
+      (job) =>
+        (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
+        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
+    );
+
   return (
-    <div className="w-full h-screen flex flex-col">
-      <Navbar></Navbar>
-      <div className="mt-[250px] px-8 md:px-16 lg:px-20 flex flex-col lg:flex-row gap-16 lg:gap-8 grow">
+    <div className="w-full flex flex-col">
+      <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col lg:flex-row gap-16 lg:gap-8 grow">
         <div className="flex flex-col gap-4 lg:gap-6">
-          <div className="text-black font-semibold text-3xl select-none">Filters</div>
+          <div className="text-black font-semibold text-3xl select-none lg:sticky lg:top-[110px]">Filters</div>
           <FilterCard categories={filterCategories} onFilterChange={handleFilterChange}></FilterCard>
         </div>
         <div className="w-full flex flex-col gap-4 lg:gap-6">
@@ -98,16 +147,34 @@ export default function Jobs() {
             </div>
           </div>
           {/* Conditional rendering for jobData with loader as fallback */}
-          {filteredJobs ? (
-            <div>
-              <JobGrid jobs={filteredJobs} />
-            </div>
+          {tab == 1 ? (
+            <>
+              {filteredJobs ? (
+                <>
+                  <JobGrid jobs={filteredJobs} />
+                </>
+              ) : (
+                <Loader
+                  size="xl"
+                  label="Loading Jobs..."
+                  className="grow flex flex-col gap-6 justify-center items-center lg:-mt-28 mt-28"
+                />
+              )}
+            </>
           ) : (
-            <Loader
-              size="xl"
-              label="Loading Jobs..."
-              className="grow flex flex-col gap-6 justify-center items-center lg:-mt-28 mt-28"
-            ></Loader>
+            <>
+              {filteredRecentJobs ? (
+                <>
+                  <JobGrid jobs={filteredRecentJobs} />
+                </>
+              ) : (
+                <Loader
+                  size="xl"
+                  label="Loading Jobs..."
+                  className="grow flex flex-col gap-6 justify-center items-center lg:-mt-28 mt-28"
+                />
+              )}
+            </>
           )}
         </div>
       </div>
