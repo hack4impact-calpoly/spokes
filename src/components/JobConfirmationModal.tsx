@@ -14,29 +14,24 @@ export default function JobConfirmationModal() {
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent
-          className="flex justify-center items-center flex-shrink-0 rounded-lg border border-black overflow-hidden text-center"
-          sx={{
-            width: ["300px", "65vw"],
-            maxWidth: ["350px", "65vw"],
-            height: ["270px", "250px"],
-          }}
+          className="flex justify-center items-center flex-shrink-0 rounded-lg border border-black overflow-visible text-center py-10"
+          maxW={["350px", "60vw"]}
+          h={["270px", "250px"]}
         >
-          <div className="flex flex-col items-start gap-[1vh] w-full h-[250px] sm:w-[65vw] sm:h-[170px] md:h-[180px]">
-            <ModalHeader className="self-stretch text-black font-inter font-semibold leading-normal">
-              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">Job listing successfully submitted</p>
-            </ModalHeader>
-            <ModalBody className="self-stretch text-black font-inter text-md sm:text-lg md:text-xl lg:text-2xl font-normal leading-normal">
-              An admin will review this job listing, and you will be notified once it is approved.
-            </ModalBody>
-            <ModalFooter
-              as="a"
-              href="/"
-              alignSelf={"center"}
-              className="text-black font-inter text-[0.8em] sm:text-[1em] md:text-[1.2em] lg:text-[1.4em] font-normal leading-normal underline"
-            >
-              Submit new job listing
-            </ModalFooter>
-          </div>
+          <ModalHeader className="self-stretch text-black font-semibold leading-normal">
+            <p className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold">Job listing successfully submitted</p>
+          </ModalHeader>
+          <ModalBody className="self-stretch text-black text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-normal">
+            An admin will review this job listing, and you will be notified once it is approved.
+          </ModalBody>
+          <ModalFooter
+            as="a"
+            href="/"
+            alignSelf={"center"}
+            className="text-black text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-normal underline"
+          >
+            Submit new job listing
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </div>
