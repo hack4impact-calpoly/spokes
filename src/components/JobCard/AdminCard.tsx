@@ -1,4 +1,4 @@
-import { Button, Icon } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 import { IJob } from "@/database/jobSchema";
 import JobStatusBadge from "@/components/JobCard/JobStatusBadge";
 import JobBadge from "@/components/JobCard/JobBadge";
@@ -13,6 +13,11 @@ interface JobCardProps {
 export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
   const isExpired =
     job.approvedDate && new Date(job.approvedDate) < new Date(new Date().setDate(new Date().getDate() - 30));
+
+  const handleAction = (action: "approved" | "rejected", approvedDate?: Date) => {
+    console.log(`Button clicked: ${action}, Job ID: ${job._id}`);
+    onUpdateJob?.(job._id, action, approvedDate);
+  };
 
   return (
     <div className="max-w-[100%]">
@@ -50,7 +55,7 @@ export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
                 fontWeight="normal"
                 variant="outline"
                 borderColor="black"
-                onClick={() => onUpdateJob?.(job._id, "approved", new Date())}
+                onClick={() => handleAction("approved", new Date())}
               >
                 Approve
               </Button>
@@ -60,17 +65,20 @@ export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
                 fontWeight="normal"
                 variant="outline"
                 borderColor="black"
-                onClick={() => onUpdateJob?.(job._id, "rejected")}
+                onClick={() => handleAction("rejected")}
               >
                 Deny
               </Button>
             </>
           )}
 
-          {isExpired && (
+          {isExpired && job.jobStatus !== "pending" && (
             <Button
-              //colorScheme="blue"
-              size="sm"
+              px="20"
+              fontSize="small"
+              fontWeight="normal"
+              variant="outline"
+              borderColor="black"
               onClick={() => onUpdateJob?.(job._id, "approved", new Date())}
             >
               Renew
