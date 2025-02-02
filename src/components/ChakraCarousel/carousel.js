@@ -167,11 +167,17 @@ const Slider = ({
           onClick={handleDecrementClick}
           onFocus={handleFocus}
           mr={`${gap / 3}px`}
-          color="black.200"
           variant="link"
           minW={0}
+          // When pressed, the svg (arrow icon) will have no fill and a black stroke.
+          _active={{
+            svg: {
+              fill: "none",
+              stroke: "black",
+            },
+          }}
         >
-          <ChevronLeftIcon boxSize={9} />
+          <ChevronLeftIcon boxSize={9} color="black" />
         </Button>
 
         <Progress
@@ -184,6 +190,7 @@ const Slider = ({
           sx={{
             "> div": {
               backgroundColor: "gray.400",
+              transition: "width 0.5s ease-in-out", // Smoothly animate width changes
             },
           }}
         />
@@ -192,12 +199,18 @@ const Slider = ({
           onClick={handleIncrementClick}
           onFocus={handleFocus}
           ml={`${gap / 3}px`}
-          color="black.200"
           variant="link"
           zIndex={2}
           minW={0}
+          // Apply the same active styles to the right arrow.
+          _active={{
+            svg: {
+              fill: "none",
+              stroke: "black",
+            },
+          }}
         >
-          <ChevronRightIcon boxSize={9} />
+          <ChevronRightIcon boxSize={9} color="black" />
         </Button>
       </Flex>
     </>
