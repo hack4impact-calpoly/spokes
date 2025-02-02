@@ -1,7 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+} from "@chakra-ui/react";
 
 export default function JobConfirmationModal() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,6 +27,7 @@ export default function JobConfirmationModal() {
           maxW={["350px", "60vw", "55vw"]}
           h={["270px", "auto"]}
         >
+          <ModalCloseButton top={3} size={["md", "md", "lg"]} onClick={closeModal} />
           <ModalHeader className="self-stretch text-black font-semibold leading-normal">
             <p className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold">Job listing successfully submitted</p>
           </ModalHeader>
