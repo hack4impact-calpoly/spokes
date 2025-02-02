@@ -47,7 +47,7 @@ export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
         </div>
 
         <div className="flex flex-wrap gap-2 mt-4">
-          {job.jobStatus === "pending" && (
+          {job.jobStatus === "pending" && !isExpired && (
             <>
               <Button
                 px="20"
@@ -72,7 +72,7 @@ export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
             </>
           )}
 
-          {isExpired && job.jobStatus !== "pending" && (
+          {isExpired && (
             <Button
               px="20"
               fontSize="small"

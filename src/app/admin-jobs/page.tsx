@@ -7,10 +7,12 @@ import { Loader } from "@/components/Loader";
 // Helper function to filter the job data into the three categories
 function filterJobs(jobs: IJob[], filterBy: "pending" | "approved" | "rejected" | "expired") {
   //If the job's approvedDate is older than 30 days, filter it as expired
-  if (filterBy == "expired") {
+  if (filterBy === "expired") {
     const now = new Date();
+    const expirationThreshold = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
+
     return jobs.filter(
-      (job) => job.approvedDate && new Date(job.approvedDate) < new Date(now.setDate(now.getDate() - 30)),
+      (job) => job.jobStatus === "expired" || (job.approvedDate && new Date(job.approvedDate) < expirationThreshold),
     );
   }
   return jobs.filter((job) => job.jobStatus === filterBy);
@@ -108,9 +110,9 @@ export default function AdminJobs() {
             onUpdateJob={updateJobStatus}
             showApproveDeny
           ></JobSection>
-          <JobSection jobs={liveJobData} title="Live Applications"></JobSection>
-          <JobSection jobs={completeJobData} title="Complete Applications"></JobSection>
-          <JobSection jobs={expiredJobData} title="Expired Applications" onUpdateJob={updateJobStatus} showRenew />
+          <JobSection jobs={liveJobData} title="Live Applications" onUpdateJob={updateJobStatus}></JobSection>
+          <JobSection jobs={completeJobData} title="Complete Applications" onUpdateJob={updateJobStatus}></JobSection>
+          <JobSection jobs={expiredJobData} title="Expired Applications" onUpdateJob={updateJobStatus}></JobSection>
         </div>
       </div>
     </div>
