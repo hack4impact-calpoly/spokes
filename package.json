@@ -13,6 +13,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/next-js": "^2.4.2",
     "@chakra-ui/react": "^2.10.4",
     "@clerk/nextjs": "^6.9.10",
@@ -25,6 +26,9 @@
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.4.0",
+    "react-responsive-carousel": "^3.2.23",
+    "react-slick": "^0.30.3",
+    "slick-carousel": "^1.8.1",
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {

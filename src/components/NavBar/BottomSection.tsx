@@ -50,8 +50,8 @@ export default function BottomSection({ user, isAdmin }: BottomSectionProps) {
       </Link>
       {user && isAdmin && (
         <Link
-          href="admin-jobs"
-          className={`font-medium text-center w-1/2 sm:w-max text-lg py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E] ${isActive("/admin-jobs") ? "border-b-[#C3412E]" : ""}`}
+          href="admin"
+          className={`font-medium text-center w-1/2 sm:w-max text-lg py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E] ${isActive("/admin") ? "border-b-[#C3412E]" : ""}`}
         >
           View Applications
         </Link>
