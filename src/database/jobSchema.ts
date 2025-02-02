@@ -17,7 +17,6 @@ export enum JobStatus {
   pending = "pending",
   approved = "approved",
   rejected = "rejected",
-  expired = "expired",
 }
 
 // Interface for job object
