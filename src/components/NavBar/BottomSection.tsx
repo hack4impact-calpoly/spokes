@@ -17,14 +17,14 @@ export default function BottomSection({ user, isAdmin }: BottomSectionProps) {
 
   useEffect(() => {
     const handleScroll: EventListener = () => {
-      setShowScrollToTop(window.scrollY > 300);
+      setShowScrollToTop(window.scrollY > 300 && pathname == "/jobs");
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [pathname]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
