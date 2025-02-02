@@ -14,8 +14,8 @@ export default function JobConfirmationModal() {
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent
-          className="flex justify-center items-center flex-shrink-0 rounded-lg border border-black overflow-visible text-center py-10"
-          maxW={["350px", "60vw"]}
+          className="flex justify-center items-center flex-shrink-0 rounded-lg border border-black overflow-hidden text-center py-10"
+          maxW={["350px", "60vw", "55vw", "53vw"]}
           h={["270px", "250px"]}
         >
           <ModalHeader className="self-stretch text-black font-semibold leading-normal">
