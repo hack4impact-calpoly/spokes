@@ -44,8 +44,6 @@ export default function AdminJobs() {
                     justifyContent="space-between"
                     flexDirection="column"
                     overflow="hidden"
-                    color="gray.300"
-                    bg="base.d100"
                     rounded={5}
                     flex={1}
                   >
