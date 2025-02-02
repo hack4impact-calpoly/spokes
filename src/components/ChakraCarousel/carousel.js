@@ -184,12 +184,13 @@ const Slider = ({
           value={percentage(activeItem, positions.length - constraint)}
           alignSelf="center"
           borderRadius="2px"
-          bg="gray.100"
+          bg="gray.200"
           flex={1}
           h="3px"
           sx={{
             "> div": {
               backgroundColor: "black",
+              transition: "width 0.4s linear", // Smoothly animate width changes
             },
           }}
         />
