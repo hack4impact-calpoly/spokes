@@ -5,6 +5,7 @@ import AdminJobCard from "@/components/JobCard/AdminCard";
 import JobGrid from "@/components/JobGrid";
 import { Loader } from "@/components/Loader";
 import { IJob } from "@/database/jobSchema";
+import { Flex } from "@chakra-ui/react";
 
 // Helper function to filter the job data into the three categories
 function filterJobs(jobs: IJob[], filterBy: "pending" | "approved" | "rejected") {
@@ -36,9 +37,20 @@ export default function AdminJobs() {
           <div className="flex flex-col gap-8">
             <div className="text-2xl font-semibold">Incoming Applications</div>
             {incomingJobData ? (
-              <ChakraCarousel gap={16}>
+              <ChakraCarousel gap={25}>
                 {incomingJobData.map((job) => (
-                  <AdminJobCard key={job._id} job={job} />
+                  <Flex
+                    key={job._id}
+                    justifyContent="space-between"
+                    flexDirection="column"
+                    overflow="hidden"
+                    color="gray.300"
+                    bg="base.d100"
+                    rounded={5}
+                    flex={1}
+                  >
+                    <AdminJobCard key={job._id} job={job} />
+                  </Flex>
                 ))}
               </ChakraCarousel>
             ) : (
