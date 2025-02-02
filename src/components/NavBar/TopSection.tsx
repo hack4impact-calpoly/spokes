@@ -69,12 +69,19 @@ export default function TopSection({ user }: TopSectionProps) {
       </main>
 
       {isModalOpen && (
-        <Modal isCentered isOpen={true} onClose={closeModal}>
+        <Modal
+          isCentered
+          isOpen={true}
+          onClose={closeModal}
+          size={{ base: "xs", sm: "sm", md: "md", lg: "lg", xl: "xl" }}
+        >
           <ModalOverlay />
-          <ModalContent w={"calc(100vw - 80px)"} maxW={"450px"}>
-            <ModalHeader pb={0}>Log out from Spokes?</ModalHeader>
-            <ModalFooter>
-              <Button onClick={closeModal} mr={3}>
+          <ModalContent>
+            <ModalHeader pb={0} textAlign={"center"} fontSize={["md", "lg", "xl"]}>
+              Would you like to sign out?
+            </ModalHeader>
+            <ModalFooter justifyContent={"space-around"} minH={"100"}>
+              <Button onClick={closeModal} w={["8em", "10em"]} h={"2.5em"} fontSize={["sm", "md"]}>
                 Cancel
               </Button>
               <Button
@@ -82,11 +89,13 @@ export default function TopSection({ user }: TopSectionProps) {
                   signOut({ redirectUrl: "/" });
                   closeModal();
                 }}
-                bg="black"
-                textColor="white"
-                _hover={{ bg: "gray.800" }}
+                colorScheme="red"
+                _hover={{ bg: "red.400" }}
+                w={["8em", "10em"]}
+                h={"2.5em"}
+                fontSize={["sm", "md"]}
               >
-                Log Out
+                Sign Out
               </Button>
             </ModalFooter>
           </ModalContent>
