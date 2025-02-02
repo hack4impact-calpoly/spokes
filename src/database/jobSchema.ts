@@ -19,7 +19,7 @@ export enum JobStatus {
   rejected = "rejected",
 }
 
-// Interface for the job object
+// Interface for job object
 export interface IJob {
   approvedDate: Date;
   _id: string;
