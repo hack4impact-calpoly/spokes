@@ -37,7 +37,7 @@ export default function AdminJobs() {
           <div className="flex flex-col gap-8">
             <div className="text-2xl font-semibold">Incoming Applications</div>
             {incomingJobData ? (
-              <ChakraCarousel gap={25}>
+              <ChakraCarousel gap={20}>
                 {incomingJobData.map((job) => (
                   <Flex
                     key={job._id}
@@ -49,7 +49,7 @@ export default function AdminJobs() {
                     rounded={5}
                     flex={1}
                   >
-                    <AdminJobCard key={job._id} job={job} />
+                    <AdminJobCard job={job} />
                   </Flex>
                 ))}
               </ChakraCarousel>
