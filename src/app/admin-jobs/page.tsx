@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import ChakraCarousel from "@/components/ChakraCarousel/carousel";
-import JobCard from "@/components/JobCard/JobCard"; // or your custom job item component
+import AdminJobCard from "@/components/JobCard/AdminCard";
 import JobGrid from "@/components/JobGrid";
 import { Loader } from "@/components/Loader";
 import { IJob } from "@/database/jobSchema";
@@ -32,13 +32,13 @@ export default function AdminJobs() {
     <div className="w-full">
       <div className="mt-20 px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
         <div className="flex flex-col gap-16 mb-20">
-          {/* Incoming Applications with Carousel */}
+          {/* Incoming Applications with Carousel using AdminJobCard */}
           <div className="flex flex-col gap-8">
             <div className="text-2xl font-semibold">Incoming Applications</div>
             {incomingJobData ? (
               <ChakraCarousel gap={16}>
                 {incomingJobData.map((job) => (
-                  <JobCard key={job._id} job={job} />
+                  <AdminJobCard key={job._id} job={job} />
                 ))}
               </ChakraCarousel>
             ) : (
