@@ -8,9 +8,10 @@ import { get } from "http";
 
 interface JobCardProps {
   job: IJob;
+  innerRef?: (node?: Element | null | undefined) => void;
 }
 
-export default function JobCard({ job }: JobCardProps) {
+export default function JobCard({ job, innerRef }: JobCardProps) {
   const [recentJobs, setRecentJobs] = useState<string[]>(() => {
     const storedJobs = localStorage.getItem("myJobs");
     return storedJobs ? JSON.parse(storedJobs) : [];
@@ -41,7 +42,7 @@ export default function JobCard({ job }: JobCardProps) {
   };
 
   return (
-    <div className="max-w-[100%]">
+    <div className="max-w-[100%]" ref={innerRef}>
       <div className="bg-[#f7f7f7] rounded-md px-8 pt-5 pb-2 shadow-sm">
         <JobCardInformation job={job} />
         <div className="flex flex-row md:flex-col lg:flex-row gap-4 items-end lg:items-end md:items-start mt-5">
