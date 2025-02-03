@@ -31,7 +31,9 @@ export interface IJob {
   employmentType: string;
   compensationType: string;
   jobStatus: string;
-  url: string;
+  // url: string;
+  detailUrl: string;
+  applyNowUrl?: string; // applyNowUrl is optional
 }
 
 // Schema for the job object
