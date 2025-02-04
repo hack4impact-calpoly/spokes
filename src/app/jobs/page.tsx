@@ -20,56 +20,31 @@ export default function Jobs() {
 
   const [jobData, setJobData] = useState<null | IJob[]>(null);
 
-  const [recentJobs, setRecentJobs] = useState<IJob[]>([
-    // Hardcoded recently viewed jobs
-    {
-      _id: "1",
-      organizationName: "Tech Corp",
-      organizationIndustry: "Technology",
-      title: "Software Engineer",
-      postDate: new Date("2024-01-15"),
-      expireDate: new Date("2024-02-15"),
-      jobDescription: "Develop and maintain software solutions.",
-      employmentType: "full-time",
-      compensationType: "paid",
-      jobStatus: "Open",
-      url: "https://techcorp.com/jobs/software-engineer",
-    },
-    {
-      _id: "2",
-      organizationName: "InnovateX",
-      organizationIndustry: "Product Development",
-      title: "Product Manager",
-      postDate: new Date("2024-01-10"),
-      expireDate: new Date("2024-02-10"),
-      jobDescription: "Lead product development initiatives.",
-      employmentType: "part-time",
-      compensationType: "paid",
-      jobStatus: "Open",
-      url: "https://innovatex.com/careers/product-manager",
-    },
-    {
-      _id: "3",
-      organizationName: "Creative Solutions",
-      organizationIndustry: "Design",
-      title: "UX Designer",
-      postDate: new Date("2024-01-20"),
-      expireDate: new Date("2024-03-01"),
-      jobDescription: "Design user experiences and interfaces.",
-      employmentType: "full-time",
-      compensationType: "volunteer",
-      jobStatus: "Open",
-      url: "https://creativesolutions.com/jobs/ux-designer",
-    },
-  ]);
+  const [recentJobs, setRecentJobs] = useState<IJob[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch("/api/jobs");
       const result = await response.json();
       setJobData(result);
-    };
 
+      // Get recent viewed job IDs from local storage
+      const raw = localStorage.getItem("myJobs");
+      const recentJobIds = raw ? JSON.parse(raw) : [];
+
+      // Query for recent jobs if one or more IDs are present
+      if (recentJobIds.length > 0) {
+        const recentJobsresponse = await fetch("/api/jobs/recent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rawJobIdArray: recentJobIds }),
+        });
+        const recentJobsResult = await recentJobsresponse.json();
+        setRecentJobs(recentJobsResult);
+      } else {
+        setRecentJobs([]);
+      }
+    };
     fetchData();
   }, []);
 
