@@ -20,14 +20,6 @@ export default function JobCard({ job }: JobCardProps) {
     localStorage.setItem("myJobs", JSON.stringify(recentJobs));
   }, [recentJobs]);
 
-  const getRecentJobs = () => {
-    const storedJobs = localStorage.getItem("myJobs");
-    if (storedJobs) {
-      return JSON.parse(storedJobs);
-    }
-    return [];
-  };
-
   // when user clicks apply it birngs them to a email with a custom email template
   const handleApplyNowClick = () => {
     // we first check if there is an actual URL, if so we bring the user there
