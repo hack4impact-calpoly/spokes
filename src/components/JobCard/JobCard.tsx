@@ -20,18 +20,6 @@ export default function JobCard({ job }: JobCardProps) {
     localStorage.setItem("myJobs", JSON.stringify(recentJobs));
   }, [recentJobs]);
 
-  const handleButtonClick = () => {
-    const newJob = job._id;
-    const arr = getRecentJobs();
-
-    if (!recentJobs.includes(newJob)) {
-      arr.push(newJob);
-    }
-
-    setRecentJobs(arr);
-    console.log(getRecentJobs());
-  };
-
   const getRecentJobs = () => {
     const storedJobs = localStorage.getItem("myJobs");
     if (storedJobs) {
@@ -68,15 +56,6 @@ export default function JobCard({ job }: JobCardProps) {
         </div>
         <div className="flex lg:flex-row flex-col gap-4 my-5">
           <Button
-            // old
-
-            // onClick={handleButtonClick}
-            // className="lg:w-[50%] w-full"
-            // fontWeight="normal"
-            // variant="outline"
-            // borderColor="black"
-
-            // new
             as="a"
             href={job.detailURL}
             className="lg:w-[50%] w-full"
@@ -87,19 +66,6 @@ export default function JobCard({ job }: JobCardProps) {
             See More
           </Button>
           <Button
-            //old
-
-            // onClick={handleButtonClick}
-            // className="lg:w-[50%] w-full"
-            // fontWeight="normal"
-            // variant="outline"
-            // bg="black"
-            // textColor="white"
-            // _hover={{
-            //   bg: "gray.800",
-            // }}
-
-            // new
             onClick={handleApplyNowClick}
             className="lg:w-[50%] w-full"
             fontWeight="normal"
