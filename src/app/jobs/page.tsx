@@ -28,22 +28,7 @@ export default function Jobs() {
       const result = await response.json();
       setJobData(result);
 
-      // Get recent viewed job IDs from local storage
-      const raw = localStorage.getItem("myJobs");
-      const recentJobIds = raw ? JSON.parse(raw) : [];
-
-      // Query for recent jobs if one or more IDs are present
-      if (recentJobIds.length > 0) {
-        const recentJobsresponse = await fetch("/api/jobs/recent", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ rawJobIdArray: recentJobIds }),
-        });
-        const recentJobsResult = await recentJobsresponse.json();
-        setRecentJobs(recentJobsResult);
-      } else {
-        setRecentJobs([]);
-      }
+      fetchRecentJobs();
     };
     fetchData();
   }, []);
@@ -58,6 +43,25 @@ export default function Jobs() {
   const filterCategories: FilterCategories = {
     employment: ["Full-time", "Part-time", "Volunteer"],
     compensation: ["Paid", "Non-paid"],
+  };
+
+  // Handler to fetch recent jobs by IDs
+  const fetchRecentJobs = async () => {
+    // Get recent viewed job IDs from local storage
+    const raw = localStorage.getItem("myJobs");
+    const recentJobIds = raw ? JSON.parse(raw) : [];
+
+    if (recentJobIds.length > 0) {
+      const recentJobsresponse = await fetch("/api/jobs/recent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rawJobIdArray: recentJobIds }),
+      });
+      const recentJobsResult = await recentJobsresponse.json();
+      setRecentJobs(recentJobsResult);
+    } else {
+      setRecentJobs([]);
+    }
   };
 
   const handleFilterChange = (category: string, value: string) => {
@@ -113,9 +117,10 @@ export default function Jobs() {
                 "text-black text-3xl cursor-pointer select-none",
                 tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
               )}
-              onClick={() => {
-                // Later add functionally to display listings
+              onClick={async () => {
+                // trigger refetch to ensure display of fresh data
                 setTab(2);
+                await fetchRecentJobs();
               }}
             >
               Recently Viewed
