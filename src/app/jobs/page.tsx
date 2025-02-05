@@ -27,8 +27,6 @@ export default function Jobs() {
       const response = await fetch("/api/jobs");
       const result = await response.json();
       setJobData(result);
-
-      fetchRecentJobs();
     };
     fetchData();
   }, []);
