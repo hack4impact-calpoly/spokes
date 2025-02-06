@@ -6,6 +6,7 @@ import JobGrid from "@/components/JobGrid";
 import { Loader } from "@/components/Loader";
 import { IJob } from "@/database/jobSchema";
 import { Flex } from "@chakra-ui/react";
+import { twMerge } from "tailwind-merge";
 
 // Helper function to filter the job data into the three categories
 function filterJobs(jobs: IJob[], filterBy: "pending" | "approved" | "rejected") {
@@ -29,13 +30,15 @@ export default function AdminJobs() {
     fetchData();
   }, []);
 
+  const [tab, setTab] = useState(1);
+
   return (
     <div className="w-full">
       <div className="mt-20 px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
-        <div className="flex flex-col gap-16 mb-20">
+        <div className="flex flex-col gap-24 mb-20">
           {/* Incoming Applications with Carousel using AdminJobCard */}
           <div className="flex flex-col gap-8">
-            <div className="text-2xl font-semibold">Incoming Applications</div>
+            <div className="text-3xl font-semibold">Incoming Applications</div>
             {incomingJobData ? (
               <ChakraCarousel gap={20}>
                 {incomingJobData.map((job) => (
@@ -60,24 +63,45 @@ export default function AdminJobs() {
             )}
           </div>
 
-          {/* Live Applications rendered as a grid */}
+          {/* Live/Completed Applications rendered as a grid */}
           <div className="flex flex-col gap-8">
-            <div className="text-2xl font-semibold">Live Applications</div>
-            {liveJobData ? (
-              <JobGrid jobs={liveJobData} isAdmin={true} />
-            ) : (
-              <Loader
-                size="md"
-                label="Loading Jobs..."
-                className="mt-8 grow flex flex-col gap-6 justify-center items-center"
-              />
-            )}
-          </div>
-
-          {/* Complete Applications rendered as a grid */}
-          <div className="flex flex-col gap-8">
-            <div className="text-2xl font-semibold">Complete Applications</div>
-            {completeJobData ? (
+            <div className="flex gap-8 w-full">
+              <div
+                className={twMerge(
+                  "text-black text-3xl text-center cursor-pointer select-none",
+                  tab == 1 ? "font-semibold" : "font-normal text-[#C3C3C3]",
+                )}
+                onClick={() => {
+                  // Later add functionally to display listings
+                  setTab(1);
+                }}
+              >
+                Live Applications
+              </div>
+              <div
+                className={twMerge(
+                  "text-black text-3xl text-center cursor-pointer select-none",
+                  tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
+                )}
+                onClick={() => {
+                  // Later add functionally to display listings
+                  setTab(2);
+                }}
+              >
+                Complete Applications
+              </div>
+            </div>
+            {tab == 1 ? (
+              liveJobData ? (
+                <JobGrid jobs={liveJobData} isAdmin={true} />
+              ) : (
+                <Loader
+                  size="md"
+                  label="Loading Jobs..."
+                  className="mt-8 grow flex flex-col gap-6 justify-center items-center"
+                />
+              )
+            ) : completeJobData ? (
               <JobGrid jobs={completeJobData} isAdmin={true} />
             ) : (
               <Loader
