@@ -34,24 +34,24 @@ export default function BottomSection({ user, isAdmin }: BottomSectionProps) {
 
   return (
     <nav
-      className={`flex sticky ${scrollDirection === "down" ? "-top-24" : "top-0"} z-10 justify-between sm:justify-start bg-[#2B2B2B] text-white sm:px-9 transition-all duration-500`}
+      className={`flex sticky ${scrollDirection === "down" ? "-top-24" : "top-0"} z-10 justify-between sm:justify-start bg-[#2B2B2B] text-white  sm:px-9 transition-all duration-500 text-xs sm:text-sm md:text-md lg:text-lg`}
     >
       <Link
         href="jobs"
-        className={`font-medium text-center w-1/2 sm:w-max text-lg py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E] ${isActive("/jobs") ? "border-b-[#C3412E]" : ""}`}
+        className={`font-medium text-center w-1/2 sm:w-max py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E] ${isActive("/jobs") ? "border-b-[#C3412E]" : ""}`}
       >
         Job Board
       </Link>
       <Link
         href="jobform"
-        className={`font-medium text-center w-1/2 sm:w-max text-lg py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E] ${isActive("/jobform") ? "border-b-[#C3412E]" : ""}`}
+        className={`font-medium text-center w-1/2 sm:w-max py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E] ${isActive("/jobform") ? "border-b-[#C3412E]" : ""}`}
       >
         List Job
       </Link>
       {user && isAdmin && (
         <Link
           href="admin"
-          className={`font-medium text-center w-1/2 sm:w-max text-lg py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E] ${isActive("/admin") ? "border-b-[#C3412E]" : ""}`}
+          className={`font-medium text-center w-1/2 sm:w-max py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E] ${isActive("/admin") ? "border-b-[#C3412E]" : ""}`}
         >
           View Applications
         </Link>
