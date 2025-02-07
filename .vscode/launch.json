@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/vishnualachi/Desktop/Hack4Impact/SPOKES/spokes-1/src/app/api",
+      "program": "/Users/vishnualachi/Desktop/Hack4Impact/SPOKES/spokes-1/src/app/api/build/Debug/outDebug"
+    }
+  ]
+}
