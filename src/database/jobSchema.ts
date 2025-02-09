@@ -4,6 +4,7 @@ import mongoose, { models, model, Schema } from "mongoose";
 export enum EmploymentType {
   partTime = "Part-Time",
   fullTime = "Full-Time",
+  volunteer = "Volunteer",
 }
 
 // The compensation type for the job
@@ -28,6 +29,7 @@ export interface IJob {
   postDate: Date;
   expireDate: Date;
   jobDescription: string;
+  memberStatus: boolean;
   employmentType: string;
   compensationType: string;
   jobStatus: string;
@@ -45,6 +47,7 @@ const JobSchema = new Schema({
   postDate: { type: Date, required: true },
   expireDate: { type: Date, required: false, default: null },
   jobDescription: { type: String, required: true },
+  memberStatus: { type: Boolean, required: true },
   employmentType: { type: String, enum: Object.values(EmploymentType), required: true },
   compensationType: { type: String, enum: Object.values(CompensationType), required: true },
   jobStatus: { type: String, enum: Object.values(JobStatus), required: true },

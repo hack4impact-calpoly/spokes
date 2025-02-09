@@ -10,7 +10,6 @@ import {
   Input,
   Stack,
   VStack,
-  HStack,
   Button,
 } from "@chakra-ui/react";
 import RadioCard from "@/components/RadioCard";
@@ -23,8 +22,9 @@ export default function JobFormPage() {
     postDate: new Date().toISOString(),
     expireDate: "",
     jobDescription: "",
+    memberStatus: true,
     employmentType: "Full-Time",
-    compensationType: "paid",
+    compensationType: "paid", //auto set to paid?
     jobStatus: "pending",
     url: "",
     contactName: "",
@@ -33,6 +33,8 @@ export default function JobFormPage() {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [selectEmployment, setSelectEmployment] = useState("");
+  const [selectMember, setSelectMember] = useState("");
 
   // formats phone number input to filter non-numbers an add -
   const formatPhoneNumber = (value: string): string => {
@@ -75,6 +77,26 @@ export default function JobFormPage() {
         throw new Error("Failed to submit job.");
       }
 
+      setFormData({
+        organizationName: "",
+        organizationIndustry: "",
+        title: "",
+        postDate: new Date().toISOString(),
+        expireDate: "",
+        jobDescription: "",
+        memberStatus: true,
+        employmentType: "",
+        compensationType: "paid",
+        jobStatus: "pending",
+        url: "",
+        contactName: "",
+        contactPhone: "",
+        contactEmail: "",
+      });
+
+      setSelectEmployment("");
+      setSelectMember("");
+
       setMessage("Job posted successfully!");
     } catch (error) {
       console.error("Error submitting job:", error);
@@ -88,18 +110,26 @@ export default function JobFormPage() {
   const typeOptions = ["Volunteer", "Full-Time", "Part-Time"];
   const { getRootProps: getJobRootProps, getRadioProps: getJobRadioProps } = useRadioGroup({
     name: "employmentType",
-    onChange: (value) => setFormData((prev) => ({ ...prev, employmentType: value })),
+    value: selectEmployment,
+    onChange: (value) => {
+      setFormData((prev) => ({ ...prev, employmentType: value }));
+      setSelectEmployment(value);
+    },
   });
 
   //For custom radio selection buttons, paid member field
   const memberOptions = ["Yes", "No"];
   const { getRootProps: getMemberRootProps, getRadioProps: getMemberRadioProps } = useRadioGroup({
-    name: "memberType",
-    onChange: console.log,
+    name: "memberStatus",
+    value: selectMember,
+    onChange: (value) => {
+      setFormData((prev) => ({ ...prev, memberStatus: value === "Yes" }));
+      setSelectMember(value);
+    },
   });
 
   return (
-    <Box mx={10} p={10}>
+    <Box mx="auto" p={10} minWidth={{ base: "320px", md: "768px", lg: "1024px" }} maxWidth="1200px">
       <Heading as="h1" size="xl" fontWeight="bold" mb={6}>
         Create new listing
       </Heading>
@@ -146,16 +176,16 @@ export default function JobFormPage() {
           </FormControl>
           <FormControl isRequired>
             <FormLabel requiredIndicator>Are you a paid member?</FormLabel>
-            <HStack {...getMemberRootProps()}>
+            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getMemberRootProps()}>
               {memberOptions.map((value) => {
                 const radio = getMemberRadioProps({ value });
                 return (
-                  <RadioCard key={value} value={value} {...radio}>
+                  <RadioCard key={value} value={value} {...radio} isChecked={selectMember === value}>
                     {value}
                   </RadioCard>
                 );
               })}
-            </HStack>
+            </Stack>
           </FormControl>
           <FormControl isRequired>
             <FormLabel requiredIndicator>Please select one below for your listing:</FormLabel>
@@ -163,7 +193,7 @@ export default function JobFormPage() {
               {typeOptions.map((value) => {
                 const radio = getJobRadioProps({ value });
                 return (
-                  <RadioCard key={value} value={value} {...radio}>
+                  <RadioCard key={value} value={value} {...radio} isChecked={selectEmployment === value}>
                     {value}
                   </RadioCard>
                 );
@@ -248,6 +278,10 @@ export default function JobFormPage() {
             colorScheme="blackAlpha"
             bg="black"
             _hover={{ bg: "#5E5E5E" }}
+            onClick={() => {
+              setSelectMember("");
+              setSelectEmployment("");
+            }}
           >
             Submit
           </Button>

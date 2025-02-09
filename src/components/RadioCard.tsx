@@ -3,6 +3,7 @@ import { Box, useRadio } from "@chakra-ui/react";
 interface RadioCardProps {
   children: React.ReactNode;
   value: string;
+  isChecked: boolean;
 }
 
 const RadioCard = (props: RadioCardProps) => {
@@ -12,7 +13,7 @@ const RadioCard = (props: RadioCardProps) => {
 
   return (
     <Box as="label">
-      <input {...input} />
+      <input {...input} checked={props.isChecked} readOnly />
       <Box
         {...checkbox}
         cursor="pointer"

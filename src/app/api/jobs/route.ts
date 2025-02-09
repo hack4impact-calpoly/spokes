@@ -37,6 +37,7 @@ export async function POST(request: Request) {
   try {
     await connectDB();
     const jobData = await request.json();
+    console.log("Job data", jobData);
     if (
       !jobData ||
       !jobData.organizationName ||
