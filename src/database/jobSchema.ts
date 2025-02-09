@@ -1,9 +1,9 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { models, model, Schema } from "mongoose";
 
 // The employment type for the job
 export enum EmploymentType {
-  partTime = "part-time",
-  fullTime = "full-time",
+  partTime = "Part-Time",
+  fullTime = "Full-Time",
 }
 
 // The compensation type for the job
@@ -32,6 +32,9 @@ export interface IJob {
   compensationType: string;
   jobStatus: string;
   url: string;
+  contactName?: string;
+  contactPhone?: string;
+  contactEmail?: string;
 }
 
 // Schema for the job object
@@ -40,12 +43,16 @@ const JobSchema = new Schema({
   organizationIndustry: { type: String, required: true },
   title: { type: String, required: true },
   postDate: { type: Date, required: true },
-  expireDate: { type: Date, required: true },
+  expireDate: { type: Date, required: false, default: null },
   jobDescription: { type: String, required: true },
   employmentType: { type: String, enum: Object.values(EmploymentType), required: true },
   compensationType: { type: String, enum: Object.values(CompensationType), required: true },
   jobStatus: { type: String, enum: Object.values(JobStatus), required: true },
   url: { type: String, required: true },
+  contactName: { type: String, required: false },
+  contactPhone: { type: String, required: false },
+  contactEmail: { type: String, required: false },
 });
 
-export default mongoose.models.Job || mongoose.model("Job", JobSchema);
+const Job = models.Job || model("Job", JobSchema);
+export default Job;
