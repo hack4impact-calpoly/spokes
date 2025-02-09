@@ -5,6 +5,7 @@ This guide outlines the core features and components of the Automated Job Board.
 ---
 
 ## Table of Contents
+
 - [Job Board](#job-board)
   - [API Endpoints](#api-endpoints)
   - [UI Components](#ui-components)
@@ -14,6 +15,7 @@ This guide outlines the core features and components of the Automated Job Board.
     - [JobGrid & Loader](#jobgrid--loader)
     - [Job Confirmation Modal](#job-confirmation-modal)
     - [Main Jobs Component (Job Board View)](#main-jobs-component-job-board-view)
+    - [Radio Card](#radio-card)
 - [List a Job Form](#list-a-job-form)
 - [Nav Bar](#nav-bar)
   - [Top Section](#top-section)
@@ -36,23 +38,25 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 
 ### API Endpoints
 
-- **DELETE Job**  
+- **DELETE Job**
+
   - **What it does:**  
     Validates a job ID and deletes the corresponding job using `Job.findByIdAndDelete()`.
   - **Dev Note:**  
     Ensure robust error handling, enhanced logging, and proper handling for missing or invalid IDs.
 
-- **POST Recent Jobs**  
+- **POST Recent Jobs**
+
   - **What it does:**  
     Accepts an array of job IDs (from local storage), converts them to `ObjectId`, and retrieves the matching job documents.
   - **Dev Note:**  
     Validate that the IDs are correctly stored in local storage and handle any conversion errors.
 
-- **CRUD Endpoints (GET / POST / PUT)**  
+- **CRUD Endpoints (GET / POST / PUT)**
   - **GET:**  
-    Fetches all jobs sorted by `postDate` (newest first).  
+    Fetches all jobs sorted by `postDate` (newest first).
   - **POST (Create Job):**  
-    Creates a new job entry in the database.  
+    Creates a new job entry in the database.
   - **PUT (Update Job):**  
     Updates an existing job using `findByIdAndUpdate()` with `.orFail()` for error checking.
   - **Dev Note:**  
@@ -62,14 +66,14 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 
 #### Job Cards
 
-- **JobCardInformation:**  
+- **JobCardInformation:**
   - **What it does:** Displays the job title, organization, industry, and a truncated description.
-- **JobBadge & JobStatusBadge:**  
+- **JobBadge & JobStatusBadge:**
   - **What they do:** Map job types and statuses to specific colors using helper functions.
-- **JobPostedDate:**  
+- **JobPostedDate:**
   - **What it does:** Calculates and displays how long ago a job was posted (e.g., "5 minutes ago"), with basic error handling for invalid dates.
-- **JobCard:**  
-  - **What it does:** Combines job information, badges, and action buttons ("See More", "Apply Now").  
+- **JobCard:**
+  - **What it does:** Combines job information, badges, and action buttons ("See More", "Apply Now").
   - **Dev Note:**  
     Both action buttons (See More & Apply Now) currently add the job to the “recently viewed” list stored in local storage.
 
@@ -82,7 +86,7 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 
 #### Filters
 
-- **FilterCard:**  
+- **FilterCard:**
   - **What it does:**  
     Provides checkboxes to filter jobs by employment type (e.g., Full-time, Part-time) and compensation (e.g., Paid, Volunteer).  
     Uses internal state to manage selections and passes changes via an `onFilterChange` callback.
@@ -91,13 +95,13 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 
 #### JobGrid & Loader
 
-- **JobGrid:**  
+- **JobGrid:**
   - **What it does:**  
     Displays a grid of job cards (or admin cards if in admin mode).  
     Handles empty states by displaying a fallback message ("No Jobs Found").
   - **Dev Note:**  
     Ensure that the component gracefully handles changes in data and role-based rendering.
-- **Loader:**  
+- **Loader:**
   - **What it does:**  
     Displays a spinner with an optional label while data is loading.
   - **Dev Note:**  
@@ -112,12 +116,17 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 
 #### Main Jobs Component (Job Board View)
 
-- **What it does:**  
+- **What it does:**
   - Fetches job data from `/api/jobs` when mounted.
   - Supports two tabs: "All Jobs" and "Recently Viewed" (which triggers a refresh of recent jobs).
   - Applies filters (employment and compensation) to the job lists.
 - **Dev Note:**  
   Optimize data fetching (e.g., debounce filter updates) for better performance.
+
+#### Radio Card
+
+- **What it does:**
+  Uses Chakra UI to display custom radio buttons for the member status and job type in the job form.
 
 ---
 
@@ -127,8 +136,9 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
   Provides a form for users to create new job listings. It includes fields for:
   - Organization name and industry
   - Job title
+  - Member status with Spokes
   - Employment/compensation type (with button selections for Paid, Not Paid, Volunteer, Part-time, Full-time)
-  - Posting and expiration dates
+  - Posting and expiration dates (not implemented yet)
   - Job description and URL
   - Personal information (name, phone number, email)
 - **Dev Note:**  
@@ -245,4 +255,4 @@ This view is designed for your client’s internal team and handles the review a
 
 ---
 
-*This document is a living guide for developers working on the Automated Job Board. Please update it as new features are added or modifications are made.*
+_This document is a living guide for developers working on the Automated Job Board. Please update it as new features are added or modifications are made._

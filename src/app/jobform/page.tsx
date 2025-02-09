@@ -1,97 +1,292 @@
-import React from "react";
-import { Box, Button, Flex, Heading, Input, Stack } from "@chakra-ui/react";
+"use client";
+import React, { useState } from "react";
+import {
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  useRadioGroup,
+  Box,
+  Heading,
+  Input,
+  Stack,
+  VStack,
+  Button,
+} from "@chakra-ui/react";
+import RadioCard from "@/components/RadioCard";
 
-const JobFormPage: React.FC = () => {
+export default function JobFormPage() {
+  const [formData, setFormData] = useState({
+    organizationName: "",
+    organizationIndustry: "",
+    title: "",
+    postDate: new Date().toISOString(),
+    expireDate: "",
+    jobDescription: "",
+    memberStatus: true,
+    employmentType: "Full-Time",
+    compensationType: "paid", //auto set to paid?
+    jobStatus: "pending",
+    contactName: "",
+    contactPhone: "",
+    contactEmail: "",
+    detailURL: "",
+    applyNowURL: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [selectEmployment, setSelectEmployment] = useState("");
+  const [selectMember, setSelectMember] = useState("");
+
+  // formats phone number input to filter non-numbers an add -
+  const formatPhoneNumber = (value: string): string => {
+    const cleaned = value.replace(/\D/g, "");
+    const match = cleaned.match(/^(\d{3})(\d{0,3})(\d{0,4})$/);
+    if (!match) return value;
+    return [match[1], match[2], match[3]].filter(Boolean).join("-");
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "contactPhone" ? formatPhoneNumber(value) : value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    //set expire date to null
+    const formattedFormData = {
+      ...formData,
+      expireDate: formData.expireDate ? formData.expireDate : null,
+    };
+
+    console.log("Submitting Job Data:", formattedFormData);
+
+    try {
+      const response = await fetch("/api/jobs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formattedFormData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit job.");
+      }
+
+      setFormData({
+        organizationName: "",
+        organizationIndustry: "",
+        title: "",
+        postDate: new Date().toISOString(),
+        expireDate: "",
+        jobDescription: "",
+        memberStatus: true,
+        employmentType: "",
+        compensationType: "paid",
+        jobStatus: "pending",
+        contactName: "",
+        contactPhone: "",
+        contactEmail: "",
+        detailURL: "",
+        applyNowURL: "",
+      });
+
+      setMessage("Job posted successfully!");
+    } catch (error) {
+      console.error("Error submitting job:", error);
+      setMessage("Error submitting job.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //For custom radio selection buttons, job type field
+  const typeOptions = ["Volunteer", "Full-Time", "Part-Time"];
+  const { getRootProps: getJobRootProps, getRadioProps: getJobRadioProps } = useRadioGroup({
+    name: "employmentType",
+    value: selectEmployment,
+    onChange: (value) => {
+      setFormData((prev) => ({ ...prev, employmentType: value }));
+      setSelectEmployment(value);
+    },
+  });
+
+  //For custom radio selection buttons, paid member field
+  const memberOptions = ["Yes", "No"];
+  const { getRootProps: getMemberRootProps, getRadioProps: getMemberRadioProps } = useRadioGroup({
+    name: "memberStatus",
+    value: selectMember,
+    onChange: (value) => {
+      setFormData((prev) => ({ ...prev, memberStatus: value === "Yes" }));
+      setSelectMember(value);
+    },
+  });
+
   return (
-    <Box p={5}>
-      <Heading as="h1" size="xl" mb={4}>
-        <strong>Create new listing</strong>
+    <Box mx="auto" p={10} minWidth={{ base: "320px", md: "768px", lg: "1024px" }} maxWidth="1200px">
+      <Heading as="h1" size="xl" fontWeight="bold" mb={6}>
+        Create new listing
       </Heading>
       <Heading as="h2" size="lg" mb={6}>
         Job Information
       </Heading>
-      <Heading as="h2" size="md" mb={2}>
-        Organization name
-      </Heading>
-      <Input placeholder="Enter your response" mb={6} />
-      <Heading as="h2" size="md" mb={2}>
-        Organization Industry
-      </Heading>
-      <Input placeholder="Enter your response" mb={6} />
-      <Heading as="h2" size="md" mb={2}>
-        Job title
-      </Heading>
-      <Input placeholder="Enter your response" mb={6} />
-      <Heading as="h2" size="md" mb={2}>
-        Select all that apply
-      </Heading>
-      <Stack spacing={2} direction="row" mb={4}>
-        <Button bg="green.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Paid
-        </Button>
-        <Button bg="red.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Not Paid
-        </Button>
-        <Button bg="blue.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Volunteer
-        </Button>
-        <Button bg="red.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Part-time
-        </Button>
-        <Button bg="yellow.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Full-time
-        </Button>
-      </Stack>
-      <Flex mb={6}>
-        <Box flex="1" mr={2}>
-          <Heading as="h2" size="md" mb={6}>
-            Posting Date
+      <form onSubmit={handleSubmit} method="POST">
+        <VStack spacing={4}>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Organization Name</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter your response"
+              bg="#F6F6F6"
+              border="0"
+              name="organizationName"
+              value={formData.organizationName}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Organization Industry</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter your response"
+              bg="#F6F6F6"
+              border="0"
+              name="organizationIndustry"
+              value={formData.organizationIndustry}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Job Title</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter your response"
+              bg="#F6F6F6"
+              border="0"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Are you a paid member?</FormLabel>
+            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getMemberRootProps()}>
+              {memberOptions.map((value) => {
+                const radio = getMemberRadioProps({ value });
+                return (
+                  <RadioCard key={value} value={value} {...radio} isChecked={selectMember === value}>
+                    {value}
+                  </RadioCard>
+                );
+              })}
+            </Stack>
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Please select one below for your listing:</FormLabel>
+            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getJobRootProps()}>
+              {typeOptions.map((value) => {
+                const radio = getJobRadioProps({ value });
+                return (
+                  <RadioCard key={value} value={value} {...radio} isChecked={selectEmployment === value}>
+                    {value}
+                  </RadioCard>
+                );
+              })}
+            </Stack>
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Job Description</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter your response"
+              bg="#F6F6F6"
+              border="0"
+              name="jobDescription"
+              value={formData.jobDescription}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Link to job listing</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter your response"
+              bg="#F6F6F6"
+              border="0"
+              name="detailURL"
+              value={formData.detailURL}
+              onChange={handleChange}
+            />
+            <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
+          </FormControl>
+          <Heading as="h2" size="lg" textAlign="left" w="full">
+            Person of Contact - Information
           </Heading>
-          <Input placeholder="xx/xx/xxxx" />
-        </Box>
-        <Box flex="1" ml={2}>
-          <Heading as="h2" size="md" mb={6}>
-            Expiration Date
-          </Heading>
-          <Input placeholder="xx/xx/xxxx" />
-        </Box>
-      </Flex>
-      <Heading as="h2" size="md" mb={2}>
-        Job Description
-      </Heading>
-      <Input placeholder="Enter your response" mb={6} />
-      <Heading as="h2" size="md" mb={2}>
-        Link to job listing
-      </Heading>
-      <Input placeholder="xxxx.com" mb={6} />
-      <Heading as="h2" size="md" mb={6}>
-        Personal Information
-      </Heading>
-      <Flex mb={4}>
-        <Box flex="1" mr={2}>
-          <Heading as="h2" size="md" mb={2}>
-            Name
-          </Heading>
-          <Input placeholder="First and Last Name" mb={6} />
-        </Box>
-        <Box flex="1" ml={2}>
-          <Heading as="h2" size="md" mb={2}>
-            Phone Number
-          </Heading>
-          <Input placeholder="Phone Number" />
-        </Box>
-      </Flex>
-      <Heading as="h2" size="md" mb={2}>
-        Email
-      </Heading>
-      <Input placeholder="xxxxx@example.com" mb={4} />
-      <Flex justify="center" mt={4}>
-        <Button colorScheme="blackAlpha" size="lg">
-          Submit
-        </Button>
-      </Flex>
+          <Stack w="full" direction={{ base: "column", md: "row" }} spacing={{ base: 6, md: 40 }}>
+            <FormControl isRequired>
+              <FormLabel requiredIndicator>Name</FormLabel>
+              <Input
+                type="text"
+                placeholder="First and Last Name"
+                bg="#F6F6F6"
+                border="0"
+                name="contactName"
+                value={formData.contactName}
+                onChange={handleChange}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Phone Number</FormLabel>
+              <Input
+                type="tel"
+                bg="#F6F6F6"
+                placeholder="xxx-xxx-xxxx"
+                border="0"
+                name="contactPhone"
+                value={formData.contactPhone}
+                onChange={handleChange}
+                maxLength={12}
+              />
+              <FormErrorMessage>Please enter a valid phone number.</FormErrorMessage>
+            </FormControl>
+          </Stack>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Email</FormLabel>
+            <Input
+              type="email"
+              placeholder="xxxxx@example.com"
+              bg="#F6F6F6"
+              border="0"
+              name="contactEmail"
+              value={formData.contactEmail}
+              onChange={handleChange}
+            />
+            <FormErrorMessage>Please enter a valid email address.</FormErrorMessage>
+          </FormControl>
+          <Button
+            isLoading={loading}
+            loadingText="Submitting..."
+            mt={10}
+            type="submit"
+            size="lg"
+            colorScheme="blackAlpha"
+            bg="black"
+            _hover={{ bg: "#5E5E5E" }}
+            onClick={() => {
+              setSelectMember("");
+              setSelectEmployment("");
+            }}
+          >
+            Submit
+          </Button>
+          {message && <p>{message}</p>}
+        </VStack>
+      </form>
     </Box>
   );
-};
-
-export default JobFormPage;
+}
