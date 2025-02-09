@@ -37,6 +37,8 @@ export interface IJob {
   contactName?: string;
   contactPhone?: string;
   contactEmail?: string;
+  detailURL: string;
+  applyNowURL?: string;
 }
 
 // Schema for the job object
@@ -55,6 +57,8 @@ const JobSchema = new Schema({
   contactName: { type: String, required: false },
   contactPhone: { type: String, required: false },
   contactEmail: { type: String, required: false },
+  detailURL: { type: String, required: true },
+  applyNowURL: { type: String }, // this field is optional
 });
 
 const Job = models.Job || model("Job", JobSchema);
