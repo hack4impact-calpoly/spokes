@@ -7,14 +7,7 @@ import { Loader } from "@/components/Loader";
 // Helper function to filter the job data into the three categories
 function filterJobs(jobs: IJob[], filterBy: "pending" | "approved" | "rejected" | "expired") {
   //If the job's approvedDate is older than 30 days, filter it as expired
-  if (filterBy === "expired") {
-    const now = new Date();
-    const expirationThreshold = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
 
-    return jobs.filter(
-      (job) => job.jobStatus === "expired" || (job.approvedDate && new Date(job.approvedDate) < expirationThreshold),
-    );
-  }
   return jobs.filter((job) => job.jobStatus === filterBy);
 }
 
@@ -104,14 +97,8 @@ export default function AdminJobs() {
     <div className="w-full">
       <div className="mt-20 px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
         <div className="flex flex-col gap-16 mb-20">
-          <JobSection
-            jobs={incomingJobData}
-            title="Incoming Applications"
-            onUpdateJob={updateJobStatus}
-            showApproveDeny
-          ></JobSection>
+          <JobSection jobs={incomingJobData} title="Incoming Applications" onUpdateJob={updateJobStatus}></JobSection>
           <JobSection jobs={liveJobData} title="Live Applications" onUpdateJob={updateJobStatus}></JobSection>
-          <JobSection jobs={completeJobData} title="Complete Applications" onUpdateJob={updateJobStatus}></JobSection>
           <JobSection jobs={expiredJobData} title="Expired Applications" onUpdateJob={updateJobStatus}></JobSection>
         </div>
       </div>
@@ -123,8 +110,6 @@ interface JobSectionProps {
   title: string;
   jobs?: IJob[] | null;
   onUpdateJob?: (jobId: string, status: "approved" | "rejected", approvedDate?: Date) => void;
-  showApproveDeny?: boolean;
-  showRenew?: boolean;
 }
 
 const JobSection = ({ title, jobs, onUpdateJob }: JobSectionProps) => {
