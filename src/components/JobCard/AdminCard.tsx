@@ -11,12 +11,11 @@ interface JobCardProps {
 }
 
 export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
-  const isExpired =
-    job.approvedDate && new Date(job.approvedDate) < new Date(new Date().setDate(new Date().getDate() - 30));
+  const isExpired = job.postDate && new Date(job.postDate) < new Date(new Date().setDate(new Date().getDate() - 30));
 
-  const handleAction = (action: "approved" | "rejected", approvedDate?: Date) => {
+  const handleAction = (action: "approved" | "rejected", postDate?: Date) => {
     console.log(`Button clicked: ${action}, Job ID: ${job._id}`);
-    onUpdateJob?.(job._id, action, approvedDate);
+    onUpdateJob?.(job._id, action, postDate);
   };
 
   return (

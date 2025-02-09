@@ -6,9 +6,18 @@ import { Loader } from "@/components/Loader";
 
 // Helper function to filter the job data into the three categories
 function filterJobs(jobs: IJob[], filterBy: "pending" | "approved" | "rejected" | "expired") {
-  //If the job's approvedDate is older than 30 days, filter it as expired
+  // Check for expired jobs first
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  return jobs.filter((job) => job.jobStatus === filterBy);
+  return jobs.filter((job) => {
+    // If the job is pending and older than 30 days, mark it as expired
+    const postDate = new Date(job.postDate);
+    if (job.jobStatus === "pending" && postDate < thirtyDaysAgo) {
+      return filterBy === "expired";
+    }
+    return job.jobStatus === filterBy;
+  });
 }
 
 export default function AdminJobs() {
@@ -17,10 +26,25 @@ export default function AdminJobs() {
   const [completeJobData, setCompleteJobData] = useState<null | IJob[]>(null);
   const [expiredJobData, setExpiredJobData] = useState<null | IJob[]>(null);
 
-  // Note: job schema liekly will change and this will need to be adjusted
+  const updateExpiredJobs = async (jobs: IJob[]) => {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const expiredJobs = jobs.filter((job) => job.jobStatus === "pending" && new Date(job.postDate) < thirtyDaysAgo);
+
+    // Update each expired job's status
+    for (const job of expiredJobs) {
+      await updateJobStatus(job._id, "expired");
+    }
+  };
+
   const fetchData = async () => {
     const response = await fetch("/api/jobs");
     const result = await response.json();
+
+    // Check and update expired jobs before filtering
+    await updateExpiredJobs(result);
+
     const incoming = filterJobs(result, "pending");
     const live = filterJobs(result, "approved");
     const complete = filterJobs(result, "rejected");
@@ -33,9 +57,15 @@ export default function AdminJobs() {
 
   useEffect(() => {
     fetchData();
+
+    // Set up an interval to check for expired jobs every hour
+    const interval = setInterval(fetchData, 3600000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
   }, []);
 
-  const updateJobStatus = async (jobId: string, status: "approved" | "rejected", approvedDate?: Date) => {
+  const updateJobStatus = async (jobId: string, status: "approved" | "rejected" | "expired", approvedDate?: Date) => {
     try {
       //fetches job data
       const response = await fetch(`/api/jobs/${jobId}`);
@@ -71,12 +101,11 @@ export default function AdminJobs() {
         url: job.url,
         approvedDate: approvedDate ? approvedDate.toISOString() : job.approvedDate,
       };
-      console.log("Sending Updated Job:", updatedJob);
-      //Use PUT to update the Job
+
       const updateResponse = await fetch(`/api/jobs/${jobId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" }, // specifies JSON format (some errors occur otherwise)
-        body: JSON.stringify(updatedJob), // convert updated job data to JSON for same reason above
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedJob),
       });
 
       if (!updateResponse.ok) {
@@ -109,7 +138,7 @@ export default function AdminJobs() {
 interface JobSectionProps {
   title: string;
   jobs?: IJob[] | null;
-  onUpdateJob?: (jobId: string, status: "approved" | "rejected", approvedDate?: Date) => void;
+  onUpdateJob?: (jobId: string, status: "approved" | "rejected" | "expired", approvedDate?: Date) => void;
 }
 
 const JobSection = ({ title, jobs, onUpdateJob }: JobSectionProps) => {
