@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       !jobData.employmentType ||
       !jobData.compensationType ||
       !jobData.jobStatus ||
-      !jobData.url
+      !jobData.detailURL
     ) {
       return NextResponse.json({ message: "Invalid job input" }, { status: 400 });
     }

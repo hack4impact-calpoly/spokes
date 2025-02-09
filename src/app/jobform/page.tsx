@@ -26,10 +26,11 @@ export default function JobFormPage() {
     employmentType: "Full-Time",
     compensationType: "paid", //auto set to paid?
     jobStatus: "pending",
-    url: "",
     contactName: "",
     contactPhone: "",
     contactEmail: "",
+    detailURL: "",
+    applyNowURL: "",
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -88,14 +89,12 @@ export default function JobFormPage() {
         employmentType: "",
         compensationType: "paid",
         jobStatus: "pending",
-        url: "",
         contactName: "",
         contactPhone: "",
         contactEmail: "",
+        detailURL: "",
+        applyNowURL: "",
       });
-
-      setSelectEmployment("");
-      setSelectMember("");
 
       setMessage("Job posted successfully!");
     } catch (error) {
@@ -219,8 +218,8 @@ export default function JobFormPage() {
               placeholder="Enter your response"
               bg="#F6F6F6"
               border="0"
-              name="url"
-              value={formData.url}
+              name="detailURL"
+              value={formData.detailURL}
               onChange={handleChange}
             />
             <FormErrorMessage>Please enter a valid link.</FormErrorMessage>

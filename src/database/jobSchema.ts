@@ -33,7 +33,6 @@ export interface IJob {
   employmentType: string;
   compensationType: string;
   jobStatus: string;
-  url: string;
   contactName?: string;
   contactPhone?: string;
   contactEmail?: string;
@@ -53,7 +52,6 @@ const JobSchema = new Schema({
   employmentType: { type: String, enum: Object.values(EmploymentType), required: true },
   compensationType: { type: String, enum: Object.values(CompensationType), required: true },
   jobStatus: { type: String, enum: Object.values(JobStatus), required: true },
-  url: { type: String, required: true },
   contactName: { type: String, required: false },
   contactPhone: { type: String, required: false },
   contactEmail: { type: String, required: false },
