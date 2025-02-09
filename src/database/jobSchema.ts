@@ -31,7 +31,8 @@ export interface IJob {
   employmentType: string;
   compensationType: string;
   jobStatus: string;
-  url: string;
+  detailURL: string;
+  applyNowURL?: string;
 }
 
 // Schema for the job object
@@ -45,7 +46,8 @@ const JobSchema = new Schema({
   employmentType: { type: String, enum: Object.values(EmploymentType), required: true },
   compensationType: { type: String, enum: Object.values(CompensationType), required: true },
   jobStatus: { type: String, enum: Object.values(JobStatus), required: true },
-  url: { type: String, required: true },
+  detailURL: { type: String, required: true },
+  applyNowURL: { type: String }, // this field is optional
 });
 
 export default mongoose.models.Job || mongoose.model("Job", JobSchema);
