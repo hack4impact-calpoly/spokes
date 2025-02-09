@@ -15,6 +15,7 @@ This guide outlines the core features and components of the Automated Job Board.
     - [JobGrid & Loader](#jobgrid--loader)
     - [Job Confirmation Modal](#job-confirmation-modal)
     - [Main Jobs Component (Job Board View)](#main-jobs-component-job-board-view)
+    - [Radio Card](#radio-card)
 - [List a Job Form](#list-a-job-form)
 - [Nav Bar](#nav-bar)
   - [Top Section](#top-section)
@@ -122,6 +123,11 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 - **Dev Note:**  
   Optimize data fetching (e.g., debounce filter updates) for better performance.
 
+#### Radio Card
+
+- **What it does:**
+  Uses Chakra UI to display custom radio buttons for the member status and job type in the job form.
+
 ---
 
 ## List a Job Form
@@ -130,8 +136,9 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
   Provides a form for users to create new job listings. It includes fields for:
   - Organization name and industry
   - Job title
+  - Member status with Spokes
   - Employment/compensation type (with button selections for Paid, Not Paid, Volunteer, Part-time, Full-time)
-  - Posting and expiration dates
+  - Posting and expiration dates (not implemented yet)
   - Job description and URL
   - Personal information (name, phone number, email)
 - **Dev Note:**  
