@@ -4,7 +4,6 @@ import JobBadge from "@/components/JobCard/JobBadge";
 import JobCardInformation from "@/components/JobCard/JobCardInformation";
 import JobPostedDate from "@/components/JobCard/JobPostedDate";
 import { useState, useEffect } from "react";
-import { get } from "http";
 
 interface JobCardProps {
   job: IJob;
@@ -20,24 +19,20 @@ export default function JobCard({ job }: JobCardProps) {
     localStorage.setItem("myJobs", JSON.stringify(recentJobs));
   }, [recentJobs]);
 
-  const handleButtonClick = () => {
-    const newJob = job._id;
-    const arr = getRecentJobs();
-
-    if (!recentJobs.includes(newJob)) {
-      arr.push(newJob);
+  const handleApplyNowClick = () => {
+    if (job.applyNowURL) {
+      window.open(job.applyNowURL, "_blank");
+    } else {
+      const email = "jobposter@example.com";
+      const subject = `Application for ${job.title}`;
+      const body = `Dear ${job.organizationName},%0D%0A%0D%0AI am interested in the ${job.title} position. Please find my application attached.%0D%0A%0D%0AThank you,%0D%0A[Your Name]`;
+      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
     }
-
-    setRecentJobs(arr);
-    console.log(getRecentJobs());
   };
 
-  const getRecentJobs = () => {
-    const storedJobs = localStorage.getItem("myJobs");
-    if (storedJobs) {
-      return JSON.parse(storedJobs);
-    }
-    return [];
+  const handleSeeMoreClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    window.open(job.detailURL, "_blank");
   };
 
   return (
@@ -53,7 +48,7 @@ export default function JobCard({ job }: JobCardProps) {
         </div>
         <div className="flex lg:flex-row flex-col gap-4 my-5">
           <Button
-            onClick={handleButtonClick}
+            onClick={handleSeeMoreClick}
             className="lg:w-[50%] w-full"
             fontWeight="normal"
             variant="outline"
@@ -62,7 +57,7 @@ export default function JobCard({ job }: JobCardProps) {
             See More
           </Button>
           <Button
-            onClick={handleButtonClick}
+            onClick={handleApplyNowClick}
             className="lg:w-[50%] w-full"
             fontWeight="normal"
             variant="outline"
