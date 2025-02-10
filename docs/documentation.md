@@ -59,8 +59,9 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
     Creates a new job entry in the database.
   - **PUT (Update Job):**  
     Updates an existing job using `findByIdAndUpdate()` with `.orFail()` for error checking.
-  - **Dev Note:**  
-    Validate request payloads and consider adding pagination for large data sets.
+  - **Dev Note:**
+    - Validate payloads rigorously and consider pagination for GET requests when the dataset grows.
+    - Caching currently exists in GET. current setting: keep response fresh for 60s, then serve stale data for up to 30s while revalidating in the background
 
 ### UI Components
 
