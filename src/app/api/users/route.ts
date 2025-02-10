@@ -6,7 +6,6 @@ import User from "@/database/userSchema"; // Import your User model
 
 export async function POST(req: NextRequest) {
   try {
-    console.log("jhd");
     connectDB();
     const { name, email, isadmin } = await req.json();
 
@@ -28,11 +27,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Failed to create user", error }, { status: 500 });
   }
 }
-
-//test
-
-//   {
-//     "name": "test",
-//     "email": "test@gmail.com",
-//     "isadmin": true
-//   }
