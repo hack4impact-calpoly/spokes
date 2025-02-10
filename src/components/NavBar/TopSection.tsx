@@ -26,7 +26,7 @@ export default function TopSection({ user }: TopSectionProps) {
         {user ? (
           <div className="flex flex-col gap-3 items-center">
             <UserButton showName={true} />
-            <OrganizationSwitcher hidePersonal={true} />
+            <OrganizationSwitcher />
           </div>
         ) : (
           <Link href="/sign-in">

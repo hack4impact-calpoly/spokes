@@ -33,7 +33,9 @@ export default function BottomSection() {
       <NavBarLink title="Job board" href="jobs" />
       <NavBarLink title="List Job" href="jobform" />
 
-      {has && has({ role: "org:admin" }) && <NavBarLink title="Admin" href="admin" />}
+      {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
+      {/* {has && has({ role: "org:admin" }) && <NavBarLink title="Spokes Dashboard" href="admin" />}  */}
+      <NavBarLink title="Spokes Dashboard" href="admin" />
 
       {showScrollToTop && (
         <div
