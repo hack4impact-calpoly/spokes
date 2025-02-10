@@ -22,9 +22,8 @@ export default function JobFormPage() {
     postDate: new Date().toISOString(),
     expireDate: "",
     jobDescription: "",
-    memberStatus: true,
     employmentType: "Full-Time",
-    compensationType: "paid", //auto set to paid?
+    compensationType: "paid",
     jobStatus: "pending",
     contactName: "",
     contactPhone: "",
@@ -35,7 +34,7 @@ export default function JobFormPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [selectEmployment, setSelectEmployment] = useState("");
-  const [selectMember, setSelectMember] = useState("");
+  const [selectCompensation, setSelectCompensation] = useState("");
 
   // formats phone number input to filter non-numbers an add -
   const formatPhoneNumber = (value: string): string => {
@@ -85,7 +84,6 @@ export default function JobFormPage() {
         postDate: new Date().toISOString(),
         expireDate: "",
         jobDescription: "",
-        memberStatus: true,
         employmentType: "",
         compensationType: "paid",
         jobStatus: "pending",
@@ -116,14 +114,14 @@ export default function JobFormPage() {
     },
   });
 
-  //For custom radio selection buttons, paid member field
-  const memberOptions = ["Yes", "No"];
-  const { getRootProps: getMemberRootProps, getRadioProps: getMemberRadioProps } = useRadioGroup({
-    name: "memberStatus",
-    value: selectMember,
+  //For custom radio selection buttons, compensation type field
+  const compensationOptions = ["Paid", "Unpaid"];
+  const { getRootProps: getCompensationRootProps, getRadioProps: getCompensationRadioProps } = useRadioGroup({
+    name: "compensationType",
+    value: selectCompensation,
     onChange: (value) => {
-      setFormData((prev) => ({ ...prev, memberStatus: value === "Yes" }));
-      setSelectMember(value);
+      setFormData((prev) => ({ ...prev, compensationType: value.toLowerCase() }));
+      setSelectCompensation(value);
     },
   });
 
@@ -174,12 +172,12 @@ export default function JobFormPage() {
             />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel requiredIndicator>Are you a paid member?</FormLabel>
-            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getMemberRootProps()}>
-              {memberOptions.map((value) => {
-                const radio = getMemberRadioProps({ value });
+            <FormLabel requiredIndicator>Job Compensation Type</FormLabel>
+            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getCompensationRootProps()}>
+              {compensationOptions.map((value) => {
+                const radio = getCompensationRadioProps({ value });
                 return (
-                  <RadioCard key={value} value={value} {...radio} isChecked={selectMember === value}>
+                  <RadioCard key={value} value={value} {...radio} isChecked={selectCompensation === value}>
                     {value}
                   </RadioCard>
                 );
@@ -278,7 +276,7 @@ export default function JobFormPage() {
             bg="black"
             _hover={{ bg: "#5E5E5E" }}
             onClick={() => {
-              setSelectMember("");
+              setSelectCompensation("");
               setSelectEmployment("");
             }}
           >
