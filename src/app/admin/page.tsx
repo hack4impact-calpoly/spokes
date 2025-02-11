@@ -103,7 +103,6 @@ export default function AdminJobs() {
         jobStatus: status,
         detailURL: currentJob.url,
         approvedDate: approvedDate ? approvedDate : currentJob.approvedDate,
-        memberStatus: false,
       };
 
       // Send the complete updated job object
