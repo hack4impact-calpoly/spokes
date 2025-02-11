@@ -21,6 +21,11 @@ export async function PUT(request: Request) {
   }
 }
 
+// no filters: GET /api/jobs?page=1&limit=10
+// filter by employment type: GET /api/jobs?employmentType=Full-time&employment=Part-time
+// combine filters w/ pagination: GET /api/jobs?employmentType=Full-time&compensationType=Paid&page=2&limit=10
+
+// normalize data in DB?
 export async function GET(req: Request) {
   try {
     await connectDB();
@@ -32,8 +37,54 @@ export async function GET(req: Request) {
     const limit = parseInt(searchParams.get("limit") || "10", 10);
     const skip = (page - 1) * limit;
 
-    const jobs = await Job.find().sort({ postDate: -1 }).skip(skip).limit(limit);
+    // Filter parameters
+    const employmentFilters = searchParams.getAll("employmentType");
+    const compensationFilters = searchParams.getAll("compensationType");
 
+    // Normalize filter values to match document values
+    const normalizeEmployment = (value: string) => {
+      switch (value.toLowerCase()) {
+        case "full-time":
+          return "Full-Time";
+        case "part-time":
+          return "part-time";
+        case "volunteer":
+          return "Volunteer";
+        default:
+          return value;
+      }
+    };
+
+    const normalizeCompensation = (value: string) => {
+      switch (value.toLowerCase()) {
+        case "paid":
+          return "paid";
+        case "non-paid":
+          return "unpaid";
+        case "volunteer":
+          return "volunteer";
+        default:
+          return value;
+      }
+    };
+
+    // Build the filter object dynamically
+    const filter: any = {};
+
+    if (employmentFilters.length > 0) {
+      filter.employmentType = {
+        $in: employmentFilters.map(normalizeEmployment),
+      };
+    }
+
+    if (compensationFilters.length > 0) {
+      filter.compensationType = {
+        $in: compensationFilters.map(normalizeCompensation),
+      };
+    }
+
+    // Fetch jobs with filters, sorting, and pagination
+    const jobs = await Job.find(filter).sort({ postDate: -1 }).skip(skip).limit(limit);
     return NextResponse.json(jobs, { status: 200 });
   } catch (error) {
     return NextResponse.json(error, { status: 500 });
