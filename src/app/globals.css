@@ -16,6 +16,20 @@ html {
   transition: background-color 0.3s ease;
 }
 
+.cl-userButtonBox {
+  padding: 0.5em 1em;
+  background-color: #c2412e;
+  color: white;
+  border-radius: 6px;
+  font-weight: bold;
+  width: 100%;
+}
+
+.cl-organizationSwitcherTrigger {
+  background-color: #f7f7f7;
+  border-radius: 6px;
+}
+
 @layer utilities {
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {

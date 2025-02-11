@@ -153,7 +153,7 @@ export default function AdminJobs() {
 
   return (
     <div className="w-full">
-      <div className="mt-20 px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
+      <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
         <div className="flex flex-col gap-24 mb-20">
           <div className="flex flex-col gap-8">
             <div className="text-3xl font-semibold">Incoming Applications</div>
