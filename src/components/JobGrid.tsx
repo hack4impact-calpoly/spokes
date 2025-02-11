@@ -5,9 +5,10 @@ import JobCard from "./JobCard/JobCard";
 interface JobGridProps {
   jobs: IJob[];
   isAdmin?: boolean;
+  innerRef?: (node?: Element | null | undefined) => void;
 }
 
-export default function JobGrid({ jobs, isAdmin = false }: JobGridProps) {
+export default function JobGrid({ jobs, isAdmin = false, innerRef }: JobGridProps) {
   const CardComponent = isAdmin ? AdminCard : JobCard;
   console.log(jobs);
 
@@ -17,8 +18,8 @@ export default function JobGrid({ jobs, isAdmin = false }: JobGridProps) {
         <NoJobsFound isAdmin={isAdmin} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
-          {Array.from(jobs).map((job) => (
-            <CardComponent key={job._id} job={job} />
+          {Array.from(jobs).map((job, index) => (
+            <CardComponent key={job._id} job={job} innerRef={index === jobs.length - 1 ? innerRef : undefined} />
           ))}
         </div>
       )}
