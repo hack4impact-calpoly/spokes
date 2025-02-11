@@ -154,18 +154,19 @@ The Nav Bar is split into two sections (Top and Bottom) and provides navigation 
 ### Top Section
 
 - **What it does:**  
-  Displays the company logo and a login button.  
-  If a user is logged in (using Clerk), it shows the user's first name and provides a modal to sign out.
+  Displays the company logo, clerk user button, and clerk org switcher.
+  If a user is logged in (using Clerk), it shows the user button and org switcher, otherwise sign in button.
 - **Dev Note:**  
   Use Chakra UI modals for sign-out confirmation and keep authentication flows up to date with Clerk changes.
 
 ### Bottom Section
 
 - **What it does:**  
-  Displays navigation links for "Job Board", "List Job", and (if the user is an admin) "View Applications".  
+  Displays navigation links for "Job Board", "List Job", and (if the user is an admin) "Spokes Dashboard".  
   Implements a "Scroll to Top" button that appears when the user scrolls down on the job board.
 - **Dev Note:**  
   Uses a custom hook (`useScrollDirection`) to determine scroll behavior. Adjust responsiveness and scrolling thresholds as needed.
+  The spokes dashboard is always displayed for now, will need to add logic later for only spokes admin
 
 ### Navigation Buttons
 

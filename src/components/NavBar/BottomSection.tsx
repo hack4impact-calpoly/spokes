@@ -1,19 +1,15 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import { FaArrowUp } from "react-icons/fa";
-import { UserResource } from "@clerk/types";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
+import NavBarLink from "./NavBarLink";
 
-interface BottomSectionProps {
-  user: UserResource | null | undefined;
-  isAdmin: boolean;
-}
-
-export default function BottomSection({ user, isAdmin }: BottomSectionProps) {
+export default function BottomSection() {
   const scrollDirection = useScrollDirection();
   const [showScrollToTop, setShowScrollToTop] = useState(false);
   const pathname = usePathname();
+  const { has } = useAuth();
 
   useEffect(() => {
     const handleScroll: EventListener = () => {
@@ -30,32 +26,16 @@ export default function BottomSection({ user, isAdmin }: BottomSectionProps) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const isActive = (path: string) => pathname?.startsWith(path);
-
   return (
     <nav
       className={`flex sticky ${scrollDirection === "down" ? "-top-24" : "top-0"} z-10 justify-between sm:justify-start bg-[#2B2B2B] text-white  sm:px-9 transition-all duration-500 text-xs sm:text-sm md:text-md lg:text-lg`}
     >
-      <Link
-        href="jobs"
-        className={`font-medium text-center w-1/2 sm:w-max py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E] ${isActive("/jobs") ? "border-b-[#C3412E]" : ""}`}
-      >
-        Job Board
-      </Link>
-      <Link
-        href="jobform"
-        className={`font-medium text-center w-1/2 sm:w-max py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E] ${isActive("/jobform") ? "border-b-[#C3412E]" : ""}`}
-      >
-        List Job
-      </Link>
-      {user && isAdmin && (
-        <Link
-          href="admin"
-          className={`font-medium text-center w-1/2 sm:w-max py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E] ${isActive("/admin") ? "border-b-[#C3412E]" : ""}`}
-        >
-          View Applications
-        </Link>
-      )}
+      <NavBarLink title="Job board" href="jobs" />
+      <NavBarLink title="List Job" href="jobform" />
+
+      {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
+      {/* {has && has({ role: "org:admin" }) && <NavBarLink title="Spokes Dashboard" href="admin" />}  */}
+      <NavBarLink title="Spokes Dashboard" href="admin" />
 
       {showScrollToTop && (
         <div

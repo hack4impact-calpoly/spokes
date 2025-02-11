@@ -22,7 +22,6 @@ The Spokes team consists of 17 Cal Poly students. Over the course of about 9 mon
 - [James Tran](https://www.linkedin.com/in/jameskhaihoantran/) - Project Manager
 - [Jessica Yu](https://www.linkedin.com/in/jessicayuhope/) - Designer
 - [Katie Phan](https://www.linkedin.com/in/katiehuynhphan/) - Designer
-- [Reva Moolky](https://www.linkedin.com/in/reva-moolky/) - Designer
 - [Neal Parthasarathy](https://www.linkedin.com/in/nealparthslo/) - Designer
 - [Noah Giboney](https://www.linkedin.com/in/noah-giboney-896847261/) - Tech Lead
 - [Shawn Gill](https://www.linkedin.com/in/shawngill404/) - Tech Lead
