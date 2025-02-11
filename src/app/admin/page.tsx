@@ -30,33 +30,40 @@ export default function AdminJobs() {
   const [completeJobData, setCompleteJobData] = useState<null | IJob[]>(null);
   const [expiredJobData, setExpiredJobData] = useState<null | IJob[]>(null);
 
-  const updateExpiredJobs = async (jobs: IJob[]) => {
+  const setExpiredJobs = async (jobs: IJob[]) => {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const expiredJobs = jobs.filter((job) => job.jobStatus === "pending" && new Date(job.postDate) < thirtyDaysAgo);
+    const jobsToExpire = jobs.filter((job) => job.jobStatus !== "expired" && new Date(job.postDate) < thirtyDaysAgo);
 
-    // Update each expired job's status
-    for (const job of expiredJobs) {
+    for (const job of jobsToExpire) {
       await updateJobStatus(job._id, "expired");
     }
+
+    console.log(`${jobsToExpire.length} jobs set to expired.`);
   };
 
   const fetchData = async () => {
-    const response = await fetch("/api/jobs");
-    const result = await response.json();
+    try {
+      const response = await fetch("/api/jobs");
+      const result: IJob[] = await response.json();
 
-    // Check and update expired jobs before filtering
-    await updateExpiredJobs(result);
+      // Check and update expired jobs
+      await setExpiredJobs(result);
 
-    const incoming = filterJobs(result, "pending");
-    const live = filterJobs(result, "approved");
-    const complete = filterJobs(result, "rejected");
-    const expired = filterJobs(result, "expired");
-    setIncomingJobData(incoming);
-    setLiveJobData(live);
-    setCompleteJobData(complete);
-    setExpiredJobData(expired);
+      // Filter jobs after updating
+      const incoming = filterJobs(result, "pending");
+      const live = filterJobs(result, "approved");
+      const complete = filterJobs(result, "rejected");
+      const expired = filterJobs(result, "expired");
+
+      setIncomingJobData(incoming);
+      setLiveJobData(live);
+      setCompleteJobData(complete);
+      setExpiredJobData(expired);
+    } catch (error) {
+      console.error("Error fetching job data:", error);
+    }
   };
 
   useEffect(() => {
@@ -71,41 +78,35 @@ export default function AdminJobs() {
 
   const updateJobStatus = async (jobId: string, status: "approved" | "rejected" | "expired", approvedDate?: Date) => {
     try {
-      //fetches job data
+      // First fetch the current job data
       const response = await fetch(`/api/jobs/${jobId}`);
       if (!response.ok) {
-        console.error("Failed to fetch job data");
-        return;
+        throw new Error("Failed to fetch job data");
       }
-      if (response.ok) {
-        console.log("Response OK");
-      }
-
       const jobs = await response.json();
-      console.log("Fetched Jobs:", jobs);
+      const currentJob = jobs.find((j: IJob) => j._id === jobId);
 
-      const job = jobs.find((j: IJob) => j._id === jobId);
-      if (!job) {
-        console.error("Job not found");
-        return;
+      if (!currentJob) {
+        throw new Error("Job not found");
       }
-      console.log("Target Job:", job);
 
-      const updatedJob = {
-        //  ...job, // "spreads"/ copy existing information
-        _id: job._id,
-        organizationName: job.organizationName,
-        organizationIndustry: job.organizationIndustry,
-        title: job.title,
-        postDate: job.postDate,
-        jobDescription: job.jobDescription,
-        employmentType: job.employmentType,
-        compensationType: job.compensationType,
+      // Create the updated job object with all required fields
+      const updatedJob: IJob = {
+        _id: currentJob._id,
+        organizationName: currentJob.organizationName,
+        organizationIndustry: currentJob.organizationIndustry,
+        title: currentJob.title,
+        postDate: currentJob.postDate,
+        jobDescription: currentJob.jobDescription,
+        employmentType: currentJob.employmentType,
+        compensationType: currentJob.compensationType,
         jobStatus: status,
-        url: job.url,
-        approvedDate: approvedDate ? approvedDate.toISOString() : job.approvedDate,
+        detailURL: currentJob.url,
+        approvedDate: approvedDate ? approvedDate : currentJob.approvedDate,
+        memberStatus: false,
       };
 
+      // Send the complete updated job object
       const updateResponse = await fetch(`/api/jobs/${jobId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -113,14 +114,36 @@ export default function AdminJobs() {
       });
 
       if (!updateResponse.ok) {
-        console.error("Failed updateResponse");
-        return;
+        throw new Error("Failed to update job status");
       }
 
-      console.log("updateResponse good");
+      // Remove the job from its current category
+      if (incomingJobData) {
+        setIncomingJobData(incomingJobData.filter((job) => job._id !== jobId));
+      }
+      if (liveJobData) {
+        setLiveJobData(liveJobData.filter((job) => job._id !== jobId));
+      }
+      if (completeJobData) {
+        setCompleteJobData(completeJobData.filter((job) => job._id !== jobId));
+      }
+      if (expiredJobData) {
+        setExpiredJobData(expiredJobData.filter((job) => job._id !== jobId));
+      }
 
-      //Update frontend imediately so user doesnt have to refresh
-      await fetchData();
+      // Add the job to its new category
+      switch (status) {
+        case "approved":
+          setLiveJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
+          setExpiredJobData((prev) => (prev ? prev.filter((job) => job._id !== jobId) : []));
+          break;
+        case "rejected":
+          setCompleteJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
+          break;
+        case "expired":
+          setExpiredJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
+          break;
+      }
     } catch (error) {
       console.error("Error updating job status:", error);
     }
@@ -146,7 +169,7 @@ export default function AdminJobs() {
                     rounded={5}
                     flex={1}
                   >
-                    <AdminJobCard job={job} />
+                    <AdminJobCard job={job} onUpdateJob={updateJobStatus} />
                   </Flex>
                 ))}
               </ChakraCarousel>
@@ -189,7 +212,11 @@ export default function AdminJobs() {
             </div>
             {tab == 1 ? (
               liveJobData ? (
-                <JobGrid jobs={liveJobData} isAdmin={true} />
+                <JobGrid
+                  jobs={liveJobData}
+                  isAdmin={true}
+                  onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
+                />
               ) : (
                 <Loader
                   size="md"
@@ -198,7 +225,11 @@ export default function AdminJobs() {
                 />
               )
             ) : expiredJobData ? (
-              <JobGrid jobs={expiredJobData} isAdmin={true} />
+              <JobGrid
+                jobs={expiredJobData}
+                isAdmin={true}
+                onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
+              />
             ) : (
               <Loader
                 size="md"
