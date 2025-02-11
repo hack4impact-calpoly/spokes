@@ -16,11 +16,6 @@ export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
     job.postDate &&
     new Date(job.postDate) < new Date(new Date().setDate(new Date().getDate() - 30));
 
-  const handleAction = (action: "approved" | "rejected", postDate?: Date) => {
-    console.log(`Button clicked: ${action}, Job ID: ${job._id}`);
-    onUpdateJob?.(job._id, action, postDate);
-  };
-
   return (
     <div className="max-w-[100%]">
       <div className="bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm">

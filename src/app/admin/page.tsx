@@ -155,7 +155,6 @@ export default function AdminJobs() {
     <div className="w-full">
       <div className="mt-20 px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
         <div className="flex flex-col gap-24 mb-20">
-          {/* Incoming Applications with Carousel using AdminJobCard */}
           <div className="flex flex-col gap-8">
             <div className="text-3xl font-semibold">Incoming Applications</div>
             {incomingJobData ? (
@@ -182,7 +181,6 @@ export default function AdminJobs() {
             )}
           </div>
 
-          {/* Live/Completed Applications rendered as a grid */}
           <div className="flex flex-col gap-8">
             <div className="flex gap-8 w-full">
               <div
