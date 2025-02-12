@@ -6,6 +6,9 @@ import JobGrid from "@/components/JobGrid";
 import { IJob } from "@/database/jobSchema";
 import { Loader } from "@/components/Loader";
 
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInView } from "react-intersection-observer";
+
 // Interfaces to make TS happy
 interface FilterCategories {
   [key: string]: string[];
@@ -14,6 +17,14 @@ interface FilterCategories {
 interface FilterState {
   [key: string]: string[];
 }
+
+const fetchJobs = async ({ pageParam = 0 }) => {
+  console.log("fetching: ", pageParam + 1);
+  const response = await fetch(`http://localhost:3000/api/jobs?page=${pageParam + 1}&limit=10`);
+  const data = await response.json();
+  console.log("fetched", data);
+  return data;
+};
 
 export default function Jobs() {
   const [tab, setTab] = useState(1);
@@ -63,15 +74,47 @@ export default function Jobs() {
     },
   ]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch("/api/jobs");
-      const result = await response.json();
-      setJobData(result);
-    };
+  // const {
+  //   data,
+  //   fetchNextPage,
+  //   hasNextPage,
+  //   isFetchingNextPage,
+  //   status,
+  // } = useInfiniteQuery({
+  //   queryKey: ["jobs"], // Include filters in the key to refetch when they change
+  //   queryFn: ({ pageParam = 1 }) => fetchJobs({ pageParam }),
+  //   getNextPageParam: (lastPage, allPages) => {
+  //     return lastPage.length ? allPages.length + 1 : undefined;
+  //   },
+  //   initialPageParam: 1,
+  // });
 
-    fetchData();
-  }, []);
+  const {
+    data: fetchedJobs,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
+    queryKey: ["jobs"],
+    queryFn: fetchJobs,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === 10 ? allPages.length + 1 : undefined;
+    },
+  });
+
+  // console.log("Query Data:", fetchedJobs?.pages.flat());  // Log to check what data looks like
+  // console.log("Query Status:", status);
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, fetchNextPage]);
 
   // State to manage filters
   const [filters, setFilters] = useState<FilterState>({
@@ -147,11 +190,14 @@ export default function Jobs() {
             </div>
           </div>
           {/* Conditional rendering for jobData with loader as fallback */}
+
           {tab == 1 ? (
             <>
-              {filteredJobs ? (
+              {fetchedJobs ? (
                 <>
-                  <JobGrid jobs={filteredJobs} />
+                  <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} />
+                  {isFetchingNextPage && <Loader size="xl" label="Loading more jobs..." />}
+                  <div ref={ref} className="h-10" /> {/* This triggers fetchNextPage when in view */}{" "}
                 </>
               ) : (
                 <Loader
