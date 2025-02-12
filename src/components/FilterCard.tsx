@@ -34,7 +34,7 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
             <div className="text-black font-semibold text-lg mb-1 select-none">Employment</div>
             <div className="flex flex-col gap-[2px]">
               <Checkbox
-                label="Full-time"
+                label="Full-Time"
                 checked={fullTimeChecked}
                 changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
                   setFullTimeChecked(event.target.checked);
@@ -42,7 +42,7 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
                 }}
               ></Checkbox>
               <Checkbox
-                label="Part-time"
+                label="Part-Time"
                 checked={partTimeChecked}
                 changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
                   setPartTimeChecked(event.target.checked);
