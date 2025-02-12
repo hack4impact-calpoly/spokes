@@ -120,12 +120,12 @@ export default function JobFormPage() {
   };
 
   //For custom radio selection buttons, job type field
-  const typeOptions = ["Volunteer", "Full-Time", "Part-Time"];
+  const typeOptions = ["Full-Time", "Part-Time", "Volunteer"];
   const { getRootProps: getJobRootProps, getRadioProps: getJobRadioProps } = useRadioGroup({
     name: "employmentType",
     value: selectEmployment,
     onChange: (value) => {
-      setFormData((prev) => ({ ...prev, employmentType: value }));
+      setFormData((prev) => ({ ...prev, employmentType: value.toLowerCase() }));
       setSelectEmployment(value);
     },
   });
@@ -253,7 +253,7 @@ export default function JobFormPage() {
             />
             <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
           </FormControl>
-          <Heading as="h2" size="md" mb={5} textAlign="left" w="100%">
+          <Heading as="h2" size="md" textAlign="left" w="100%">
             Person of Contact - Information
           </Heading>
           <Stack w="full" direction={{ base: "column", md: "row" }} spacing={{ base: 6, md: 40 }}>
