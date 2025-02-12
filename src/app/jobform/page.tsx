@@ -9,12 +9,12 @@ import {
   FormLabel,
   Input,
   Stack,
-  Radio,
   FormErrorMessage,
   useRadioGroup,
 } from "@chakra-ui/react";
 import RadioCard from "@/components/RadioCard";
 import JobConfirmationModal from "@/components/JobConfirmationModal";
+import { useRouter } from "next/navigation";
 
 export default function JobFormPage() {
   const [formData, setFormData] = useState({
@@ -38,6 +38,7 @@ export default function JobFormPage() {
   const [selectEmployment, setSelectEmployment] = useState("");
   const [selectCompensation, setSelectCompensation] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
   const employmentColorMapping = {
     Volunteer: "#C6D3FF",
@@ -142,6 +143,7 @@ export default function JobFormPage() {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    router.push("/");
   };
 
   return (

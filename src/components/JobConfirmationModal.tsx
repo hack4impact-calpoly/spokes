@@ -36,7 +36,7 @@ export default function JobConfirmationModal({ isOpen, onClose }: JobConfirmatio
           </ModalBody>
           <ModalFooter
             as="a"
-            href="/"
+            href="/jobform"
             alignSelf={"center"}
             className="text-black text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-normal underline"
           >
