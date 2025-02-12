@@ -47,7 +47,7 @@ export default function JobFormPage() {
 
   const compensationColorMapping = {
     Paid: "#DEF8EE",
-    Unpaid: "DFDFFD",
+    Unpaid: "#DFDFFD",
   };
 
   // formats phone number input to filter non-numbers an add -
@@ -145,7 +145,7 @@ export default function JobFormPage() {
   };
 
   return (
-    <Box mx="auto" p={10} ml={10} mr={10}>
+    <Box mx="auto" p={10} minWidth={{ base: "320px", md: "768px", lg: "1024px" }} maxWidth="1200px">
       <div className="mt-[8px] mb-[10px] text-black text-3xl font-semibold">Create New Listing</div>
       <Heading as="h2" size="md" mb={5}>
         Job Information
