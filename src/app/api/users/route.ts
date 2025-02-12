@@ -6,7 +6,7 @@ import User from "@/database/userSchema"; // Import your User model
 
 export async function POST(req: NextRequest) {
   try {
-    connectDB();
+    await connectDB();
     const { name, email, isadmin } = await req.json();
 
     // Validate request body
