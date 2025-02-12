@@ -20,6 +20,7 @@ export default function JobCard({ job }: JobCardProps) {
   }, [recentJobs]);
 
   const handleApplyNowClick = () => {
+    updateLocalStorage();
     if (job.applyNowURL) {
       window.open(job.applyNowURL, "_blank");
     } else {
@@ -31,8 +32,28 @@ export default function JobCard({ job }: JobCardProps) {
   };
 
   const handleSeeMoreClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    updateLocalStorage();
     event.preventDefault();
     window.open(job.detailURL, "_blank");
+  };
+
+  const updateLocalStorage = () => {
+    const newJob = job._id;
+    const arr = getRecentJobs();
+
+    if (!recentJobs.includes(newJob)) {
+      arr.push(newJob);
+    }
+
+    setRecentJobs(arr);
+  };
+
+  const getRecentJobs = () => {
+    const storedJobs = localStorage.getItem("myJobs");
+    if (storedJobs) {
+      return JSON.parse(storedJobs);
+    }
+    return [];
   };
 
   return (
