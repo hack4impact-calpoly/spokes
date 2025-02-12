@@ -18,6 +18,7 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
     const [partTimeChecked, setPartTimeChecked] = useState(false);
     const [volunteerChecked, setVolunteerChecked] = useState(false);
     const [paidChecked, setPaidChecked] = useState(false);
+    const [unpaidChecked, setUnpaidChecked] = useState(false);
 
     return (
       <div className="sticky top-[155px]">
@@ -33,7 +34,7 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
             <div className="text-black font-semibold text-lg mb-1 select-none">Employment</div>
             <div className="flex flex-col gap-[2px]">
               <Checkbox
-                label="Full-time"
+                label="Full-Time"
                 checked={fullTimeChecked}
                 changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
                   setFullTimeChecked(event.target.checked);
@@ -41,11 +42,19 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
                 }}
               ></Checkbox>
               <Checkbox
-                label="Part-time"
+                label="Part-Time"
                 checked={partTimeChecked}
                 changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
                   setPartTimeChecked(event.target.checked);
                   onFilterChange("employment", "part-time");
+                }}
+              ></Checkbox>
+              <Checkbox
+                label="Volunteer"
+                checked={volunteerChecked}
+                changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setVolunteerChecked(event.target.checked);
+                  onFilterChange("employment", "volunteer");
                 }}
               ></Checkbox>
             </div>
@@ -62,11 +71,11 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
                 }}
               ></Checkbox>
               <Checkbox
-                label="Volunteer"
-                checked={volunteerChecked}
+                label="Unpaid"
+                checked={unpaidChecked}
                 changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setVolunteerChecked(event.target.checked);
-                  onFilterChange("compensation", "volunteer");
+                  setUnpaidChecked(event.target.checked);
+                  onFilterChange("compensation", "unpaid");
                 }}
               ></Checkbox>
             </div>
