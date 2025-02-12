@@ -18,6 +18,7 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
     const [partTimeChecked, setPartTimeChecked] = useState(false);
     const [volunteerChecked, setVolunteerChecked] = useState(false);
     const [paidChecked, setPaidChecked] = useState(false);
+    const [unpaidChecked, setUnpaidChecked] = useState(false);
 
     return (
       <div className="sticky top-[155px]">
@@ -48,6 +49,14 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
                   onFilterChange("employment", "part-time");
                 }}
               ></Checkbox>
+              <Checkbox
+                label="Volunteer"
+                checked={volunteerChecked}
+                changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setVolunteerChecked(event.target.checked);
+                  onFilterChange("employment", "volunteer");
+                }}
+              ></Checkbox>
             </div>
           </div>
           <div className="lg:mb-8">
@@ -62,11 +71,11 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
                 }}
               ></Checkbox>
               <Checkbox
-                label="Volunteer"
-                checked={volunteerChecked}
+                label="Unpaid"
+                checked={unpaidChecked}
                 changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setVolunteerChecked(event.target.checked);
-                  onFilterChange("compensation", "volunteer");
+                  setUnpaidChecked(event.target.checked);
+                  onFilterChange("compensation", "unpaid");
                 }}
               ></Checkbox>
             </div>
