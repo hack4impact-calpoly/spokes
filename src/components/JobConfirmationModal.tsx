@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Modal,
@@ -12,22 +12,22 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 
-export default function JobConfirmationModal() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+interface JobConfirmationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
+export default function JobConfirmationModal({ isOpen, onClose }: JobConfirmationModalProps) {
   return (
     <div className="modal">
-      <Button onClick={openModal}>Open Modal</Button>
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
+      <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent
           className="flex justify-center items-center flex-shrink-0 rounded-lg border border-black overflow-hidden text-center py-10"
           maxW={["350px", "60vw", "55vw"]}
           h={["270px", "auto"]}
         >
-          <ModalCloseButton top={3} size={["md", "md", "lg"]} onClick={closeModal} />
+          <ModalCloseButton top={3} size={["md", "md", "lg"]} onClick={onClose} />
           <ModalHeader className="self-stretch text-black font-semibold leading-normal">
             <p className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold">Job listing successfully submitted</p>
           </ModalHeader>

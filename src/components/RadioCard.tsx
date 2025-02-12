@@ -4,6 +4,7 @@ interface RadioCardProps {
   children: React.ReactNode;
   value: string;
   isChecked: boolean;
+  checkedColor: string;
 }
 
 const RadioCard = (props: RadioCardProps) => {
@@ -23,12 +24,13 @@ const RadioCard = (props: RadioCardProps) => {
         py={3}
         bg="#F6F6F6"
         _checked={{
-          bg: "#BFBFBF",
+          bg: props.checkedColor,
           color: "black",
           borderColor: "F6F6F6",
         }}
         _hover={{
-          bg: "#BFBFBF",
+          bg: props.checkedColor,
+          opacity: 0.8,
           color: "black",
         }}
       >

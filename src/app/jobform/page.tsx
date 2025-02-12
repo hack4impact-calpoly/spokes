@@ -1,18 +1,20 @@
 "use client";
 import React, { useState } from "react";
 import {
+  Box,
+  Button,
+  Heading,
+  VStack,
   FormControl,
   FormLabel,
-  FormErrorMessage,
-  useRadioGroup,
-  Box,
-  Heading,
   Input,
   Stack,
-  VStack,
-  Button,
+  Radio,
+  FormErrorMessage,
+  useRadioGroup,
 } from "@chakra-ui/react";
 import RadioCard from "@/components/RadioCard";
+import JobConfirmationModal from "@/components/JobConfirmationModal";
 
 export default function JobFormPage() {
   const [formData, setFormData] = useState({
@@ -35,6 +37,18 @@ export default function JobFormPage() {
   const [message, setMessage] = useState("");
   const [selectEmployment, setSelectEmployment] = useState("");
   const [selectCompensation, setSelectCompensation] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const employmentColorMapping = {
+    Volunteer: "#C6D3FF",
+    "Full-Time": "#F8B1B8",
+    "Part-Time": "#FFE297",
+  };
+
+  const compensationColorMapping = {
+    Paid: "#DEF8EE",
+    Unpaid: "DFDFFD",
+  };
 
   // formats phone number input to filter non-numbers an add -
   const formatPhoneNumber = (value: string): string => {
@@ -95,6 +109,7 @@ export default function JobFormPage() {
       });
 
       setMessage("Job posted successfully!");
+      setIsModalOpen(true);
     } catch (error) {
       console.error("Error submitting job:", error);
       setMessage("Error submitting job.");
@@ -125,12 +140,14 @@ export default function JobFormPage() {
     },
   });
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
-    <Box mx="auto" p={10} minWidth={{ base: "320px", md: "768px", lg: "1024px" }} maxWidth="1200px">
-      <Heading as="h1" size="xl" fontWeight="bold" mb={6}>
-        Create new listing
-      </Heading>
-      <Heading as="h2" size="lg" mb={6}>
+    <Box mx="auto" p={10} ml={10} mr={10}>
+      <div className="mt-[8px] mb-[10px] text-black text-3xl font-semibold">Create New Listing</div>
+      <Heading as="h2" size="md" mb={5}>
         Job Information
       </Heading>
       <form onSubmit={handleSubmit} method="POST">
@@ -177,7 +194,13 @@ export default function JobFormPage() {
               {compensationOptions.map((value) => {
                 const radio = getCompensationRadioProps({ value });
                 return (
-                  <RadioCard key={value} value={value} {...radio} isChecked={selectCompensation === value}>
+                  <RadioCard
+                    key={value}
+                    value={value}
+                    {...radio}
+                    isChecked={selectCompensation === value}
+                    checkedColor={compensationColorMapping[value as keyof typeof compensationColorMapping]}
+                  >
                     {value}
                   </RadioCard>
                 );
@@ -190,7 +213,13 @@ export default function JobFormPage() {
               {typeOptions.map((value) => {
                 const radio = getJobRadioProps({ value });
                 return (
-                  <RadioCard key={value} value={value} {...radio} isChecked={selectEmployment === value}>
+                  <RadioCard
+                    key={value}
+                    value={value}
+                    {...radio}
+                    isChecked={selectEmployment === value}
+                    checkedColor={employmentColorMapping[value as keyof typeof employmentColorMapping]}
+                  >
                     {value}
                   </RadioCard>
                 );
@@ -210,7 +239,7 @@ export default function JobFormPage() {
             />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel requiredIndicator>Link to job listing</FormLabel>
+            <FormLabel requiredIndicator>Link to Job Listing</FormLabel>
             <Input
               type="text"
               placeholder="Enter your response"
@@ -222,7 +251,7 @@ export default function JobFormPage() {
             />
             <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
           </FormControl>
-          <Heading as="h2" size="lg" textAlign="left" w="full">
+          <Heading as="h2" size="md" mb={5} textAlign="left" w="100%">
             Person of Contact - Information
           </Heading>
           <Stack w="full" direction={{ base: "column", md: "row" }} spacing={{ base: 6, md: 40 }}>
@@ -285,6 +314,7 @@ export default function JobFormPage() {
           {message && <p>{message}</p>}
         </VStack>
       </form>
+      <JobConfirmationModal isOpen={isModalOpen} onClose={closeModal} />
     </Box>
   );
 }
