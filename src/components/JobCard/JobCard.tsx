@@ -7,9 +7,10 @@ import { useState, useEffect } from "react";
 
 interface JobCardProps {
   job: IJob;
+  onJobView?: (job: IJob) => void;
 }
 
-export default function JobCard({ job }: JobCardProps) {
+export default function JobCard({ job, onJobView }: JobCardProps) {
   const [recentJobs, setRecentJobs] = useState<string[]>(() => {
     const storedJobs = localStorage.getItem("myJobs");
     return storedJobs ? JSON.parse(storedJobs) : [];
@@ -39,13 +40,14 @@ export default function JobCard({ job }: JobCardProps) {
 
   const updateLocalStorage = () => {
     const newJob = job._id;
-    const arr = getRecentJobs();
-
     if (!recentJobs.includes(newJob)) {
-      arr.push(newJob);
+      const updatedJobs = [...recentJobs, newJob];
+      setRecentJobs(updatedJobs);
+      localStorage.setItem("myJobs", JSON.stringify(updatedJobs));
+      if (onJobView) {
+        onJobView(job);
+      }
     }
-
-    setRecentJobs(arr);
   };
 
   const getRecentJobs = () => {
