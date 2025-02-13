@@ -6,11 +6,11 @@ interface JobGridProps {
   jobs: IJob[];
   isAdmin?: boolean;
   onJobView?: (job: IJob) => void;
+  onUpdateJob?: (jobId: string, status: "approved" | "rejected", approvedDate?: Date) => void;
 }
 
-export default function JobGrid({ jobs, isAdmin = false, onJobView }: JobGridProps) {
+export default function JobGrid({ jobs, isAdmin = false, onJobView, onUpdateJob }: JobGridProps) {
   const CardComponent = isAdmin ? AdminCard : JobCard;
-  console.log(jobs);
 
   return (
     <>
@@ -19,7 +19,7 @@ export default function JobGrid({ jobs, isAdmin = false, onJobView }: JobGridPro
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
           {Array.from(jobs).map((job) => (
-            <CardComponent key={job._id} job={job} onJobView={onJobView} />
+            <CardComponent key={job._id} job={job} onUpdateJob={onUpdateJob} onJobView={onJobView} />
           ))}
         </div>
       )}
