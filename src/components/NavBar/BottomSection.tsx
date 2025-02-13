@@ -30,7 +30,7 @@ export default function BottomSection() {
     <nav
       className={`flex sticky ${scrollDirection === "down" ? "-top-24" : "top-0"} z-10 justify-between sm:justify-start bg-[#2B2B2B] text-white  sm:px-9 transition-all duration-500 text-xs sm:text-sm md:text-md lg:text-lg`}
     >
-      <NavBarLink title="Job board" href="jobs" />
+      <NavBarLink title="Job Board" href="jobs" />
       <NavBarLink title="List Job" href="jobform" />
 
       {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
