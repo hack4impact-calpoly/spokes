@@ -20,7 +20,7 @@ interface FilterState {
 
 const fetchJobs = async ({ pageParam = 0 }) => {
   console.log("fetching: ", pageParam + 1);
-  const response = await fetch(`http://localhost:3000/api/jobs?page=${pageParam + 1}&limit=10`);
+  const response = await fetch(`http://localhost:3000/api/jobs?page=${pageParam}&limit=10`);
   const data = await response.json();
   console.log("fetched", data);
   return data;
@@ -99,7 +99,7 @@ export default function Jobs() {
   } = useInfiniteQuery({
     queryKey: ["jobs"],
     queryFn: fetchJobs,
-    initialPageParam: 0,
+    initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === 10 ? allPages.length + 1 : undefined;
     },
