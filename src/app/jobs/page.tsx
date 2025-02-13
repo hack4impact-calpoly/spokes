@@ -18,14 +18,27 @@ interface FilterState {
   [key: string]: string[];
 }
 
-const fetchJobs = async ({ pageParam = 0 }) => {
-  console.log("fetching: ", pageParam + 1);
-  const response = await fetch(`http://localhost:3000/api/jobs?page=${pageParam}&limit=10`);
+const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filters: FilterState }) => {
+  console.log("fetching: ", pageParam);
+  const url = new URL("http://localhost:3000/api/jobs");
+
+  // Add pagination parameters
+  url.searchParams.append("page", pageParam.toString());
+  url.searchParams.append("limit", "10");
+
+  // Add filter parameters
+  if (filters.employment.length > 0) {
+    filters.employment.forEach((filter) => url.searchParams.append("employmentType", filter));
+  }
+  if (filters.compensation.length > 0) {
+    filters.compensation.forEach((filter) => url.searchParams.append("compensationType", filter));
+  }
+
+  const response = await fetch(url.toString());
   const data = await response.json();
   console.log("fetched", data);
   return data;
 };
-
 export default function Jobs() {
   const [tab, setTab] = useState(1);
 
@@ -74,48 +87,6 @@ export default function Jobs() {
     },
   ]);
 
-  // const {
-  //   data,
-  //   fetchNextPage,
-  //   hasNextPage,
-  //   isFetchingNextPage,
-  //   status,
-  // } = useInfiniteQuery({
-  //   queryKey: ["jobs"], // Include filters in the key to refetch when they change
-  //   queryFn: ({ pageParam = 1 }) => fetchJobs({ pageParam }),
-  //   getNextPageParam: (lastPage, allPages) => {
-  //     return lastPage.length ? allPages.length + 1 : undefined;
-  //   },
-  //   initialPageParam: 1,
-  // });
-
-  const {
-    data: fetchedJobs,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    status,
-  } = useInfiniteQuery({
-    queryKey: ["jobs"],
-    queryFn: fetchJobs,
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length === 10 ? allPages.length + 1 : undefined;
-    },
-  });
-
-  // console.log("Query Data:", fetchedJobs?.pages.flat());  // Log to check what data looks like
-  // console.log("Query Status:", status);
-
-  const { ref, inView } = useInView();
-
-  useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [inView, hasNextPage, fetchNextPage]);
-
   // State to manage filters
   const [filters, setFilters] = useState<FilterState>({
     employment: [],
@@ -154,6 +125,30 @@ export default function Jobs() {
         (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
         (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
     );
+
+  const {
+    data: fetchedJobs,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
+    queryKey: ["jobs", filters],
+    queryFn: ({ pageParam = 1 }) => fetchJobs({ pageParam, filters }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === 10 ? allPages.length + 1 : undefined;
+    },
+  });
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, fetchNextPage]);
 
   return (
     <div className="w-full flex flex-col">
