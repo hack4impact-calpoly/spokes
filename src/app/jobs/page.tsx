@@ -5,6 +5,16 @@ import { twMerge } from "tailwind-merge";
 import JobGrid from "@/components/JobGrid";
 import { IJob } from "@/database/jobSchema";
 import { Loader } from "@/components/Loader";
+import {
+  Button,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@chakra-ui/react";
 
 // Interfaces to make TS happy
 interface FilterCategories {
@@ -19,8 +29,10 @@ export default function Jobs() {
   const [tab, setTab] = useState(1);
 
   const [jobData, setJobData] = useState<null | IJob[]>(null);
+  const [recentJobs, setRecentJobs] = useState<null | IJob[]>(null);
 
-  const [recentJobs, setRecentJobs] = useState<IJob[]>([]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [hasLoadedRecentJobs, setHasLoadedRecentJobs] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +57,6 @@ export default function Jobs() {
 
   // Handler to fetch recent jobs by IDs
   const fetchRecentJobs = async () => {
-    // Get recent viewed job IDs from local storage
     const raw = localStorage.getItem("myJobs");
     const recentJobIds = raw ? JSON.parse(raw) : [];
 
@@ -73,6 +84,26 @@ export default function Jobs() {
     });
   };
 
+  const handleJobView = (job: IJob) => {
+    if (recentJobs) {
+      setRecentJobs([...recentJobs, job]);
+    }
+  };
+
+  const handleClearRecentJobs = () => {
+    localStorage.removeItem("myJobs");
+    setRecentJobs([]);
+    onClose();
+  };
+
+  const handleTabChange = async (tabNumber: number) => {
+    setTab(tabNumber);
+    if (tabNumber === 2 && !hasLoadedRecentJobs) {
+      await fetchRecentJobs();
+      setHasLoadedRecentJobs(true);
+    }
+  };
+
   const filteredJobs =
     jobData &&
     Array.from(jobData)?.filter(
@@ -97,40 +128,38 @@ export default function Jobs() {
           <FilterCard categories={filterCategories} onFilterChange={handleFilterChange}></FilterCard>
         </div>
         <div className="w-full flex flex-col gap-4 lg:gap-6">
-          <div className="flex gap-8 w-full">
-            <div
-              className={twMerge(
-                "text-black text-3xl cursor-pointer select-none",
-                tab == 1 ? "font-semibold" : "font-normal text-[#C3C3C3]",
-              )}
-              onClick={() => {
-                // Later add functionally to display listings
-                setTab(1);
-              }}
-            >
-              All Jobs
+          <div className="flex justify-between items-center">
+            <div className="flex gap-8">
+              <div
+                className={twMerge(
+                  "text-black text-3xl cursor-pointer select-none",
+                  tab == 1 ? "font-semibold" : "font-normal text-[#C3C3C3]",
+                )}
+                onClick={() => handleTabChange(1)}
+              >
+                All Jobs
+              </div>
+              <div
+                className={twMerge(
+                  "text-black text-3xl cursor-pointer select-none",
+                  tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
+                )}
+                onClick={() => handleTabChange(2)}
+              >
+                Recently Viewed
+              </div>
             </div>
-            <div
-              className={twMerge(
-                "text-black text-3xl cursor-pointer select-none",
-                tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
-              )}
-              onClick={async () => {
-                // trigger refetch to ensure display of fresh data
-                setTab(2);
-                await fetchRecentJobs();
-              }}
-            >
-              Recently Viewed
-            </div>
+            {tab === 2 && (
+              <Button onClick={onOpen} fontWeight="normal" variant="outline" borderColor="black" size="sm">
+                Clear History
+              </Button>
+            )}
           </div>
-          {/* Conditional rendering for jobData with loader as fallback */}
+
           {tab == 1 ? (
             <>
               {filteredJobs ? (
-                <>
-                  <JobGrid jobs={filteredJobs} />
-                </>
+                <JobGrid jobs={filteredJobs} onJobView={handleJobView} />
               ) : (
                 <Loader
                   size="xl"
@@ -142,9 +171,7 @@ export default function Jobs() {
           ) : (
             <>
               {filteredRecentJobs ? (
-                <>
-                  <JobGrid jobs={filteredRecentJobs} />
-                </>
+                <JobGrid jobs={filteredRecentJobs} onJobView={handleJobView} />
               ) : (
                 <Loader
                   size="xl"
@@ -156,6 +183,22 @@ export default function Jobs() {
           )}
         </div>
       </div>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Clear History</ModalHeader>
+          <ModalBody>Are you sure you want to clear your recently viewed jobs?</ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={onClose}>
+              Cancel
+            </Button>
+            <Button onClick={handleClearRecentJobs} bg="black" color="white" _hover={{ bg: "gray.800" }}>
+              Clear
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }
