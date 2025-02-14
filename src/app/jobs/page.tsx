@@ -33,7 +33,6 @@ const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filte
   if (filters.compensation.length > 0) {
     filters.compensation.forEach((filter) => url.searchParams.append("compensationType", filter));
   }
-  console.log(url.toString());
   const response = await fetch(url.toString());
   const data = await response.json();
   return data;
@@ -95,8 +94,8 @@ export default function Jobs() {
 
   // Define filter categories
   const filterCategories: FilterCategories = {
-    employment: ["full-time", "part-time"],
-    compensation: ["paid", "volunteer"],
+    employment: ["Full-time", "Part-time"],
+    compensation: ["Paid", "Volunteer"],
   };
 
   const handleFilterChange = (category: string, value: string) => {
