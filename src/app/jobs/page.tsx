@@ -33,6 +33,7 @@ const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filte
   if (filters.compensation.length > 0) {
     filters.compensation.forEach((filter) => url.searchParams.append("compensationType", filter));
   }
+  console.log(url.toString());
   const response = await fetch(url.toString());
   const data = await response.json();
   return data;
@@ -129,7 +130,7 @@ export default function Jobs() {
     queryFn: ({ pageParam = 1 }) => fetchJobs({ pageParam, filters }),
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length === 10 ? allPages.length + 1 : undefined;
+      return lastPage.length === 12 ? allPages.length + 1 : undefined;
     },
   });
 
