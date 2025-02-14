@@ -7,11 +7,12 @@ import JobPostedDate from "@/components/JobCard/JobPostedDate";
 
 interface JobCardProps {
   job: IJob;
+  innerRef?: (node?: Element | null | undefined) => void;
 }
 
-export default function AdminCard({ job }: JobCardProps) {
+export default function AdminCard({ job, innerRef }: JobCardProps) {
   return (
-    <div className="max-w-[100%]">
+    <div className="max-w-[100%]" ref={innerRef}>
       <div className="bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm">
         <div className="flex justify-between mb-5">
           <JobStatusBadge jobStatus={job.jobStatus} />
