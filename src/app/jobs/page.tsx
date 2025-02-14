@@ -24,7 +24,7 @@ const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filte
 
   // Add pagination parameters
   url.searchParams.append("page", pageParam.toString());
-  url.searchParams.append("limit", "10");
+  url.searchParams.append("limit", "12");
 
   // Add filter parameters
   if (filters.employment.length > 0) {
