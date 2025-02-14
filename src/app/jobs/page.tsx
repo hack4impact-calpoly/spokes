@@ -33,12 +33,12 @@ const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filte
   if (filters.compensation.length > 0) {
     filters.compensation.forEach((filter) => url.searchParams.append("compensationType", filter));
   }
-
+  console.log(url.toString());
   const response = await fetch(url.toString());
   const data = await response.json();
-  console.log("fetched", data);
   return data;
 };
+
 export default function Jobs() {
   const [tab, setTab] = useState(1);
 
@@ -95,8 +95,8 @@ export default function Jobs() {
 
   // Define filter categories
   const filterCategories: FilterCategories = {
-    employment: ["Full-time", "Part-time", "Volunteer"],
-    compensation: ["Paid", "Non-paid"],
+    employment: ["full-time", "part-time"],
+    compensation: ["paid", "volunteer"],
   };
 
   const handleFilterChange = (category: string, value: string) => {
@@ -109,14 +109,6 @@ export default function Jobs() {
       return { ...prev, [category]: newFilters };
     });
   };
-
-  const filteredJobs =
-    jobData &&
-    Array.from(jobData)?.filter(
-      (job) =>
-        (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
-        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
-    );
 
   const filteredRecentJobs =
     recentJobs &&
