@@ -184,7 +184,6 @@ export default function Jobs() {
                 <>
                   <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} />
                   {isFetchingNextPage && <Loader size="xl" label="Loading more jobs..." />}
-                  <div ref={ref} className="h-10" /> {/* This triggers fetchNextPage when in view */}{" "}
                 </>
               ) : (
                 <Loader
