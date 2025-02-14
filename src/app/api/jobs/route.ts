@@ -29,38 +29,62 @@ export async function GET(req: Request) {
     await connectDB();
 
     const { searchParams } = new URL(req.url);
-
-    // Pagination parameters
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const limit = parseInt(searchParams.get("limit") || "12", 12);
+    // page defaults to 1, limit to 10 jobs if not specified
+    // example path: /api/jobs?page=2&limit=10
+    const page = parseInt(searchParams.get("page") || "0", 10);
+    const limit = parseInt(searchParams.get("limit") || "10", 10);
     const skip = (page - 1) * limit;
 
     // Filter parameters
     const employmentFilters = searchParams.getAll("employmentType");
     const compensationFilters = searchParams.getAll("compensationType");
 
+    // Normalize filter values to match document values
+    const normalizeEmployment = (value: string) => {
+      switch (value.toLowerCase()) {
+        case "Full-time":
+          return "full-Time";
+        case "Part-time":
+          return "part-time";
+        default:
+          return value;
+      }
+    };
+
+    const normalizeCompensation = (value: string) => {
+      switch (value.toLowerCase()) {
+        case "Paid":
+          return "paid";
+        case "Volunteer":
+          return "volunteer";
+        default:
+          return value;
+      }
+    };
+
     // Build the filter object dynamically
     const filter: any = {};
 
     if (employmentFilters.length > 0) {
-      filter.employmentType = { $in: employmentFilters };
+      filter.employmentType = {
+        $in: employmentFilters.map(normalizeEmployment),
+      };
     }
 
     if (compensationFilters.length > 0) {
-      filter.compensationType = { $in: compensationFilters };
+      filter.compensationType = {
+        $in: compensationFilters.map(normalizeCompensation),
+      };
     }
 
     // Fetch jobs with filters, sorting, and pagination
-    const jobs = await Job.find(filter)
-      .sort({ postDate: -1 }) // Sort by postDate in descending order
-      .skip(skip) // Skip items for pagination
-      .limit(limit); // Limit the number of items per page
-
+    const jobs = await Job.find(filter).sort({ postDate: -1 }).skip(skip).limit(limit);
     return NextResponse.json(jobs, { status: 200 });
   } catch (error) {
     return NextResponse.json(error, { status: 500 });
   }
 }
+
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
