@@ -31,8 +31,8 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
 
     // Pagination parameters
-    const page = parseInt(searchParams.get("page") || "1", 10); // Default to page 1
-    const limit = parseInt(searchParams.get("limit") || "10", 10); // Default to 10 items per page
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "12", 12);
     const skip = (page - 1) * limit;
 
     // Filter parameters
