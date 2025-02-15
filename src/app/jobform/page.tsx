@@ -41,14 +41,14 @@ export default function JobFormPage() {
   const router = useRouter();
 
   const employmentColorMapping = {
-    Volunteer: "#C6D3FF",
     "Full-Time": "#F8B1B8",
     "Part-Time": "#FFE297",
   };
 
   const compensationColorMapping = {
-    Paid: "#DEF8EE",
-    Unpaid: "#DFDFFD",
+    Volunteer: "#C6D3FF",
+    Salary: "#DEF8EE",
+    Hourly: "#DFDFFD",
   };
 
   // formats phone number input to filter non-numbers an add -
@@ -120,7 +120,7 @@ export default function JobFormPage() {
   };
 
   //For custom radio selection buttons, job type field
-  const typeOptions = ["Full-Time", "Part-Time", "Volunteer"];
+  const typeOptions = ["Full-Time", "Part-Time"];
   const { getRootProps: getJobRootProps, getRadioProps: getJobRadioProps } = useRadioGroup({
     name: "employmentType",
     value: selectEmployment,
@@ -131,7 +131,7 @@ export default function JobFormPage() {
   });
 
   //For custom radio selection buttons, compensation type field
-  const compensationOptions = ["Paid", "Unpaid"];
+  const compensationOptions = ["Salary", "Hourly", "Volunteer"];
   const { getRootProps: getCompensationRootProps, getRadioProps: getCompensationRadioProps } = useRadioGroup({
     name: "compensationType",
     value: selectCompensation,
