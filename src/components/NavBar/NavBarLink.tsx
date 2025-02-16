@@ -4,6 +4,7 @@ import Link from "next/link";
 interface NavBarLinkProps {
   title: string;
   href: string;
+  onClick?: () => void;
 }
 
 export default function NavBarLink({ title, href }: NavBarLinkProps) {
