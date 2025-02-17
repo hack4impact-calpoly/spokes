@@ -1,4 +1,4 @@
-import { Button, Icon } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 import { IJob } from "@/database/jobSchema";
 import JobStatusBadge from "@/components/JobCard/JobStatusBadge";
 import JobBadge from "@/components/JobCard/JobBadge";
@@ -10,7 +10,16 @@ interface JobCardProps {
   innerRef?: (node?: Element | null | undefined) => void;
 }
 
-export default function AdminCard({ job, innerRef }: JobCardProps) {
+
+onUpdateJob?: (jobId: string, status: "approved" | "rejected", approvedDate?: Date) => void;
+
+export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) {
+
+  const isExpired =
+    job.jobStatus != "approved" &&
+    job.postDate &&
+    new Date(job.postDate) < new Date(new Date().setDate(new Date().getDate() - 30));
+
   return (
     <div className="max-w-[100%]" ref={innerRef}>
       <div className="bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm">
@@ -37,6 +46,47 @@ export default function AdminCard({ job, innerRef }: JobCardProps) {
             </Button>
           </div>
         </div>
+
+        <div className="flex flex-wrap gap-2 mt-4">
+          {job.jobStatus === "pending" && !isExpired && (
+            <>
+              <Button
+                px="20"
+                fontSize="small"
+                fontWeight="normal"
+                variant="outline"
+                borderColor="black"
+                onClick={() => onUpdateJob?.(job._id, "approved", new Date())}
+              >
+                Approve
+              </Button>
+              <Button
+                px="20"
+                fontSize="small"
+                fontWeight="normal"
+                variant="outline"
+                borderColor="black"
+                onClick={() => onUpdateJob?.(job._id, "rejected", new Date())}
+              >
+                Deny
+              </Button>
+            </>
+          )}
+
+          {isExpired && (
+            <Button
+              px="20"
+              fontSize="small"
+              fontWeight="normal"
+              variant="outline"
+              borderColor="black"
+              onClick={() => onUpdateJob?.(job._id, "approved", new Date())}
+            >
+              Renew
+            </Button>
+          )}
+        </div>
+
         <div className="mt-5">
           <JobPostedDate date={job.postDate} />
         </div>

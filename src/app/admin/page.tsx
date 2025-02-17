@@ -6,42 +6,157 @@ import JobGrid from "@/components/JobGrid";
 import { Loader } from "@/components/Loader";
 import { IJob } from "@/database/jobSchema";
 import { Flex } from "@chakra-ui/react";
+import { twMerge } from "tailwind-merge";
 
 // Helper function to filter the job data into the three categories
-function filterJobs(jobs: IJob[], filterBy: "pending" | "approved" | "rejected") {
-  if (!Array.isArray(jobs)) {
-    console.error("filterJobs error: jobs is not an array", jobs);
-    return [];
-  }
+function filterJobs(jobs: IJob[], filterBy: "pending" | "approved" | "rejected" | "expired") {
+  // Check for expired jobs first
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  return jobs.filter((job) => job.jobStatus === filterBy);
+  return jobs.filter((job) => {
+    // If the job is pending and older than 30 days, mark it as expired
+    const postDate = new Date(job.postDate);
+    if (job.jobStatus === "pending" && postDate < thirtyDaysAgo) {
+      return filterBy === "expired";
+    }
+    return job.jobStatus === filterBy;
+  });
 }
 
 export default function AdminJobs() {
   const [incomingJobData, setIncomingJobData] = useState<null | IJob[]>(null);
   const [liveJobData, setLiveJobData] = useState<null | IJob[]>(null);
   const [completeJobData, setCompleteJobData] = useState<null | IJob[]>(null);
+  const [expiredJobData, setExpiredJobData] = useState<null | IJob[]>(null);
+
+
+  const setExpiredJobs = async (jobs: IJob[]) => {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const jobsToExpire = jobs.filter((job) => job.jobStatus !== "expired" && new Date(job.postDate) < thirtyDaysAgo);
+
+    for (const job of jobsToExpire) {
+      await updateJobStatus(job._id, "expired");
+    }
+
+    console.log(`${jobsToExpire.length} jobs set to expired.`);
+  };
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch("/api/jobs");
+      const result: IJob[] = await response.json();
+
+      // Check and update expired jobs
+      await setExpiredJobs(result);
+
+      // Filter jobs after updating
+      const incoming = filterJobs(result, "pending");
+      const live = filterJobs(result, "approved");
+      const complete = filterJobs(result, "rejected");
+      const expired = filterJobs(result, "expired");
+
+      setIncomingJobData(incoming);
+      setLiveJobData(live);
+      setCompleteJobData(complete);
+      setExpiredJobData(expired);
+    } catch (error) {
+      console.error("Error fetching job data:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch("/api/jobs"); // might not be fetching enough jobs because of pagination
-      const result = await response.json();
-
-      setIncomingJobData(filterJobs(result, "pending"));
-      setLiveJobData(filterJobs(result, "approved"));
-      setCompleteJobData(filterJobs(result, "rejected"));
-    };
-
     fetchData();
+
+    // Set up an interval to check for expired jobs every hour
+    const interval = setInterval(fetchData, 3600000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
   }, []);
+
+  const updateJobStatus = async (jobId: string, status: "approved" | "rejected" | "expired", approvedDate?: Date) => {
+    try {
+      // First fetch the current job data
+      const response = await fetch(`/api/jobs/${jobId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch job data");
+      }
+      const jobs = await response.json();
+      const currentJob = jobs.find((j: IJob) => j._id === jobId);
+
+      if (!currentJob) {
+        throw new Error("Job not found");
+      }
+
+      // Create the updated job object with all required fields
+      const updatedJob: IJob = {
+        _id: currentJob._id,
+        organizationName: currentJob.organizationName,
+        organizationIndustry: currentJob.organizationIndustry,
+        title: currentJob.title,
+        postDate: currentJob.postDate,
+        jobDescription: currentJob.jobDescription,
+        employmentType: currentJob.employmentType,
+        compensationType: currentJob.compensationType,
+        jobStatus: status,
+        detailURL: currentJob.url,
+        approvedDate: approvedDate ? approvedDate : currentJob.approvedDate,
+      };
+
+      // Send the complete updated job object
+      const updateResponse = await fetch(`/api/jobs/${jobId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedJob),
+      });
+
+      if (!updateResponse.ok) {
+        throw new Error("Failed to update job status");
+      }
+
+      // Remove the job from its current category
+      if (incomingJobData) {
+        setIncomingJobData(incomingJobData.filter((job) => job._id !== jobId));
+      }
+      if (liveJobData) {
+        setLiveJobData(liveJobData.filter((job) => job._id !== jobId));
+      }
+      if (completeJobData) {
+        setCompleteJobData(completeJobData.filter((job) => job._id !== jobId));
+      }
+      if (expiredJobData) {
+        setExpiredJobData(expiredJobData.filter((job) => job._id !== jobId));
+      }
+
+      // Add the job to its new category
+      switch (status) {
+        case "approved":
+          setLiveJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
+          setExpiredJobData((prev) => (prev ? prev.filter((job) => job._id !== jobId) : []));
+          break;
+        case "rejected":
+          setCompleteJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
+          break;
+        case "expired":
+          setExpiredJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
+          break;
+      }
+    } catch (error) {
+      console.error("Error updating job status:", error);
+    }
+  };
+
+  const [tab, setTab] = useState(1);
 
   return (
     <div className="w-full">
-      <div className="mt-20 px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
-        <div className="flex flex-col gap-16 mb-20">
-          {/* Incoming Applications with Carousel using AdminJobCard */}
+      <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
+        <div className="flex flex-col gap-24 mb-20">
           <div className="flex flex-col gap-8">
-            <div className="text-2xl font-semibold">Incoming Applications</div>
+            <div className="text-3xl font-semibold">Incoming Applications</div>
             {incomingJobData ? (
               <ChakraCarousel gap={20}>
                 {incomingJobData.map((job) => (
@@ -53,7 +168,7 @@ export default function AdminJobs() {
                     rounded={5}
                     flex={1}
                   >
-                    <AdminJobCard job={job} />
+                    <AdminJobCard job={job} onUpdateJob={updateJobStatus} />
                   </Flex>
                 ))}
               </ChakraCarousel>
@@ -66,25 +181,53 @@ export default function AdminJobs() {
             )}
           </div>
 
-          {/* Live Applications rendered as a grid */}
           <div className="flex flex-col gap-8">
-            <div className="text-2xl font-semibold">Live Applications</div>
-            {liveJobData ? (
-              <JobGrid jobs={liveJobData} isAdmin={true} />
-            ) : (
-              <Loader
-                size="md"
-                label="Loading Jobs..."
-                className="mt-8 grow flex flex-col gap-6 justify-center items-center"
+            <div className="flex gap-8 w-full">
+              <div
+                className={twMerge(
+                  "text-black text-3xl text-center cursor-pointer select-none",
+                  tab == 1 ? "font-semibold" : "font-normal text-[#C3C3C3]",
+                )}
+                onClick={() => {
+                  // Later add functionally to display listings
+                  setTab(1);
+                }}
+              >
+                Live Applications
+              </div>
+              <div
+                className={twMerge(
+                  "text-black text-3xl text-center cursor-pointer select-none",
+                  tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
+                )}
+                onClick={() => {
+                  // Later add functionally to display listings
+                  setTab(2);
+                }}
+              >
+                Expired Applications
+              </div>
+            </div>
+            {tab == 1 ? (
+              liveJobData ? (
+                <JobGrid
+                  jobs={liveJobData}
+                  isAdmin={true}
+                  onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
+                />
+              ) : (
+                <Loader
+                  size="md"
+                  label="Loading Jobs..."
+                  className="mt-8 grow flex flex-col gap-6 justify-center items-center"
+                />
+              )
+            ) : expiredJobData ? (
+              <JobGrid
+                jobs={expiredJobData}
+                isAdmin={true}
+                onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
               />
-            )}
-          </div>
-
-          {/* Complete Applications rendered as a grid */}
-          <div className="flex flex-col gap-8">
-            <div className="text-2xl font-semibold">Complete Applications</div>
-            {completeJobData ? (
-              <JobGrid jobs={completeJobData} isAdmin={true} />
             ) : (
               <Loader
                 size="md"

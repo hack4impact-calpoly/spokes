@@ -5,6 +5,16 @@ import { twMerge } from "tailwind-merge";
 import JobGrid from "@/components/JobGrid";
 import { IJob } from "@/database/jobSchema";
 import { Loader } from "@/components/Loader";
+import {
+  Button,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@chakra-ui/react";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
@@ -46,49 +56,19 @@ export default function Jobs() {
   const [tab, setTab] = useState(1);
 
   const [jobData, setJobData] = useState<null | IJob[]>(null);
+  const [recentJobs, setRecentJobs] = useState<null | IJob[]>(null);
 
-  const [recentJobs, setRecentJobs] = useState<IJob[]>([
-    // Hardcoded recently viewed jobs
-    {
-      _id: "1",
-      organizationName: "Tech Corp",
-      organizationIndustry: "Technology",
-      title: "Software Engineer",
-      postDate: new Date("2024-01-15"),
-      expireDate: new Date("2024-02-15"),
-      jobDescription: "Develop and maintain software solutions.",
-      employmentType: "full-time",
-      compensationType: "paid",
-      jobStatus: "Open",
-      url: "https://techcorp.com/jobs/software-engineer",
-    },
-    {
-      _id: "2",
-      organizationName: "InnovateX",
-      organizationIndustry: "Product Development",
-      title: "Product Manager",
-      postDate: new Date("2024-01-10"),
-      expireDate: new Date("2024-02-10"),
-      jobDescription: "Lead product development initiatives.",
-      employmentType: "part-time",
-      compensationType: "paid",
-      jobStatus: "Open",
-      url: "https://innovatex.com/careers/product-manager",
-    },
-    {
-      _id: "3",
-      organizationName: "Creative Solutions",
-      organizationIndustry: "Design",
-      title: "UX Designer",
-      postDate: new Date("2024-01-20"),
-      expireDate: new Date("2024-03-01"),
-      jobDescription: "Design user experiences and interfaces.",
-      employmentType: "full-time",
-      compensationType: "volunteer",
-      jobStatus: "Open",
-      url: "https://creativesolutions.com/jobs/ux-designer",
-    },
-  ]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [hasLoadedRecentJobs, setHasLoadedRecentJobs] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch("/api/jobs");
+      const result = await response.json();
+      setJobData(result);
+    };
+    fetchData();
+  }, []);
 
   // State to manage filters
   const [filters, setFilters] = useState<FilterState>({
@@ -102,6 +82,24 @@ export default function Jobs() {
     compensation: ["Paid", "Volunteer"],
   };
 
+  // Handler to fetch recent jobs by IDs
+  const fetchRecentJobs = async () => {
+    const raw = localStorage.getItem("myJobs");
+    const recentJobIds = raw ? JSON.parse(raw) : [];
+
+    if (recentJobIds.length > 0) {
+      const recentJobsresponse = await fetch("/api/jobs/recent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rawJobIdArray: recentJobIds }),
+      });
+      const recentJobsResult = await recentJobsresponse.json();
+      setRecentJobs(recentJobsResult);
+    } else {
+      setRecentJobs([]);
+    }
+  };
+
   const handleFilterChange = (category: string, value: string) => {
     setFilters((prev) => {
       const currentFilters = prev[category];
@@ -112,6 +110,34 @@ export default function Jobs() {
       return { ...prev, [category]: newFilters };
     });
   };
+
+  const handleJobView = (job: IJob) => {
+    if (recentJobs) {
+      setRecentJobs([...recentJobs, job]);
+    }
+  };
+
+  const handleClearRecentJobs = () => {
+    localStorage.removeItem("myJobs");
+    setRecentJobs([]);
+    onClose();
+  };
+
+  const handleTabChange = async (tabNumber: number) => {
+    setTab(tabNumber);
+    if (tabNumber === 2 && !hasLoadedRecentJobs) {
+      await fetchRecentJobs();
+      setHasLoadedRecentJobs(true);
+    }
+  };
+
+  const filteredJobs =
+    jobData &&
+    Array.from(jobData)?.filter(
+      (job) =>
+        (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
+        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
+    );
 
   const filteredRecentJobs =
     recentJobs &&
@@ -153,33 +179,34 @@ export default function Jobs() {
           <FilterCard categories={filterCategories} onFilterChange={handleFilterChange}></FilterCard>
         </div>
         <div className="w-full flex flex-col gap-4 lg:gap-6">
-          <div className="flex gap-8 w-full">
-            <div
-              className={twMerge(
-                "text-black text-3xl cursor-pointer select-none",
-                tab == 1 ? "font-semibold" : "font-normal text-[#C3C3C3]",
-              )}
-              onClick={() => {
-                // Later add functionally to display listings
-                setTab(1);
-              }}
-            >
-              All Jobs
+          <div className="flex justify-between items-center">
+            <div className="flex gap-8">
+              <div
+                className={twMerge(
+                  "text-black text-3xl cursor-pointer select-none",
+                  tab == 1 ? "font-semibold" : "font-normal text-[#C3C3C3]",
+                )}
+                onClick={() => handleTabChange(1)}
+              >
+                All Jobs
+              </div>
+              <div
+                className={twMerge(
+                  "text-black text-3xl cursor-pointer select-none",
+                  tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
+                )}
+                onClick={() => handleTabChange(2)}
+              >
+                Recently Viewed
+              </div>
             </div>
-            <div
-              className={twMerge(
-                "text-black text-3xl cursor-pointer select-none",
-                tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
-              )}
-              onClick={() => {
-                // Later add functionally to display listings
-                setTab(2);
-              }}
-            >
-              Recently Viewed
-            </div>
+            {tab === 2 && (
+              <Button onClick={onOpen} fontWeight="normal" variant="outline" borderColor="black" size="sm">
+                Clear History
+              </Button>
+            )}
           </div>
-          {/* Conditional rendering for jobData with loader as fallback */}
+
           {tab == 1 ? (
             <>
               {fetchedJobs ? (
@@ -187,6 +214,7 @@ export default function Jobs() {
                   <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} />
                   {isFetchingNextPage && <Loader size="xl" label="Loading more jobs..." />}
                 </>
+
               ) : (
                 <Loader
                   size="xl"
@@ -198,9 +226,7 @@ export default function Jobs() {
           ) : (
             <>
               {filteredRecentJobs ? (
-                <>
-                  <JobGrid jobs={filteredRecentJobs} />
-                </>
+                <JobGrid jobs={filteredRecentJobs} onJobView={handleJobView} />
               ) : (
                 <Loader
                   size="xl"
@@ -212,6 +238,22 @@ export default function Jobs() {
           )}
         </div>
       </div>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Clear History</ModalHeader>
+          <ModalBody>Are you sure you want to clear your recently viewed jobs?</ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={onClose}>
+              Cancel
+            </Button>
+            <Button onClick={handleClearRecentJobs} bg="black" color="white" _hover={{ bg: "gray.800" }}>
+              Clear
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

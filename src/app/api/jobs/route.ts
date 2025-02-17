@@ -89,14 +89,27 @@ export async function GET(req: Request) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(request: Request) {
   try {
     await connectDB();
-    const jobData: IJob = await req.json();
-    console.log(jobData);
-    const newJob = await new Job(jobData).save();
-    return NextResponse.json(newJob, { status: 201 });
-  } catch (error) {
-    return NextResponse.json({ message: "Failed to create job." }, { status: 500 });
+    const jobData = await request.json();
+    console.log("Job data", jobData);
+    if (
+      !jobData ||
+      !jobData.organizationName ||
+      !jobData.organizationIndustry ||
+      !jobData.title ||
+      !jobData.postDate ||
+      !jobData.employmentType ||
+      !jobData.compensationType ||
+      !jobData.jobStatus ||
+      !jobData.detailURL
+    ) {
+      return NextResponse.json({ message: "Invalid job input" }, { status: 400 });
+    }
+    const newJob = await Job.create(jobData);
+    return NextResponse.json({ message: "Job posted succesfully!", job: newJob }, { status: 201 });
+  } catch (error: any) {
+    return NextResponse.json({ message: "Could not submit job ", error }, { status: 500 });
   }
 }

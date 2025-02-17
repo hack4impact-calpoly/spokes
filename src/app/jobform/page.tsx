@@ -1,97 +1,322 @@
-import React from "react";
-import { Box, Button, Flex, Heading, Input, Stack } from "@chakra-ui/react";
+"use client";
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  Heading,
+  VStack,
+  FormControl,
+  FormLabel,
+  Input,
+  Stack,
+  FormErrorMessage,
+  useRadioGroup,
+} from "@chakra-ui/react";
+import RadioCard from "@/components/RadioCard";
+import JobConfirmationModal from "@/components/JobConfirmationModal";
+import { useRouter } from "next/navigation";
 
-const JobFormPage: React.FC = () => {
+export default function JobFormPage() {
+  const [formData, setFormData] = useState({
+    organizationName: "",
+    organizationIndustry: "",
+    title: "",
+    postDate: new Date().toISOString(),
+    expireDate: "",
+    jobDescription: "",
+    employmentType: "Full-Time",
+    compensationType: "paid",
+    jobStatus: "pending",
+    contactName: "",
+    contactPhone: "",
+    contactEmail: "",
+    detailURL: "",
+    applyNowURL: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [selectEmployment, setSelectEmployment] = useState("");
+  const [selectCompensation, setSelectCompensation] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
+
+  const employmentColorMapping = {
+    Volunteer: "#C6D3FF",
+    "Full-Time": "#F8B1B8",
+    "Part-Time": "#FFE297",
+  };
+
+  const compensationColorMapping = {
+    Paid: "#DEF8EE",
+    Unpaid: "#DFDFFD",
+  };
+
+  // formats phone number input to filter non-numbers an add -
+  const formatPhoneNumber = (value: string): string => {
+    const cleaned = value.replace(/\D/g, "");
+    const match = cleaned.match(/^(\d{3})(\d{0,3})(\d{0,4})$/);
+    if (!match) return value;
+    return [match[1], match[2], match[3]].filter(Boolean).join("-");
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "contactPhone" ? formatPhoneNumber(value) : value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    //set expire date to null
+    const formattedFormData = {
+      ...formData,
+      expireDate: formData.expireDate ? formData.expireDate : null,
+    };
+
+    console.log("Submitting Job Data:", formattedFormData);
+
+    try {
+      const response = await fetch("/api/jobs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formattedFormData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit job.");
+      }
+
+      setFormData({
+        organizationName: "",
+        organizationIndustry: "",
+        title: "",
+        postDate: new Date().toISOString(),
+        expireDate: "",
+        jobDescription: "",
+        employmentType: "",
+        compensationType: "paid",
+        jobStatus: "pending",
+        contactName: "",
+        contactPhone: "",
+        contactEmail: "",
+        detailURL: "",
+        applyNowURL: "",
+      });
+
+      setMessage("Job posted successfully!");
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Error submitting job:", error);
+      setMessage("Error submitting job.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //For custom radio selection buttons, job type field
+  const typeOptions = ["Full-Time", "Part-Time", "Volunteer"];
+  const { getRootProps: getJobRootProps, getRadioProps: getJobRadioProps } = useRadioGroup({
+    name: "employmentType",
+    value: selectEmployment,
+    onChange: (value) => {
+      setFormData((prev) => ({ ...prev, employmentType: value.toLowerCase() }));
+      setSelectEmployment(value);
+    },
+  });
+
+  //For custom radio selection buttons, compensation type field
+  const compensationOptions = ["Paid", "Unpaid"];
+  const { getRootProps: getCompensationRootProps, getRadioProps: getCompensationRadioProps } = useRadioGroup({
+    name: "compensationType",
+    value: selectCompensation,
+    onChange: (value) => {
+      setFormData((prev) => ({ ...prev, compensationType: value.toLowerCase() }));
+      setSelectCompensation(value);
+    },
+  });
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    router.push("/");
+  };
+
   return (
-    <Box p={5}>
-      <Heading as="h1" size="xl" mb={4}>
-        <strong>Create new listing</strong>
-      </Heading>
-      <Heading as="h2" size="lg" mb={6}>
+    <Box mx="auto" p={10} minWidth={{ base: "320px", md: "768px", lg: "1024px" }} maxWidth="1200px">
+      <div className="mt-[8px] mb-[10px] text-black text-3xl font-semibold">Create New Listing</div>
+      <Heading as="h2" size="md" mb={5}>
         Job Information
       </Heading>
-      <Heading as="h2" size="md" mb={2}>
-        Organization name
-      </Heading>
-      <Input placeholder="Enter your response" mb={6} />
-      <Heading as="h2" size="md" mb={2}>
-        Organization Industry
-      </Heading>
-      <Input placeholder="Enter your response" mb={6} />
-      <Heading as="h2" size="md" mb={2}>
-        Job title
-      </Heading>
-      <Input placeholder="Enter your response" mb={6} />
-      <Heading as="h2" size="md" mb={2}>
-        Select all that apply
-      </Heading>
-      <Stack spacing={2} direction="row" mb={4}>
-        <Button bg="green.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Paid
-        </Button>
-        <Button bg="red.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Not Paid
-        </Button>
-        <Button bg="blue.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Volunteer
-        </Button>
-        <Button bg="red.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Part-time
-        </Button>
-        <Button bg="yellow.200" color="black" p={2} borderWidth="1px" borderRadius="md">
-          Full-time
-        </Button>
-      </Stack>
-      <Flex mb={6}>
-        <Box flex="1" mr={2}>
-          <Heading as="h2" size="md" mb={6}>
-            Posting Date
+      <form onSubmit={handleSubmit} method="POST">
+        <VStack spacing={4}>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Organization Name</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter your response"
+              bg="#F6F6F6"
+              border="0"
+              name="organizationName"
+              value={formData.organizationName}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Organization Industry</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter your response"
+              bg="#F6F6F6"
+              border="0"
+              name="organizationIndustry"
+              value={formData.organizationIndustry}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Job Title</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter your response"
+              bg="#F6F6F6"
+              border="0"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Job Compensation Type</FormLabel>
+            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getCompensationRootProps()}>
+              {compensationOptions.map((value) => {
+                const radio = getCompensationRadioProps({ value });
+                return (
+                  <RadioCard
+                    key={value}
+                    value={value}
+                    {...radio}
+                    isChecked={selectCompensation === value}
+                    checkedColor={compensationColorMapping[value as keyof typeof compensationColorMapping]}
+                  >
+                    {value}
+                  </RadioCard>
+                );
+              })}
+            </Stack>
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Please select one below for your listing:</FormLabel>
+            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getJobRootProps()}>
+              {typeOptions.map((value) => {
+                const radio = getJobRadioProps({ value });
+                return (
+                  <RadioCard
+                    key={value}
+                    value={value}
+                    {...radio}
+                    isChecked={selectEmployment === value}
+                    checkedColor={employmentColorMapping[value as keyof typeof employmentColorMapping]}
+                  >
+                    {value}
+                  </RadioCard>
+                );
+              })}
+            </Stack>
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Job Description</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter your response"
+              bg="#F6F6F6"
+              border="0"
+              name="jobDescription"
+              value={formData.jobDescription}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Link to Job Listing</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter your response"
+              bg="#F6F6F6"
+              border="0"
+              name="detailURL"
+              value={formData.detailURL}
+              onChange={handleChange}
+            />
+            <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
+          </FormControl>
+          <Heading as="h2" size="md" textAlign="left" w="100%">
+            Person of Contact - Information
           </Heading>
-          <Input placeholder="xx/xx/xxxx" />
-        </Box>
-        <Box flex="1" ml={2}>
-          <Heading as="h2" size="md" mb={6}>
-            Expiration Date
-          </Heading>
-          <Input placeholder="xx/xx/xxxx" />
-        </Box>
-      </Flex>
-      <Heading as="h2" size="md" mb={2}>
-        Job Description
-      </Heading>
-      <Input placeholder="Enter your response" mb={6} />
-      <Heading as="h2" size="md" mb={2}>
-        Link to job listing
-      </Heading>
-      <Input placeholder="xxxx.com" mb={6} />
-      <Heading as="h2" size="md" mb={6}>
-        Personal Information
-      </Heading>
-      <Flex mb={4}>
-        <Box flex="1" mr={2}>
-          <Heading as="h2" size="md" mb={2}>
-            Name
-          </Heading>
-          <Input placeholder="First and Last Name" mb={6} />
-        </Box>
-        <Box flex="1" ml={2}>
-          <Heading as="h2" size="md" mb={2}>
-            Phone Number
-          </Heading>
-          <Input placeholder="Phone Number" />
-        </Box>
-      </Flex>
-      <Heading as="h2" size="md" mb={2}>
-        Email
-      </Heading>
-      <Input placeholder="xxxxx@example.com" mb={4} />
-      <Flex justify="center" mt={4}>
-        <Button colorScheme="blackAlpha" size="lg">
-          Submit
-        </Button>
-      </Flex>
+          <Stack w="full" direction={{ base: "column", md: "row" }} spacing={{ base: 6, md: 40 }}>
+            <FormControl isRequired>
+              <FormLabel requiredIndicator>Name</FormLabel>
+              <Input
+                type="text"
+                placeholder="First and Last Name"
+                bg="#F6F6F6"
+                border="0"
+                name="contactName"
+                value={formData.contactName}
+                onChange={handleChange}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Phone Number</FormLabel>
+              <Input
+                type="tel"
+                bg="#F6F6F6"
+                placeholder="xxx-xxx-xxxx"
+                border="0"
+                name="contactPhone"
+                value={formData.contactPhone}
+                onChange={handleChange}
+                maxLength={12}
+              />
+              <FormErrorMessage>Please enter a valid phone number.</FormErrorMessage>
+            </FormControl>
+          </Stack>
+          <FormControl isRequired>
+            <FormLabel requiredIndicator>Email</FormLabel>
+            <Input
+              type="email"
+              placeholder="xxxxx@example.com"
+              bg="#F6F6F6"
+              border="0"
+              name="contactEmail"
+              value={formData.contactEmail}
+              onChange={handleChange}
+            />
+            <FormErrorMessage>Please enter a valid email address.</FormErrorMessage>
+          </FormControl>
+          <Button
+            isLoading={loading}
+            loadingText="Submitting..."
+            mt={10}
+            type="submit"
+            size="lg"
+            colorScheme="blackAlpha"
+            bg="black"
+            _hover={{ bg: "#5E5E5E" }}
+            onClick={() => {
+              setSelectCompensation("");
+              setSelectEmployment("");
+            }}
+          >
+            Submit
+          </Button>
+          {message && <p>{message}</p>}
+        </VStack>
+      </form>
+      <JobConfirmationModal isOpen={isModalOpen} onClose={closeModal} />
     </Box>
   );
-};
-
-export default JobFormPage;
+}

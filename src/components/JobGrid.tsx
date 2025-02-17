@@ -8,9 +8,12 @@ interface JobGridProps {
   innerRef?: (node?: Element | null | undefined) => void;
 }
 
-export default function JobGrid({ jobs, isAdmin = false, innerRef }: JobGridProps) {
+
+export default function JobGrid({ jobs, isAdmin = false, onJobView, onUpdateJob, innerRef }: JobGridProps) {
+  onJobView?: (job: IJob) => void;
+  onUpdateJob?: (jobId: string, status: "approved" | "rejected", approvedDate?: Date) => void;
+
   const CardComponent = isAdmin ? AdminCard : JobCard;
-  console.log(jobs);
 
   return (
     <>
@@ -18,8 +21,9 @@ export default function JobGrid({ jobs, isAdmin = false, innerRef }: JobGridProp
         <NoJobsFound isAdmin={isAdmin} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
-          {Array.from(jobs).map((job, index) => (
-            <CardComponent key={job._id} job={job} innerRef={index === jobs.length - 1 ? innerRef : undefined} />
+
+          {Array.from(jobs).map((job) => (
+            <CardComponent key={job._id} job={job} onUpdateJob={onUpdateJob} onJobView={onJobView} innerRef={index === jobs.length - 1 ? innerRef : undefined}/>
           ))}
         </div>
       )}
