@@ -47,12 +47,14 @@ export default function Jobs() {
   const [filters, setFilters] = useState<FilterState>({
     employment: [],
     compensation: [],
+    industry: [],
   });
 
   // Define filter categories
   const filterCategories: FilterCategories = {
     employment: ["Full-time", "Part-time", "Volunteer"],
     compensation: ["Paid", "Non-paid"],
+    industry: ["Technology", "Healthcare", "Agriculture", "Education", "Retail"],
   };
 
   // Handler to fetch recent jobs by IDs
@@ -109,7 +111,8 @@ export default function Jobs() {
     Array.from(jobData)?.filter(
       (job) =>
         (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
-        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
+        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)) &&
+        (filters.industry.length === 0 || filters.industry.includes(job.organizationIndustry)),
     );
 
   const filteredRecentJobs =
@@ -117,18 +120,19 @@ export default function Jobs() {
     Array.from(recentJobs)?.filter(
       (job) =>
         (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
-        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
+        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)) &&
+        (filters.industry.length === 0 || filters.industry.includes(job.organizationIndustry)),
     );
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="flex flex-col w-full">
       <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col lg:flex-row gap-16 lg:gap-8 grow">
         <div className="flex flex-col gap-4 lg:gap-6">
           <div className="text-black font-semibold text-3xl select-none lg:sticky lg:top-[110px]">Filters</div>
           <FilterCard categories={filterCategories} onFilterChange={handleFilterChange}></FilterCard>
         </div>
-        <div className="w-full flex flex-col gap-4 lg:gap-6">
-          <div className="flex justify-between items-center">
+        <div className="flex flex-col w-full gap-4 lg:gap-6">
+          <div className="flex items-center justify-between">
             <div className="flex gap-8">
               <div
                 className={twMerge(
@@ -164,7 +168,7 @@ export default function Jobs() {
                 <Loader
                   size="xl"
                   label="Loading Jobs..."
-                  className="grow flex flex-col gap-6 justify-center items-center lg:-mt-28 mt-28"
+                  className="flex flex-col items-center justify-center gap-6 grow lg:-mt-28 mt-28"
                 />
               )}
             </>
@@ -176,7 +180,7 @@ export default function Jobs() {
                 <Loader
                   size="xl"
                   label="Loading Jobs..."
-                  className="grow flex flex-col gap-6 justify-center items-center lg:-mt-28 mt-28"
+                  className="flex flex-col items-center justify-center gap-6 grow lg:-mt-28 mt-28"
                 />
               )}
             </>

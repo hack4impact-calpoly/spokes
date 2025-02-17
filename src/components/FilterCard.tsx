@@ -26,10 +26,11 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
 
     const industries = ["Technology", "Healthcare", "Agriculture", "Education", "Retail"];
 
-    const toggleIndustry = (industry: string) => {
+    const handleIndustryChange = (industry: string) => {
       setSelectedIndustries((prev) =>
         prev.includes(industry) ? prev.filter((i) => i !== industry) : [...prev, industry],
       );
+      onFilterChange("industry", industry);
     };
 
     return (
@@ -115,7 +116,7 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
                     key={industry}
                     label={industry}
                     checked={selectedIndustries.includes(industry)}
-                    changeHandler={() => toggleIndustry(industry)}
+                    changeHandler={() => handleIndustryChange(industry)}
                   />
                 ))}
               </div>
