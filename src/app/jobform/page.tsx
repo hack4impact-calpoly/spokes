@@ -43,12 +43,13 @@ export default function JobFormPage() {
   const employmentColorMapping = {
     "Full-Time": "#F8B1B8",
     "Part-Time": "#FFE297",
+    Volunteer: "#C6D3FF",
   };
 
   const compensationColorMapping = {
-    Volunteer: "#C6D3FF",
     Salary: "#DEF8EE",
     Hourly: "#DFDFFD",
+    Contract: "#BDEABD",
   };
 
   // formats phone number input to filter non-numbers an add -
@@ -78,8 +79,6 @@ export default function JobFormPage() {
       ...formData,
       expireDate: formData.expireDate ? formData.expireDate : null,
     };
-
-    console.log("Submitting Job Data:", formattedFormData);
 
     try {
       const response = await fetch("/api/jobs", {
@@ -120,7 +119,7 @@ export default function JobFormPage() {
   };
 
   //For custom radio selection buttons, job type field
-  const typeOptions = ["Full-Time", "Part-Time"];
+  const typeOptions = ["Full-Time", "Part-Time", "Volunteer"];
   const { getRootProps: getJobRootProps, getRadioProps: getJobRadioProps } = useRadioGroup({
     name: "employmentType",
     value: selectEmployment,
@@ -131,7 +130,7 @@ export default function JobFormPage() {
   });
 
   //For custom radio selection buttons, compensation type field
-  const compensationOptions = ["Salary", "Hourly", "Volunteer"];
+  const compensationOptions = ["Salary", "Hourly", "Contract"];
   const { getRootProps: getCompensationRootProps, getRadioProps: getCompensationRadioProps } = useRadioGroup({
     name: "compensationType",
     value: selectCompensation,

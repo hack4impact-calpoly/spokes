@@ -4,13 +4,14 @@ import mongoose, { models, model, Schema } from "mongoose";
 export enum EmploymentType {
   partTime = "part-time",
   fullTime = "full-time",
+  volunteer = "volunteer",
 }
 
 // The compensation type for the job
 export enum CompensationType {
   salary = "salary",
   hourly = "hourly",
-  volunteer = "volunteer",
+  contract = "contract",
 }
 
 // The status of the job
