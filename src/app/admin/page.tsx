@@ -9,6 +9,11 @@ import { Flex } from "@chakra-ui/react";
 
 // Helper function to filter the job data into the three categories
 function filterJobs(jobs: IJob[], filterBy: "pending" | "approved" | "rejected") {
+  if (!Array.isArray(jobs)) {
+    console.error("filterJobs error: jobs is not an array", jobs);
+    return [];
+  }
+
   return jobs.filter((job) => job.jobStatus === filterBy);
 }
 
@@ -21,6 +26,7 @@ export default function AdminJobs() {
     const fetchData = async () => {
       const response = await fetch("/api/jobs");
       const result = await response.json();
+
       setIncomingJobData(filterJobs(result, "pending"));
       setLiveJobData(filterJobs(result, "approved"));
       setCompleteJobData(filterJobs(result, "rejected"));
