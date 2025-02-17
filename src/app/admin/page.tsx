@@ -30,7 +30,6 @@ export default function AdminJobs() {
   const [completeJobData, setCompleteJobData] = useState<null | IJob[]>(null);
   const [expiredJobData, setExpiredJobData] = useState<null | IJob[]>(null);
 
-
   const setExpiredJobs = async (jobs: IJob[]) => {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);

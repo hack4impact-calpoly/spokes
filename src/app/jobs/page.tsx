@@ -214,7 +214,6 @@ export default function Jobs() {
                   <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} />
                   {isFetchingNextPage && <Loader size="xl" label="Loading more jobs..." />}
                 </>
-
               ) : (
                 <Loader
                   size="xl"
