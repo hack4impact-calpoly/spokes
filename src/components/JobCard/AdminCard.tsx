@@ -8,13 +8,10 @@ import JobPostedDate from "@/components/JobCard/JobPostedDate";
 interface JobCardProps {
   job: IJob;
   innerRef?: (node?: Element | null | undefined) => void;
+  onUpdateJob?: (jobId: string, status: "approved" | "rejected", approvedDate?: Date) => void;
 }
 
-
-onUpdateJob?: (jobId: string, status: "approved" | "rejected", approvedDate?: Date) => void;
-
 export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) {
-
   const isExpired =
     job.jobStatus != "approved" &&
     job.postDate &&

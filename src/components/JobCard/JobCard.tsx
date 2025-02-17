@@ -8,11 +8,10 @@ import { useState, useEffect } from "react";
 interface JobCardProps {
   job: IJob;
   innerRef?: (node?: Element | null | undefined) => void;
+  onJobView?: (job: IJob) => void;
 }
 
 export default function JobCard({ job, onJobView, innerRef }: JobCardProps) {
-  onJobView?: (job: IJob) => void;
-  
   const [recentJobs, setRecentJobs] = useState<string[]>(() => {
     const storedJobs = localStorage.getItem("myJobs");
     return storedJobs ? JSON.parse(storedJobs) : [];
