@@ -8,6 +8,7 @@ import { Loader } from "@/components/Loader";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 // Interfaces to make TS happy
 interface FilterCategories {
@@ -20,8 +21,10 @@ interface FilterState {
 
 const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filters: FilterState }) => {
   console.log("fetching: ", pageParam);
-  const url = new URL("http://localhost:3000/api/jobs");
 
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || (typeof window !== "undefined" ? window.location.origin : "");
+
+  const url = new URL(`${baseUrl}/api/jobs`);
   // Add pagination parameters
   url.searchParams.append("page", pageParam.toString());
   url.searchParams.append("limit", "12");
@@ -177,7 +180,6 @@ export default function Jobs() {
             </div>
           </div>
           {/* Conditional rendering for jobData with loader as fallback */}
-
           {tab == 1 ? (
             <>
               {fetchedJobs ? (
