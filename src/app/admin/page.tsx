@@ -24,7 +24,7 @@ export default function AdminJobs() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("/api/jobs");
+      const response = await fetch("/api/jobs"); // might not be fetching enough jobs because of pagination
       const result = await response.json();
 
       setIncomingJobData(filterJobs(result, "pending"));
