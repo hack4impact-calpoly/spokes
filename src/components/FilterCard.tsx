@@ -21,12 +21,24 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
     const [hourlyChecked, setHourlyChecked] = useState(false);
     const [contractChecked, setContractChecked] = useState(false);
 
+    const [industryOpen, setIndustryOpen] = useState(false);
+    const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
+
+    const industries = ["Technology", "Healthcare", "Agriculture", "Education", "Retail"];
+
+    const toggleIndustry = (industry: string) => {
+      setSelectedIndustries((prev) =>
+        prev.includes(industry) ? prev.filter((i) => i !== industry) : [...prev, industry],
+      );
+    };
+
     return (
       <div className="sticky top-[155px]">
         <div
           ref={ref}
           className={twMerge(
-            "bg-[#F7F7F7] px-8 py-6 rounded flex flex-col gap-2 min-[430px]:flex-row min-[430px]:gap-16 lg:flex-col lg:gap-4",
+            "bg-[#F7F7F7] px-6 py-5 rounded flex flex-col gap-4",
+            "md:flex-row md:gap-8 lg:flex-col lg:gap-4",
             className,
           )}
           {...props}
@@ -60,7 +72,7 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
               ></Checkbox>
             </div>
           </div>
-          <div className="lg:mb-8">
+          <div>
             <div className="mb-1 text-lg font-semibold text-black select-none">Compensation</div>
             <div className="flex flex-col gap-[2px]">
               <Checkbox
@@ -88,6 +100,26 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
                 }}
               ></Checkbox>
             </div>
+          </div>
+          <div className="lg:mb-6">
+            <div
+              className="mb-1 text-lg font-semibold text-black select-none whitespace-nowrap hover:underline"
+              onClick={() => setIndustryOpen(!industryOpen)}
+            >
+              Industry
+            </div>
+            {industryOpen && (
+              <div className="flex flex-col gap-[2px]">
+                {industries.map((industry) => (
+                  <Checkbox
+                    key={industry}
+                    label={industry}
+                    checked={selectedIndustries.includes(industry)}
+                    changeHandler={() => toggleIndustry(industry)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
