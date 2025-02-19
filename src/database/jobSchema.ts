@@ -22,15 +22,6 @@ export enum JobStatus {
   expired = "expired",
 }
 
-// The options for job industry
-export enum IndustryType {
-  technology = "technology",
-  healthcare = "healthcare",
-  agriculture = "agriculture",
-  education = "education",
-  retail = "retail",
-}
-
 // Interface for job object
 export interface IJob {
   _id: string;
@@ -53,7 +44,7 @@ export interface IJob {
 // Schema for the job object
 const JobSchema = new Schema({
   organizationName: { type: String, required: true },
-  organizationIndustry: { type: String, enum: Object.values(IndustryType), required: true },
+  organizationIndustry: { type: String, required: true },
   title: { type: String, required: true },
   postDate: { type: Date, required: true },
   approvedDate: { type: Date, required: false },
