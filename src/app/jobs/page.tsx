@@ -96,8 +96,8 @@ export default function Jobs() {
 
   // Define filter categories
   const filterCategories: FilterCategories = {
-    employment: ["Full-time", "Part-time", "Volunteer"],
-    compensation: ["Paid", "Non-paid"],
+    employment: ["Full-time", "Part-time"],
+    compensation: ["Paid", "Volunteer"],
   };
 
   // Handler to fetch recent jobs by IDs
