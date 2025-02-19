@@ -1,6 +1,8 @@
 import { twMerge } from "tailwind-merge";
 import { ComponentProps, forwardRef, useState } from "react";
 import { Checkbox } from "./Checkbox";
+import { FiChevronDown } from "react-icons/fi";
+import { FiChevronUp } from "react-icons/fi";
 
 interface FilterCategories {
   [key: string]: string[];
@@ -115,10 +117,11 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
           </div>
           <div className="lg:mb-6">
             <div
-              className="mb-1 text-lg font-semibold text-black select-none whitespace-nowrap hover:underline"
+              className="flex gap-1 items-center mb-1 text-lg font-semibold text-black select-none whitespace-nowrap hover:underline"
               onClick={() => setIndustryOpen(!industryOpen)}
             >
               Industry
+              {industryOpen ? <FiChevronUp /> : <FiChevronDown />}
             </div>
             {industryOpen && (
               <div className="flex flex-col gap-[2px]">
