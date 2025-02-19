@@ -61,7 +61,16 @@ export async function GET(req: Request) {
 
     // Fetch jobs with filters, sorting, and pagination
     const jobs = await Job.find(filter).sort({ postDate: -1 }).skip(skip).limit(limit);
-    return NextResponse.json(jobs, { status: 200 });
+    // return NextResponse.json(jobs, { status: 200 });
+
+    return new NextResponse(JSON.stringify(jobs), {
+      status: 200,
+      headers: {
+        // cache settings: keep response fresh for 60s, then serve stale data for up to 30s while revalidating in the background
+        "Cache-Control": "max-age=60, stale-while-revalidate=30",
+        "Content-Type": "application/json",
+      },
+    });
   } catch (error) {
     return NextResponse.json(error, { status: 500 });
   }
