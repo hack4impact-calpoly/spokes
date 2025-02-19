@@ -24,7 +24,18 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
     const [industryOpen, setIndustryOpen] = useState(false);
     const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
 
-    const industries = ["Technology", "Healthcare", "Agriculture", "Education", "Retail"];
+    const industries = [
+      "Arts",
+      "Civil Rights",
+      "Community Development",
+      "Education",
+      "Environment",
+      "Faith",
+      "Health",
+      "Humanitarian Aid",
+      "Social Services",
+      "Youth",
+    ];
 
     const handleIndustryChange = (industry: string) => {
       setSelectedIndustries((prev) =>
@@ -38,7 +49,7 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
         <div
           ref={ref}
           className={twMerge(
-            "bg-[#F7F7F7] px-6 py-5 rounded flex flex-col gap-4",
+            "bg-[#F7F7F7] px-6 py-5 rounded flex flex-col gap-4 min-w-[270px]",
             "md:flex-row md:gap-8 lg:flex-col lg:gap-4",
             className,
           )}
