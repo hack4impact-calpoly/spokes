@@ -115,7 +115,7 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
               ></Checkbox>
             </div>
           </div>
-          <div className="lg:mb-6">
+          <div>
             <div
               className="flex gap-1 items-center mb-1 text-lg font-semibold text-black select-none whitespace-nowrap hover:underline"
               onClick={() => setIndustryOpen(!industryOpen)}
