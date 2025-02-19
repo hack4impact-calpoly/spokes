@@ -54,7 +54,7 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 
 - **CRUD Endpoints (GET / POST / PUT)**
   - **GET:**  
-    Fetches all jobs sorted by `postDate` (newest first).
+    Fetches all jobs sorted by `postDate` (newest first)
   - **POST (Create Job):**  
     Creates a new job entry in the database.
   - **PUT (Update Job):**  
@@ -62,6 +62,7 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
   - **Dev Note:**
     - Validate payloads rigorously and consider pagination for GET requests when the dataset grows.
     - Caching currently exists in GET. current setting: keep response fresh for 60s, then serve stale data for up to 30s while revalidating in the background
+    - GET route is paginated to allow for infinite scrolling on Job Board page
 
 ### UI Components
 
