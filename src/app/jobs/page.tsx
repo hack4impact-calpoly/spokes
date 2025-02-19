@@ -18,7 +18,6 @@ import {
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 // Interfaces to make TS happy
 interface FilterCategories {
@@ -46,6 +45,10 @@ const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filte
   if (filters.compensation.length > 0) {
     filters.compensation.forEach((filter) => url.searchParams.append("compensationType", filter));
   }
+  if (filters.industry.length > 0) {
+    filters.industry.forEach((filter) => url.searchParams.append("organizationIndustry", filter));
+  }
+
   console.log(url.toString());
   const response = await fetch(url.toString());
   const data = await response.json();
@@ -70,10 +73,25 @@ export default function Jobs() {
     fetchData();
   }, []);
 
+  // Maps shorter filter name to longer job industry name
+  const industryValueMapping = {
+    Arts: "Arts & Culture",
+    Education: "Education & Research",
+    Health: "Health & Human Services",
+    "Social Services": "Human & Social Services",
+    "Community Development": "Community & Economic Development",
+    Environment: "Environment & Animals",
+    Youth: "Youth Development & Recreation",
+    Faith: "Faith-Based & Spiritual Organizations",
+    "Civil Rights": "Civil Rights & Advocacy",
+    "Humanitarian Aid": "International Development & Humanitarian Aid",
+  };
+
   // State to manage filters
   const [filters, setFilters] = useState<FilterState>({
     employment: [],
     compensation: [],
+    industry: [],
   });
 
   // Define filter categories
@@ -103,9 +121,12 @@ export default function Jobs() {
   const handleFilterChange = (category: string, value: string) => {
     setFilters((prev) => {
       const currentFilters = prev[category];
-      const newFilters = currentFilters.includes(value)
-        ? currentFilters.filter((item) => item !== value)
-        : [...currentFilters, value];
+      const mappedValue =
+        category === "industry" ? industryValueMapping[value as keyof typeof industryValueMapping] : value;
+
+      const newFilters = currentFilters.includes(mappedValue)
+        ? currentFilters.filter((item) => item !== mappedValue)
+        : [...currentFilters, mappedValue];
 
       return { ...prev, [category]: newFilters };
     });
@@ -136,7 +157,8 @@ export default function Jobs() {
     Array.from(jobData)?.filter(
       (job) =>
         (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
-        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
+        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)) &&
+        (filters.industry.length === 0 || filters.industry.includes(job.organizationIndustry)),
     );
 
   const filteredRecentJobs =
@@ -144,7 +166,8 @@ export default function Jobs() {
     Array.from(recentJobs)?.filter(
       (job) =>
         (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
-        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
+        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)) &&
+        (filters.industry.length === 0 || filters.industry.includes(job.organizationIndustry)),
     );
 
   const {
@@ -178,8 +201,8 @@ export default function Jobs() {
           <div className="text-black font-semibold text-3xl select-none lg:sticky lg:top-[110px]">Filters</div>
           <FilterCard categories={filterCategories} onFilterChange={handleFilterChange}></FilterCard>
         </div>
-        <div className="w-full flex flex-col gap-4 lg:gap-6">
-          <div className="flex justify-between items-center">
+        <div className="flex flex-col w-full gap-4 lg:gap-6">
+          <div className="flex items-center justify-between">
             <div className="flex gap-8">
               <div
                 className={twMerge(
@@ -218,7 +241,7 @@ export default function Jobs() {
                 <Loader
                   size="xl"
                   label="Loading Jobs..."
-                  className="grow flex flex-col gap-6 justify-center items-center lg:-mt-28 mt-28"
+                  className="flex flex-col items-center justify-center gap-6 grow lg:-mt-28 mt-28"
                 />
               )}
             </>
@@ -230,7 +253,7 @@ export default function Jobs() {
                 <Loader
                   size="xl"
                   label="Loading Jobs..."
-                  className="grow flex flex-col gap-6 justify-center items-center lg:-mt-28 mt-28"
+                  className="flex flex-col items-center justify-center gap-6 grow lg:-mt-28 mt-28"
                 />
               )}
             </>

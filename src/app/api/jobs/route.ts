@@ -36,48 +36,41 @@ export async function GET(req: Request) {
     // Filter parameters
     const employmentFilters = searchParams.getAll("employmentType");
     const compensationFilters = searchParams.getAll("compensationType");
-
-    // Normalize filter values to match document values
-    const normalizeEmployment = (value: string) => {
-      switch (value.toLowerCase()) {
-        case "Full-time":
-          return "full-Time";
-        case "Part-time":
-          return "part-time";
-        default:
-          return value;
-      }
-    };
-
-    const normalizeCompensation = (value: string) => {
-      switch (value.toLowerCase()) {
-        case "Paid":
-          return "paid";
-        case "Volunteer":
-          return "volunteer";
-        default:
-          return value;
-      }
-    };
+    const industryFilters = searchParams.getAll("organizationIndustry");
 
     // Build the filter object dynamically
     const filter: any = {};
 
     if (employmentFilters.length > 0) {
       filter.employmentType = {
-        $in: employmentFilters.map(normalizeEmployment),
+        $in: employmentFilters,
       };
     }
 
     if (compensationFilters.length > 0) {
       filter.compensationType = {
-        $in: compensationFilters.map(normalizeCompensation),
+        $in: compensationFilters,
+      };
+    }
+
+    if (industryFilters.length > 0) {
+      filter.organizationIndustry = {
+        $in: industryFilters,
       };
     }
 
     // Fetch jobs with filters, sorting, and pagination
     const jobs = await Job.find(filter).sort({ postDate: -1 }).skip(skip).limit(limit);
-    return NextResponse.json(jobs, { status: 200 });
+    // return NextResponse.json(jobs, { status: 200 });
+
+    return new NextResponse(JSON.stringify(jobs), {
+      status: 200,
+      headers: {
+        // cache settings: keep response fresh for 60s, then serve stale data for up to 30s while revalidating in the background
+        "Cache-Control": "max-age=60, stale-while-revalidate=30",
+        "Content-Type": "application/json",
+      },
+    });
   } catch (error) {
     return NextResponse.json(error, { status: 500 });
   }

@@ -99,7 +99,7 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 
 - **FilterCard:**
   - **What it does:**  
-    Provides checkboxes to filter jobs by employment type (e.g., Full-time, Part-time) and compensation (e.g., Paid, Volunteer).  
+    Provides checkboxes to filter jobs by employment type (e.g., Full-time, Part-time), compensation (e.g., Paid, Volunteer), and industry (e.g., Arts, Education).  
     Uses internal state to manage selections and passes changes via an `onFilterChange` callback.
   - **Dev Note:**  
     Consolidate duplicate implementations to avoid confusion.
