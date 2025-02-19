@@ -16,6 +16,10 @@ import {
   ModalFooter,
 } from "@chakra-ui/react";
 
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInView } from "react-intersection-observer";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
 // Interfaces to make TS happy
 interface FilterCategories {
   [key: string]: string[];
@@ -24,6 +28,29 @@ interface FilterCategories {
 interface FilterState {
   [key: string]: string[];
 }
+
+const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filters: FilterState }) => {
+  console.log("fetching: ", pageParam);
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || (typeof window !== "undefined" ? window.location.origin : "");
+
+  const url = new URL(`${baseUrl}/api/jobs`);
+  // Add pagination parameters
+  url.searchParams.append("page", pageParam.toString());
+  url.searchParams.append("limit", "12");
+
+  // Add filter parameters
+  if (filters.employment.length > 0) {
+    filters.employment.forEach((filter) => url.searchParams.append("employmentType", filter));
+  }
+  if (filters.compensation.length > 0) {
+    filters.compensation.forEach((filter) => url.searchParams.append("compensationType", filter));
+  }
+  console.log(url.toString());
+  const response = await fetch(url.toString());
+  const data = await response.json();
+  return data;
+};
 
 export default function Jobs() {
   const [tab, setTab] = useState(1);
@@ -51,8 +78,8 @@ export default function Jobs() {
 
   // Define filter categories
   const filterCategories: FilterCategories = {
-    employment: ["Full-time", "Part-time", "Volunteer"],
-    compensation: ["Paid", "Non-paid"],
+    employment: ["Full-time", "Part-time"],
+    compensation: ["Paid", "Volunteer"],
   };
 
   // Handler to fetch recent jobs by IDs
@@ -120,8 +147,32 @@ export default function Jobs() {
         (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
     );
 
+  const {
+    data: fetchedJobs,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
+    queryKey: ["jobs", filters],
+    queryFn: ({ pageParam = 1 }) => fetchJobs({ pageParam, filters }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === 12 ? allPages.length + 1 : undefined;
+    },
+  });
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, fetchNextPage]);
+
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col pb-10">
       <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col lg:flex-row gap-16 lg:gap-8 grow">
         <div className="flex flex-col gap-4 lg:gap-6">
           <div className="text-black font-semibold text-3xl select-none lg:sticky lg:top-[110px]">Filters</div>
@@ -158,8 +209,11 @@ export default function Jobs() {
 
           {tab == 1 ? (
             <>
-              {filteredJobs ? (
-                <JobGrid jobs={filteredJobs} onJobView={handleJobView} />
+              {fetchedJobs ? (
+                <>
+                  <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} />
+                  {isFetchingNextPage && <Loader size="xl" label="Loading more jobs..." />}
+                </>
               ) : (
                 <Loader
                   size="xl"
