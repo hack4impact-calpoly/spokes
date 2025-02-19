@@ -47,9 +47,9 @@ export default function JobFormPage() {
   };
 
   const compensationColorMapping = {
-    Salary: "#DEF8EE",
-    Hourly: "#DFDFFD",
-    Contract: "#BDEABD",
+    Salary: "#BDEABD",
+    Hourly: "#87CEFA",
+    Contract: "#FAC791",
   };
 
   // formats phone number input to filter non-numbers an add -
