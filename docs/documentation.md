@@ -8,6 +8,7 @@ This guide outlines the core features and components of the Automated Job Board.
 
 - [Job Board](#job-board)
   - [API Endpoints](#api-endpoints)
+  - [Recently Viewed Jobs](#recently-viewed-jobs)
   - [UI Components](#ui-components)
     - [Job Cards](#job-cards)
     - [Recently Viewed](#recently-viewed)
@@ -54,7 +55,7 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 
 - **CRUD Endpoints (GET / POST / PUT)**
   - **GET:**  
-    Fetches all jobs sorted by `postDate` (newest first).
+    Fetches all jobs sorted by `postDate` (newest first)
   - **POST (Create Job):**  
     Creates a new job entry in the database.
   - **PUT (Update Job):**  
@@ -62,6 +63,15 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
   - **Dev Note:**
     - Validate payloads rigorously and consider pagination for GET requests when the dataset grows.
     - Caching currently exists in GET. current setting: keep response fresh for 60s, then serve stale data for up to 30s while revalidating in the background
+    - GET route is paginated to allow for infinite scrolling on Job Board page
+
+### Recently Viewed Jobs
+
+- **What it does:**
+  - Fetches jobs from `/jobs/recent` using local storage data when tab is switched to 'Recently Viewed'.
+  - When any button on the job card is clicked, jobs are inserted locally into the recently viewed jobs array and that Job ID is stored in local storage.
+- **Dev Note:**  
+  This section of the job board is believed to be finished and optimized. Recently viewed jobs are only fetched onced and then updated locally.
 
 ### UI Components
 

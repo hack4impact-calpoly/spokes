@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "./ui/providers";
 import { Inter } from "next/font/google";
 import NavBar from "@/components/NavBar/NavBar";
+import ReactQueryProvider from "@/components/ReactQueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,10 +27,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <html lang="en">
         <body className={inter.className}>
-          <Providers>
-            <NavBar />
-            {children}
-          </Providers>
+          <ReactQueryProvider>
+            <Providers>
+              <NavBar />
+              {children}
+            </Providers>
+          </ReactQueryProvider>
         </body>
       </html>
     </ClerkProvider>

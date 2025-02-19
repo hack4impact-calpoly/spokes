@@ -21,20 +21,63 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function GET() {
+// no filters: GET /api/jobs?page=1&limit=10
+// filter by employment type: GET /api/jobs?employmentType=full-time&employment=part-time
+// combine filters w/ pagination: GET /api/jobs?employmentType=full-time&compensationType=paid&page=2&limit=10
+export async function GET(req: Request) {
   try {
     await connectDB();
 
-    const jobs = await Job.find().sort({ postDate: -1 });
+    const { searchParams } = new URL(req.url);
+    const page = Math.max(parseInt(searchParams.get("page") || "1", 10), 1);
+    const limit = Math.max(parseInt(searchParams.get("limit") || "10", 10), 1);
+    const skip = (page - 1) * limit; // This will always be >= 0
 
-    return new NextResponse(JSON.stringify(jobs), {
-      status: 200,
-      headers: {
-        // cache settings: keep response fresh for 60s, then serve stale data for up to 30s while revalidating in the background
-        "Cache-Control": "max-age=60, stale-while-revalidate=30",
-        "Content-Type": "application/json",
-      },
-    });
+    // Filter parameters
+    const employmentFilters = searchParams.getAll("employmentType");
+    const compensationFilters = searchParams.getAll("compensationType");
+
+    // Normalize filter values to match document values
+    const normalizeEmployment = (value: string) => {
+      switch (value.toLowerCase()) {
+        case "Full-time":
+          return "full-Time";
+        case "Part-time":
+          return "part-time";
+        default:
+          return value;
+      }
+    };
+
+    const normalizeCompensation = (value: string) => {
+      switch (value.toLowerCase()) {
+        case "Paid":
+          return "paid";
+        case "Volunteer":
+          return "volunteer";
+        default:
+          return value;
+      }
+    };
+
+    // Build the filter object dynamically
+    const filter: any = {};
+
+    if (employmentFilters.length > 0) {
+      filter.employmentType = {
+        $in: employmentFilters.map(normalizeEmployment),
+      };
+    }
+
+    if (compensationFilters.length > 0) {
+      filter.compensationType = {
+        $in: compensationFilters.map(normalizeCompensation),
+      };
+    }
+
+    // Fetch jobs with filters, sorting, and pagination
+    const jobs = await Job.find(filter).sort({ postDate: -1 }).skip(skip).limit(limit);
+    return NextResponse.json(jobs, { status: 200 });
   } catch (error) {
     return NextResponse.json(error, { status: 500 });
   }
