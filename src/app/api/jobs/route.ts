@@ -29,12 +29,6 @@ export async function GET(req: Request) {
     await connectDB();
 
     const { searchParams } = new URL(req.url);
-    // page defaults to 1, limit to 10 jobs if not specified
-    // example path: /api/jobs?page=2&limit=10
-    // const page = parseInt(searchParams.get("page") || "1", 1);
-    // const limit = parseInt(searchParams.get("limit") || "12", 12);
-    // const skip = (page - 1) * limit;
-
     const page = Math.max(parseInt(searchParams.get("page") || "1", 10), 1);
     const limit = Math.max(parseInt(searchParams.get("limit") || "10", 10), 1);
     const skip = (page - 1) * limit; // This will always be >= 0
