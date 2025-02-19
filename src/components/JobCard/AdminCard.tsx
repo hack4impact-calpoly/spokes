@@ -1,9 +1,12 @@
-import { Button } from "@chakra-ui/react";
+import { Button, IconButton } from "@chakra-ui/react";
+import { FiEdit } from "react-icons/fi";
 import { IJob } from "@/database/jobSchema";
 import JobStatusBadge from "@/components/JobCard/JobStatusBadge";
 import JobBadge from "@/components/JobCard/JobBadge";
 import JobCardInformation from "@/components/JobCard/JobCardInformation";
 import JobPostedDate from "@/components/JobCard/JobPostedDate";
+import { useState } from "react";
+import JobCardModal from "./JobCardModal";
 
 interface JobCardProps {
   job: IJob;
@@ -11,6 +14,29 @@ interface JobCardProps {
 }
 
 export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedAction, setSelectedAction] = useState<"approve" | "reject" | "renew" | null>(null);
+
+  // Opens modal with the appropriate action
+  const openModal = (action: "approve" | "reject" | "renew") => {
+    setSelectedAction(action);
+    setModalOpen(true);
+  };
+
+  // Closes modal
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedAction(null);
+  };
+
+  // Handles confirmation action if action was approved
+  const handleConfirm = () => {
+    if (selectedAction && onUpdateJob) {
+      onUpdateJob(job._id, selectedAction === "reject" ? "rejected" : "approved", new Date());
+    }
+    closeModal();
+  };
+
   const isExpired =
     job.jobStatus != "approved" &&
     job.postDate &&
@@ -18,7 +44,17 @@ export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
 
   return (
     <div className="max-w-[100%]">
-      <div className="bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm">
+      <div className="relative bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm">
+        <IconButton
+          aria-label="Edit Application"
+          // eslint-disable-next-line react/jsx-no-undef
+          icon={<FiEdit />}
+          size="sm"
+          variant="outline"
+          borderColor="black"
+          position="absolute"
+          className="absolute top-4 right-[1rem]"
+        />
         <div className="flex justify-between mb-5">
           <JobStatusBadge jobStatus={job.jobStatus} />
         </div>
@@ -28,41 +64,30 @@ export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
             <JobBadge badgeType={job.employmentType} />
             <JobBadge badgeType={job.compensationType} />
           </div>
-          <div>
-            <Button
-              px="2"
-              py="1"
-              h="min-content"
-              fontSize="small"
-              fontWeight="normal"
-              variant="outline"
-              borderColor="black"
-            >
-              Edit Application
-            </Button>
-          </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 mt-4">
+        <div className="flex flex-wrap gap-2 mt-4 justify-end">
           {job.jobStatus === "pending" && !isExpired && (
             <>
               <Button
-                px="20"
+                px="10"
+                colorScheme="green"
+                width="120px"
                 fontSize="small"
                 fontWeight="normal"
-                variant="outline"
                 borderColor="black"
-                onClick={() => onUpdateJob?.(job._id, "approved", new Date())}
+                onClick={() => openModal("approve")}
               >
                 Approve
               </Button>
               <Button
-                px="20"
+                px="10"
+                colorScheme="red"
+                width="120px"
                 fontSize="small"
                 fontWeight="normal"
-                variant="outline"
                 borderColor="black"
-                onClick={() => onUpdateJob?.(job._id, "rejected", new Date())}
+                onClick={() => openModal("reject")}
               >
                 Deny
               </Button>
@@ -71,12 +96,13 @@ export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
 
           {isExpired && (
             <Button
-              px="20"
+              px="10"
+              colorScheme="yellow"
+              width="120px"
               fontSize="small"
               fontWeight="normal"
-              variant="outline"
               borderColor="black"
-              onClick={() => onUpdateJob?.(job._id, "approved", new Date())}
+              onClick={() => openModal("renew")}
             >
               Renew
             </Button>
@@ -87,6 +113,9 @@ export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
           <JobPostedDate date={job.postDate} />
         </div>
       </div>
+      {selectedAction && (
+        <JobCardModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleConfirm} action={selectedAction} />
+      )}
     </div>
   );
 }
