@@ -43,6 +43,20 @@ export default function Jobs() {
     fetchData();
   }, []);
 
+  // Maps shorter filter name to longer job industry name
+  const industryValueMapping = {
+    Arts: "Arts & Culture",
+    Education: "Education & Research",
+    Health: "Health & Human Services",
+    "Social Services": "Human & Social Services",
+    "Community Development": "Community & Economic Development",
+    Environment: "Environment & Animals",
+    Youth: "Youth Development & Recreation",
+    Faith: "Faith-Based & Spiritual Organizations",
+    "Civil Rights": "Civil Rights & Advocacy",
+    "Humanitarian Aid": "International Development & Humanitarian Aid",
+  };
+
   // State to manage filters
   const [filters, setFilters] = useState<FilterState>({
     employment: [],
@@ -78,9 +92,12 @@ export default function Jobs() {
   const handleFilterChange = (category: string, value: string) => {
     setFilters((prev) => {
       const currentFilters = prev[category];
-      const newFilters = currentFilters.includes(value)
-        ? currentFilters.filter((item) => item !== value)
-        : [...currentFilters, value];
+      const mappedValue =
+        category === "industry" ? industryValueMapping[value as keyof typeof industryValueMapping] : value;
+
+      const newFilters = currentFilters.includes(mappedValue)
+        ? currentFilters.filter((item) => item !== mappedValue)
+        : [...currentFilters, mappedValue];
 
       return { ...prev, [category]: newFilters };
     });
