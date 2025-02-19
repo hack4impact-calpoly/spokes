@@ -18,7 +18,6 @@ import {
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 // Interfaces to make TS happy
 interface FilterCategories {
@@ -46,6 +45,10 @@ const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filte
   if (filters.compensation.length > 0) {
     filters.compensation.forEach((filter) => url.searchParams.append("compensationType", filter));
   }
+  if (filters.industry.length > 0) {
+    filters.industry.forEach((filter) => url.searchParams.append("organizationIndustry", filter));
+  }
+
   console.log(url.toString());
   const response = await fetch(url.toString());
   const data = await response.json();
@@ -95,7 +98,6 @@ export default function Jobs() {
   const filterCategories: FilterCategories = {
     employment: ["Full-time", "Part-time", "Volunteer"],
     compensation: ["Paid", "Non-paid"],
-    industry: ["Technology", "Healthcare", "Agriculture", "Education", "Retail"],
   };
 
   // Handler to fetch recent jobs by IDs

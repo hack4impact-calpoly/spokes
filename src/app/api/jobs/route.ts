@@ -36,42 +36,26 @@ export async function GET(req: Request) {
     // Filter parameters
     const employmentFilters = searchParams.getAll("employmentType");
     const compensationFilters = searchParams.getAll("compensationType");
-
-    // Normalize filter values to match document values
-    const normalizeEmployment = (value: string) => {
-      switch (value.toLowerCase()) {
-        case "Full-time":
-          return "full-Time";
-        case "Part-time":
-          return "part-time";
-        default:
-          return value;
-      }
-    };
-
-    const normalizeCompensation = (value: string) => {
-      switch (value.toLowerCase()) {
-        case "Paid":
-          return "paid";
-        case "Volunteer":
-          return "volunteer";
-        default:
-          return value;
-      }
-    };
+    const industryFilters = searchParams.getAll("organizationIndustry");
 
     // Build the filter object dynamically
     const filter: any = {};
 
     if (employmentFilters.length > 0) {
       filter.employmentType = {
-        $in: employmentFilters.map(normalizeEmployment),
+        $in: employmentFilters,
       };
     }
 
     if (compensationFilters.length > 0) {
       filter.compensationType = {
-        $in: compensationFilters.map(normalizeCompensation),
+        $in: compensationFilters,
+      };
+    }
+
+    if (industryFilters.length > 0) {
+      filter.organizationIndustry = {
+        $in: industryFilters,
       };
     }
 
