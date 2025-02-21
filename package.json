@@ -28,6 +28,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.5.0",
+    "react-intersection-observer": "^9.15.1",
     "react-responsive-carousel": "^3.2.23",
     "react-slick": "^0.30.3",
     "slick-carousel": "^1.8.1",
