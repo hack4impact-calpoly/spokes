@@ -39,10 +39,11 @@ export default function BottomSection() {
     >
       {/* Desktop Navigation (visible on sm and up) */}
       <div className="hidden sm:flex justify-between items-center px-9 py-.5 text-xs sm:text-sm md:text-md lg:text-lg">
-        <div className="flex gap-6">
+        <div className="flex">
           <NavBarLink title="Job Board" href="jobs" />
           <NavBarLink title="List Job" href="jobform" />
-          {/* Uncomment the check when needed */}
+          {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
+          {/* {has && has({ role: "org:admin" }) && <NavBarLink title="Spokes Dashboard" href="admin" />}  */}
           <NavBarLink title="Spokes Dashboard" href="admin" />
         </div>
         {showScrollToTop && (
@@ -72,6 +73,8 @@ export default function BottomSection() {
         >
           <NavBarLink title="Job Board" href="jobs" onClick={() => setIsMobileMenuOpen(false)} />
           <NavBarLink title="List Job" href="jobform" onClick={() => setIsMobileMenuOpen(false)} />
+          {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
+          {/* {has && has({ role: "org:admin" }) && <NavBarLink title="Spokes Dashboard" href="admin" onClick={() => setIsMobileMenuOpen(false)}/>}  */}
           <NavBarLink title="Spokes Dashboard" href="admin" onClick={() => setIsMobileMenuOpen(false)} />
           {showScrollToTop && (
             <div
