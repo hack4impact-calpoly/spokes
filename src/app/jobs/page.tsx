@@ -16,6 +16,9 @@ import {
   ModalFooter,
 } from "@chakra-ui/react";
 
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInView } from "react-intersection-observer";
+
 // Interfaces to make TS happy
 interface FilterCategories {
   [key: string]: string[];
@@ -24,6 +27,33 @@ interface FilterCategories {
 interface FilterState {
   [key: string]: string[];
 }
+
+const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filters: FilterState }) => {
+  console.log("fetching: ", pageParam);
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || (typeof window !== "undefined" ? window.location.origin : "");
+
+  const url = new URL(`${baseUrl}/api/jobs`);
+  // Add pagination parameters
+  url.searchParams.append("page", pageParam.toString());
+  url.searchParams.append("limit", "12");
+
+  // Add filter parameters
+  if (filters.employment.length > 0) {
+    filters.employment.forEach((filter) => url.searchParams.append("employmentType", filter));
+  }
+  if (filters.compensation.length > 0) {
+    filters.compensation.forEach((filter) => url.searchParams.append("compensationType", filter));
+  }
+  if (filters.industry.length > 0) {
+    filters.industry.forEach((filter) => url.searchParams.append("organizationIndustry", filter));
+  }
+
+  console.log(url.toString());
+  const response = await fetch(url.toString());
+  const data = await response.json();
+  return data;
+};
 
 export default function Jobs() {
   const [tab, setTab] = useState(1);
@@ -43,16 +73,31 @@ export default function Jobs() {
     fetchData();
   }, []);
 
+  // Maps shorter filter name to longer job industry name
+  const industryValueMapping = {
+    Arts: "Arts & Culture",
+    Education: "Education & Research",
+    Health: "Health & Human Services",
+    "Social Services": "Human & Social Services",
+    "Community Development": "Community & Economic Development",
+    Environment: "Environment & Animals",
+    Youth: "Youth Development & Recreation",
+    Faith: "Faith-Based & Spiritual Organizations",
+    "Civil Rights": "Civil Rights & Advocacy",
+    "Humanitarian Aid": "International Development & Humanitarian Aid",
+  };
+
   // State to manage filters
   const [filters, setFilters] = useState<FilterState>({
     employment: [],
     compensation: [],
+    industry: [],
   });
 
   // Define filter categories
   const filterCategories: FilterCategories = {
-    employment: ["Full-time", "Part-time", "Volunteer"],
-    compensation: ["Paid", "Non-paid"],
+    employment: ["Full-time", "Part-time"],
+    compensation: ["Paid", "Volunteer"],
   };
 
   // Handler to fetch recent jobs by IDs
@@ -76,9 +121,12 @@ export default function Jobs() {
   const handleFilterChange = (category: string, value: string) => {
     setFilters((prev) => {
       const currentFilters = prev[category];
-      const newFilters = currentFilters.includes(value)
-        ? currentFilters.filter((item) => item !== value)
-        : [...currentFilters, value];
+      const mappedValue =
+        category === "industry" ? industryValueMapping[value as keyof typeof industryValueMapping] : value;
+
+      const newFilters = currentFilters.includes(mappedValue)
+        ? currentFilters.filter((item) => item !== mappedValue)
+        : [...currentFilters, mappedValue];
 
       return { ...prev, [category]: newFilters };
     });
@@ -109,7 +157,8 @@ export default function Jobs() {
     Array.from(jobData)?.filter(
       (job) =>
         (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
-        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
+        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)) &&
+        (filters.industry.length === 0 || filters.industry.includes(job.organizationIndustry)),
     );
 
   const filteredRecentJobs =
@@ -117,18 +166,43 @@ export default function Jobs() {
     Array.from(recentJobs)?.filter(
       (job) =>
         (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
-        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)),
+        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)) &&
+        (filters.industry.length === 0 || filters.industry.includes(job.organizationIndustry)),
     );
 
+  const {
+    data: fetchedJobs,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
+    queryKey: ["jobs", filters],
+    queryFn: ({ pageParam = 1 }) => fetchJobs({ pageParam, filters }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === 12 ? allPages.length + 1 : undefined;
+    },
+  });
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, fetchNextPage]);
+
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col pb-10">
       <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col lg:flex-row gap-16 lg:gap-8 grow">
         <div className="flex flex-col gap-4 lg:gap-6">
           <div className="text-black font-semibold text-3xl select-none lg:sticky lg:top-[110px]">Filters</div>
           <FilterCard categories={filterCategories} onFilterChange={handleFilterChange}></FilterCard>
         </div>
-        <div className="w-full flex flex-col gap-4 lg:gap-6">
-          <div className="flex justify-between items-center">
+        <div className="flex flex-col w-full gap-4 lg:gap-6">
+          <div className="flex items-center justify-between">
             <div className="flex gap-8">
               <div
                 className={twMerge(
@@ -158,13 +232,16 @@ export default function Jobs() {
 
           {tab == 1 ? (
             <>
-              {filteredJobs ? (
-                <JobGrid jobs={filteredJobs} onJobView={handleJobView} />
+              {fetchedJobs ? (
+                <>
+                  <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} />
+                  {isFetchingNextPage && <Loader size="xl" label="Loading more jobs..." />}
+                </>
               ) : (
                 <Loader
                   size="xl"
                   label="Loading Jobs..."
-                  className="grow flex flex-col gap-6 justify-center items-center lg:-mt-28 mt-28"
+                  className="flex flex-col items-center justify-center gap-6 grow lg:-mt-28 mt-28"
                 />
               )}
             </>
@@ -176,7 +253,7 @@ export default function Jobs() {
                 <Loader
                   size="xl"
                   label="Loading Jobs..."
-                  className="grow flex flex-col gap-6 justify-center items-center lg:-mt-28 mt-28"
+                  className="flex flex-col items-center justify-center gap-6 grow lg:-mt-28 mt-28"
                 />
               )}
             </>

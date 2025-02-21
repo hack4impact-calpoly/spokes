@@ -9,8 +9,9 @@ export enum EmploymentType {
 
 // The compensation type for the job
 export enum CompensationType {
-  paid = "paid",
-  volunteer = "unpaid",
+  salary = "salary",
+  hourly = "hourly",
+  contract = "contract",
 }
 
 // The status of the job
