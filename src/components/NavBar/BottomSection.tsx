@@ -11,11 +11,11 @@ export default function BottomSection() {
   const [showScrollToTop, setShowScrollToTop] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { has } = useAuth();
 
   useEffect(() => {
     const handleScroll: EventListener = () => {
       setShowScrollToTop(window.scrollY > 300 && pathname === "/jobs");
+      setIsMobileMenuOpen(false);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -60,14 +60,14 @@ export default function BottomSection() {
       {/* Mobile Navigation (visible below sm) */}
       <div className="sm:hidden flex flex-col">
         {/* Header: Hamburger icon on the right */}
-        <div className="flex justify-end items-center px-4 py-6 mt-3">
+        <div className="flex justify-end items-center px-4 py-4 mt-3">
           <button onClick={toggleMobileMenu} aria-label="Toggle menu">
-            {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+            {isMobileMenuOpen ? <FiX size={27} /> : <FiMenu size={27} />}
           </button>
         </div>
         {/* Dropdown Menu: Center all text */}
         <div
-          className={`flex flex-col items-center text-center px-4 pb-4 transition-all duration-300 overflow-hidden ${
+          className={`flex flex-col items-center text-center px-5 pb-4 transition-all duration-300 overflow-hidden ${
             isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
           } space-y-1`}
         >
