@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
   }
 
   return (
-    <footer className="py-[40px] md:py-[80px] px-6 md:px-20 bg-white border-t-4 border-gray-200 flex items-center">
+    <footer className="py-[40px] md:py-[80px] px-6 md:px-20 bg-white border-t-2 border-gray-200 flex items-center">
       <div className="container mx-auto flex flex-col md:flex-row items-center justify-between text-center md:text-left">
         <div className="flex flex-col gap-[15px] md:gap-[23px] items-center md:items-start">
           <div className="flex items-center mb-4 md:mb-0">
