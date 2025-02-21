@@ -39,7 +39,7 @@ export default function BottomSection() {
       }`}
     >
       {/* Desktop Navigation (visible on sm and up) */}
-      <div className="hidden sm:flex justify-between items-center px-9 py-3 text-xs sm:text-sm md:text-md lg:text-lg">
+      <div className="hidden sm:flex justify-between items-center px-9 py-.5 text-xs sm:text-sm md:text-md lg:text-lg">
         <div className="flex gap-6">
           <NavBarLink title="Job Board" href="jobs" />
           <NavBarLink title="List Job" href="jobform" />
@@ -60,7 +60,7 @@ export default function BottomSection() {
       {/* Mobile Navigation (visible below sm) */}
       <div className="sm:hidden flex flex-col">
         {/* Header: Hamburger icon on the right */}
-        <div className="flex justify-end items-center px-4 py-3 mt-3">
+        <div className="flex justify-end items-center px-4 py-6 mt-3">
           <button onClick={toggleMobileMenu} aria-label="Toggle menu">
             {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
           </button>
