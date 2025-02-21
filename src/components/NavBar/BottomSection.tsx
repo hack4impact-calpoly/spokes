@@ -15,7 +15,6 @@ export default function BottomSection() {
   useEffect(() => {
     const handleScroll: EventListener = () => {
       setShowScrollToTop(window.scrollY > 300 && pathname === "/jobs");
-      setIsMobileMenuOpen(false);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -36,7 +35,7 @@ export default function BottomSection() {
     <nav
       className={`sticky z-10 bg-[#2B2B2B] text-white transition-all duration-500 ${
         scrollDirection === "down" ? "-top-24" : "top-0"
-      }`}
+      } ${isMobileMenuOpen ? "!top-0" : ""}`}
     >
       {/* Desktop Navigation (visible on sm and up) */}
       <div className="hidden sm:flex justify-between items-center px-9 py-.5 text-xs sm:text-sm md:text-md lg:text-lg">
