@@ -11,7 +11,6 @@ export default function BottomSection() {
   const [showScrollToTop, setShowScrollToTop] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { has } = useAuth();
 
   useEffect(() => {
     const handleScroll: EventListener = () => {
@@ -36,14 +35,15 @@ export default function BottomSection() {
     <nav
       className={`sticky z-10 bg-[#2B2B2B] text-white transition-all duration-500 ${
         scrollDirection === "down" ? "-top-24" : "top-0"
-      }`}
+      } ${isMobileMenuOpen ? "!top-0" : ""}`}
     >
       {/* Desktop Navigation (visible on sm and up) */}
       <div className="hidden sm:flex justify-between items-center px-9 py-.5 text-xs sm:text-sm md:text-md lg:text-lg">
-        <div className="flex gap-6">
+        <div className="flex">
           <NavBarLink title="Job Board" href="jobs" />
           <NavBarLink title="List Job" href="jobform" />
-          {/* Uncomment the check when needed */}
+          {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
+          {/* {has && has({ role: "org:admin" }) && <NavBarLink title="Spokes Dashboard" href="admin" />}  */}
           <NavBarLink title="Spokes Dashboard" href="admin" />
         </div>
         {showScrollToTop && (
@@ -60,19 +60,21 @@ export default function BottomSection() {
       {/* Mobile Navigation (visible below sm) */}
       <div className="sm:hidden flex flex-col">
         {/* Header: Hamburger icon on the right */}
-        <div className="flex justify-end items-center px-4 py-6 mt-3">
+        <div className="flex justify-end items-center px-4 py-4 mt-3">
           <button onClick={toggleMobileMenu} aria-label="Toggle menu">
-            {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+            {isMobileMenuOpen ? <FiX size={27} /> : <FiMenu size={27} />}
           </button>
         </div>
         {/* Dropdown Menu: Center all text */}
         <div
-          className={`flex flex-col items-center text-center px-4 pb-4 transition-all duration-300 overflow-hidden ${
+          className={`flex flex-col items-center text-center px-5 pb-4 transition-all duration-300 overflow-hidden ${
             isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
           } space-y-1`}
         >
           <NavBarLink title="Job Board" href="jobs" onClick={() => setIsMobileMenuOpen(false)} />
           <NavBarLink title="List Job" href="jobform" onClick={() => setIsMobileMenuOpen(false)} />
+          {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
+          {/* {has && has({ role: "org:admin" }) && <NavBarLink title="Spokes Dashboard" href="admin" onClick={() => setIsMobileMenuOpen(false)}/>}  */}
           <NavBarLink title="Spokes Dashboard" href="admin" onClick={() => setIsMobileMenuOpen(false)} />
           {showScrollToTop && (
             <div
