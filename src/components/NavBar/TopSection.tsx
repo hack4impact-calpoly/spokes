@@ -14,7 +14,7 @@ export default function TopSection({ user }: TopSectionProps) {
   return (
     <>
       <main className="flex justify-between items-center bg-white px-10 sm:px-14 py-7">
-        <Link href="/jobs" className="flex-shrink-0 max-[458px]:w-[115px] w-[200px]">
+        <Link href="/jobs" className="flex-shrink-0 max-[458px]:w-[115px] w-[200px] cursor-pointer">
           <Image
             className="h-auto"
             alt="spokes logo"
