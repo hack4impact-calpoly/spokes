@@ -4,6 +4,7 @@ import JobStatusBadge from "@/components/JobCard/JobStatusBadge";
 import JobBadge from "@/components/JobCard/JobBadge";
 import JobCardInformation from "@/components/JobCard/JobCardInformation";
 import JobPostedDate from "@/components/JobCard/JobPostedDate";
+import { useRouter } from "next/navigation";
 
 interface JobCardProps {
   job: IJob;
@@ -12,10 +13,16 @@ interface JobCardProps {
 }
 
 export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) {
+  const router = useRouter();
   const isExpired =
     job.jobStatus != "approved" &&
     job.postDate &&
     new Date(job.postDate) < new Date(new Date().setDate(new Date().getDate() - 30));
+
+  function handleEditApplicationButton(e: React.ChangeEvent<any>) {
+    e.preventDefault();
+    router.push("/jobform");
+  }
 
   return (
     <div className="max-w-[100%]" ref={innerRef}>
@@ -31,6 +38,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
           </div>
           <div>
             <Button
+              onClick={handleEditApplicationButton}
               px="2"
               py="1"
               h="min-content"
