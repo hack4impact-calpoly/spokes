@@ -30,23 +30,31 @@ function JobModal({ isOpen, onClose, onConfirm, action }: JobModalProps) {
         <ModalFooter className="flex flex-wrap gap-2 mt-4 justify-end">
           <Button
             px="10"
-            colorScheme="green"
             width="120px"
             fontSize="small"
             fontWeight="normal"
             borderColor="black"
             onClick={onConfirm}
+            sx={{
+              _hover: {
+                backgroundColor: "green.300",
+              },
+            }}
           >
             Confirm
           </Button>
           <Button
             px="10"
-            colorScheme="red"
             width="120px"
             fontSize="small"
             fontWeight="normal"
             borderColor="black"
             onClick={onClose}
+            sx={{
+              _hover: {
+                backgroundColor: "red.300",
+              },
+            }}
           >
             Cancel
           </Button>

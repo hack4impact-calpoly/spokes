@@ -50,7 +50,6 @@ export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
           // eslint-disable-next-line react/jsx-no-undef
           icon={<FiEdit />}
           size="sm"
-          variant="outline"
           borderColor="black"
           position="absolute"
           className="absolute top-4 right-[1rem]"
@@ -59,54 +58,66 @@ export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
           <JobStatusBadge jobStatus={job.jobStatus} />
         </div>
         <JobCardInformation job={job} />
-        <div className="flex flex-wrap justify-between min-[1000px]:flex-row flex-col min-[1000px]:gap-4 gap-2 mt-5">
+        <div className="flex flex-wrap justify-between flex-row min-[1000px]:gap-4 gap-2 items-center">
           <div className="flex flex-wrap gap-2">
             <JobBadge badgeType={job.employmentType} />
             <JobBadge badgeType={job.compensationType} />
           </div>
-        </div>
 
-        <div className="flex flex-wrap gap-2 mt-4 justify-end">
-          {job.jobStatus === "pending" && !isExpired && (
-            <>
+          <div className="flex flex-wrap gap-2 justify-end min-[1000px]:mt-0 mt-5">
+            {job.jobStatus === "pending" && !isExpired && (
+              <>
+                <Button
+                  px="10"
+                  width="120px"
+                  fontSize="small"
+                  fontWeight="normal"
+                  borderColor="black"
+                  sx={{
+                    _hover: {
+                      backgroundColor: "green.300",
+                    },
+                  }}
+                  onClick={() => openModal("approve")}
+                >
+                  Approve
+                </Button>
+                <Button
+                  px="10"
+                  width="120px"
+                  fontSize="small"
+                  fontWeight="normal"
+                  borderColor="black"
+                  onClick={() => openModal("reject")}
+                  sx={{
+                    _hover: {
+                      backgroundColor: "red.300",
+                    },
+                  }}
+                >
+                  Deny
+                </Button>
+              </>
+            )}
+
+            {isExpired && (
               <Button
                 px="10"
-                colorScheme="green"
                 width="120px"
                 fontSize="small"
                 fontWeight="normal"
                 borderColor="black"
-                onClick={() => openModal("approve")}
+                onClick={() => openModal("renew")}
+                sx={{
+                  _hover: {
+                    backgroundColor: "yellow.300",
+                  },
+                }}
               >
-                Approve
+                Renew
               </Button>
-              <Button
-                px="10"
-                colorScheme="red"
-                width="120px"
-                fontSize="small"
-                fontWeight="normal"
-                borderColor="black"
-                onClick={() => openModal("reject")}
-              >
-                Deny
-              </Button>
-            </>
-          )}
-
-          {isExpired && (
-            <Button
-              px="10"
-              colorScheme="yellow"
-              width="120px"
-              fontSize="small"
-              fontWeight="normal"
-              borderColor="black"
-              onClick={() => openModal("renew")}
-            >
-              Renew
-            </Button>
-          )}
+            )}
+          </div>
         </div>
 
         <div className="mt-5">
