@@ -56,20 +56,23 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(_request: NextRequest, { params }: { params: { jobId: string } }) {
   try {
     await connectDB();
+    const { jobId } = params;
 
-    const jobs = await Job.find().sort({ postDate: -1 });
+    console.log("Received jobId:", jobId);
 
-    if (!jobs) {
+    const job = await Job.findById(jobId);
+
+    if (!job) {
       return NextResponse.json({ message: "Job not found" }, { status: 404 });
     }
 
-    return NextResponse.json(jobs, { status: 200 });
+    return NextResponse.json(job, { status: 200 });
   } catch (error) {
     console.error("GET Error:", error);
-    return NextResponse.json(error, { status: 500 });
+    return NextResponse.json({ message: "Error fetching job" }, { status: 500 });
   }
 }
 
