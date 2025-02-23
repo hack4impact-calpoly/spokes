@@ -225,7 +225,7 @@ export default function Jobs() {
             <>
               {fetchedJobs ? (
                 <>
-                  <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} />
+                  <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} onJobView={handleJobView} />
                   {isFetchingNextPage && <Loader size="xl" label="Loading more jobs..." />}
                 </>
               ) : (
