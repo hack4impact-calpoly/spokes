@@ -11,6 +11,7 @@ import {
   Stack,
   FormErrorMessage,
   useRadioGroup,
+  HStack,
 } from "@chakra-ui/react";
 import RadioCard from "@/components/RadioCard";
 import JobConfirmationModal from "@/components/JobConfirmationModal";
@@ -149,6 +150,34 @@ export default function JobFormPage() {
       setMessage("Error updating job.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    const updatedFormData = {
+      ...formData,
+      jobStatus: "rejected",
+      expireDate: formData.expireDate ? formData.expireDate : null,
+    };
+
+    try {
+      const response = await fetch(`/api/jobs/${jobId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedFormData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete job.");
+      }
+      setMessage("Successfully deleted job");
+      setLoading(false);
+    } catch (error) {
+      console.error(`Error deleting job: ${error}`);
     }
   };
 
@@ -338,22 +367,39 @@ export default function JobFormPage() {
             />
             <FormErrorMessage>Please enter a valid email address.</FormErrorMessage>
           </FormControl>
-          <Button
-            isLoading={loading}
-            loadingText="Updating..."
-            mt={10}
-            type="submit"
-            size="lg"
-            colorScheme="blackAlpha"
-            bg="black"
-            _hover={{ bg: "#5E5E5E" }}
-            onClick={() => {
-              setSelectCompensation("");
-              setSelectEmployment("");
-            }}
-          >
-            Update
-          </Button>
+          <HStack>
+            <Button
+              isLoading={loading}
+              loadingText="Updating..."
+              mt={10}
+              type="submit"
+              size="lg"
+              colorScheme="blackAlpha"
+              bg="black"
+              mr="4"
+              _hover={{ bg: "#5E5E5E" }}
+              onClick={() => {
+                setSelectCompensation("");
+                setSelectEmployment("");
+              }}
+            >
+              Update
+            </Button>
+            <Button
+              isLoading={loading}
+              loadingText="Updating..."
+              mt={10}
+              size="lg"
+              colorScheme="redAlpha"
+              bg="red"
+              ml="4"
+              _hover={{ bg: "#5E5E5E" }}
+              onClick={handleDelete}
+            >
+              Delete
+            </Button>
+          </HStack>
+
           {message && <p>{message}</p>}
         </VStack>
       </form>
