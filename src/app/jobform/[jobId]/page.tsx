@@ -103,7 +103,7 @@ export default function JobFormPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
@@ -115,14 +115,14 @@ export default function JobFormPage() {
     };
 
     try {
-      const response = await fetch("/api/jobs", {
-        method: "POST",
+      const response = await fetch(`/api/jobs/${jobId}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formattedFormData),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to submit job.");
+        throw new Error("Failed to update job.");
       }
 
       setFormData({
@@ -142,11 +142,11 @@ export default function JobFormPage() {
         applyNowURL: "",
       });
 
-      setMessage("Job posted successfully!");
+      setMessage("Job updated successfully!");
       setIsModalOpen(true);
     } catch (error) {
-      console.error("Error submitting job:", error);
-      setMessage("Error submitting job.");
+      console.error("Error updating job:", error);
+      setMessage("Error updating job.");
     } finally {
       setLoading(false);
     }
@@ -185,7 +185,7 @@ export default function JobFormPage() {
       <Heading as="h2" size="md" mb={5}>
         Job Information
       </Heading>
-      <form onSubmit={handleSubmit} method="POST">
+      <form onSubmit={handleUpdate} method="PUT">
         <VStack spacing={4}>
           <FormControl isRequired>
             <FormLabel requiredIndicator>Organization Name</FormLabel>
@@ -340,7 +340,7 @@ export default function JobFormPage() {
           </FormControl>
           <Button
             isLoading={loading}
-            loadingText="Submitting..."
+            loadingText="Updating..."
             mt={10}
             type="submit"
             size="lg"
@@ -352,7 +352,7 @@ export default function JobFormPage() {
               setSelectEmployment("");
             }}
           >
-            Submit
+            Update
           </Button>
           {message && <p>{message}</p>}
         </VStack>
