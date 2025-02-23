@@ -152,8 +152,9 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
   - Posting and expiration dates (not implemented yet)
   - Job description and URL
   - Personal information (name, phone number, email)
-- **Dev Note:**  
-  Enhance form validation and error messaging to ensure data integrity. This form interacts with the POST `/api/jobs` endpoint.
+- **Dev Note:**
+  - Enhance form validation and error messaging to ensure data integrity. This form interacts with the POST `/api/jobs` endpoint.
+  - Due to caching (60 second periods) newly edited jobs or recently deleted jobs may not be updated in view immediately.
 
 ---
 
