@@ -35,6 +35,7 @@ export default function JobFormPage() {
     applyNowURL: "",
   });
   const [loading, setLoading] = useState(false);
+  const [loadingInfo, setLoadingInfo] = useState(true); // for setting loading state of job info fetching
   const [message, setMessage] = useState("");
   const [selectEmployment, setSelectEmployment] = useState("");
   const [selectCompensation, setSelectCompensation] = useState("");
@@ -66,6 +67,7 @@ export default function JobFormPage() {
     }
 
     const fetchJobData = async () => {
+      setLoadingInfo(true);
       try {
         const response = await fetch(`/api/jobs/${jobId}`);
         if (!response.ok) {
@@ -73,14 +75,16 @@ export default function JobFormPage() {
         }
         const data = await response.json();
         setFormData(data);
-        setLoading(false);
+        setLoadingInfo(false);
       } catch (error) {
+        setLoadingInfo(false);
         console.error("Fetch failed:", error);
+        router.push("/jobform"); // reroutes to jobform page if jobId not found
       }
     };
 
     fetchJobData();
-  }, [jobId]);
+  }, [jobId, router]);
 
   // formats phone number input to filter non-numbers an add -
   const formatPhoneNumber = (value: string): string => {
@@ -191,8 +195,9 @@ export default function JobFormPage() {
               bg="#F6F6F6"
               border="0"
               name="organizationName"
-              value={formData.organizationName}
+              value={loadingInfo ? "Loading..." : formData.organizationName}
               onChange={handleChange}
+              disabled={loadingInfo}
             />
           </FormControl>
           <FormControl isRequired>
@@ -203,8 +208,9 @@ export default function JobFormPage() {
               bg="#F6F6F6"
               border="0"
               name="organizationIndustry"
-              value={formData.organizationIndustry}
+              value={loadingInfo ? "Loading..." : formData.organizationIndustry}
               onChange={handleChange}
+              disabled={loadingInfo}
             />
           </FormControl>
           <FormControl isRequired>
@@ -215,8 +221,9 @@ export default function JobFormPage() {
               bg="#F6F6F6"
               border="0"
               name="title"
-              value={formData.title}
+              value={loadingInfo ? "Loading..." : formData.title}
               onChange={handleChange}
+              disabled={loadingInfo}
             />
           </FormControl>
           <FormControl isRequired>
@@ -265,8 +272,9 @@ export default function JobFormPage() {
               bg="#F6F6F6"
               border="0"
               name="jobDescription"
-              value={formData.jobDescription}
+              value={loadingInfo ? "Loading..." : formData.jobDescription}
               onChange={handleChange}
+              disabled={loadingInfo}
             />
           </FormControl>
           <FormControl isRequired>
@@ -277,8 +285,9 @@ export default function JobFormPage() {
               bg="#F6F6F6"
               border="0"
               name="detailURL"
-              value={formData.detailURL}
+              value={loadingInfo ? "Loading..." : formData.detailURL}
               onChange={handleChange}
+              disabled={loadingInfo}
             />
             <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
           </FormControl>
@@ -294,8 +303,9 @@ export default function JobFormPage() {
                 bg="#F6F6F6"
                 border="0"
                 name="contactName"
-                value={formData.contactName}
+                value={loadingInfo ? "Loading..." : formData.contactName}
                 onChange={handleChange}
+                disabled={loadingInfo}
               />
             </FormControl>
             <FormControl>
@@ -306,9 +316,10 @@ export default function JobFormPage() {
                 placeholder="xxx-xxx-xxxx"
                 border="0"
                 name="contactPhone"
-                value={formData.contactPhone}
+                value={loadingInfo ? "Loading..." : formData.contactPhone}
                 onChange={handleChange}
                 maxLength={12}
+                disabled={loadingInfo}
               />
               <FormErrorMessage>Please enter a valid phone number.</FormErrorMessage>
             </FormControl>
@@ -321,8 +332,9 @@ export default function JobFormPage() {
               bg="#F6F6F6"
               border="0"
               name="contactEmail"
-              value={formData.contactEmail}
+              value={loadingInfo ? "Loading..." : formData.contactEmail}
               onChange={handleChange}
+              disabled={loadingInfo}
             />
             <FormErrorMessage>Please enter a valid email address.</FormErrorMessage>
           </FormControl>
