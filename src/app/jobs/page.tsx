@@ -152,15 +152,6 @@ export default function Jobs() {
     }
   };
 
-  const filteredJobs =
-    jobData &&
-    Array.from(jobData)?.filter(
-      (job) =>
-        (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
-        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)) &&
-        (filters.industry.length === 0 || filters.industry.includes(job.organizationIndustry)),
-    );
-
   const filteredRecentJobs =
     recentJobs &&
     Array.from(recentJobs)?.filter(
