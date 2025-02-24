@@ -197,7 +197,7 @@ export default function Jobs() {
             <div className="flex gap-8">
               <div
                 className={twMerge(
-                  "text-black text-3xl cursor-pointer select-none",
+                  "text-black text-2xl sm:text-3xl cursor-pointer select-none",
                   tab == 1 ? "font-semibold" : "font-normal text-[#C3C3C3]",
                 )}
                 onClick={() => handleTabChange(1)}
@@ -206,7 +206,7 @@ export default function Jobs() {
               </div>
               <div
                 className={twMerge(
-                  "text-black text-3xl cursor-pointer select-none",
+                  "text-black text-2xl sm:text-3xl cursor-pointer select-none",
                   tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
                 )}
                 onClick={() => handleTabChange(2)}
