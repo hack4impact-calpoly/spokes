@@ -15,8 +15,9 @@ import {
 import RadioCard from "@/components/RadioCard";
 import JobConfirmationModal from "@/components/JobConfirmationModal";
 import { useRouter } from "next/navigation";
-import TagSelect from "@/components/TagSelect";
+import TagSelect, { TagSelectOther } from "@/components/TagSelect";
 import { Option } from "@/components/TagsMultiselect/multiselect";
+import { cn } from "@/lib/utils";
 
 // converts the formData string array to a Option object array necessary for use in the TagSelect componenet
 function formatIndustries(industries: string[]): Option[] {
@@ -154,13 +155,12 @@ export default function JobFormPage() {
     router.push("/");
   };
 
-  const [industries, setIndustries] = useState([]);
   const [showMaxError, setShowMaxError] = useState(false);
 
   return (
     <Box mx="auto" p={10} minWidth={{ base: "320px", md: "768px", lg: "1024px" }} maxWidth="1200px">
       <div className="mt-[8px] mb-[10px] text-black text-3xl font-semibold">Create New Listing</div>
-      <Heading as="h2" size="md" mb={5}>
+      <Heading as="h2" size="md" mb={5} mt={10}>
         Job Information
       </Heading>
       <form onSubmit={handleSubmit} method="POST">
@@ -180,7 +180,14 @@ export default function JobFormPage() {
           <FormControl isRequired>
             <div className="flex gap-0">
               <FormLabel requiredIndicator>Organization Industry</FormLabel>
-              {showMaxError && <p className="text-red-500 text-xs font-medium mt-1.5">Choose up to 3</p>}
+              <p
+                className={cn(
+                  "text-red-600 text-xs font-medium mt-1.5 transition",
+                  showMaxError ? "opacity-1" : "opacity-0",
+                )}
+              >
+                Max limit 3
+              </p>
             </div>
             <TagSelect
               value={formatIndustries(formData.organizationIndustry)}
@@ -193,6 +200,9 @@ export default function JobFormPage() {
               }}
               onMax={() => {
                 setShowMaxError(true);
+                setTimeout(() => {
+                  setShowMaxError(false);
+                }, 3000);
               }}
               checkMax={(length) => {
                 if (length < 3) {
@@ -276,7 +286,7 @@ export default function JobFormPage() {
             />
             <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
           </FormControl>
-          <Heading as="h2" size="md" textAlign="left" w="100%">
+          <Heading as="h2" size="md" textAlign="left" w="100%" mt={5}>
             Person of Contact - Information
           </Heading>
           <Stack w="full" direction={{ base: "column", md: "row" }} spacing={{ base: 6, md: 40 }}>

@@ -7,6 +7,8 @@ import { useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/components/TagsMultiselect/command";
+import { Input } from "@chakra-ui/react";
+import { TagSelectOther } from "../TagSelect";
 
 export interface Option {
   value: string;
@@ -338,6 +340,10 @@ const MultipleSelector = ({
             return;
           }
           setInputValue("");
+          if (value.toLowerCase() == "other") {
+            onOtherOpen();
+            return;
+          }
           const newOptions = [...selected, { value, label: value }];
           setSelected(newOptions);
           onChange?.(newOptions);
@@ -392,193 +398,236 @@ const MultipleSelector = ({
     return undefined;
   }, [creatable, commandProps?.filter]);
 
+  const [otherValue, setOtherValue] = React.useState("");
+  const [isOtherOpen, setIsOtherOpen] = React.useState(false);
+
+  function onOtherClose() {
+    setIsOtherOpen(false);
+    setOtherValue("");
+  }
+
+  function onOtherOpen() {
+    setIsOtherOpen(true);
+  }
+
+  function handleOther() {
+    const option = { value: otherValue, label: otherValue };
+    if (otherValue == "" || selected.some((e) => e.value == otherValue)) {
+      onOtherClose();
+      return;
+    }
+    const newOptions = [...selected, option];
+    setSelected(newOptions);
+    onChange?.(newOptions);
+    onOtherClose();
+  }
+
   return (
-    <Command
-      id="tagSelectSelector"
-      ref={dropdownRef}
-      {...commandProps}
-      onKeyDown={(e) => {
-        handleKeyDown(e);
-        commandProps?.onKeyDown?.(e);
-      }}
-      className={cn("h-auto overflow-visible bg-[#f6f6f6]", commandProps?.className)}
-      shouldFilter={commandProps?.shouldFilter !== undefined ? commandProps.shouldFilter : !onSearch} // When onSearch is provided, we don&lsquo;t want to filter the options. You can still override it.
-      filter={commandFilter()}
-    >
-      <div
-        id="tagSelectOutline"
-        className={cn(
-          "border-0 outline outline-1 outline-transparent focus-within:outline-[#4880c8] has-aria-invalid:border-destructive relative min-h-[38px] rounded-md text-sm transition-[color,box-shadow,outline] has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-disabled:opacity-50",
-          {
-            "p-1.5": selected.length !== 0,
-            "cursor-text": !disabled && selected.length !== 0,
-          },
-          !hideClearAllButton && "pe-9",
-          className,
-        )}
-        onClick={() => {
-          if (disabled) return;
-          inputRef?.current?.focus();
+    <>
+      <Command
+        id="tagSelectSelector"
+        ref={dropdownRef}
+        {...commandProps}
+        onKeyDown={(e) => {
+          handleKeyDown(e);
+          commandProps?.onKeyDown?.(e);
         }}
+        className={cn("h-auto overflow-visible bg-[#f6f6f6]", commandProps?.className)}
+        shouldFilter={commandProps?.shouldFilter !== undefined ? commandProps.shouldFilter : !onSearch} // When onSearch is provided, we don&lsquo;t want to filter the options. You can still override it.
+        filter={commandFilter()}
       >
-        <div className="flex flex-wrap gap-1">
-          {selected.map((option) => {
-            return (
-              <div
-                key={option.value}
-                className={cn(
-                  "animate-fadeIn bg-white text-secondary-foreground hover:bg-white relative inline-flex h-7 cursor-default items-center rounded-md border ps-2 pe-7 pl-2 text-xs font-medium transition-all disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 data-fixed:pe-2",
-                  badgeClassName,
-                )}
-                data-fixed={option.fixed}
-                data-disabled={disabled || undefined}
-              >
-                {option.label}
-                <button
-                  className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute -inset-y-px -end-px flex size-7 items-center justify-center rounded-e-md border border-transparent p-0 outline-hidden transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleUnselect(option);
-                    }
-                  }}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  onClick={() => handleUnselect(option)}
-                  aria-label="Remove"
-                >
-                  <XIcon size={14} aria-hidden="true" />
-                </button>
-              </div>
-            );
-          })}
-          {/* Avoid having the "Search" Icon */}
-          <CommandPrimitive.Input
-            {...inputProps}
-            ref={inputRef}
-            value={inputValue}
-            disabled={disabled}
-            onValueChange={(value) => {
-              setInputValue(value);
-              inputProps?.onValueChange?.(value);
-            }}
-            onBlur={(event) => {
-              if (!onScrollbar) {
-                setOpen(false);
-              }
-              inputProps?.onBlur?.(event);
-            }}
-            onFocus={(event) => {
-              setOpen(true);
-              if (triggerSearchOnFocus) {
-                onSearch?.(debouncedSearchTerm);
-              }
-              inputProps?.onFocus?.(event);
-            }}
-            placeholder={hidePlaceholderWhenSelected && selected.length !== 0 ? "" : placeholder}
-            id="tagSelectInput"
-            className={cn(
-              "placeholder:text-[#] border-0 outline-none ring-0 font-normal text-base flex-1 bg-transparent outline-hidden disabled:cursor-not-allowed",
-              {
-                "w-full": hidePlaceholderWhenSelected,
-                "px-4 py-2": selected.length === 0,
-                "ml-1": selected.length !== 0,
-              },
-              inputProps?.className,
-            )}
-          />
-          <button
-            type="button"
-            onClick={() => {
-              setSelected(selected.filter((s) => s.fixed));
-              onChange?.(selected.filter((s) => s.fixed));
-            }}
-            className={cn(
-              "text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute end-0 top-0 flex size-9 items-center justify-center rounded-md border border-transparent transition-[color,box-shadow] outline-none focus-visible:ring-[3px]",
-              (hideClearAllButton ||
-                disabled ||
-                selected.length < 1 ||
-                selected.filter((s) => s.fixed).length === selected.length) &&
-                "hidden",
-            )}
-            aria-label="Clear all"
-          >
-            <XIcon size={16} aria-hidden="true" />
-          </button>
-        </div>
-      </div>
-      <div className="relative">
         <div
+          id="tagSelectOutline"
           className={cn(
-            "border-input absolute top-2 z-10 w-full overflow-hidden rounded-md border",
-            "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
-            !open && "hidden",
+            "border-0 outline outline-1 outline-transparent focus-within:outline-[#4880c8] has-aria-invalid:border-destructive relative min-h-[38px] rounded-md text-sm transition-[color,box-shadow,outline] has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-disabled:opacity-50",
+            {
+              "p-1.5": selected.length !== 0,
+              "cursor-text": !disabled && selected.length !== 0,
+            },
+            !hideClearAllButton && "pe-9",
+            className,
           )}
-          data-state={open ? "open" : "closed"}
+          onClick={() => {
+            if (disabled) return;
+            inputRef?.current?.focus();
+          }}
         >
-          {open && (
-            <CommandList
-              className="bg-popover text-popover-foreground shadow-lg outline-hidden"
-              onMouseLeave={() => {
-                setOnScrollbar(false);
+          <div className="flex flex-wrap gap-1">
+            {selected.map((option) => {
+              return (
+                <div
+                  key={option.value}
+                  className={cn(
+                    "animate-fadeIn bg-white text-secondary-foreground hover:bg-white relative inline-flex h-7 cursor-default items-center rounded-md border ps-2 pe-7 pl-2 text-xs font-medium transition-all disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 data-fixed:pe-2",
+                    badgeClassName,
+                  )}
+                  data-fixed={option.fixed}
+                  data-disabled={disabled || undefined}
+                >
+                  {option.label}
+                  <button
+                    className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute -inset-y-px -end-px flex size-7 items-center justify-center rounded-e-md border border-transparent p-0 outline-hidden transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleUnselect(option);
+                      }
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onClick={() => handleUnselect(option)}
+                    aria-label="Remove"
+                  >
+                    <XIcon size={14} aria-hidden="true" />
+                  </button>
+                </div>
+              );
+            })}
+            {/* Avoid having the "Search" Icon */}
+            <CommandPrimitive.Input
+              {...inputProps}
+              ref={inputRef}
+              value={inputValue}
+              disabled={disabled}
+              onValueChange={(value) => {
+                setInputValue(value);
+                inputProps?.onValueChange?.(value);
               }}
-              onMouseEnter={() => {
-                setOnScrollbar(true);
+              onBlur={(event) => {
+                if (!onScrollbar) {
+                  setOpen(false);
+                }
+                inputProps?.onBlur?.(event);
               }}
-              onMouseUp={() => {
-                inputRef?.current?.focus();
+              onFocus={(event) => {
+                setOpen(true);
+                if (triggerSearchOnFocus) {
+                  onSearch?.(debouncedSearchTerm);
+                }
+                inputProps?.onFocus?.(event);
               }}
-            >
-              {isLoading ? (
-                <>{loadingIndicator}</>
-              ) : (
-                <>
-                  {EmptyItem()}
-                  {CreatableItem()}
-                  {!selectFirstItem && <CommandItem value="-" className="hidden" />}
-                  {Object.entries(selectables).map(([key, dropdowns]) => (
-                    <CommandGroup key={key} heading={key} className="h-full overflow-auto">
-                      <>
-                        {dropdowns.map((option) => {
-                          return (
-                            <CommandItem
-                              key={option.value}
-                              value={option.value}
-                              disabled={option.disable}
-                              onMouseDown={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                              }}
-                              onSelect={() => {
-                                if (selected.length >= maxSelected) {
-                                  onMaxSelected?.(selected.length);
-                                  return;
-                                }
-                                setInputValue("");
-                                const newOptions = [...selected, option];
-                                setSelected(newOptions);
-                                onChange?.(newOptions);
-                              }}
-                              className={cn(
-                                "cursor-pointer",
-                                option.disable && "pointer-events-none cursor-not-allowed opacity-50",
-                              )}
-                            >
-                              {option.label}
-                            </CommandItem>
-                          );
-                        })}
-                      </>
-                    </CommandGroup>
-                  ))}
-                </>
+              placeholder={hidePlaceholderWhenSelected && selected.length !== 0 ? "" : placeholder}
+              id="tagSelectInput"
+              className={cn(
+                "placeholder:text-[#] border-0 outline-none ring-0 font-normal text-base flex-1 bg-transparent outline-hidden disabled:cursor-not-allowed",
+                {
+                  "w-full": hidePlaceholderWhenSelected,
+                  "px-4 py-2": selected.length === 0,
+                  "ml-1": selected.length !== 0,
+                },
+                inputProps?.className,
               )}
-            </CommandList>
-          )}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setSelected(selected.filter((s) => s.fixed));
+                onChange?.(selected.filter((s) => s.fixed));
+              }}
+              className={cn(
+                "text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute end-0 top-0 flex size-9 items-center justify-center rounded-md border border-transparent transition-[color,box-shadow] outline-none focus-visible:ring-[3px]",
+                (hideClearAllButton ||
+                  disabled ||
+                  selected.length < 1 ||
+                  selected.filter((s) => s.fixed).length === selected.length) &&
+                  "hidden",
+              )}
+              aria-label="Clear all"
+            >
+              <XIcon size={16} aria-hidden="true" />
+            </button>
+          </div>
         </div>
-      </div>
-    </Command>
+        <div className="relative">
+          <div
+            className={cn(
+              "border-input absolute top-2 z-10 w-full overflow-hidden rounded-md border",
+              "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+              !open && "hidden",
+            )}
+            data-state={open ? "open" : "closed"}
+          >
+            {open && (
+              <CommandList
+                className="bg-popover text-popover-foreground shadow-lg outline-hidden"
+                onMouseLeave={() => {
+                  setOnScrollbar(false);
+                }}
+                onMouseEnter={() => {
+                  setOnScrollbar(true);
+                }}
+                onMouseUp={() => {
+                  inputRef?.current?.focus();
+                }}
+              >
+                {isLoading ? (
+                  <>{loadingIndicator}</>
+                ) : (
+                  <>
+                    {EmptyItem()}
+                    {CreatableItem()}
+                    {!selectFirstItem && <CommandItem value="-" className="hidden" />}
+                    {Object.entries(selectables).map(([key, dropdowns]) => (
+                      <CommandGroup key={key} heading={key} className="h-full overflow-auto">
+                        <>
+                          {dropdowns.map((option) => {
+                            return (
+                              <CommandItem
+                                key={option.value}
+                                value={option.value}
+                                disabled={option.disable}
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
+                                onSelect={() => {
+                                  if (selected.length >= maxSelected) {
+                                    onMaxSelected?.(selected.length);
+                                    return;
+                                  }
+                                  setInputValue("");
+                                  if (option.value.toLowerCase() == "other") {
+                                    onOtherOpen();
+                                    return;
+                                  }
+                                  const newOptions = [...selected, option];
+                                  setSelected(newOptions);
+                                  onChange?.(newOptions);
+                                }}
+                                className={cn(
+                                  "cursor-pointer",
+                                  option.disable && "pointer-events-none cursor-not-allowed opacity-50",
+                                )}
+                              >
+                                {option.label}
+                              </CommandItem>
+                            );
+                          })}
+                        </>
+                      </CommandGroup>
+                    ))}
+                  </>
+                )}
+              </CommandList>
+            )}
+          </div>
+        </div>
+      </Command>
+      <TagSelectOther isOpen={isOtherOpen} onClose={onOtherClose} onSubmit={handleOther}>
+        <Input
+          type="text"
+          placeholder="Enter your response"
+          bg="#F6F6F6"
+          border="0"
+          name="jobDescription"
+          value={otherValue}
+          onChange={(e) => {
+            setOtherValue(e.target.value);
+          }}
+        />
+      </TagSelectOther>
+    </>
   );
 };
 

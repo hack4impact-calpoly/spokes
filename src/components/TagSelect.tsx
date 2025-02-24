@@ -1,6 +1,7 @@
 import { Label } from "@/components/TagsMultiselect/label";
 import MultipleSelector, { Option } from "@/components/TagsMultiselect/multiselect";
-import { useRef } from "react";
+import { Button, FormLabel, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay } from "@chakra-ui/react";
+import { ReactNode, useRef, useState } from "react";
 
 const industries: Option[] = [
   {
@@ -85,5 +86,39 @@ export default function TagSelect({
         emptyIndicator={<p className="text-center text-sm p-0 h-fit">No results found</p>}
       />
     </div>
+  );
+}
+
+export function TagSelectOther({
+  isOpen,
+  onClose,
+  onSubmit,
+  children,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <Modal isCentered={true} isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent maxW={"400px"}>
+        <ModalBody pt={5}>
+          <FormLabel fontSize={"xl"} fontWeight={"medium"} requiredIndicator>
+            Other Industry
+          </FormLabel>
+          {children}
+        </ModalBody>
+        <ModalFooter pb={5}>
+          <Button className="cursor-pointer" variant="ghost" mr={3} onClick={onClose}>
+            Cancel
+          </Button>
+          <Button className="cursor-pointer" onClick={onSubmit} bg="black" color="white" _hover={{ bg: "gray.800" }}>
+            Submit
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 }
