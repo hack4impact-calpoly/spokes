@@ -17,6 +17,7 @@ import RadioCard from "@/components/RadioCard";
 import JobConfirmationModal from "@/components/JobConfirmationModal";
 import JobDeletedModal from "@/components/JobDeletedModal";
 import { useRouter, useParams } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export default function JobFormPage() {
   console.log("Component rendered");
@@ -62,8 +63,6 @@ export default function JobFormPage() {
 
   // for populating formData with job data
   useEffect(() => {
-    console.log("running, jobId:", jobId); // Check jobId value
-
     if (!jobId) {
       console.log("No jobId provided. Skipping fetch.");
       return;
@@ -147,6 +146,7 @@ export default function JobFormPage() {
 
       setMessage("Job updated successfully!");
       setIsSubmitModalOpen(true);
+      revalidatePath("/jobs"); // clears cache of /jobs to show updated results
     } catch (error) {
       console.error("Error updating job:", error);
       setMessage("Error updating job.");
@@ -179,8 +179,10 @@ export default function JobFormPage() {
       setMessage("Successfully deleted job");
       setLoading(false);
       setIsDeleteModalOpen(true);
+      revalidatePath("/jobs"); // clears cache of /jobs to show updated results
     } catch (error) {
       console.error(`Error deleting job: ${error}`);
+      setMessage("Error occoured while attempting to delete job");
     }
   };
 
