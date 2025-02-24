@@ -46,9 +46,10 @@ export default function JobBadge({ badgeType }: JobBadgeProps) {
 
   return (
     <Badge
-      className="text-center w-fit h-[26px] w-[80px]"
+      className="text-center w-fit"
       rounded="md"
-      p="1"
+      px="2"
+      py="1"
       textTransform="none"
       fontWeight="normal"
       bg={badgeColor}
