@@ -40,11 +40,11 @@ export default function BottomSection() {
       {/* Desktop Navigation (visible on sm and up) */}
       <div className="hidden sm:flex justify-between items-center px-9 py-.5 text-xs sm:text-sm md:text-md lg:text-lg">
         <div className="flex">
-          <NavBarLink title="Job Board" href="jobs" />
-          <NavBarLink title="List Job" href="jobform" />
+          <NavBarLink title="Job Board" href="/jobs" />
+          <NavBarLink title="List Job" href="/jobform" />
           {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
           {/* {has && has({ role: "org:admin" }) && <NavBarLink title="Spokes Dashboard" href="admin" />}  */}
-          <NavBarLink title="Spokes Dashboard" href="admin" />
+          <NavBarLink title="Spokes Dashboard" href="/admin" />
         </div>
         {showScrollToTop && (
           <div
