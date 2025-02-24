@@ -12,6 +12,7 @@ import {
   FormErrorMessage,
   useRadioGroup,
   HStack,
+  Link,
 } from "@chakra-ui/react";
 import RadioCard from "@/components/RadioCard";
 import JobConfirmationModal from "@/components/JobConfirmationModal";
@@ -409,6 +410,9 @@ export default function JobFormPage() {
               Delete
             </Button>
           </HStack>
+          <Link variant="underline" href="/jobs" mt="2">
+            Return to job board
+          </Link>
 
           {message && <p>{message}</p>}
         </VStack>
