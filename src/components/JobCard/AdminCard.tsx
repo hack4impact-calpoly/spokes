@@ -65,7 +65,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
             <JobBadge badgeType={job.compensationType} />
           </div>
 
-          <div className="flex flex-wrap gap-2 justify-end min-[1000px]:mt-0 mt-5">
+          <div className="flex flex-wrap gap-2 justify min-[1000px]:mt-0 mt-5">
             {job.jobStatus === "pending" && !isExpired && (
               <>
                 <Button
