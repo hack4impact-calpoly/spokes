@@ -10,10 +10,11 @@ import JobCardModal from "./JobCardModal";
 
 interface JobCardProps {
   job: IJob;
+  innerRef?: (node?: Element | null | undefined) => void;
   onUpdateJob?: (jobId: string, status: "approved" | "rejected", approvedDate?: Date) => void;
 }
 
-export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
+export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<"approve" | "reject" | "renew" | null>(null);
 
@@ -43,7 +44,7 @@ export default function AdminCard({ job, onUpdateJob }: JobCardProps) {
     new Date(job.postDate) < new Date(new Date().setDate(new Date().getDate() - 30));
 
   return (
-    <div className="max-w-[100%]">
+    <div className="max-w-[100%]" ref={innerRef}>
       <div className="relative bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm">
         <IconButton
           aria-label="Edit Application"
