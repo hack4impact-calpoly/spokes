@@ -69,11 +69,13 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
             {job.jobStatus === "pending" && !isExpired && (
               <>
                 <Button
+                  className="border"
                   px="10"
                   width="120px"
                   fontSize="small"
                   fontWeight="normal"
                   borderColor="black"
+                  backgroundColor={"#f7f7f7"}
                   sx={{
                     _hover: {
                       backgroundColor: "green.300",
@@ -84,11 +86,13 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
                   Approve
                 </Button>
                 <Button
+                  className="border"
                   px="10"
                   width="120px"
                   fontSize="small"
                   fontWeight="normal"
                   borderColor="black"
+                  backgroundColor={"#f7f7f7"}
                   onClick={() => openModal("reject")}
                   sx={{
                     _hover: {
@@ -103,11 +107,13 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
 
             {isExpired && (
               <Button
+                className="border"
                 px="10"
                 width="120px"
                 fontSize="small"
                 fontWeight="normal"
                 borderColor="black"
+                backgroundColor={"#f7f7f7"}
                 onClick={() => openModal("renew")}
                 sx={{
                   _hover: {
