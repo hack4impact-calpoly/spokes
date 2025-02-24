@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import RadioCard from "@/components/RadioCard";
 import JobConfirmationModal from "@/components/JobConfirmationModal";
+import JobDeletedModal from "@/components/JobDeletedModal";
 import { useRouter, useParams } from "next/navigation";
 
 export default function JobFormPage() {
@@ -40,7 +41,8 @@ export default function JobFormPage() {
   const [message, setMessage] = useState("");
   const [selectEmployment, setSelectEmployment] = useState("");
   const [selectCompensation, setSelectCompensation] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const router = useRouter();
 
   const { jobId } = useParams<{ jobId?: string }>();
@@ -144,7 +146,7 @@ export default function JobFormPage() {
       });
 
       setMessage("Job updated successfully!");
-      setIsModalOpen(true);
+      setIsSubmitModalOpen(true);
     } catch (error) {
       console.error("Error updating job:", error);
       setMessage("Error updating job.");
@@ -176,6 +178,7 @@ export default function JobFormPage() {
       }
       setMessage("Successfully deleted job");
       setLoading(false);
+      setIsDeleteModalOpen(true);
     } catch (error) {
       console.error(`Error deleting job: ${error}`);
     }
@@ -203,8 +206,13 @@ export default function JobFormPage() {
     },
   });
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const closeSubmitModal = () => {
+    setIsSubmitModalOpen(false);
+    router.push("/");
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
     router.push("/");
   };
 
@@ -403,7 +411,8 @@ export default function JobFormPage() {
           {message && <p>{message}</p>}
         </VStack>
       </form>
-      <JobConfirmationModal isOpen={isModalOpen} onClose={closeModal} />
+      <JobConfirmationModal isOpen={isSubmitModalOpen} onClose={closeSubmitModal} />
+      <JobDeletedModal isOpen={isDeleteModalOpen} onClose={closeDeleteModal} />
     </Box>
   );
 }
