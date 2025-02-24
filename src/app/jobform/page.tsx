@@ -15,11 +15,20 @@ import {
 import RadioCard from "@/components/RadioCard";
 import JobConfirmationModal from "@/components/JobConfirmationModal";
 import { useRouter } from "next/navigation";
+import TagSelect from "@/components/TagSelect";
+import { Option } from "@/components/TagsMultiselect/multiselect";
+
+// converts the formData string array to a Option object array necessary for use in the TagSelect componenet
+function formatIndustries(industries: string[]): Option[] {
+  return industries.map((industry) => {
+    return { value: industry, label: industry };
+  });
+}
 
 export default function JobFormPage() {
   const [formData, setFormData] = useState({
     organizationName: "",
-    organizationIndustry: "",
+    organizationIndustry: [],
     title: "",
     postDate: new Date().toISOString(),
     expireDate: "",
@@ -60,12 +69,12 @@ export default function JobFormPage() {
     return [match[1], match[2], match[3]].filter(Boolean).join("-");
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | { target: { name: string; value: string[] } }) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "contactPhone" ? formatPhoneNumber(value) : value,
+      [name]: name === "contactPhone" ? formatPhoneNumber(String(value)) : value,
     }));
   };
 
@@ -93,7 +102,7 @@ export default function JobFormPage() {
 
       setFormData({
         organizationName: "",
-        organizationIndustry: "",
+        organizationIndustry: [],
         title: "",
         postDate: new Date().toISOString(),
         expireDate: "",
@@ -145,6 +154,9 @@ export default function JobFormPage() {
     router.push("/");
   };
 
+  const [industries, setIndustries] = useState([]);
+  const [showMaxError, setShowMaxError] = useState(false);
+
   return (
     <Box mx="auto" p={10} minWidth={{ base: "320px", md: "768px", lg: "1024px" }} maxWidth="1200px">
       <div className="mt-[8px] mb-[10px] text-black text-3xl font-semibold">Create New Listing</div>
@@ -166,16 +178,28 @@ export default function JobFormPage() {
             />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel requiredIndicator>Organization Industry</FormLabel>
-            <Input
-              type="text"
-              placeholder="Enter your response"
-              bg="#F6F6F6"
-              border="0"
+            <div className="flex gap-0">
+              <FormLabel requiredIndicator>Organization Industry</FormLabel>
+              {showMaxError && <p className="text-red-500 text-xs font-medium mt-1.5">Choose up to 3</p>}
+            </div>
+            <TagSelect
+              value={formatIndustries(formData.organizationIndustry)}
               name="organizationIndustry"
-              value={formData.organizationIndustry}
-              onChange={handleChange}
-            />
+              onChange={(values: Option[]) => {
+                const industries: string[] = values.map((value) => {
+                  return value.value;
+                });
+                handleChange({ target: { name: "organizationIndustry", value: industries } });
+              }}
+              onMax={() => {
+                setShowMaxError(true);
+              }}
+              checkMax={(length) => {
+                if (length < 3) {
+                  setShowMaxError(false);
+                }
+              }}
+            ></TagSelect>
           </FormControl>
           <FormControl isRequired>
             <FormLabel requiredIndicator>Job Title</FormLabel>
