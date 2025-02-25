@@ -4,7 +4,7 @@ import Jobs from "../../jobs/page";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@testing-library/jest-dom";
 
-// Helper function to create a QueryClient instance for tests
+// needed because jobs page uses react-query hooks (like useInfiniteQuery) which expect a QueryClient
 const createTestQueryClient = () =>
   new QueryClient({
     defaultOptions: {
