@@ -37,10 +37,6 @@ const industries: Option[] = [
     label: "Faith-Based & Spiritual",
   },
   {
-    value: "Organizations",
-    label: "Organizations",
-  },
-  {
     value: "Civil Rights & Advocacy",
     label: "Civil Rights & Advocacy",
   },
