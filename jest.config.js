@@ -4,7 +4,7 @@ module.exports = {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
   transform: {
-    "^.+\\.(js|jsx|ts|tsx)$": "babel-jest",
+    "^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { configFile: "./babel.config.jest.js" }],
   },
   transformIgnorePatterns: ["/node_modules/"],
   setupFilesAfterEnv: ["@testing-library/jest-dom"],
