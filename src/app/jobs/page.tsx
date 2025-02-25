@@ -152,15 +152,6 @@ export default function Jobs() {
     }
   };
 
-  const filteredJobs =
-    jobData &&
-    Array.from(jobData)?.filter(
-      (job) =>
-        (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
-        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)) &&
-        (filters.industry.length === 0 || filters.industry.includes(job.organizationIndustry)),
-    );
-
   const filteredRecentJobs =
     recentJobs &&
     Array.from(recentJobs)?.filter(
@@ -206,7 +197,7 @@ export default function Jobs() {
             <div className="flex gap-8">
               <div
                 className={twMerge(
-                  "text-black text-3xl cursor-pointer select-none",
+                  "text-black text-2xl sm:text-3xl cursor-pointer select-none",
                   tab == 1 ? "font-semibold" : "font-normal text-[#C3C3C3]",
                 )}
                 onClick={() => handleTabChange(1)}
@@ -215,7 +206,7 @@ export default function Jobs() {
               </div>
               <div
                 className={twMerge(
-                  "text-black text-3xl cursor-pointer select-none",
+                  "text-black text-2xl sm:text-3xl cursor-pointer select-none",
                   tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
                 )}
                 onClick={() => handleTabChange(2)}
@@ -234,7 +225,7 @@ export default function Jobs() {
             <>
               {fetchedJobs ? (
                 <>
-                  <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} />
+                  <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} onJobView={handleJobView} />
                   {isFetchingNextPage && <Loader size="xl" label="Loading more jobs..." />}
                 </>
               ) : (
