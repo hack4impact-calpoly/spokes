@@ -91,6 +91,19 @@ export default function JobFormPage() {
         throw new Error("Failed to submit job.");
       }
 
+      // send email noti to admin
+      const emailResponse = await fetch("/api/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedFormData),
+      });
+
+      if (!emailResponse.ok) {
+        console.error("Failed to send notification email");
+      }
+
       setFormData({
         organizationName: "",
         organizationIndustry: "",
