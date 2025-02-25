@@ -158,7 +158,8 @@ export default function Jobs() {
       (job) =>
         (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
         (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)) &&
-        (filters.industry.length === 0 || filters.industry.includes(job.organizationIndustry)),
+        (filters.industry.length === 0 ||
+          filters.industry.some((industry) => job.organizationIndustry.includes(industry))),
     );
 
   const {
