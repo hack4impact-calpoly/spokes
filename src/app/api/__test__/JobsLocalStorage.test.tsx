@@ -2,11 +2,11 @@ import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
 import JobCard from "../../../components/JobCard/JobCard"; // adjust the path as needed
 
-// dummy job object
+// Dummy job object with organizationIndustry as an array
 const dummyJob = {
   _id: "job-123",
   organizationName: "Test Org",
-  organizationIndustry: "Tech",
+  organizationIndustry: ["Tech"] as [string],
   title: "Test Title",
   postDate: new Date(),
   jobDescription: "Test description",
@@ -19,8 +19,9 @@ const dummyJob = {
 
 describe("Local Storage Addition for JobCard", () => {
   beforeEach(() => {
-    // clear localStorage before each test
     localStorage.clear();
+    // Mock window.open to avoid jsdom's "not implemented" error
+    window.open = jest.fn();
   });
 
   test("Job is added to localStorage when 'See More' is clicked", () => {
@@ -28,7 +29,7 @@ describe("Local Storage Addition for JobCard", () => {
 
     expect(localStorage.getItem("myJobs")).toBe("[]");
 
-    // "See More"triggers updateLocalStorage in JobCard.tsx
+    // "See More" triggers updateLocalStorage in JobCard.tsx
     const seeMoreButton = screen.getByRole("button", { name: /see more/i });
     fireEvent.click(seeMoreButton);
 

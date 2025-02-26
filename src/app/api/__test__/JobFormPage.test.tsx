@@ -36,7 +36,8 @@ describe("JobFormPage", () => {
     fireEvent.change(screen.getByLabelText(/Organization Name/i), {
       target: { value: "Test Org" },
     });
-    fireEvent.change(screen.getByLabelText(/Organization Industry/i), {
+    // Instead of getByLabelText, query by the placeholder text.
+    fireEvent.change(screen.getByPlaceholderText(/Select industries/i), {
       target: { value: "Test" },
     });
     fireEvent.change(screen.getByLabelText(/Job Title/i), {
@@ -88,7 +89,8 @@ describe("JobFormPage", () => {
     fireEvent.change(screen.getByLabelText(/Organization Name/i), {
       target: { value: "Test Org" },
     });
-    fireEvent.change(screen.getByLabelText(/Organization Industry/i), {
+    // Use getByPlaceholderText here as well.
+    fireEvent.change(screen.getByPlaceholderText(/Select industries/i), {
       target: { value: "Test" },
     });
     fireEvent.change(screen.getByLabelText(/Job Title/i), {

@@ -27,14 +27,14 @@ describe("Jobs Page", () => {
         title: "Job One",
         employmentType: "full-time",
         compensationType: "paid",
-        organizationIndustry: "Tech",
+        organizationIndustry: ["Tech"],
       },
       {
         _id: "2",
         title: "Job Two",
         employmentType: "part-time",
         compensationType: "volunteer",
-        organizationIndustry: "Health",
+        organizationIndustry: ["Health"],
       },
     ];
 
