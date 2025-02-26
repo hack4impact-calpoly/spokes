@@ -7,31 +7,36 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: NextRequest) {
   try {
     const jobData = await request.json();
+    console.log("📧 ATTEMPTING TO SEND: ", jobData.title);
 
     const { data, error } = await resend.emails.send({
       from: "SpokesJB <onboarding@resend.dev>",
-      to: ["delivered@resend.dev"], // Replace with actual recipient email
-      subject: "New Job Posting!",
+      to: ["noahgiboney@gmail.com"],
+      subject: `${jobData.organizationName} submitted a job and is pending approval...`,
       react: EmailTemplate({
-        jobTitle: jobData.title,
-        jobDescription: jobData.description,
-        jobLocation: jobData.location,
-        jobSalary: jobData.salary || "Not specified",
+        title: jobData.title,
+        jobDescription: jobData.jobDescription,
         organizationName: jobData.organizationName,
+        organizationIndustry: jobData.organizationIndustry,
         employmentType: jobData.employmentType,
         compensationType: jobData.compensationType,
+        contactName: jobData.contactName,
+        contactPhone: jobData.contactPhone,
+        contactEmail: jobData.contactEmail,
+        detailURL: jobData.detailURL,
+        applyNowURL: jobData.applyNowURL,
       }),
     });
 
     if (error) {
-      console.error("❌ EMAIL DIDN'T SEND", error);
+      console.error("❌ EMAIL FAILED:", error);
       return Response.json({ error }, { status: 500 });
     }
 
     console.log("✅ EMAIL SENT! ID:", data?.id);
     return Response.json({ success: true, data });
   } catch (error) {
-    console.error("❌ EMAIL DIDN'T SEND", error);
+    console.error("❌ EMAIL FAILED:", error);
     return Response.json({ error: "Failed to send email" }, { status: 500 });
   }
 }
