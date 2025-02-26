@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
 
     const { data, error } = await resend.emails.send({
       from: "SpokesJB <onboarding@resend.dev>", // replace with our email
-      to: ["noahgiboney@gmail.com"], // replace with michael
+      to: [""], // replace with michael
       subject: `${jobData.organizationName} submitted a job and is pending approval...`,
       react: EmailTemplate({
         title: jobData.title,
