@@ -7,11 +7,13 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: NextRequest) {
   try {
     const jobData = await request.json();
+
+    // console logs can be removed in the future
     console.log("📧 ATTEMPTING TO SEND: ", jobData.title);
 
     const { data, error } = await resend.emails.send({
-      from: "SpokesJB <onboarding@resend.dev>",
-      to: ["noahgiboney@gmail.com"],
+      from: "SpokesJB <onboarding@resend.dev>", // replace with our email
+      to: ["noahgiboney@gmail.com"], // replace with michael
       subject: `${jobData.organizationName} submitted a job and is pending approval...`,
       react: EmailTemplate({
         title: jobData.title,
