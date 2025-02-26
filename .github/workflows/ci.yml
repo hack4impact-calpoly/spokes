@@ -47,4 +47,4 @@ jobs:
           # Add additional environment variables here
       
       - name: Run tests
-        run: CI=true npm test
+        run: npm test
