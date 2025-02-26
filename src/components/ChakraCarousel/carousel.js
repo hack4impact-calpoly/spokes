@@ -7,7 +7,7 @@ import { motion, useAnimation, useMotionValue } from "framer-motion";
 import useBoundingRect from "./hooks/useBoundingRect";
 import percentage from "./utils/percentage";
 
-const MotionFlex = motion(Flex);
+const MotionFlex = motion.create(Flex);
 
 const transitionProps = {
   stiffness: 400,
