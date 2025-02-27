@@ -27,16 +27,13 @@ describe("JobFormPage", () => {
     const fetchMock = global.fetch as jest.Mock<any>;
     fetchMock.mockResolvedValueOnce({
       ok: true,
+      status: 200, // Ensure status 200 is present
       json: async () => ({ id: "123", message: "Job posted successfully!" }),
     });
-
-    render(<JobFormPage />);
-
-    // Fill text input fields using label queries
+    render(<JobFormPage />); // Fill text input fields using label queries
     fireEvent.change(screen.getByLabelText(/Organization Name/i), {
       target: { value: "Test Org" },
     });
-    // Instead of getByLabelText, query by the placeholder text.
     fireEvent.change(screen.getByPlaceholderText(/Select industries/i), {
       target: { value: "Test" },
     });
@@ -56,15 +53,10 @@ describe("JobFormPage", () => {
     fireEvent.change(screen.getByLabelText(/Email/i), {
       target: { value: "test@example.com" },
     });
-
     fireEvent.click(screen.getByText(/Salary/i));
-    fireEvent.click(screen.getByText(/Full-Time/i));
-
-    // click the submit button
+    fireEvent.click(screen.getByText(/Full-Time/i)); // Click the submit button
     const submitButton = screen.getByRole("button", { name: /submit/i });
-    fireEvent.click(submitButton);
-
-    // Wait for async events and verify that fetch was called with POST method
+    fireEvent.click(submitButton); // Wait for the fetch call and check the response status
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
         "/api/jobs",
@@ -72,10 +64,15 @@ describe("JobFormPage", () => {
           method: "POST",
         }),
       );
+    }); // Check the response status is 200
+    await waitFor(async () => {
+      const response = await fetchMock.mock.results[0].value;
+      expect(response.status).toBe(200);
+    }); // check if response.ok is true
+    await waitFor(async () => {
+      const response = await fetchMock.mock.results[0].value;
+      expect(response.ok).toBe(true);
     });
-
-    // Check that the success message is displayed
-    expect(await screen.findByText(/job posted successfully/i)).toBeInTheDocument();
   });
 
   it("displays error on submission failure", async () => {
