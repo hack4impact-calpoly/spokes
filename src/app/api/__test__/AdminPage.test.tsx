@@ -28,7 +28,7 @@ describe("Admin Jobs Page", () => {
     const fakeJobs = [
       {
         _id: "1",
-        title: "Pending Job",
+        title: "Job1",
         jobStatus: "pending",
         postDate: new Date().toISOString(),
         organizationName: "Org1",
@@ -42,7 +42,7 @@ describe("Admin Jobs Page", () => {
       },
       {
         _id: "2",
-        title: "Live Job",
+        title: "Job2",
         jobStatus: "approved",
         postDate: new Date().toISOString(),
         organizationName: "Org2",
@@ -56,8 +56,8 @@ describe("Admin Jobs Page", () => {
       },
       {
         _id: "3",
-        title: "Rejected Job",
-        jobStatus: "rejected",
+        title: "Job3",
+        jobStatus: "expired",
         postDate: new Date().toISOString(),
         organizationName: "Org3",
         organizationIndustry: ["Finance"],
@@ -85,13 +85,24 @@ describe("Admin Jobs Page", () => {
     expect(screen.getByText(/Pending Jobs/i)).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByText(/Pending Job/i)).toBeInTheDocument();
+      expect(screen.getByText(/Job1/i)).toBeInTheDocument();
+      expect(screen.getByText("Org1")).toBeInTheDocument();
+      expect(screen.getByText(/Pending description/i)).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByText(/Live Jobs/i));
 
     await waitFor(() => {
-      expect(screen.getByRole("heading", { name: /Live Job/i })).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: /Job2/i })).toBeInTheDocument();
+      expect(screen.getByText("Org2")).toBeInTheDocument();
+      expect(screen.getByText(/Live description/i)).toBeInTheDocument;
+    });
+
+    fireEvent.click(screen.getByText(/Expired Jobs/i));
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: /Job3/i })).toBeInTheDocument();
+      expect(screen.getByText("Org3")).toBeInTheDocument();
+      expect(screen.getByText(/Rejected description/i)).toBeInTheDocument();
     });
   });
 });
