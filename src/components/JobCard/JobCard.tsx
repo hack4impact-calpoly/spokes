@@ -51,14 +51,6 @@ export default function JobCard({ job, onJobView, innerRef }: JobCardProps) {
     }
   };
 
-  const getRecentJobs = () => {
-    const storedJobs = localStorage.getItem("myJobs");
-    if (storedJobs) {
-      return JSON.parse(storedJobs);
-    }
-    return [];
-  };
-
   return (
     <div className="max-w-[100%]" ref={innerRef}>
       <div className="bg-[#f7f7f7] rounded-md px-8 pt-5 pb-2 shadow-sm">

@@ -156,7 +156,7 @@ export default function AdminJobs() {
       <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
         <div className="flex flex-col gap-24 mb-20">
           <div className="flex flex-col gap-8">
-            <div className="text-3xl font-semibold">Incoming Applications</div>
+            <div className="text-3xl font-semibold">Pending Jobs</div>
             {!incomingJobData ? (
               <Loader
                 size="md"
@@ -195,7 +195,7 @@ export default function AdminJobs() {
             <div className="flex gap-8 w-full">
               <div
                 className={twMerge(
-                  "text-black text-3xl text-center cursor-pointer select-none",
+                  "text-black text-2xl sm:text-3xl text-center cursor-pointer select-none",
                   tab == 1 ? "font-semibold" : "font-normal text-[#C3C3C3]",
                 )}
                 onClick={() => {
@@ -203,11 +203,11 @@ export default function AdminJobs() {
                   setTab(1);
                 }}
               >
-                Live Applications
+                Live Jobs
               </div>
               <div
                 className={twMerge(
-                  "text-black text-3xl text-center cursor-pointer select-none",
+                  "text-black text-2xl sm:text-3xl text-center cursor-pointer select-none",
                   tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
                 )}
                 onClick={() => {
@@ -215,7 +215,7 @@ export default function AdminJobs() {
                   setTab(2);
                 }}
               >
-                Expired Applications
+                Expired Jobs
               </div>
             </div>
             {tab == 1 ? (

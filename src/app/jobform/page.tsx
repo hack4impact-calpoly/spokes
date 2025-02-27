@@ -15,11 +15,21 @@ import {
 import RadioCard from "@/components/RadioCard";
 import JobConfirmationModal from "@/components/JobConfirmationModal";
 import { useRouter } from "next/navigation";
+import TagSelect, { TagSelectOther } from "@/components/TagSelect";
+import { Option } from "@/components/TagsMultiselect/multiselect";
+import { cn } from "@/lib/utils";
+
+// converts the formData string array to a Option object array necessary for use in the TagSelect componenet
+function formatIndustries(industries: string[]): Option[] {
+  return industries.map((industry) => {
+    return { value: industry, label: industry };
+  });
+}
 
 export default function JobFormPage() {
   const [formData, setFormData] = useState({
     organizationName: "",
-    organizationIndustry: "",
+    organizationIndustry: [],
     title: "",
     postDate: new Date().toISOString(),
     expireDate: "",
@@ -60,12 +70,12 @@ export default function JobFormPage() {
     return [match[1], match[2], match[3]].filter(Boolean).join("-");
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | { target: { name: string; value: string[] } }) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "contactPhone" ? formatPhoneNumber(value) : value,
+      [name]: name === "contactPhone" ? formatPhoneNumber(String(value)) : value,
     }));
   };
 
@@ -91,9 +101,22 @@ export default function JobFormPage() {
         throw new Error("Failed to submit job.");
       }
 
+      // send email noti to admin
+      const emailResponse = await fetch("/api/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedFormData),
+      });
+
+      if (!emailResponse.ok) {
+        console.error("Failed to send notification email");
+      }
+
       setFormData({
         organizationName: "",
-        organizationIndustry: "",
+        organizationIndustry: [],
         title: "",
         postDate: new Date().toISOString(),
         expireDate: "",
@@ -145,10 +168,12 @@ export default function JobFormPage() {
     router.push("/");
   };
 
+  const [showMaxError, setShowMaxError] = useState(false);
+
   return (
     <Box mx="auto" p={10} minWidth={{ base: "320px", md: "768px", lg: "1024px" }} maxWidth="1200px">
       <div className="mt-[8px] mb-[10px] text-black text-3xl font-semibold">Create New Listing</div>
-      <Heading as="h2" size="md" mb={5}>
+      <Heading as="h2" size="md" mb={5} mt={10}>
         Job Information
       </Heading>
       <form onSubmit={handleSubmit} method="POST">
@@ -166,16 +191,38 @@ export default function JobFormPage() {
             />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel requiredIndicator>Organization Industry</FormLabel>
-            <Input
-              type="text"
-              placeholder="Enter your response"
-              bg="#F6F6F6"
-              border="0"
+            <div className="flex gap-0">
+              <FormLabel requiredIndicator>Organization Industry</FormLabel>
+              <p
+                className={cn(
+                  "text-red-600 text-xs font-medium mt-1.5 transition",
+                  showMaxError ? "opacity-1" : "opacity-0",
+                )}
+              >
+                Max limit 3
+              </p>
+            </div>
+            <TagSelect
+              value={formatIndustries(formData.organizationIndustry)}
               name="organizationIndustry"
-              value={formData.organizationIndustry}
-              onChange={handleChange}
-            />
+              onChange={(values: Option[]) => {
+                const industries: string[] = values.map((value) => {
+                  return value.value;
+                });
+                handleChange({ target: { name: "organizationIndustry", value: industries } });
+              }}
+              onMax={() => {
+                setShowMaxError(true);
+                setTimeout(() => {
+                  setShowMaxError(false);
+                }, 3000);
+              }}
+              checkMax={(length) => {
+                if (length < 3) {
+                  setShowMaxError(false);
+                }
+              }}
+            ></TagSelect>
           </FormControl>
           <FormControl isRequired>
             <FormLabel requiredIndicator>Job Title</FormLabel>
@@ -252,7 +299,7 @@ export default function JobFormPage() {
             />
             <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
           </FormControl>
-          <Heading as="h2" size="md" textAlign="left" w="100%">
+          <Heading as="h2" size="md" textAlign="left" w="100%" mt={5}>
             Person of Contact - Information
           </Heading>
           <Stack w="full" direction={{ base: "column", md: "row" }} spacing={{ base: 6, md: 40 }}>
