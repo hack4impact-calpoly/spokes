@@ -56,8 +56,8 @@ describe("JobFormPage", () => {
     const dropdownTrigger = screen.getByPlaceholderText(/Select industries/i);
     fireEvent.click(dropdownTrigger);
 
-    // Wait for the dropdown options to appear and click the one labeled "Organizations"
-    const dropdownOption = await screen.findByText("Organizations");
+    // Wait for the dropdown options to appear and click the one labeled "Arts & Culture"
+    const dropdownOption = await screen.findByText("Arts & Culture");
     fireEvent.click(dropdownOption);
 
     fireEvent.change(screen.getByLabelText(/Job Title/i), {
@@ -100,7 +100,7 @@ describe("JobFormPage", () => {
     expect(parsedBody).toEqual(
       expect.objectContaining({
         organizationName: "Test Org",
-        organizationIndustry: ["Organizations"],
+        organizationIndustry: ["Arts & Culture"],
         title: "Software Engineer",
         postDate: expect.any(String),
         expireDate: null,
