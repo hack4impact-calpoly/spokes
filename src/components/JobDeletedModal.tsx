@@ -1,47 +1,65 @@
-"use client";
-
-import React from "react";
+import { Button } from "@chakra-ui/react/button";
 import {
-  Button,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
+  ModalCloseButton,
   ModalBody,
   ModalFooter,
-  ModalCloseButton,
 } from "@chakra-ui/react";
 
-interface JobDeletedModalProps {
+type JobDeletedModalProps = {
   isOpen: boolean;
   onClose: () => void;
-}
+  onConfirm: () => Promise<void>;
+};
 
-export default function JobDeletedModal({ isOpen, onClose }: JobDeletedModalProps) {
+function JobDeletedModal({ isOpen, onClose, onConfirm }: JobDeletedModalProps) {
+  // Map action to user friendly text
+  const actionText = "delete";
   return (
-    <div className="modal">
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent
-          className="flex justify-center items-center flex-shrink-0 rounded-lg border border-black overflow-hidden text-center py-10"
-          maxW={["350px", "60vw", "55vw"]}
-          h={["270px", "auto"]}
-        >
-          <ModalCloseButton top={3} size={["md", "md", "lg"]} onClick={onClose} />
-          <ModalHeader className="self-stretch text-black font-semibold leading-normal">
-            <p className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold">Job listing successfully deleted</p>
-          </ModalHeader>
-          <ModalBody className="self-stretch text-black text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-normal"></ModalBody>
-          <ModalFooter
-            as="a"
-            href="/jobs"
-            alignSelf={"center"}
-            className="text-black text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-normal underline"
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Confirm {actionText}</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>Are you sure you would like to {actionText} this job posting?</ModalBody>
+        <ModalFooter className="flex flex-wrap gap-2 mt-4 justify-end">
+          <Button
+            px="10"
+            width="120px"
+            fontSize="small"
+            fontWeight="normal"
+            borderColor="black"
+            onClick={onConfirm}
+            sx={{
+              _hover: {
+                backgroundColor: "green.300",
+              },
+            }}
           >
-            return to job board
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </div>
+            Confirm
+          </Button>
+          <Button
+            px="10"
+            width="120px"
+            fontSize="small"
+            fontWeight="normal"
+            borderColor="black"
+            onClick={onClose}
+            sx={{
+              _hover: {
+                backgroundColor: "red.300",
+              },
+            }}
+          >
+            Cancel
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 }
+
+export default JobDeletedModal;

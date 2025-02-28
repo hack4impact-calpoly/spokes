@@ -18,7 +18,6 @@ import RadioCard from "@/components/RadioCard";
 import JobConfirmationModal from "@/components/JobConfirmationModal";
 import JobDeletedModal from "@/components/JobDeletedModal";
 import { useRouter, useParams } from "next/navigation";
-import { revalidatePath } from "next/cache";
 
 export default function JobFormPage() {
   console.log("Component rendered");
@@ -147,7 +146,6 @@ export default function JobFormPage() {
 
       setMessage("Job updated successfully!");
       setIsSubmitModalOpen(true);
-      revalidatePath("/jobs"); // clears cache of /jobs to show updated results
     } catch (error) {
       console.error("Error updating job:", error);
       setMessage("Error updating job.");
@@ -156,8 +154,7 @@ export default function JobFormPage() {
     }
   };
 
-  const handleDelete = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleDelete = async () => {
     setLoading(true);
     setMessage("");
 
@@ -177,10 +174,10 @@ export default function JobFormPage() {
       if (!response.ok) {
         throw new Error("Failed to delete job.");
       }
+      setIsDeleteModalOpen(false);
       setMessage("Successfully deleted job");
       setLoading(false);
-      setIsDeleteModalOpen(true);
-      revalidatePath("/jobs"); // clears cache of /jobs to show updated results
+      router.push("/admin");
     } catch (error) {
       console.error(`Error deleting job: ${error}`);
       setMessage("Error occoured while attempting to delete job");
@@ -211,12 +208,10 @@ export default function JobFormPage() {
 
   const closeSubmitModal = () => {
     setIsSubmitModalOpen(false);
-    router.push("/");
   };
 
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
-    router.push("/");
   };
 
   return (
@@ -405,20 +400,20 @@ export default function JobFormPage() {
               bg="red"
               ml="4"
               _hover={{ bg: "#5E5E5E" }}
-              onClick={handleDelete}
+              onClick={() => setIsDeleteModalOpen(true)}
             >
               Delete
             </Button>
           </HStack>
-          <Link variant="underline" href="/jobs" mt="2">
-            Return to job board
+          <Link variant="underline" href="/admin" mt="2">
+            Return to admin board
           </Link>
 
           {message && <p>{message}</p>}
         </VStack>
       </form>
       <JobConfirmationModal isOpen={isSubmitModalOpen} onClose={closeSubmitModal} />
-      <JobDeletedModal isOpen={isDeleteModalOpen} onClose={closeDeleteModal} />
+      <JobDeletedModal isOpen={isDeleteModalOpen} onClose={closeDeleteModal} onConfirm={handleDelete} />
     </Box>
   );
 }
