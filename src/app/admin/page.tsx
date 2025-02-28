@@ -47,6 +47,7 @@ export default function AdminJobs() {
     try {
       const response = await fetch("/api/jobs");
       const result: IJob[] = await response.json();
+      //const result: IJob[] = [];
 
       // Check and update expired jobs
       await setExpiredJobs(result);
@@ -155,28 +156,38 @@ export default function AdminJobs() {
       <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
         <div className="flex flex-col gap-24 mb-20">
           <div className="flex flex-col gap-8">
-            <div className="text-3xl font-semibold">Incoming Applications</div>
-            {incomingJobData ? (
-              <ChakraCarousel gap={20}>
-                {incomingJobData.map((job) => (
-                  <Flex
-                    key={job._id}
-                    justifyContent="space-between"
-                    flexDirection="column"
-                    overflow="hidden"
-                    rounded={5}
-                    flex={1}
-                  >
-                    <AdminJobCard job={job} onUpdateJob={updateJobStatus} />
-                  </Flex>
-                ))}
-              </ChakraCarousel>
-            ) : (
+            <div className="text-3xl font-semibold">Pending Jobs</div>
+            {!incomingJobData ? (
               <Loader
                 size="md"
                 label="Loading Jobs..."
                 className="mt-8 grow flex flex-col gap-6 justify-center items-center"
               />
+            ) : incomingJobData.length === 0 ? (
+              <JobGrid
+                jobs={incomingJobData}
+                isAdmin={true}
+                onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
+              />
+            ) : (
+              <ChakraCarousel gap={20}>
+                {incomingJobData && incomingJobData.length > 0 ? (
+                  incomingJobData.map((job) => (
+                    <Flex
+                      key={job._id}
+                      justifyContent="space-between"
+                      flexDirection="column"
+                      overflow="hidden"
+                      rounded={5}
+                      flex={1}
+                    >
+                      <AdminJobCard job={job} onUpdateJob={updateJobStatus} />
+                    </Flex>
+                  ))
+                ) : (
+                  <div>No jobs available</div>
+                )}
+              </ChakraCarousel>
             )}
           </div>
 
@@ -184,7 +195,7 @@ export default function AdminJobs() {
             <div className="flex gap-8 w-full">
               <div
                 className={twMerge(
-                  "text-black text-3xl text-center cursor-pointer select-none",
+                  "text-black text-2xl sm:text-3xl text-center cursor-pointer select-none",
                   tab == 1 ? "font-semibold" : "font-normal text-[#C3C3C3]",
                 )}
                 onClick={() => {
@@ -192,11 +203,11 @@ export default function AdminJobs() {
                   setTab(1);
                 }}
               >
-                Live Applications
+                Live Jobs
               </div>
               <div
                 className={twMerge(
-                  "text-black text-3xl text-center cursor-pointer select-none",
+                  "text-black text-2xl sm:text-3xl text-center cursor-pointer select-none",
                   tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
                 )}
                 onClick={() => {
@@ -204,7 +215,7 @@ export default function AdminJobs() {
                   setTab(2);
                 }}
               >
-                Expired Applications
+                Expired Jobs
               </div>
             </div>
             {tab == 1 ? (

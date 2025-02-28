@@ -17,7 +17,7 @@ Spoke's has a mission to guide nonprofits to achieve their goals through support
 
 ### Team
 
-The Spokes team consists of 17 Cal Poly students. Over the course of about 9 months, we worked as a team to deploy this web application. The team members are listed below:
+The Spokes team consists of 16 Cal Poly students. Over the course of about 9 months, we worked as a team to deploy this web application. The team members are listed below:
 
 - [James Tran](https://www.linkedin.com/in/jameskhaihoantran/) - Project Manager
 - [Jessica Yu](https://www.linkedin.com/in/jessicayuhope/) - Designer
