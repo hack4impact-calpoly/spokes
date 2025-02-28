@@ -21,11 +21,47 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function GET() {
+// no filters: GET /api/jobs?page=1&limit=10
+// filter by employment type: GET /api/jobs?employmentType=full-time&employment=part-time
+// combine filters w/ pagination: GET /api/jobs?employmentType=full-time&compensationType=paid&page=2&limit=10
+export async function GET(req: Request) {
   try {
     await connectDB();
 
-    const jobs = await Job.find().sort({ postDate: -1 });
+    const { searchParams } = new URL(req.url);
+    const page = Math.max(parseInt(searchParams.get("page") || "1", 10), 1);
+    const limit = Math.max(parseInt(searchParams.get("limit") || "10", 10), 1);
+    const skip = (page - 1) * limit; // This will always be >= 0
+
+    // Filter parameters
+    const employmentFilters = searchParams.getAll("employmentType");
+    const compensationFilters = searchParams.getAll("compensationType");
+    const industryFilters = searchParams.getAll("organizationIndustry");
+
+    // Build the filter object dynamically
+    const filter: any = {};
+
+    if (employmentFilters.length > 0) {
+      filter.employmentType = {
+        $in: employmentFilters,
+      };
+    }
+
+    if (compensationFilters.length > 0) {
+      filter.compensationType = {
+        $in: compensationFilters,
+      };
+    }
+
+    if (industryFilters.length > 0) {
+      filter.organizationIndustry = {
+        $in: industryFilters,
+      };
+    }
+
+    // Fetch jobs with filters, sorting, and pagination
+    const jobs = await Job.find(filter).sort({ postDate: -1 }).skip(skip).limit(limit);
+    // return NextResponse.json(jobs, { status: 200 });
 
     return new NextResponse(JSON.stringify(jobs), {
       status: 200,

@@ -9,8 +9,9 @@ export enum EmploymentType {
 
 // The compensation type for the job
 export enum CompensationType {
-  paid = "paid",
-  volunteer = "unpaid",
+  salary = "salary",
+  hourly = "hourly",
+  contract = "contract",
 }
 
 // The status of the job
@@ -25,7 +26,7 @@ export enum JobStatus {
 export interface IJob {
   _id: string;
   organizationName: string;
-  organizationIndustry: string;
+  organizationIndustry: [string];
   title: string;
   postDate: Date;
   approvedDate?: Date;
@@ -43,7 +44,7 @@ export interface IJob {
 // Schema for the job object
 const JobSchema = new Schema({
   organizationName: { type: String, required: true },
-  organizationIndustry: { type: String, required: true },
+  organizationIndustry: { type: [String], required: true },
   title: { type: String, required: true },
   postDate: { type: Date, required: true },
   approvedDate: { type: Date, required: false },

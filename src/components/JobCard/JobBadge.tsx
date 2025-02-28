@@ -28,14 +28,14 @@ export default function JobBadge({ badgeType }: JobBadgeProps) {
     case "full-time":
       badgeColor = "#F8B1B8"; // red
       break;
-    case "paid":
+    case "salary":
       badgeColor = "#BDEABD"; // green
       break;
-    case "member":
-      badgeColor = "#BDEABD"; // green
+    case "hourly":
+      badgeColor = "#87CEFA"; // light blue
       break;
-    case "non-member":
-      badgeColor = "#F8B1B8"; // red
+    case "contract":
+      badgeColor = "#FAC791"; // orange
       break;
     default:
       badgeColor = "#e6e6e6"; // grey
@@ -48,8 +48,8 @@ export default function JobBadge({ badgeType }: JobBadgeProps) {
     <Badge
       className="text-center w-fit"
       rounded="md"
-      p="1"
       px="2"
+      py="1"
       textTransform="none"
       fontWeight="normal"
       bg={badgeColor}

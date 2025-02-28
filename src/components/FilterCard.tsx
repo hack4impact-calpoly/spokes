@@ -1,6 +1,8 @@
 import { twMerge } from "tailwind-merge";
 import { ComponentProps, forwardRef, useState } from "react";
 import { Checkbox } from "./Checkbox";
+import { FiChevronDown } from "react-icons/fi";
+import { FiChevronUp } from "react-icons/fi";
 
 interface FilterCategories {
   [key: string]: string[];
@@ -17,21 +19,46 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
     const [fullTimeChecked, setFullTimeChecked] = useState(false);
     const [partTimeChecked, setPartTimeChecked] = useState(false);
     const [volunteerChecked, setVolunteerChecked] = useState(false);
-    const [paidChecked, setPaidChecked] = useState(false);
-    const [unpaidChecked, setUnpaidChecked] = useState(false);
+    const [salaryChecked, setSalaryChecked] = useState(false);
+    const [hourlyChecked, setHourlyChecked] = useState(false);
+    const [contractChecked, setContractChecked] = useState(false);
+
+    const [industryOpen, setIndustryOpen] = useState(false);
+    const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
+
+    const industries = [
+      "Arts",
+      "Civil Rights",
+      "Community Development",
+      "Education",
+      "Environment",
+      "Faith",
+      "Health",
+      "Humanitarian Aid",
+      "Social Services",
+      "Youth",
+    ];
+
+    const handleIndustryChange = (industry: string) => {
+      setSelectedIndustries((prev) =>
+        prev.includes(industry) ? prev.filter((i) => i !== industry) : [...prev, industry],
+      );
+      onFilterChange("industry", industry);
+    };
 
     return (
       <div className="sticky top-[155px]">
         <div
           ref={ref}
           className={twMerge(
-            "bg-[#F7F7F7] px-8 py-6 rounded flex flex-col gap-2 min-[430px]:flex-row min-[430px]:gap-16 lg:flex-col lg:gap-4",
+            "bg-[#F7F7F7] px-6 py-5 rounded flex flex-col gap-4 min-w-[270px]",
+            "md:flex-row md:gap-8 lg:flex-col lg:gap-4",
             className,
           )}
           {...props}
         >
           <div>
-            <div className="text-black font-semibold text-lg mb-1 select-none">Employment</div>
+            <div className="mb-1 text-lg font-semibold text-black select-none">Employment</div>
             <div className="flex flex-col gap-[2px]">
               <Checkbox
                 label="Full-Time"
@@ -59,26 +86,55 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
               ></Checkbox>
             </div>
           </div>
-          <div className="lg:mb-8">
-            <div className="text-black font-semibold text-lg mb-1 select-none">Compensation</div>
+          <div>
+            <div className="mb-1 text-lg font-semibold text-black select-none">Compensation</div>
             <div className="flex flex-col gap-[2px]">
               <Checkbox
-                label="Paid"
-                checked={paidChecked}
+                label="Salary"
+                checked={salaryChecked}
                 changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setPaidChecked(event.target.checked);
-                  onFilterChange("compensation", "paid");
+                  setSalaryChecked(event.target.checked);
+                  onFilterChange("compensation", "salary");
                 }}
               ></Checkbox>
               <Checkbox
-                label="Unpaid"
-                checked={unpaidChecked}
+                label="Hourly"
+                checked={hourlyChecked}
                 changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setUnpaidChecked(event.target.checked);
-                  onFilterChange("compensation", "unpaid");
+                  setHourlyChecked(event.target.checked);
+                  onFilterChange("compensation", "hourly");
+                }}
+              ></Checkbox>
+              <Checkbox
+                label="Contract"
+                checked={contractChecked}
+                changeHandler={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setContractChecked(event.target.checked);
+                  onFilterChange("compensation", "contract");
                 }}
               ></Checkbox>
             </div>
+          </div>
+          <div>
+            <div
+              className="flex gap-1 items-center mb-1 text-lg font-semibold text-black select-none whitespace-nowrap hover:underline"
+              onClick={() => setIndustryOpen(!industryOpen)}
+            >
+              Industry
+              {industryOpen ? <FiChevronUp /> : <FiChevronDown />}
+            </div>
+            {industryOpen && (
+              <div className="flex flex-col gap-[2px]">
+                {industries.map((industry) => (
+                  <Checkbox
+                    key={industry}
+                    label={industry}
+                    checked={selectedIndustries.includes(industry)}
+                    changeHandler={() => handleIndustryChange(industry)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

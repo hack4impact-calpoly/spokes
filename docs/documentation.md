@@ -8,6 +8,7 @@ This guide outlines the core features and components of the Automated Job Board.
 
 - [Job Board](#job-board)
   - [API Endpoints](#api-endpoints)
+  - [Recently Viewed Jobs](#recently-viewed-jobs)
   - [UI Components](#ui-components)
     - [Job Cards](#job-cards)
     - [Recently Viewed](#recently-viewed)
@@ -54,7 +55,7 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 
 - **CRUD Endpoints (GET / POST / PUT)**
   - **GET:**  
-    Fetches all jobs sorted by `postDate` (newest first).
+    Fetches all jobs sorted by `postDate` (newest first)
   - **POST (Create Job):**  
     Creates a new job entry in the database.
   - **PUT (Update Job):**  
@@ -62,6 +63,15 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
   - **Dev Note:**
     - Validate payloads rigorously and consider pagination for GET requests when the dataset grows.
     - Caching currently exists in GET. current setting: keep response fresh for 60s, then serve stale data for up to 30s while revalidating in the background
+    - GET route is paginated to allow for infinite scrolling on Job Board page
+
+### Recently Viewed Jobs
+
+- **What it does:**
+  - Fetches jobs from `/jobs/recent` using local storage data when tab is switched to 'Recently Viewed'.
+  - When any button on the job card is clicked, jobs are inserted locally into the recently viewed jobs array and that Job ID is stored in local storage.
+- **Dev Note:**  
+  This section of the job board is believed to be finished and optimized. Recently viewed jobs are only fetched onced and then updated locally.
 
 ### UI Components
 
@@ -89,7 +99,7 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 
 - **FilterCard:**
   - **What it does:**  
-    Provides checkboxes to filter jobs by employment type (e.g., Full-time, Part-time) and compensation (e.g., Paid, Volunteer).  
+    Provides checkboxes to filter jobs by employment type (e.g., Full-time, Part-time), compensation (e.g., Paid, Volunteer), and industry (e.g., Arts, Education).  
     Uses internal state to manage selections and passes changes via an `onFilterChange` callback.
   - **Dev Note:**  
     Consolidate duplicate implementations to avoid confusion.
@@ -129,6 +139,13 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 - **What it does:**
   Uses Chakra UI to display custom radio buttons for the member status and job type in the job form.
 
+#### Job Card Modal (Admin Dashboard View)
+
+- **What it does:**  
+  Displays a modal to confirm proposed action (rejection, approval, or renewal) on a job application as an Admin.
+- **Dev Note:**  
+  Uses Chakra UI modals for confirmation dialogs. The component accepts `isOpen`, `onClose`, `onConfirm`, and `action` props, where action can be "approve", "reject", or "renew". The modal automatically adjusts text based on the action type. Uses consistent button styling with hover effects (green for confirm, red for cancel).
+
 ---
 
 ## List a Job Form
@@ -163,7 +180,8 @@ The Nav Bar is split into two sections (Top and Bottom) and provides navigation 
 
 - **What it does:**  
   Displays navigation links for "Job Board", "List Job", and (if the user is an admin) "Spokes Dashboard".  
-  Implements a "Scroll to Top" button that appears when the user scrolls down on the job board.
+  Implements a "Scroll to Top" button that appears when the user scrolls down on the job board. Uses a hamburger selector for
+  mobile view so that more tabs can be accommodated,
 - **Dev Note:**  
   Uses a custom hook (`useScrollDirection`) to determine scroll behavior. Adjust responsiveness and scrolling thresholds as needed.
   The spokes dashboard is always displayed for now, will need to add logic later for only spokes admin
