@@ -100,7 +100,7 @@ describe("JobFormPage", () => {
     expect(parsedBody).toEqual(
       expect.objectContaining({
         organizationName: "Test Org",
-        organizationIndustry: ["Art & Culture"],
+        organizationIndustry: ["Arts & Culture"],
         title: "Software Engineer",
         postDate: expect.any(String),
         expireDate: null,
