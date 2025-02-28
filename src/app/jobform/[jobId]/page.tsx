@@ -148,6 +148,7 @@ export default function JobFormPage() {
 
       setMessage("Job updated successfully!");
       setIsSubmitModalOpen(true);
+      router.push("/admin");
     } catch (error) {
       console.error("Error updating job:", error);
       setMessage("Error updating job.");
