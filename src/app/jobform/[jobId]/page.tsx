@@ -78,6 +78,8 @@ export default function JobFormPage() {
         const data = await response.json();
         setFormData(data);
         setLoadingInfo(false);
+        setSelectEmployment(data.employmentType);
+        setSelectCompensation(data.compensationType);
       } catch (error) {
         setLoadingInfo(false);
         console.error("Fetch failed:", error);
@@ -271,7 +273,7 @@ export default function JobFormPage() {
                     key={value}
                     value={value}
                     {...radio}
-                    isChecked={selectCompensation === value}
+                    isChecked={selectCompensation.toLowerCase() === value.toLowerCase()}
                     checkedColor={compensationColorMapping[value as keyof typeof compensationColorMapping]}
                   >
                     {value}
@@ -290,7 +292,7 @@ export default function JobFormPage() {
                     key={value}
                     value={value}
                     {...radio}
-                    isChecked={selectEmployment === value}
+                    isChecked={selectEmployment.toLowerCase() === value.toLowerCase()}
                     checkedColor={employmentColorMapping[value as keyof typeof employmentColorMapping]}
                   >
                     {value}
