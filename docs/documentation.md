@@ -238,6 +238,7 @@ This view is designed for your client’s internal team and handles the review a
 - **What it does:**  
   Provides sign-in and sign-up pages using Clerk.  
   Components such as `<SignIn />` and `<SignUp />` from `@clerk/nextjs` are wrapped in Chakra UI’s `Center` for styling.
+  After Sign up the page will redirect to `/addUser` to make a POST request that adds Clerk's user id and user data to our MongoDB user database.
 - **Dev Note:**  
   Ensure that authentication flows and user session management are maintained with Clerk’s updates.
 
