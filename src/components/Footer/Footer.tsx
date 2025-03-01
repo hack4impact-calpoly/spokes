@@ -38,7 +38,7 @@ const Footer: React.FC = () => {
               >
                 Spokes | Resources for Nonprofits.
               </Link>
-              All Rights Reserved.
+              ‎ All Rights Reserved.
             </p>
             <p>PO Box 5122, San Luis Obispo, CA 93403</p>
           </div>
@@ -55,10 +55,14 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="flex space-x-[10px] md:space-x-[14px] mt-4 md:mt-0 md:ml-[40px]">
-            <Link href="https://www.instagram.com/yourinstagram" target="_blank" rel="noopener noreferrer">
+            <Link href="https://www.instagram.com/spokes.for.nonprofits/" target="_blank" rel="noopener noreferrer">
               <GrInstagram width={30} height={30} className="w-[30px] h-[30px] md:w-[35px] md:h-[35px]" />
             </Link>
-            <Link href="https://www.linkedin.com/company/yourlinkedin" target="_blank" rel="noopener noreferrer">
+            <Link
+              href="https://www.linkedin.com/company/spokes---resources-for-nonprofits/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <SiLinkedin
                 style={{ fill: "#0077B5" }}
                 width={30}
@@ -66,7 +70,7 @@ const Footer: React.FC = () => {
                 className="w-[30px] h-[30px] md:w-[35px] md:h-[35px]"
               />
             </Link>
-            <Link href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
+            <Link href="https://www.facebook.com/Spokesfornonprofits/" target="_blank" rel="noopener noreferrer">
               <ImFacebook2
                 style={{ fill: "#1877F2" }}
                 width={30}

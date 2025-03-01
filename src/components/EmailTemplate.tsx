@@ -4,7 +4,7 @@ interface EmailTemplateProps {
   title: string;
   jobDescription: string;
   organizationName: string;
-  organizationIndustry: string;
+  organizationIndustry: [string];
   employmentType: string;
   compensationType: string;
   contactName: string;
@@ -13,6 +13,12 @@ interface EmailTemplateProps {
   detailURL: string;
   applyNowURL?: string;
 }
+
+const toTitleCase = (badgeName: string): string =>
+  badgeName
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join("-");
 
 export const EmailTemplate: React.FC<EmailTemplateProps> = ({
   title,
@@ -90,7 +96,7 @@ export const EmailTemplate: React.FC<EmailTemplateProps> = ({
             marginBottom: "4px",
           }}
         >
-          <strong>Industry:</strong> {organizationIndustry}
+          <strong>Industry:</strong> {organizationIndustry.join(", ")}
         </p>
       </div>
 
@@ -111,11 +117,12 @@ export const EmailTemplate: React.FC<EmailTemplateProps> = ({
                   ? "#FFE297"
                   : "#C6D3FF",
             padding: "4px 12px",
+            marginRight: "12px",
             borderRadius: "4px",
             fontSize: "14px",
           }}
         >
-          {employmentType}
+          {toTitleCase(employmentType)}
         </span>
         <span
           style={{
@@ -130,7 +137,7 @@ export const EmailTemplate: React.FC<EmailTemplateProps> = ({
             fontSize: "14px",
           }}
         >
-          {compensationType}
+          {toTitleCase(compensationType)}
         </span>
       </div>
 

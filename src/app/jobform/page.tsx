@@ -237,7 +237,7 @@ export default function JobFormPage() {
             />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel requiredIndicator>Job Compensation Type</FormLabel>
+            <FormLabel requiredIndicator>Compensation Type</FormLabel>
             <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getCompensationRootProps()}>
               {compensationOptions.map((value) => {
                 const radio = getCompensationRadioProps({ value });
@@ -256,7 +256,7 @@ export default function JobFormPage() {
             </Stack>
           </FormControl>
           <FormControl isRequired>
-            <FormLabel requiredIndicator>Please select one below for your listing:</FormLabel>
+            <FormLabel requiredIndicator>Employment Type</FormLabel>
             <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getJobRootProps()}>
               {typeOptions.map((value) => {
                 const radio = getJobRadioProps({ value });
