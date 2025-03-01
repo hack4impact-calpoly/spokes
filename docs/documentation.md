@@ -140,6 +140,13 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 - **What it does:**
   Uses Chakra UI to display custom radio buttons for the member status and job type in the job form.
 
+#### Job Card Modal (Admin Dashboard View)
+
+- **What it does:**  
+  Displays a modal to confirm proposed action (rejection, approval, or renewal) on a job application as an Admin.
+- **Dev Note:**  
+  Uses Chakra UI modals for confirmation dialogs. The component accepts `isOpen`, `onClose`, `onConfirm`, and `action` props, where action can be "approve", "reject", or "renew". The modal automatically adjusts text based on the action type. Uses consistent button styling with hover effects (green for confirm, red for cancel).
+
 ---
 
 ## List a Job Form
@@ -174,7 +181,8 @@ The Nav Bar is split into two sections (Top and Bottom) and provides navigation 
 
 - **What it does:**  
   Displays navigation links for "Job Board", "List Job", and (if the user is an admin) "Spokes Dashboard".  
-  Implements a "Scroll to Top" button that appears when the user scrolls down on the job board.
+  Implements a "Scroll to Top" button that appears when the user scrolls down on the job board. Uses a hamburger selector for
+  mobile view so that more tabs can be accommodated,
 - **Dev Note:**  
   Uses a custom hook (`useScrollDirection`) to determine scroll behavior. Adjust responsiveness and scrolling thresholds as needed.
   The spokes dashboard is always displayed for now, will need to add logic later for only spokes admin

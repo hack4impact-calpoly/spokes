@@ -48,8 +48,8 @@ export default function JobBadge({ badgeType }: JobBadgeProps) {
     <Badge
       className="text-center w-fit"
       rounded="md"
-      p="1"
       px="2"
+      py="1"
       textTransform="none"
       fontWeight="normal"
       bg={badgeColor}

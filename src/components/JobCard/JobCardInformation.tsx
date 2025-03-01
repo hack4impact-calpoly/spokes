@@ -9,10 +9,10 @@ export default function JobCardInformation({ job }: JobInformationProps) {
     <>
       <div className="mb-2">
         <h1 className="text-2xl font-bold truncate">{job.title}</h1>
-        <p className="text-gray-700 font-semibold">{job.organizationName}</p>
+        <p className="text-gray-700 font-semibold truncate">{job.organizationName}</p>
       </div>
       <div className="mb-4">
-        <p className="text-gray-700 italic">{job.organizationIndustry}</p>
+        <p className="text-gray-700 italic">{job.organizationIndustry.join(", ")}</p>
       </div>
       <div className="mb-4">
         <p className="text-gray-700 overflow:s h-max-[150px] h-[90px] overflow-scroll no-scrollbar">
