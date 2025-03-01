@@ -15,6 +15,7 @@ import {
 import RadioCard from "@/components/RadioCard";
 import JobConfirmationModal from "@/components/JobConfirmationModal";
 import { useRouter } from "next/navigation";
+import JobFailModal from "@/components/JobFailModal";
 
 export default function JobFormPage() {
   const [formData, setFormData] = useState({
@@ -38,6 +39,7 @@ export default function JobFormPage() {
   const [selectEmployment, setSelectEmployment] = useState("");
   const [selectCompensation, setSelectCompensation] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFailModalOpen, setIsFailModalOpen] = useState(false);
   const router = useRouter();
 
   const employmentColorMapping = {
@@ -112,7 +114,7 @@ export default function JobFormPage() {
       setIsModalOpen(true);
     } catch (error) {
       console.error("Error submitting job:", error);
-      setMessage("Error submitting job.");
+      setIsFailModalOpen(true);
     } finally {
       setLoading(false);
     }
@@ -143,6 +145,10 @@ export default function JobFormPage() {
   const closeModal = () => {
     setIsModalOpen(false);
     router.push("/");
+  };
+
+  const closeFailModal = () => {
+    setIsFailModalOpen(false);
   };
 
   return (
@@ -316,6 +322,7 @@ export default function JobFormPage() {
         </VStack>
       </form>
       <JobConfirmationModal isOpen={isModalOpen} onClose={closeModal} />
+      <JobFailModal isOpen={isFailModalOpen} onClose={closeFailModal} />
     </Box>
   );
 }

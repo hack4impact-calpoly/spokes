@@ -77,6 +77,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(request: Request) {
+  throw new Error("Job not posted");
   try {
     await connectDB();
     const jobData = await request.json();

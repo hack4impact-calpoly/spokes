@@ -12,18 +12,12 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 
-interface JobConfirmationModalProps {
+interface JobComfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  wasRejected?: boolean;
 }
 
-export default function JobConfirmationModal({ isOpen, onClose, wasRejected = false }: JobConfirmationModalProps) {
-  const modalHeaderText = wasRejected ? "Job Listing Submission Failed" : "Job listing successfully submitted";
-  const modalBodyText = wasRejected
-    ? "There was an error processing your job listing. Please try again."
-    : "An admin will review this job listing, and you will be notified once it is approved.";
-
+export default function JobConfirmationlModal({ isOpen, onClose }: JobComfirmationModalProps) {
   return (
     <div className="modal">
       <Modal isOpen={isOpen} onClose={onClose}>
