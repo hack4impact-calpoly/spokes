@@ -7,6 +7,7 @@ import JobCardInformation from "@/components/JobCard/JobCardInformation";
 import JobPostedDate from "@/components/JobCard/JobPostedDate";
 import { useState } from "react";
 import JobCardModal from "./JobCardModal";
+import { useRouter } from "next/navigation";
 
 interface JobCardProps {
   job: IJob;
@@ -17,6 +18,7 @@ interface JobCardProps {
 export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<"approve" | "reject" | "renew" | null>(null);
+  const router = useRouter();
 
   // Opens modal with the appropriate action
   const openModal = (action: "approve" | "reject" | "renew") => {
@@ -43,6 +45,11 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
     job.postDate &&
     new Date(job.postDate) < new Date(new Date().setDate(new Date().getDate() - 30));
 
+  function handleEditApplicationButton(e: React.ChangeEvent<any>) {
+    e.preventDefault();
+    router.push(`/jobform?jobId=${job._id}`);
+  }
+
   return (
     <div className="max-w-[100%]" ref={innerRef}>
       <div className="relative bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm">
@@ -54,6 +61,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
           borderColor="black"
           position="absolute"
           className="absolute top-4 right-[1rem]"
+          onClick={handleEditApplicationButton}
         />
         <div className="flex justify-between mb-5">
           <JobStatusBadge jobStatus={job.jobStatus} />
