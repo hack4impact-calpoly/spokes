@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -11,22 +11,33 @@ import {
   Stack,
   FormErrorMessage,
   useRadioGroup,
+  HStack,
+  Link,
 } from "@chakra-ui/react";
+import { useRouter, useSearchParams } from "next/navigation";
+
 import RadioCard from "@/components/RadioCard";
-import JobConfirmationModal from "@/components/JobConfirmationModal";
-import { useRouter } from "next/navigation";
-import TagSelect, { TagSelectOther } from "@/components/TagSelect";
+import TagSelect from "@/components/TagSelect";
 import { Option } from "@/components/TagsMultiselect/multiselect";
 import { cn } from "@/lib/utils";
 
+import JobConfirmationModal from "@/components/JobConfirmationModal";
+import JobDeletedModal from "@/components/JobDeletedModal";
+
 // converts the formData string array to a Option object array necessary for use in the TagSelect componenet
 function formatIndustries(industries: string[]): Option[] {
-  return industries.map((industry) => {
-    return { value: industry, label: industry };
-  });
+  return industries.map((industry) => ({
+    value: industry,
+    label: industry,
+  }));
 }
 
 export default function JobFormPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const jobId = searchParams.get("jobId");
+  const isEditing = Boolean(jobId);
+
   const [formData, setFormData] = useState({
     organizationName: "",
     organizationIndustry: [],
@@ -34,7 +45,7 @@ export default function JobFormPage() {
     postDate: new Date().toISOString(),
     expireDate: "",
     jobDescription: "",
-    employmentType: "Full-Time",
+    employmentType: "full-time",
     compensationType: "paid",
     jobStatus: "pending",
     contactName: "",
@@ -43,12 +54,15 @@ export default function JobFormPage() {
     detailURL: "",
     applyNowURL: "",
   });
+
   const [loading, setLoading] = useState(false);
+  const [loadingInfo, setLoadingInfo] = useState(isEditing); // for setting loading state of job info fetching
   const [message, setMessage] = useState("");
   const [selectEmployment, setSelectEmployment] = useState("");
   const [selectCompensation, setSelectCompensation] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const router = useRouter();
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [showMaxError, setShowMaxError] = useState(false);
 
   const employmentColorMapping = {
     "Full-Time": "#F8B1B8",
@@ -61,6 +75,41 @@ export default function JobFormPage() {
     Hourly: "#87CEFA",
     Contract: "#FAC791",
   };
+
+  // if we have a jobId, fetch the existing job
+  useEffect(() => {
+    if (!jobId) return;
+    const fetchJob = async () => {
+      try {
+        setLoadingInfo(true);
+
+        const res = await fetch(`/api/jobs/${jobId}`);
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        const data = await res.json();
+
+        setFormData({
+          ...data,
+          contactPhone: data.contactPhone || "",
+          contactEmail: data.contactEmail || "",
+          detailURL: data.detailURL || "",
+          applyNowURL: data.applyNowURL || "",
+          postDate: data.postDate || new Date().toISOString(),
+        });
+
+        setSelectEmployment(data.employmentType);
+        setSelectCompensation(data.compensationType);
+
+        setLoadingInfo(false);
+      } catch (error) {
+        console.error("Failed to fetch job:", error);
+        setLoadingInfo(false);
+      }
+    };
+
+    fetchJob();
+  }, [jobId]);
 
   // formats phone number input to filter non-numbers an add -
   const formatPhoneNumber = (value: string): string => {
@@ -121,7 +170,7 @@ export default function JobFormPage() {
         postDate: new Date().toISOString(),
         expireDate: "",
         jobDescription: "",
-        employmentType: "",
+        employmentType: "full-time",
         compensationType: "paid",
         jobStatus: "pending",
         contactName: "",
@@ -130,14 +179,81 @@ export default function JobFormPage() {
         detailURL: "",
         applyNowURL: "",
       });
+      setSelectEmployment("");
+      setSelectCompensation("");
 
       setMessage("Job posted successfully!");
-      setIsModalOpen(true);
+      setIsSubmitModalOpen(true);
     } catch (error) {
       console.error("Error submitting job:", error);
       setMessage("Error submitting job.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // update -> (only if jobId)
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!jobId) return;
+    setLoading(true);
+    setMessage("");
+
+    const formattedFormData = {
+      ...formData,
+      expireDate: formData.expireDate || null,
+    };
+
+    try {
+      const response = await fetch(`/api/jobs/${jobId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formattedFormData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update job.");
+      }
+
+      setMessage("Job updated successfully!");
+      setIsSubmitModalOpen(true);
+    } catch (error) {
+      console.error("Error updating job:", error);
+      setMessage("Error updating job.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // delete -> (only if jobId)
+  const handleDelete = async () => {
+    if (!jobId) return;
+    setLoading(true);
+    setMessage("");
+
+    const updatedFormData = {
+      ...formData,
+      jobStatus: "rejected",
+      expireDate: formData.expireDate || null,
+    };
+
+    try {
+      const response = await fetch(`/api/jobs/${jobId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedFormData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete job.");
+      }
+      setIsDeleteModalOpen(false);
+      setMessage("Successfully deleted job");
+      setLoading(false);
+      router.push("/admin");
+    } catch (error) {
+      console.error(`Error deleting job: ${error}`);
+      setMessage("Error occurred while attempting to delete job");
     }
   };
 
@@ -148,7 +264,7 @@ export default function JobFormPage() {
     value: selectEmployment,
     onChange: (value) => {
       setFormData((prev) => ({ ...prev, employmentType: value.toLowerCase() }));
-      setSelectEmployment(value);
+      setSelectEmployment(value.toLowerCase());
     },
   });
 
@@ -159,44 +275,76 @@ export default function JobFormPage() {
     value: selectCompensation,
     onChange: (value) => {
       setFormData((prev) => ({ ...prev, compensationType: value.toLowerCase() }));
-      setSelectCompensation(value);
+      setSelectCompensation(value.toLowerCase());
     },
   });
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    router.push("/");
+  const handleIndustriesChange = (values: Option[]) => {
+    const industries = values.map((val) => val.value);
+    handleChange({ target: { name: "organizationIndustry", value: industries } });
   };
 
-  const [showMaxError, setShowMaxError] = useState(false);
+  const closeSubmitModal = () => {
+    setIsSubmitModalOpen(false);
+    if (isEditing) {
+      router.push("/admin");
+    } else {
+      router.push("/jobs");
+    }
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.organizationIndustry.length) {
+      setMessage("Please select at least one industry");
+      alert("Organization Industry field is required");
+      return;
+    }
+
+    if (isEditing) {
+      handleUpdate(e);
+    } else {
+      handleSubmit(e);
+    }
+  };
 
   return (
     <Box mx="auto" p={10} minWidth={{ base: "320px", md: "768px", lg: "1024px" }} maxWidth="1200px">
-      <div className="mt-[8px] mb-[10px] text-black text-3xl font-semibold">Create New Listing</div>
-      <Heading as="h2" size="md" mb={5} mt={10}>
+      <div className="mt-2 mb-2 text-black text-3xl font-semibold">
+        {isEditing ? "Edit Listing" : "Create New Listing"}
+      </div>
+
+      <Heading as="h2" size="md" mb={5}>
         Job Information
       </Heading>
-      <form onSubmit={handleSubmit} method="POST">
+
+      <form onSubmit={onSubmit}>
         <VStack spacing={4}>
           <FormControl isRequired>
-            <FormLabel requiredIndicator>Organization Name</FormLabel>
+            <FormLabel>Organization Name</FormLabel>
             <Input
               type="text"
               placeholder="Enter your response"
               bg="#F6F6F6"
               border="0"
               name="organizationName"
-              value={formData.organizationName}
+              value={loadingInfo ? "Loading..." : formData.organizationName}
               onChange={handleChange}
+              disabled={loadingInfo}
             />
           </FormControl>
           <FormControl isRequired>
             <div className="flex gap-0">
-              <FormLabel requiredIndicator>Organization Industry</FormLabel>
+              <FormLabel>Organization Industry</FormLabel>
               <p
                 className={cn(
                   "text-red-600 text-xs font-medium mt-1.5 transition",
-                  showMaxError ? "opacity-1" : "opacity-0",
+                  showMaxError ? "opacity-100" : "opacity-0",
                 )}
               >
                 Max limit 3
@@ -205,12 +353,7 @@ export default function JobFormPage() {
             <TagSelect
               value={formatIndustries(formData.organizationIndustry)}
               name="organizationIndustry"
-              onChange={(values: Option[]) => {
-                const industries: string[] = values.map((value) => {
-                  return value.value;
-                });
-                handleChange({ target: { name: "organizationIndustry", value: industries } });
-              }}
+              onChange={handleIndustriesChange}
               onMax={() => {
                 setShowMaxError(true);
                 setTimeout(() => {
@@ -222,22 +365,23 @@ export default function JobFormPage() {
                   setShowMaxError(false);
                 }
               }}
-            ></TagSelect>
+            />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel requiredIndicator>Job Title</FormLabel>
+            <FormLabel>Job Title</FormLabel>
             <Input
               type="text"
               placeholder="Enter your response"
               bg="#F6F6F6"
               border="0"
               name="title"
-              value={formData.title}
+              value={loadingInfo ? "Loading..." : formData.title}
               onChange={handleChange}
+              disabled={loadingInfo}
             />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel requiredIndicator>Compensation Type</FormLabel>
+            <FormLabel>Compensation Type</FormLabel>
             <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getCompensationRootProps()}>
               {compensationOptions.map((value) => {
                 const radio = getCompensationRadioProps({ value });
@@ -246,7 +390,7 @@ export default function JobFormPage() {
                     key={value}
                     value={value}
                     {...radio}
-                    isChecked={selectCompensation === value}
+                    isChecked={selectCompensation === value.toLowerCase()}
                     checkedColor={compensationColorMapping[value as keyof typeof compensationColorMapping]}
                   >
                     {value}
@@ -256,7 +400,7 @@ export default function JobFormPage() {
             </Stack>
           </FormControl>
           <FormControl isRequired>
-            <FormLabel requiredIndicator>Employment Type</FormLabel>
+            <FormLabel>Employment Type</FormLabel>
             <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getJobRootProps()}>
               {typeOptions.map((value) => {
                 const radio = getJobRadioProps({ value });
@@ -265,7 +409,7 @@ export default function JobFormPage() {
                     key={value}
                     value={value}
                     {...radio}
-                    isChecked={selectEmployment === value}
+                    isChecked={selectEmployment === value.toLowerCase()}
                     checkedColor={employmentColorMapping[value as keyof typeof employmentColorMapping]}
                   >
                     {value}
@@ -275,27 +419,29 @@ export default function JobFormPage() {
             </Stack>
           </FormControl>
           <FormControl isRequired>
-            <FormLabel requiredIndicator>Job Description</FormLabel>
+            <FormLabel>Job Description</FormLabel>
             <Input
               type="text"
               placeholder="Enter your response"
               bg="#F6F6F6"
               border="0"
               name="jobDescription"
-              value={formData.jobDescription}
+              value={loadingInfo ? "Loading..." : formData.jobDescription}
               onChange={handleChange}
+              disabled={loadingInfo}
             />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel requiredIndicator>Link to Job Listing</FormLabel>
+            <FormLabel>Link to Job Listing</FormLabel>
             <Input
               type="text"
               placeholder="Enter your response"
               bg="#F6F6F6"
               border="0"
               name="detailURL"
-              value={formData.detailURL}
+              value={loadingInfo ? "Loading..." : formData.detailURL}
               onChange={handleChange}
+              disabled={loadingInfo}
             />
             <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
           </FormControl>
@@ -304,15 +450,16 @@ export default function JobFormPage() {
           </Heading>
           <Stack w="full" direction={{ base: "column", md: "row" }} spacing={{ base: 6, md: 40 }}>
             <FormControl isRequired>
-              <FormLabel requiredIndicator>Name</FormLabel>
+              <FormLabel>Name</FormLabel>
               <Input
                 type="text"
                 placeholder="First and Last Name"
                 bg="#F6F6F6"
                 border="0"
                 name="contactName"
-                value={formData.contactName}
+                value={loadingInfo ? "Loading..." : formData.contactName}
                 onChange={handleChange}
+                disabled={loadingInfo}
               />
             </FormControl>
             <FormControl>
@@ -323,46 +470,82 @@ export default function JobFormPage() {
                 placeholder="xxx-xxx-xxxx"
                 border="0"
                 name="contactPhone"
-                value={formData.contactPhone}
+                value={loadingInfo ? "Loading..." : formData.contactPhone}
                 onChange={handleChange}
                 maxLength={12}
+                disabled={loadingInfo}
               />
               <FormErrorMessage>Please enter a valid phone number.</FormErrorMessage>
             </FormControl>
           </Stack>
           <FormControl isRequired>
-            <FormLabel requiredIndicator>Email</FormLabel>
+            <FormLabel>Email</FormLabel>
             <Input
               type="email"
               placeholder="xxxxx@example.com"
               bg="#F6F6F6"
               border="0"
               name="contactEmail"
-              value={formData.contactEmail}
+              value={loadingInfo ? "Loading..." : formData.contactEmail}
               onChange={handleChange}
+              disabled={loadingInfo}
             />
             <FormErrorMessage>Please enter a valid email address.</FormErrorMessage>
           </FormControl>
-          <Button
-            isLoading={loading}
-            loadingText="Submitting..."
-            mt={10}
-            type="submit"
-            size="lg"
-            colorScheme="blackAlpha"
-            bg="black"
-            _hover={{ bg: "#5E5E5E" }}
-            onClick={() => {
-              setSelectCompensation("");
-              setSelectEmployment("");
-            }}
-          >
-            Submit
-          </Button>
+          {isEditing ? (
+            // if editing, show update & delete
+            <HStack>
+              <Button
+                isLoading={loading}
+                loadingText="Updating..."
+                mt={10}
+                type="submit"
+                size="lg"
+                colorScheme="blackAlpha"
+                bg="black"
+                _hover={{ bg: "#5E5E5E" }}
+              >
+                Update
+              </Button>
+              <Button
+                isLoading={loading}
+                loadingText="Deleting..."
+                mt={10}
+                size="lg"
+                colorScheme="red"
+                bg="red"
+                _hover={{ bg: "#5E5E5E" }}
+                onClick={() => setIsDeleteModalOpen(true)}
+              >
+                Delete
+              </Button>
+            </HStack>
+          ) : (
+            // if creating, show Submit
+            <Button
+              isLoading={loading}
+              loadingText="Submitting..."
+              mt={10}
+              type="submit"
+              size="lg"
+              colorScheme="blackAlpha"
+              bg="black"
+              _hover={{ bg: "#5E5E5E" }}
+            >
+              Submit
+            </Button>
+          )}
+          {isEditing && (
+            <Link variant="underline" href="/admin" mt="2">
+              Return to admin board
+            </Link>
+          )}
           {message && <p>{message}</p>}
         </VStack>
       </form>
-      <JobConfirmationModal isOpen={isModalOpen} onClose={closeModal} />
+
+      <JobConfirmationModal isOpen={isSubmitModalOpen} onClose={closeSubmitModal} />
+      <JobDeletedModal isOpen={isDeleteModalOpen} onClose={closeDeleteModal} onConfirm={handleDelete} />
     </Box>
   );
 }
