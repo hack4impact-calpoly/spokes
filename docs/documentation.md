@@ -122,6 +122,7 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 
 - **What it does:**  
   Uses Chakra UI to display a modal confirming that a job listing has been successfully submitted.
+  Displays an visable error nessage if a posting was unsuccessful.
 - **Dev Note:**  
   Ensure the modal content remains aligned with backend approval workflows.
 

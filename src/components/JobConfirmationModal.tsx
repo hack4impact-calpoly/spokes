@@ -12,12 +12,12 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 
-interface JobConfirmationModalProps {
+interface JobComfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function JobConfirmationModal({ isOpen, onClose }: JobConfirmationModalProps) {
+export default function JobConfirmationlModal({ isOpen, onClose }: JobComfirmationModalProps) {
   return (
     <div className="modal">
       <Modal isOpen={isOpen} onClose={onClose}>

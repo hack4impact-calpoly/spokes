@@ -117,12 +117,12 @@ describe("JobFormPage", () => {
     );
   });
 
-  it("handles submission failure with HTTP error code", async () => {
+  it("displays JobFailModal on submission failure with HTTP error code", async () => {
     // Mock fetch to return a failure for the first API call
     const fetchMock = global.fetch as jest.Mock<any>;
     fetchMock.mockResolvedValueOnce({
       ok: false,
-      status: 500, // Simulate server error
+      status: 500,
       json: async () => ({ message: "Internal Server Error" }),
     });
 
@@ -132,9 +132,15 @@ describe("JobFormPage", () => {
     fireEvent.change(screen.getByLabelText(/Organization Name/i), {
       target: { value: "Test Org" },
     });
-    fireEvent.change(screen.getByPlaceholderText(/Select industries/i), {
-      target: { value: "Test" },
-    });
+
+    // Simulate clicking the industry dropdown
+    const dropdownTrigger = screen.getByPlaceholderText(/Select industries/i);
+    fireEvent.click(dropdownTrigger);
+
+    // Select an industry
+    const dropdownOption = await screen.findByText("Arts & Culture");
+    fireEvent.click(dropdownOption);
+
     fireEvent.change(screen.getByLabelText(/Job Title/i), {
       target: { value: "Test Job" },
     });
@@ -159,22 +165,37 @@ describe("JobFormPage", () => {
     const submitButton = screen.getByRole("button", { name: /submit/i });
     fireEvent.click(submitButton);
 
-    // Wait for the fetch call to be made
+    // Wait for the fetch call and modal to appear
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith("/api/jobs", expect.objectContaining({ method: "POST" }));
     });
 
-    // Verify the fetch call details:
+    // Verify the fetch call details
     const [url, options] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(url).toBe("/api/jobs");
     expect(options.method).toBe("POST");
 
-    // Check the response of the mocked fetch call:
+    // Check the response
     const response = await fetchMock.mock.results[0].value;
     expect(response.status).toBe(500);
     expect(response.ok).toBe(false);
 
-    // Finally, assert that the error message is rendered in the UI (Modify this if UI changes)
-    await waitFor(() => expect(screen.getByText(/Error submitting job/i)).toBeInTheDocument());
+    // Verify the JobFailModal appears with correct content
+    await waitFor(() => {
+      expect(screen.getByText("Job Listing Submission Failed")).toBeInTheDocument();
+      expect(screen.getByText("There was an error processing your job listing. Please try again.")).toBeInTheDocument();
+    });
+
+    // Verify modal styling
+    const modalContent = screen.getByText("Job Listing Submission Failed").closest(".chakra-modal__content");
+    expect(modalContent).toHaveClass("border-red-500");
+
+    // Test closing the modal
+    const closeButton = screen.getByRole("button", { name: /close/i });
+    fireEvent.click(closeButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText("Job Listing Submission Failed")).not.toBeInTheDocument();
+    });
   });
 });
