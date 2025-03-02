@@ -1,4 +1,3 @@
-// app/jobform/page.jsx
 import React, { Suspense } from "react";
 import JobFormPage from "./JobFormPage.client";
 
