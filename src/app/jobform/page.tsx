@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import {
   Box,
   Button,
@@ -218,8 +218,8 @@ export default function JobFormPage() {
         throw new Error("Failed to update job.");
       }
 
-      setMessage("Job updated successfully!");
-      setIsSubmitModalOpen(true);
+      setMessage("Successfully updated job.");
+      router.push("/admin");
     } catch (error) {
       console.error("Error updating job:", error);
       setMessage("Error updating job.");
@@ -321,190 +321,218 @@ export default function JobFormPage() {
   };
 
   return (
-    <Box mx="auto" p={10} minWidth={{ base: "320px", md: "768px", lg: "1024px" }} maxWidth="1200px">
-      <div className="mt-2 mb-2 text-black text-3xl font-semibold">
-        {isEditing ? "Edit Listing" : "Create New Listing"}
-      </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <Box mx="auto" p={10} minWidth={{ base: "320px", md: "768px", lg: "1024px" }} maxWidth="1200px">
+        <div className="mt-2 mb-2 text-black text-3xl font-semibold">
+          {isEditing ? "Edit Listing" : "Create New Listing"}
+        </div>
 
-      <Heading as="h2" size="md" mb={5}>
-        Job Information
-      </Heading>
+        <Heading as="h2" size="md" mb={5}>
+          Job Information
+        </Heading>
 
-      <form onSubmit={onSubmit}>
-        <VStack spacing={4}>
-          <FormControl isRequired>
-            <FormLabel>Organization Name</FormLabel>
-            <Input
-              type="text"
-              placeholder="Enter your response"
-              bg="#F6F6F6"
-              border="0"
-              name="organizationName"
-              value={loadingInfo ? "Loading..." : formData.organizationName}
-              onChange={handleChange}
-              disabled={loadingInfo}
-            />
-          </FormControl>
-          <FormControl isRequired>
-            <div className="flex gap-0">
-              <FormLabel>Organization Industry</FormLabel>
-              <p
-                className={cn(
-                  "text-red-600 text-xs font-medium mt-1.5 transition",
-                  showMaxError ? "opacity-100" : "opacity-0",
-                )}
-              >
-                Max limit 3
-              </p>
-            </div>
-            <TagSelect
-              value={formatIndustries(formData.organizationIndustry)}
-              name="organizationIndustry"
-              onChange={handleIndustriesChange}
-              onMax={() => {
-                setShowMaxError(true);
-                setTimeout(() => {
-                  setShowMaxError(false);
-                }, 3000);
-              }}
-              checkMax={(length) => {
-                if (length < 3) {
-                  setShowMaxError(false);
-                }
-              }}
-            />
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel>Job Title</FormLabel>
-            <Input
-              type="text"
-              placeholder="Enter your response"
-              bg="#F6F6F6"
-              border="0"
-              name="title"
-              value={loadingInfo ? "Loading..." : formData.title}
-              onChange={handleChange}
-              disabled={loadingInfo}
-            />
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel>Compensation Type</FormLabel>
-            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getCompensationRootProps()}>
-              {compensationOptions.map((value) => {
-                const radio = getCompensationRadioProps({ value });
-                return (
-                  <RadioCard
-                    key={value}
-                    value={value}
-                    {...radio}
-                    isChecked={selectCompensation === value.toLowerCase()}
-                    checkedColor={compensationColorMapping[value as keyof typeof compensationColorMapping]}
-                  >
-                    {value}
-                  </RadioCard>
-                );
-              })}
-            </Stack>
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel>Employment Type</FormLabel>
-            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getJobRootProps()}>
-              {typeOptions.map((value) => {
-                const radio = getJobRadioProps({ value });
-                return (
-                  <RadioCard
-                    key={value}
-                    value={value}
-                    {...radio}
-                    isChecked={selectEmployment === value.toLowerCase()}
-                    checkedColor={employmentColorMapping[value as keyof typeof employmentColorMapping]}
-                  >
-                    {value}
-                  </RadioCard>
-                );
-              })}
-            </Stack>
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel>Job Description</FormLabel>
-            <Input
-              type="text"
-              placeholder="Enter your response"
-              bg="#F6F6F6"
-              border="0"
-              name="jobDescription"
-              value={loadingInfo ? "Loading..." : formData.jobDescription}
-              onChange={handleChange}
-              disabled={loadingInfo}
-            />
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel>Link to Job Listing</FormLabel>
-            <Input
-              type="text"
-              placeholder="Enter your response"
-              bg="#F6F6F6"
-              border="0"
-              name="detailURL"
-              value={loadingInfo ? "Loading..." : formData.detailURL}
-              onChange={handleChange}
-              disabled={loadingInfo}
-            />
-            <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
-          </FormControl>
-          <Heading as="h2" size="md" textAlign="left" w="100%" mt={5}>
-            Person of Contact - Information
-          </Heading>
-          <Stack w="full" direction={{ base: "column", md: "row" }} spacing={{ base: 6, md: 40 }}>
+        <form onSubmit={onSubmit}>
+          <VStack spacing={4}>
             <FormControl isRequired>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Organization Name</FormLabel>
               <Input
                 type="text"
-                placeholder="First and Last Name"
+                placeholder="Enter your response"
                 bg="#F6F6F6"
                 border="0"
-                name="contactName"
-                value={loadingInfo ? "Loading..." : formData.contactName}
+                name="organizationName"
+                value={loadingInfo ? "Loading..." : formData.organizationName}
                 onChange={handleChange}
                 disabled={loadingInfo}
               />
             </FormControl>
-            <FormControl>
-              <FormLabel>Phone Number</FormLabel>
+            <FormControl isRequired>
+              <div className="flex gap-0">
+                <FormLabel>Organization Industry</FormLabel>
+                <p
+                  className={cn(
+                    "text-red-600 text-xs font-medium mt-1.5 transition",
+                    showMaxError ? "opacity-100" : "opacity-0",
+                  )}
+                >
+                  Max limit 3
+                </p>
+              </div>
+              <TagSelect
+                value={formatIndustries(formData.organizationIndustry)}
+                name="organizationIndustry"
+                onChange={handleIndustriesChange}
+                onMax={() => {
+                  setShowMaxError(true);
+                  setTimeout(() => {
+                    setShowMaxError(false);
+                  }, 3000);
+                }}
+                checkMax={(length) => {
+                  if (length < 3) {
+                    setShowMaxError(false);
+                  }
+                }}
+              />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Job Title</FormLabel>
               <Input
-                type="tel"
+                type="text"
+                placeholder="Enter your response"
                 bg="#F6F6F6"
-                placeholder="xxx-xxx-xxxx"
                 border="0"
-                name="contactPhone"
-                value={loadingInfo ? "Loading..." : formData.contactPhone}
+                name="title"
+                value={loadingInfo ? "Loading..." : formData.title}
                 onChange={handleChange}
-                maxLength={12}
                 disabled={loadingInfo}
               />
-              <FormErrorMessage>Please enter a valid phone number.</FormErrorMessage>
             </FormControl>
-          </Stack>
-          <FormControl isRequired>
-            <FormLabel>Email</FormLabel>
-            <Input
-              type="email"
-              placeholder="xxxxx@example.com"
-              bg="#F6F6F6"
-              border="0"
-              name="contactEmail"
-              value={loadingInfo ? "Loading..." : formData.contactEmail}
-              onChange={handleChange}
-              disabled={loadingInfo}
-            />
-            <FormErrorMessage>Please enter a valid email address.</FormErrorMessage>
-          </FormControl>
-          {isEditing ? (
-            // if editing, show update & delete
-            <HStack>
+            <FormControl isRequired>
+              <FormLabel>Compensation Type</FormLabel>
+              <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getCompensationRootProps()}>
+                {compensationOptions.map((value) => {
+                  const radio = getCompensationRadioProps({ value });
+                  return (
+                    <RadioCard
+                      key={value}
+                      value={value}
+                      {...radio}
+                      isChecked={selectCompensation === value.toLowerCase()}
+                      checkedColor={compensationColorMapping[value as keyof typeof compensationColorMapping]}
+                    >
+                      {value}
+                    </RadioCard>
+                  );
+                })}
+              </Stack>
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Employment Type</FormLabel>
+              <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getJobRootProps()}>
+                {typeOptions.map((value) => {
+                  const radio = getJobRadioProps({ value });
+                  return (
+                    <RadioCard
+                      key={value}
+                      value={value}
+                      {...radio}
+                      isChecked={selectEmployment === value.toLowerCase()}
+                      checkedColor={employmentColorMapping[value as keyof typeof employmentColorMapping]}
+                    >
+                      {value}
+                    </RadioCard>
+                  );
+                })}
+              </Stack>
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Job Description</FormLabel>
+              <Input
+                type="text"
+                placeholder="Enter your response"
+                bg="#F6F6F6"
+                border="0"
+                name="jobDescription"
+                value={loadingInfo ? "Loading..." : formData.jobDescription}
+                onChange={handleChange}
+                disabled={loadingInfo}
+              />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Link to Job Listing</FormLabel>
+              <Input
+                type="text"
+                placeholder="Enter your response"
+                bg="#F6F6F6"
+                border="0"
+                name="detailURL"
+                value={loadingInfo ? "Loading..." : formData.detailURL}
+                onChange={handleChange}
+                disabled={loadingInfo}
+              />
+              <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
+            </FormControl>
+            <Heading as="h2" size="md" textAlign="left" w="100%" mt={5}>
+              Person of Contact - Information
+            </Heading>
+            <Stack w="full" direction={{ base: "column", md: "row" }} spacing={{ base: 6, md: 40 }}>
+              <FormControl isRequired>
+                <FormLabel>Name</FormLabel>
+                <Input
+                  type="text"
+                  placeholder="First and Last Name"
+                  bg="#F6F6F6"
+                  border="0"
+                  name="contactName"
+                  value={loadingInfo ? "Loading..." : formData.contactName}
+                  onChange={handleChange}
+                  disabled={loadingInfo}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Phone Number</FormLabel>
+                <Input
+                  type="tel"
+                  bg="#F6F6F6"
+                  placeholder="xxx-xxx-xxxx"
+                  border="0"
+                  name="contactPhone"
+                  value={loadingInfo ? "Loading..." : formData.contactPhone}
+                  onChange={handleChange}
+                  maxLength={12}
+                  disabled={loadingInfo}
+                />
+                <FormErrorMessage>Please enter a valid phone number.</FormErrorMessage>
+              </FormControl>
+            </Stack>
+            <FormControl isRequired>
+              <FormLabel>Email</FormLabel>
+              <Input
+                type="email"
+                placeholder="xxxxx@example.com"
+                bg="#F6F6F6"
+                border="0"
+                name="contactEmail"
+                value={loadingInfo ? "Loading..." : formData.contactEmail}
+                onChange={handleChange}
+                disabled={loadingInfo}
+              />
+              <FormErrorMessage>Please enter a valid email address.</FormErrorMessage>
+            </FormControl>
+            {isEditing ? (
+              // if editing, show update & delete
+              <HStack>
+                <Button
+                  isLoading={loading}
+                  loadingText="Updating..."
+                  mt={10}
+                  type="submit"
+                  size="lg"
+                  colorScheme="blackAlpha"
+                  bg="black"
+                  _hover={{ bg: "#5E5E5E" }}
+                >
+                  Update
+                </Button>
+                <Button
+                  isLoading={loading}
+                  loadingText="Deleting..."
+                  mt={10}
+                  size="lg"
+                  colorScheme="red"
+                  bg="red"
+                  _hover={{ bg: "#5E5E5E" }}
+                  onClick={() => setIsDeleteModalOpen(true)}
+                >
+                  Delete
+                </Button>
+              </HStack>
+            ) : (
+              // if creating, show Submit
               <Button
                 isLoading={loading}
-                loadingText="Updating..."
+                loadingText="Submitting..."
                 mt={10}
                 type="submit"
                 size="lg"
@@ -512,48 +540,22 @@ export default function JobFormPage() {
                 bg="black"
                 _hover={{ bg: "#5E5E5E" }}
               >
-                Update
+                Submit
               </Button>
-              <Button
-                isLoading={loading}
-                loadingText="Deleting..."
-                mt={10}
-                size="lg"
-                colorScheme="red"
-                bg="red"
-                _hover={{ bg: "#5E5E5E" }}
-                onClick={() => setIsDeleteModalOpen(true)}
-              >
-                Delete
-              </Button>
-            </HStack>
-          ) : (
-            // if creating, show Submit
-            <Button
-              isLoading={loading}
-              loadingText="Submitting..."
-              mt={10}
-              type="submit"
-              size="lg"
-              colorScheme="blackAlpha"
-              bg="black"
-              _hover={{ bg: "#5E5E5E" }}
-            >
-              Submit
-            </Button>
-          )}
-          {isEditing && (
-            <Link variant="underline" href="/admin" mt="2">
-              Return to admin board
-            </Link>
-          )}
-          {message && <p>{message}</p>}
-        </VStack>
-      </form>
+            )}
+            {isEditing && (
+              <Link variant="underline" href="/admin" mt="2">
+                Return to admin board
+              </Link>
+            )}
+            {message && <p>{message}</p>}
+          </VStack>
+        </form>
 
-      <JobConfirmationModal isOpen={isSubmitModalOpen} onClose={closeSubmitModal} />
-      <JobDeletedModal isOpen={isDeleteModalOpen} onClose={closeDeleteModal} onConfirm={handleDelete} />
-      <JobFailModal isOpen={isFailModalOpen} onClose={closeFailModal} />
-    </Box>
+        <JobConfirmationModal isOpen={isSubmitModalOpen} onClose={closeSubmitModal} />
+        <JobDeletedModal isOpen={isDeleteModalOpen} onClose={closeDeleteModal} onConfirm={handleDelete} />
+        <JobFailModal isOpen={isFailModalOpen} onClose={closeFailModal} />
+      </Box>
+    </Suspense>
   );
 }
