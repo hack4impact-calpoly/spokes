@@ -545,7 +545,7 @@ export default function JobFormPage() {
             )}
             {isEditing && (
               <Link variant="underline" href="/admin" mt="2">
-                Return to admin board
+                Return to Admin Dashboard
               </Link>
             )}
             {message && <p>{message}</p>}
