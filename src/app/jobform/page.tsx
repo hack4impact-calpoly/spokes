@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 
 import JobConfirmationModal from "@/components/JobConfirmationModal";
 import JobDeletedModal from "@/components/JobDeletedModal";
+import JobFailModal from "@/components/JobFailModal";
 
 // converts the formData string array to a Option object array necessary for use in the TagSelect componenet
 function formatIndustries(industries: string[]): Option[] {
@@ -62,6 +63,7 @@ export default function JobFormPage() {
   const [selectCompensation, setSelectCompensation] = useState("");
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isFailModalOpen, setIsFailModalOpen] = useState(false);
   const [showMaxError, setShowMaxError] = useState(false);
 
   const employmentColorMapping = {
@@ -186,6 +188,7 @@ export default function JobFormPage() {
       setIsSubmitModalOpen(true);
     } catch (error) {
       console.error("Error submitting job:", error);
+      setIsFailModalOpen(true);
       setMessage("Error submitting job.");
     } finally {
       setLoading(false);
@@ -295,6 +298,10 @@ export default function JobFormPage() {
 
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
+  };
+
+  const closeFailModal = () => {
+    setIsFailModalOpen(false);
   };
 
   const onSubmit = (e: React.FormEvent) => {
@@ -546,6 +553,7 @@ export default function JobFormPage() {
 
       <JobConfirmationModal isOpen={isSubmitModalOpen} onClose={closeSubmitModal} />
       <JobDeletedModal isOpen={isDeleteModalOpen} onClose={closeDeleteModal} onConfirm={handleDelete} />
+      <JobFailModal isOpen={isFailModalOpen} onClose={closeFailModal} />
     </Box>
   );
 }
