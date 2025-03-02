@@ -1,7 +1,7 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import JobFormPage from "../../jobform/page";
+import JobFormPage from "@/app/jobform/JobFormPage.client";
 import "@testing-library/jest-dom";
 
 if (typeof global.ResizeObserver === "undefined") {
@@ -16,6 +16,7 @@ jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: jest.fn(),
   }),
+  useSearchParams: () => new URLSearchParams(""),
 }));
 
 global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>;
@@ -26,7 +27,11 @@ describe("JobFormPage", () => {
   });
 
   it("sanity check: renders JobFormPage", () => {
-    const { container } = render(<JobFormPage />);
+    const { container } = render(
+      <Suspense fallback={<div>Loading...</div>}>
+        <JobFormPage />
+      </Suspense>,
+    );
     expect(container).toBeInTheDocument();
   });
 
@@ -45,7 +50,11 @@ describe("JobFormPage", () => {
       status: 200,
     });
 
-    render(<JobFormPage />);
+    render(
+      <Suspense fallback={<div>Loading...</div>}>
+        <JobFormPage />
+      </Suspense>,
+    );
 
     // Fill out the form fields
     fireEvent.change(screen.getByLabelText(/Organization Name/i), {
@@ -126,7 +135,11 @@ describe("JobFormPage", () => {
       json: async () => ({ message: "Internal Server Error" }),
     });
 
-    render(<JobFormPage />);
+    render(
+      <Suspense fallback={<div>Loading...</div>}>
+        <JobFormPage />
+      </Suspense>,
+    );
 
     // Fill out the form fields
     fireEvent.change(screen.getByLabelText(/Organization Name/i), {

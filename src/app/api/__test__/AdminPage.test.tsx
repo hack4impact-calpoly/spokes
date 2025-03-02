@@ -4,6 +4,14 @@ import AdminJobs from "../../admin/page";
 import { ChakraProvider } from "@chakra-ui/react";
 import "@testing-library/jest-dom";
 
+// add mock for next/router
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+  }),
+  useSearchParams: () => new URLSearchParams(""),
+}));
+
 // needed because Chakra UI uses matchMedia and depends on it otherwise Jest fails
 if (!window.matchMedia) {
   window.matchMedia = (query: string) => ({
