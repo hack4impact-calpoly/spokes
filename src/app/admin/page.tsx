@@ -84,8 +84,8 @@ export default function AdminJobs() {
       if (!response.ok) {
         throw new Error("Failed to fetch job data");
       }
-      const jobs = await response.json();
-      const currentJob = jobs.find((j: IJob) => j._id === jobId);
+
+      const currentJob: IJob = await response.json();
 
       if (!currentJob) {
         throw new Error("Job not found");
@@ -102,7 +102,7 @@ export default function AdminJobs() {
         employmentType: currentJob.employmentType,
         compensationType: currentJob.compensationType,
         jobStatus: status,
-        detailURL: currentJob.url,
+        detailURL: currentJob.detailURL,
         approvedDate: approvedDate ? approvedDate : currentJob.approvedDate,
       };
 
