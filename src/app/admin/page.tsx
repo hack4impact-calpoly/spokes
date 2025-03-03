@@ -10,14 +10,14 @@ import { twMerge } from "tailwind-merge";
 
 // Helper function to filter the job data into the three categories
 function filterJobs(jobs: IJob[], filterBy: "pending" | "approved" | "rejected" | "expired") {
-  // Check for expired jobs first
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
   return jobs.filter((job) => {
-    // If the job is pending and older than 30 days, mark it as expired
-    const postDate = new Date(job.postDate);
-    if (job.jobStatus === "pending" && postDate < thirtyDaysAgo) {
+    const approvalDate = job.approvedDate ? new Date(job.approvedDate) : null;
+
+    // If the job is approved and its approvedDate is older than 30 days, mark it as expired
+    if (job.jobStatus === "approved" && approvalDate && approvalDate < thirtyDaysAgo) {
       return filterBy === "expired";
     }
     return job.jobStatus === filterBy;
