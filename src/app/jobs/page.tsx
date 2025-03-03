@@ -82,7 +82,7 @@ export default function Jobs() {
     "Community Development": "Community & Economic Development",
     Environment: "Environment & Animals",
     Youth: "Youth Development & Recreation",
-    Faith: "Faith-Based & Spiritual Organizations",
+    Faith: "Faith-Based & Spiritual",
     "Civil Rights": "Civil Rights & Advocacy",
     "Humanitarian Aid": "International Development & Humanitarian Aid",
   };
