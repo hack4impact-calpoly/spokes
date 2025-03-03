@@ -249,7 +249,7 @@ function useScrollDirection() {
     return () => {
       window.removeEventListener("scroll", updateScrollDirection);
     };
-  }, [scrollDirection]);
+  }, []);
 
   return scrollDirection;
 }
