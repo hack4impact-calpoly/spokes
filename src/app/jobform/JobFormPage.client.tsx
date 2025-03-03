@@ -1,5 +1,8 @@
 "use client";
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useFormReset } from "@/app/jobform/FormResetContext";
 import {
   Box,
   Button,
@@ -14,13 +17,10 @@ import {
   HStack,
   Link,
 } from "@chakra-ui/react";
-import { useRouter, useSearchParams } from "next/navigation";
-
 import RadioCard from "@/components/RadioCard";
 import TagSelect from "@/components/TagSelect";
 import { Option } from "@/components/TagsMultiselect/multiselect";
 import { cn } from "@/lib/utils";
-
 import JobConfirmationModal from "@/components/JobConfirmationModal";
 import JobDeletedModal from "@/components/JobDeletedModal";
 import JobFailModal from "@/components/JobFailModal";
@@ -34,10 +34,12 @@ function formatIndustries(industries: string[]): Option[] {
 }
 
 export default function JobFormPage() {
+  const { register, handleSubmit: formHandleSubmit, reset } = useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
   const jobId = searchParams.get("jobId");
   const isEditing = Boolean(jobId);
+  const { resetForm } = useFormReset();
 
   const [formData, setFormData] = useState({
     organizationName: "",
@@ -113,6 +115,13 @@ export default function JobFormPage() {
     fetchJob();
   }, [jobId]);
 
+  // Reset form when resetForm state changes
+  useEffect(() => {
+    if (resetForm) {
+      reset();
+    }
+  }, [resetForm, reset]);
+
   // formats phone number input to filter non-numbers an add -
   const formatPhoneNumber = (value: string): string => {
     const cleaned = value.replace(/\D/g, "");
@@ -130,7 +139,7 @@ export default function JobFormPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
@@ -316,7 +325,7 @@ export default function JobFormPage() {
     if (isEditing) {
       handleUpdate(e);
     } else {
-      handleSubmit(e);
+      handleFormSubmit(e);
     }
   };
 
