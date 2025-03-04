@@ -10,14 +10,14 @@ import { twMerge } from "tailwind-merge";
 
 // Helper function to filter the job data into the three categories
 function filterJobs(jobs: IJob[], filterBy: "pending" | "approved" | "rejected" | "expired") {
-  // Check for expired jobs first
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
   return jobs.filter((job) => {
-    // If the job is pending and older than 30 days, mark it as expired
-    const postDate = new Date(job.postDate);
-    if (job.jobStatus === "pending" && postDate < thirtyDaysAgo) {
+    const approvalDate = job.approvedDate ? new Date(job.approvedDate) : null;
+
+    // If the job is approved and its approvedDate is older than 30 days, mark it as expired
+    if (job.jobStatus === "approved" && approvalDate && approvalDate < thirtyDaysAgo) {
       return filterBy === "expired";
     }
     return job.jobStatus === filterBy;
@@ -84,8 +84,8 @@ export default function AdminJobs() {
       if (!response.ok) {
         throw new Error("Failed to fetch job data");
       }
-      const jobs = await response.json();
-      const currentJob = jobs.find((j: IJob) => j._id === jobId);
+
+      const currentJob: IJob = await response.json();
 
       if (!currentJob) {
         throw new Error("Job not found");
@@ -102,7 +102,7 @@ export default function AdminJobs() {
         employmentType: currentJob.employmentType,
         compensationType: currentJob.compensationType,
         jobStatus: status,
-        detailURL: currentJob.url,
+        detailURL: currentJob.detailURL,
         approvedDate: approvedDate ? approvedDate : currentJob.approvedDate,
       };
 
