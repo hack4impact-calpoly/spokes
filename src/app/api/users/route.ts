@@ -9,14 +9,19 @@ export async function POST(req: NextRequest) {
   try {
     await connectDB();
 
-    const user = await currentUser();
-    if (!user) {
+    const { userId } = await auth();
+    if (!userId) {
       return NextResponse.json({ message: "No user id." }, { status: 401 });
     }
 
-    const userId = user.id;
-    const { firstName, lastName } = user;
-    const email = user.primaryEmailAddress?.emailAddress || user.emailAddresses?.[0]?.emailAddress;
+    const client = await clerkClient();
+    const clerkUser = await client.users.getUser(userId);
+    if (!clerkUser) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    const { firstName, lastName } = clerkUser;
+    const email = clerkUser.primaryEmailAddress?.emailAddress || clerkUser.emailAddresses?.[0]?.emailAddress;
     if (!email) {
       return NextResponse.json({ message: "No email" }, { status: 404 });
     }
