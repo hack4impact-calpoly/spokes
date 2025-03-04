@@ -19,6 +19,8 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<"approve" | "reject" | "renew" | null>(null);
   const router = useRouter();
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
   // Opens modal with the appropriate action
   const openModal = (action: "approve" | "reject" | "renew") => {
@@ -40,10 +42,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
     closeModal();
   };
 
-  const isExpired =
-    job.jobStatus != "approved" &&
-    job.postDate &&
-    new Date(job.postDate) < new Date(new Date().setDate(new Date().getDate() - 30));
+  const isExpired = job.approvedDate && new Date(job.approvedDate) < thirtyDaysAgo;
 
   function handleEditApplicationButton(e: React.ChangeEvent<any>) {
     e.preventDefault();
@@ -125,7 +124,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
                 onClick={() => openModal("renew")}
                 sx={{
                   _hover: {
-                    backgroundColor: "yellow.300",
+                    backgroundColor: "#FFE297",
                   },
                 }}
               >
