@@ -21,8 +21,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         variables: {
           fontSize: "15px",
         },
-        layout: {
-          unsafe_disableDevelopmentModeWarnings: true, //to get rid of the deployment warning on clerk
+        elements: {
+          footer: "hidden",
         },
       }}
     >

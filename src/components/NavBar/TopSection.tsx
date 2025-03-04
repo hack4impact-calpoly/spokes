@@ -29,7 +29,7 @@ export default function TopSection({ user }: TopSectionProps) {
             <OrganizationSwitcher />
           </div>
         ) : (
-          <Link href="/sign-up">
+          <Link href="/sign-in">
             <Button
               className="flex flex-shrink-0 gap-2"
               fontWeight="medium"
