@@ -1,4 +1,4 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
@@ -14,6 +14,12 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.next();
   }
 
+  const client = await clerkClient();
+  const user = await client.users.getUser(userId);
+
+  const isFirstSignUp = !user.privateMetadata?.isFirstSignUp;
+  console.log("is first sign up:", isFirstSignUp);
+
   try {
     const cookies = req.headers.get("cookie") || "";
     const baseUrl = process.env.BASE_URL || "http://localhost:3000";
@@ -23,7 +29,25 @@ export default clerkMiddleware(async (auth, req) => {
         "Content-Type": "application/json",
         Cookie: cookies,
       },
+      body: JSON.stringify({
+        userId: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.primaryEmailAddress?.emailAddress,
+      }),
     });
+
+    if (response.ok) {
+      console.log("User added via middleware");
+      await client.users.updateUserMetadata(userId, {
+        privateMetadata: {
+          hasCompletedFirstSignUp: true,
+        },
+      });
+    } else {
+      const errorData = await response.json();
+      console.log("user creation failed:", errorData.message);
+    }
   } catch (error) {
     console.log("Error in adding user in middleware", error);
   }
