@@ -14,6 +14,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  useMediaQuery,
 } from "@chakra-ui/react";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -52,7 +53,8 @@ const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filte
   console.log(url.toString());
   const response = await fetch(url.toString());
   const data = await response.json();
-  return data;
+  const approvedJobs = data.filter((job: IJob) => job.jobStatus === "approved");
+  return approvedJobs;
 };
 
 export default function Jobs() {
@@ -98,6 +100,7 @@ export default function Jobs() {
   const filterCategories: FilterCategories = {
     employment: ["Full-time", "Part-time"],
     compensation: ["Paid", "Volunteer"],
+    jobStatus: ["approved"],
   };
 
   // Handler to fetch recent jobs by IDs
@@ -180,6 +183,9 @@ export default function Jobs() {
 
   const { ref, inView } = useInView();
 
+  const [isSmallScreen] = useMediaQuery("(max-width: 639px)");
+  const [isLargeScreen] = useMediaQuery("(min-width: 640px)");
+
   useEffect(() => {
     if (inView && hasNextPage) {
       fetchNextPage();
@@ -215,7 +221,7 @@ export default function Jobs() {
                 Recently Viewed
               </div>
             </div>
-            {tab === 2 && (
+            {tab === 2 && isLargeScreen && (
               <Button onClick={onOpen} fontWeight="normal" variant="outline" borderColor="black" size="sm">
                 Clear History
               </Button>
@@ -252,6 +258,13 @@ export default function Jobs() {
           )}
         </div>
       </div>
+      {tab === 2 && isSmallScreen && (
+        <div className="px-8 md:px-16 lg:px-20 mt-4 flex justify-center sm:block lg:hidden">
+          <Button onClick={onOpen} fontWeight="normal" variant="outline" borderColor="black" size="sm">
+            Clear History
+          </Button>
+        </div>
+      )}
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

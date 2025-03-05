@@ -55,17 +55,18 @@ export default function JobCard({ job, onJobView, innerRef }: JobCardProps) {
     <div className="max-w-[100%]" ref={innerRef}>
       <div className="bg-[#f7f7f7] rounded-md px-8 pt-5 pb-2 shadow-sm">
         <JobCardInformation job={job} />
-        <div className="flex flex-row md:flex-col lg:flex-row gap-4 items-end lg:items-end md:items-start mt-5">
-          <div className="flex gap-2">
+
+        <div className="flex flex-wrap gap-4 items-end mt-5">
+          <div className="flex flex-wrap gap-2">
             <JobBadge badgeType={job.employmentType} />
             <JobBadge badgeType={job.compensationType} />
           </div>
           <JobPostedDate date={job.postDate} />
         </div>
-        <div className="flex lg:flex-row flex-col gap-4 my-5">
+        <div className="flex flex-wrap gap-4 my-5">
           <Button
             onClick={handleSeeMoreClick}
-            className="lg:w-[50%] w-full"
+            className="flex-1 min-w-[150px]"
             fontWeight="normal"
             variant="outline"
             borderColor="black"
@@ -74,7 +75,7 @@ export default function JobCard({ job, onJobView, innerRef }: JobCardProps) {
           </Button>
           <Button
             onClick={handleApplyNowClick}
-            className="lg:w-[50%] w-full"
+            className="flex-1 min-w-[150px]"
             fontWeight="normal"
             variant="outline"
             bg="black"
