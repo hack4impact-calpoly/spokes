@@ -20,36 +20,39 @@ export default clerkMiddleware(async (auth, req) => {
   const isFirstSignUp = !user.privateMetadata?.isFirstSignUp;
   console.log("is first sign up:", isFirstSignUp);
 
-  try {
-    const cookies = req.headers.get("cookie") || "";
-    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
-    const response = await fetch(`${baseUrl}/api/users`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: cookies,
-      },
-      body: JSON.stringify({
-        userId: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.primaryEmailAddress?.emailAddress,
-      }),
-    });
-
-    if (response.ok) {
-      console.log("User added via middleware");
-      await client.users.updateUserMetadata(userId, {
-        privateMetadata: {
-          hasCompletedFirstSignUp: true,
+  if (!isFirstSignUp) {
+    try {
+      const cookies = req.headers.get("cookie") || "";
+      const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+      const response = await fetch(`${baseUrl}/api/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookies,
         },
+        body: JSON.stringify({
+          userId: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.primaryEmailAddress?.emailAddress,
+        }),
       });
-    } else {
-      const errorData = await response.json();
-      console.log("user creation failed:", errorData.message);
+
+      if (response.ok) {
+        console.log("User added via middleware");
+        await client.users.updateUserMetadata(userId, {
+          privateMetadata: {
+            ...user.privateMetadata,
+            isFirstSignUp: false,
+          },
+        });
+      } else {
+        const errorData = await response.json();
+        console.log("user creation failed:", errorData.message);
+      }
+    } catch (error) {
+      console.log("Error in adding user in middleware", error);
     }
-  } catch (error) {
-    console.log("Error in adding user in middleware", error);
   }
 
   return NextResponse.next();
