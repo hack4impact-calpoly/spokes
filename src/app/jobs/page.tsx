@@ -49,6 +49,9 @@ const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filte
     filters.industry.forEach((filter) => url.searchParams.append("organizationIndustry", filter));
   }
 
+  // Only fetch approved jobs
+  url.searchParams.append("jobStatus", "approved");
+
   console.log(url.toString());
   const response = await fetch(url.toString());
   const data = await response.json();
@@ -194,11 +197,11 @@ export default function Jobs() {
           <FilterCard categories={filterCategories} onFilterChange={handleFilterChange}></FilterCard>
         </div>
         <div className="flex flex-col w-full gap-4 lg:gap-6">
-          <div className="flex items-center justify-between">
-            <div className="flex gap-8">
+          <div className="flex items-center justify-between max-[500px]:flex-col max-[500px]:items-stretch">
+            <div className="flex gap-8 max-[500px]:justify-center max-[500px]:gap-4">
               <div
                 className={twMerge(
-                  "text-black text-2xl sm:text-3xl cursor-pointer select-none",
+                  "text-black text-xl sm:text-2xl md:text-3xl cursor-pointer select-none",
                   tab == 1 ? "font-semibold" : "font-normal text-[#C3C3C3]",
                 )}
                 onClick={() => handleTabChange(1)}
@@ -207,7 +210,7 @@ export default function Jobs() {
               </div>
               <div
                 className={twMerge(
-                  "text-black text-2xl sm:text-3xl cursor-pointer select-none",
+                  "text-black text-xl sm:text-2xl md:text-3xl cursor-pointer select-none",
                   tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
                 )}
                 onClick={() => handleTabChange(2)}
@@ -216,12 +219,13 @@ export default function Jobs() {
               </div>
             </div>
             {tab === 2 && (
-              <Button onClick={onOpen} fontWeight="normal" variant="outline" borderColor="black" size="sm">
-                Clear History
-              </Button>
+              <div className="max-[500px]:mt-4 max-[500px]:flex max-[500px]:justify-center">
+                <Button onClick={onOpen} fontWeight="normal" variant="outline" borderColor="black" size="sm">
+                  Clear History
+                </Button>
+              </div>
             )}
           </div>
-
           {tab == 1 ? (
             <>
               {fetchedJobs ? (

@@ -16,6 +16,7 @@ html {
   transition: background-color 0.3s ease;
 }
 
+/* Base styles */
 .cl-userButtonBox {
   padding: 0.5em 1em;
   background-color: #c2412e;
@@ -23,11 +24,95 @@ html {
   border-radius: 6px;
   font-weight: bold;
   width: 100%;
+  font-size: 1rem; /* Default size */
 }
 
 .cl-organizationSwitcherTrigger {
   background-color: #f7f7f7;
   border-radius: 6px;
+  padding: 0.5em 1em;
+  font-size: 1rem; /* Default size */
+}
+
+/* Medium Screens */
+@media (max-width: 768px) {
+  .cl-userButtonBox {
+    font-size: 0.65rem;
+  }
+
+  .cl-organizationSwitcherTrigger {
+    font-size: 0.4rem;
+  }
+
+  .cl-userButtonAvatarBox,
+  .cl-userPreviewAvatarBox {
+    max-width: 25px;
+    max-height: 25px;
+  }
+}
+
+/* Tablet screens */
+@media (max-width: 600px) {
+  .cl-userButtonBox {
+    font-size: 0.5rem;
+  }
+
+  .cl-organizationSwitcherTrigger {
+    font-size: 0.3rem;
+    border-radius: 3px;
+  }
+
+  .cl-userButtonAvatarBox,
+  .cl-userPreviewAvatarBox {
+    max-width: 20px;
+    max-height: 20px;
+  }
+}
+
+/* Small screens */
+@media (max-width: 500px) {
+  .cl-userButtonBox {
+    font-size: 0.4rem;
+  }
+
+  .cl-organizationSwitcherTrigger {
+    padding: 0.3em 0.1em;
+    font-size: 0.2rem;
+  }
+
+  .cl-userButtonAvatarBox,
+  .cl-userPreviewAvatarBox,
+  .cl-cl-userPreview__personalWorkspace {
+    padding: 0;
+    display: none;
+  }
+
+  .cl-userButtonOuterIdentifier {
+    padding: 0;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 400px) {
+  .cl-userButtonBox {
+    font-size: 0.1rem;
+  }
+
+  .cl-organizationSwitcherTrigger {
+    padding: 0;
+    font-size: 0.1rem;
+  }
+
+  .cl-userButtonAvatarBox,
+  .cl-userPreviewAvatarBox,
+  .cl-cl-userPreview__personalWorkspace {
+    padding: 0;
+    display: none;
+  }
+
+  .cl-userButtonOuterIdentifier {
+    padding: 0;
+  }
 }
 
 #tagSelectLabel {

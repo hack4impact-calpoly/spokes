@@ -3,11 +3,11 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
-  // if (isAdminRoute(req)) {
-  //   await auth.protect((has) => {
-  //     return has({ role: "org:admin" });
-  //   });
-  // }
+  if (isAdminRoute(req)) {
+    await auth.protect((has) => {
+      return has({ role: "org:admin" });
+    });
+  }
 });
 
 export const config = {
