@@ -37,6 +37,7 @@ export async function GET(req: Request) {
     const employmentFilters = searchParams.getAll("employmentType");
     const compensationFilters = searchParams.getAll("compensationType");
     const industryFilters = searchParams.getAll("organizationIndustry");
+    const statusFilter = searchParams.get("jobStatus");
 
     // Build the filter object dynamically
     const filter: any = {};
@@ -56,6 +57,12 @@ export async function GET(req: Request) {
     if (industryFilters.length > 0) {
       filter.organizationIndustry = {
         $in: industryFilters,
+      };
+    }
+
+    if (statusFilter) {
+      filter.jobStatus = {
+        $in: statusFilter,
       };
     }
 

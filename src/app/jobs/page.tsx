@@ -49,6 +49,9 @@ const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filte
     filters.industry.forEach((filter) => url.searchParams.append("organizationIndustry", filter));
   }
 
+  // Only fetch approved jobs
+  url.searchParams.append("jobStatus", "approved");
+
   console.log(url.toString());
   const response = await fetch(url.toString());
   const data = await response.json();
