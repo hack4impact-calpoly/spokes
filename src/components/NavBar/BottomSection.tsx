@@ -3,14 +3,15 @@ import React, { useState, useEffect } from "react";
 import { FaArrowUp } from "react-icons/fa";
 import { FiMenu, FiX } from "react-icons/fi";
 import { usePathname } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
 import NavBarLink from "./NavBarLink";
+import { useFormReset } from "@/app/jobform/FormResetContext";
 
 export default function BottomSection() {
   const scrollDirection = useScrollDirection();
   const [showScrollToTop, setShowScrollToTop] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { triggerReset } = useFormReset();
 
   useEffect(() => {
     const handleScroll: EventListener = () => {
@@ -31,6 +32,14 @@ export default function BottomSection() {
     setIsMobileMenuOpen((prev) => !prev);
   };
 
+  const handleListJobClick = () => {
+    triggerReset();
+    setIsMobileMenuOpen(false);
+    if (pathname === "/jobform") {
+      window.location.replace(pathname);
+    }
+  };
+
   return (
     <nav
       className={`sticky z-10 bg-[#2B2B2B] text-white transition-all duration-500 ${
@@ -40,11 +49,11 @@ export default function BottomSection() {
       {/* Desktop Navigation (visible on sm and up) */}
       <div className="hidden sm:flex justify-between items-center px-9 py-.5 text-xs sm:text-sm md:text-md lg:text-lg">
         <div className="flex">
-          <NavBarLink title="Job Board" href="jobs" />
-          <NavBarLink title="List Job" href="jobform" />
+          <NavBarLink title="Job Board" href="/jobs" />
+          <NavBarLink title="List Job" href="/jobform" onClick={handleListJobClick} />
           {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
           {/* {has && has({ role: "org:admin" }) && <NavBarLink title="Spokes Dashboard" href="admin" />}  */}
-          <NavBarLink title="Spokes Dashboard" href="admin" />
+          <NavBarLink title="Spokes Dashboard" href="/admin" />
         </div>
         {showScrollToTop && (
           <div

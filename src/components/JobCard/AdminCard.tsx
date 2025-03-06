@@ -7,6 +7,7 @@ import JobCardInformation from "@/components/JobCard/JobCardInformation";
 import JobPostedDate from "@/components/JobCard/JobPostedDate";
 import { useState } from "react";
 import JobCardModal from "./JobCardModal";
+import { useRouter } from "next/navigation";
 
 interface JobCardProps {
   job: IJob;
@@ -17,6 +18,9 @@ interface JobCardProps {
 export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<"approve" | "reject" | "renew" | null>(null);
+  const router = useRouter();
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
   // Opens modal with the appropriate action
   const openModal = (action: "approve" | "reject" | "renew") => {
@@ -38,10 +42,12 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
     closeModal();
   };
 
-  const isExpired =
-    job.jobStatus != "approved" &&
-    job.postDate &&
-    new Date(job.postDate) < new Date(new Date().setDate(new Date().getDate() - 30));
+  const isExpired = job.approvedDate && new Date(job.approvedDate) < thirtyDaysAgo;
+
+  function handleEditApplicationButton(e: React.ChangeEvent<any>) {
+    e.preventDefault();
+    router.push(`/jobform?jobId=${job._id}`);
+  }
 
   return (
     <div className="max-w-[100%]" ref={innerRef}>
@@ -54,6 +60,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
           borderColor="black"
           position="absolute"
           className="absolute top-4 right-[1rem]"
+          onClick={handleEditApplicationButton}
         />
         <div className="flex justify-between mb-5">
           <JobStatusBadge jobStatus={job.jobStatus} />
@@ -117,7 +124,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
                 onClick={() => openModal("renew")}
                 sx={{
                   _hover: {
-                    backgroundColor: "yellow.300",
+                    backgroundColor: "#FFE297",
                   },
                 }}
               >

@@ -33,14 +33,15 @@ export async function DELETE(_request: NextRequest, { params }: { params: { jobI
  * accepts a job object and updates the job in the database
  * @returns {Promise<NextResponse>}
  */
-export async function PUT(request: Request) {
+export async function PUT(_request: NextRequest, { params }: { params: { jobId: string } }) {
   try {
     await connectDB();
+    const { jobId } = params;
 
-    const job: IJob = await request.json();
+    const job: IJob = await _request.json();
     console.log("Received Job Data:", job);
 
-    if (!job._id) {
+    if (!jobId) {
       return NextResponse.json({ message: "Job ID is required" }, { status: 400 });
     }
 
@@ -48,7 +49,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ message: "Job status is required" }, { status: 400 });
     }
 
-    await Job.findByIdAndUpdate(job._id, job, { new: true }).orFail(new Error("Job not found"));
+    await Job.findByIdAndUpdate(jobId, job, { new: true }).orFail(new Error("Job not found"));
     return NextResponse.json({ message: "Job updated successfully" });
   } catch (error: any) {
     console.error("PUT Error:", error);
@@ -56,20 +57,23 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(_request: NextRequest, { params }: { params: { jobId: string } }) {
   try {
     await connectDB();
+    const { jobId } = params;
 
-    const jobs = await Job.find().sort({ postDate: -1 });
+    console.log("Received jobId:", jobId);
 
-    if (!jobs) {
+    const job = await Job.findById(jobId);
+
+    if (!job) {
       return NextResponse.json({ message: "Job not found" }, { status: 404 });
     }
 
-    return NextResponse.json(jobs, { status: 200 });
+    return NextResponse.json(job, { status: 200 });
   } catch (error) {
     console.error("GET Error:", error);
-    return NextResponse.json(error, { status: 500 });
+    return NextResponse.json({ message: "Error fetching job" }, { status: 500 });
   }
 }
 

@@ -15,7 +15,7 @@ export default function NavBarLink({ title, href, onClick }: NavBarLinkProps) {
   return (
     <Link
       href={href}
-      className={`font-medium text-center w-1/2 sm:w-max py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E] ${isActive(`/${href}`) ? "border-b-[#C3412E]" : ""}`}
+      className={`font-medium text-center w-1/2 sm:w-max py-5 sm:py-7 px-5 border-y-4 border-[#2B2B2B] hover:border-b-[#C3412E] ${isActive(`${href}`) ? "border-b-[#C3412E]" : ""}`}
       onClick={onClick}
     >
       {title}

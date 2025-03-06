@@ -42,7 +42,7 @@ function NoJobsFound({ isAdmin }: NoJobsFoundProps) {
   if (isAdmin) {
     return (
       <div className="grow flex flex-col gap-1 justify-center justify-self-center items-center mt-10">
-        <h1 className="text-3xl font-bold">No Jobs Found</h1>
+        <h1 className="text-2xl font-bold">No Jobs Found</h1>
       </div>
     );
   }

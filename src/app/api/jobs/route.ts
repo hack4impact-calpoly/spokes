@@ -66,8 +66,8 @@ export async function GET(req: Request) {
     return new NextResponse(JSON.stringify(jobs), {
       status: 200,
       headers: {
-        // cache settings: keep response fresh for 60s, then serve stale data for up to 30s while revalidating in the background
-        "Cache-Control": "max-age=60, stale-while-revalidate=30",
+        // cache settings: keep response fresh for 7s, then serve stale data for up to 1s while revalidating in the background
+        "Cache-Control": "max-age=7, stale-while-revalidate=1",
         "Content-Type": "application/json",
       },
     });
