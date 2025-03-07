@@ -9,6 +9,7 @@ export default clerkMiddleware(async (auth, req) => {
   //     return has({ role: "org:admin" });
   //   });
   // }
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.next();
@@ -17,10 +18,10 @@ export default clerkMiddleware(async (auth, req) => {
   const client = await clerkClient();
   const user = await client.users.getUser(userId);
 
-  const isFirstSignUp = !user.privateMetadata?.isFirstSignUp;
-  console.log("is first sign up:", isFirstSignUp);
+  const hasSignedInBefore = user.privateMetadata?.hasSignedInBefore ?? false;
+  console.log("Has signed in before:", hasSignedInBefore);
 
-  if (!isFirstSignUp) {
+  if (!hasSignedInBefore) {
     try {
       const cookies = req.headers.get("cookie") || "";
       const baseUrl = process.env.BASE_URL || "http://localhost:3000";
@@ -40,10 +41,11 @@ export default clerkMiddleware(async (auth, req) => {
 
       if (response.ok) {
         console.log("User added via middleware");
+
         await client.users.updateUserMetadata(userId, {
           privateMetadata: {
             ...user.privateMetadata,
-            isFirstSignUp: false,
+            hasSignedInBefore: true,
           },
         });
       } else {
