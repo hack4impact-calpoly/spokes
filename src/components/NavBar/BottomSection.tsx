@@ -5,6 +5,7 @@ import { FiMenu, FiX } from "react-icons/fi";
 import { usePathname } from "next/navigation";
 import NavBarLink from "./NavBarLink";
 import { useFormReset } from "@/app/jobform/FormResetContext";
+import { useAuth } from "@clerk/nextjs";
 
 export default function BottomSection() {
   const scrollDirection = useScrollDirection();
@@ -12,6 +13,7 @@ export default function BottomSection() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const { triggerReset } = useFormReset();
+  const { has } = useAuth();
 
   useEffect(() => {
     const handleScroll: EventListener = () => {
@@ -52,8 +54,7 @@ export default function BottomSection() {
           <NavBarLink title="Job Board" href="/jobs" />
           <NavBarLink title="List Job" href="/jobform" onClick={handleListJobClick} />
           {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
-          {/* {has && has({ role: "org:admin" }) && <NavBarLink title="Spokes Dashboard" href="admin" />}  */}
-          <NavBarLink title="Spokes Dashboard" href="/admin" />
+          {has && has({ role: "org:admin" }) && <NavBarLink title="Spokes Dashboard" href="/admin" />}
         </div>
         {showScrollToTop && (
           <div
@@ -80,11 +81,12 @@ export default function BottomSection() {
             isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
           } space-y-1`}
         >
-          <NavBarLink title="Job Board" href="jobs" onClick={() => setIsMobileMenuOpen(false)} />
-          <NavBarLink title="List Job" href="jobform" onClick={() => setIsMobileMenuOpen(false)} />
+          <NavBarLink title="Job Board" href="/jobs" onClick={() => setIsMobileMenuOpen(false)} />
+          <NavBarLink title="List Job" href="/jobform" onClick={() => setIsMobileMenuOpen(false)} />
           {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
-          {/* {has && has({ role: "org:admin" }) && <NavBarLink title="Spokes Dashboard" href="admin" onClick={() => setIsMobileMenuOpen(false)}/>}  */}
-          <NavBarLink title="Spokes Dashboard" href="admin" onClick={() => setIsMobileMenuOpen(false)} />
+          {has && has({ role: "org:admin" }) && (
+            <NavBarLink title="Spokes Dashboard" href="/admin" onClick={() => setIsMobileMenuOpen(false)} />
+          )}
           {showScrollToTop && (
             <div
               onClick={() => {
