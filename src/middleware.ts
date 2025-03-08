@@ -11,6 +11,8 @@ export default clerkMiddleware(async (auth, req) => {
   // }
 
   const { userId } = await auth();
+
+  //if not signed in, ignore
   if (!userId) {
     return NextResponse.next();
   }
@@ -19,8 +21,8 @@ export default clerkMiddleware(async (auth, req) => {
   const user = await client.users.getUser(userId);
 
   const hasSignedInBefore = user.privateMetadata?.hasSignedInBefore ?? false;
-  console.log("Has signed in before:", hasSignedInBefore);
 
+  // if first log in, call POST request to ad user to mongoDB
   if (!hasSignedInBefore) {
     try {
       const cookies = req.headers.get("cookie") || "";
