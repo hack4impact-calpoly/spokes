@@ -6,13 +6,16 @@ interface UserInterface {
   name: String;
   email: String;
   isadmin: Boolean;
+  postedJobs: [String];
 }
 
 //User Schema
 const UserSchema = new Schema<UserInterface>({
+  _id: { type: String, required: true },
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   isadmin: { type: Boolean, required: true },
+  postedJobs: { type: [String], required: true, default: [] },
 });
 
 //Export Schema

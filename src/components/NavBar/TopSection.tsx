@@ -13,7 +13,7 @@ interface TopSectionProps {
 export default function TopSection({ user }: TopSectionProps) {
   return (
     <>
-      <main className="flex justify-between items-center bg-white px-10 sm:px-14 py-7">
+      <main className="flex items-center justify-between px-10 bg-white sm:px-14 py-7">
         <Link href="/jobs" className="flex-shrink-0 max-[458px]:w-[115px] w-[200px] cursor-pointer">
           <Image
             className="h-auto"
@@ -24,7 +24,7 @@ export default function TopSection({ user }: TopSectionProps) {
           />
         </Link>
         {user ? (
-          <div className="flex flex-col gap-3 items-center">
+          <div className="flex flex-col items-center gap-3">
             <UserButton showName={true} />
             <OrganizationSwitcher />
           </div>

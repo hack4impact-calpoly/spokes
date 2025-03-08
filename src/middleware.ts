@@ -1,13 +1,65 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher, clerkClient } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
-  if (isAdminRoute(req)) {
-    await auth.protect((has) => {
-      return has({ role: "org:admin" });
-    });
+  // if (isAdminRoute(req)) {
+  //   await auth.protect((has) => {
+  //     return has({ role: "org:admin" });
+  //   });
+  // }
+
+  const { userId } = await auth();
+
+  //if not signed in, ignore
+  if (!userId) {
+    return NextResponse.next();
   }
+
+  const client = await clerkClient();
+  const user = await client.users.getUser(userId);
+
+  const hasSignedInBefore = user.privateMetadata?.hasSignedInBefore ?? false;
+
+  // if first log in, call POST request to ad user to mongoDB
+  if (!hasSignedInBefore) {
+    try {
+      const cookies = req.headers.get("cookie") || "";
+      const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+      const response = await fetch(`${baseUrl}/api/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookies,
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.primaryEmailAddress?.emailAddress,
+        }),
+      });
+
+      if (response.ok) {
+        console.log("User added via middleware");
+
+        await client.users.updateUserMetadata(userId, {
+          privateMetadata: {
+            ...user.privateMetadata,
+            hasSignedInBefore: true,
+          },
+        });
+      } else {
+        const errorData = await response.json();
+        console.log("user creation failed:", errorData.message);
+      }
+    } catch (error) {
+      console.log("Error in adding user in middleware", error);
+    }
+  }
+
+  return NextResponse.next();
 });
 
 export const config = {
