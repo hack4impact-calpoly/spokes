@@ -157,7 +157,10 @@ export default function Jobs() {
     Array.from(recentJobs)?.filter(
       (job) =>
         (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
-        (filters.compensation.length === 0 || filters.compensation.includes(job.compensationType)) &&
+        (filters.compensation.length === 0 ||
+          (job.compensationType
+            ? filters.compensation.includes(job.compensationType)
+            : filters.compensation.length === 0)) &&
         (filters.industry.length === 0 ||
           filters.industry.some((industry) => job.organizationIndustry.includes(industry))),
     );
