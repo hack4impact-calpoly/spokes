@@ -59,7 +59,7 @@ export default function JobCard({ job, onJobView, innerRef }: JobCardProps) {
         <div className="flex flex-row md:flex-col lg:flex-row gap-4 items-end lg:items-end md:items-start mt-5 max-[400px]:flex-col max-[400px]:items-start">
           <div className="flex gap-2">
             <JobBadge badgeType={job.employmentType} />
-            <JobBadge badgeType={job.compensationType} />
+            <JobBadge badgeType={job.compensationType || ""} />
           </div>
           <JobPostedDate date={job.postDate} />
         </div>
