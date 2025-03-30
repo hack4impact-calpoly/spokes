@@ -416,7 +416,7 @@ export default function JobFormPage() {
           </FormControl>
           <Box w="full">
             <Collapse in={selectEmployment !== "volunteer"} animateOpacity>
-              <FormControl isRequired={selectEmployment !== "volunteer"} mt={4}>
+              <FormControl isRequired={false} mt={4}>
                 <FormLabel>Compensation Type</FormLabel>
                 <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getCompensationRootProps()}>
                   {compensationOptions.map((value) => {
