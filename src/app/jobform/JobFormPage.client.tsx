@@ -401,7 +401,7 @@ export default function JobFormPage() {
           </FormControl>
           <FormControl isRequired>
             <FormLabel>Employment Type</FormLabel>
-            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getJobRootProps()}>
+            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getJobRootProps()} justify="flex-start">
               {typeOptions.map((value) => {
                 const radio = getJobRadioProps({ value });
                 return (
@@ -418,27 +418,29 @@ export default function JobFormPage() {
               })}
             </Stack>
           </FormControl>
-          <Collapse in={selectEmployment !== "volunteer"} animateOpacity>
-            <FormControl isRequired={selectEmployment !== "volunteer"}>
-              <FormLabel>Compensation Type</FormLabel>
-              <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getCompensationRootProps()}>
-                {compensationOptions.map((value) => {
-                  const radio = getCompensationRadioProps({ value });
-                  return (
-                    <RadioCard
-                      key={value}
-                      value={value}
-                      {...radio}
-                      isChecked={selectCompensation === value.toLowerCase()}
-                      checkedColor={compensationColorMapping[value as keyof typeof compensationColorMapping]}
-                    >
-                      {value}
-                    </RadioCard>
-                  );
-                })}
-              </Stack>
-            </FormControl>
-          </Collapse>
+          <Box w="full" align="left">
+            <Collapse in={selectEmployment !== "volunteer"} animateOpacity>
+              <FormControl isRequired={selectEmployment !== "volunteer"} mt={4}>
+                <FormLabel>Compensation Type</FormLabel>
+                <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getCompensationRootProps()}>
+                  {compensationOptions.map((value) => {
+                    const radio = getCompensationRadioProps({ value });
+                    return (
+                      <RadioCard
+                        key={value}
+                        value={value}
+                        {...radio}
+                        isChecked={selectCompensation === value.toLowerCase()}
+                        checkedColor={compensationColorMapping[value as keyof typeof compensationColorMapping]}
+                      >
+                        {value}
+                      </RadioCard>
+                    );
+                  })}
+                </Stack>
+              </FormControl>
+            </Collapse>
+          </Box>
           <FormControl isRequired>
             <FormLabel>Job Description</FormLabel>
             <Input
