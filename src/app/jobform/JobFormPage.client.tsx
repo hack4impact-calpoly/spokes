@@ -418,7 +418,7 @@ export default function JobFormPage() {
               })}
             </Stack>
           </FormControl>
-          <Box w="full" align="left">
+          <Box w="full">
             <Collapse in={selectEmployment !== "volunteer"} animateOpacity>
               <FormControl isRequired={selectEmployment !== "volunteer"} mt={4}>
                 <FormLabel>Compensation Type</FormLabel>
