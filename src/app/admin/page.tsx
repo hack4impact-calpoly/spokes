@@ -174,18 +174,7 @@ export default function AdminJobs() {
             ) : (
               <ChakraCarousel gap={20}>
                 {incomingJobData && incomingJobData.length > 0 ? (
-                  incomingJobData.map((job) => (
-                    <Flex
-                      key={job._id}
-                      justifyContent="space-between"
-                      flexDirection="column"
-                      overflow="hidden"
-                      rounded={5}
-                      flex={1}
-                    >
-                      <AdminJobCard job={job} onUpdateJob={updateJobStatus} />
-                    </Flex>
-                  ))
+                  incomingJobData.map((job) => <AdminJobCard key={job._id} job={job} onUpdateJob={updateJobStatus} />)
                 ) : (
                   <div>No jobs available</div>
                 )}
