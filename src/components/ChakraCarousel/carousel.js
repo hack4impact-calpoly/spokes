@@ -16,8 +16,9 @@ const transitionProps = {
   mass: 3,
 };
 
-const ChakraCarousel = ({ children, gap }) => {
+const ChakraCarousel = ({ children, gap, onScrollStateChange }) => {
   const [trackIsActive, setTrackIsActive] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const [multiplier, setMultiplier] = useState(0.35);
   const [sliderWidth, setSliderWidth] = useState(0);
   const [activeItem, setActiveItem] = useState(0);
@@ -38,17 +39,32 @@ const ChakraCarousel = ({ children, gap }) => {
 
   useEffect(() => {
     if (isMobile) {
-      // Mobile: show 1 job (full width)
+      // Mobile: show 1 job with padding on sides when not scrolled or at first item
       setItemWidth(sliderWidth - gap);
       setMultiplier(0.65);
       setConstraint(1);
     } else {
-      // Web: show 2 jobs side-by-side
+      // Web: show 2 jobs side-by-side with padding when not scrolled or at first item
       setItemWidth(sliderWidth / 2 - gap);
       setMultiplier(0.5);
       setConstraint(2);
     }
   }, [isMobile, sliderWidth, gap]);
+
+  // hasScrolled state based on activeItem
+  useEffect(() => {
+    // if we get at the first item, reset the hasScrolled state
+    if (activeItem === 0) {
+      setHasScrolled(false);
+    }
+  }, [activeItem, setHasScrolled]);
+
+  // notify parent component of scroll state changes
+  useEffect(() => {
+    if (onScrollStateChange) {
+      onScrollStateChange(hasScrolled);
+    }
+  }, [hasScrolled, onScrollStateChange]);
 
   const sliderProps = {
     setTrackIsActive,
@@ -59,6 +75,8 @@ const ChakraCarousel = ({ children, gap }) => {
     itemWidth,
     positions,
     gap,
+    hasScrolled,
+    setHasScrolled,
   };
 
   const trackProps = {
@@ -72,6 +90,8 @@ const ChakraCarousel = ({ children, gap }) => {
     itemWidth,
     positions,
     gap,
+    hasScrolled,
+    setHasScrolled,
   };
 
   const itemProps = {
@@ -108,6 +128,8 @@ const Slider = ({
   positions,
   children,
   gap,
+  hasScrolled,
+  setHasScrolled,
 }) => {
   const [ref, { width }] = useBoundingRect();
 
@@ -117,27 +139,44 @@ const Slider = ({
 
   const handleDecrementClick = () => {
     setTrackIsActive(true);
+
     if (activeItem !== 0) {
-      setActiveItem((prev) => prev - 1);
+      setActiveItem((prev) => {
+        // if we're going to the first item, reset hasScrolled
+        if (prev === 1) {
+          setHasScrolled(false);
+        } else {
+          setHasScrolled(true);
+        }
+        return prev - 1;
+      });
     }
   };
 
   const handleIncrementClick = () => {
     setTrackIsActive(true);
+    setHasScrolled(true);
     if (activeItem !== positions.length - constraint) {
       setActiveItem((prev) => prev + 1);
     }
   };
 
+  // padding calculated based on scroll state
+  const sidePadding = activeItem === 0 ? gap * 2 : 0;
+
   return (
     <>
       <Box
         ref={ref}
-        w={{ base: "100%", md: `calc(100% + ${gap}px)` }}
-        ml={{ base: 0, md: `-${gap / 2}px` }}
-        px={`${gap / 2}px`}
+        w={{ base: "100%", md: hasScrolled ? "100vw" : `calc(100% + ${gap}px)` }}
+        ml={{ base: 0, md: hasScrolled ? "calc(-50vw + 50%)" : `-${gap / 2}px` }}
         position="relative"
         overflow="hidden"
+        sx={{
+          padding: `0 ${sidePadding}pr`,
+          transition:
+            "padding 0.7s cubic-bezier(0.4, 0, 0.2, 1), margin 0.7s cubic-bezier(0.4, 0, 0.2, 1), width 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
         _before={{
           bgGradient: "linear(to-r, base.d400, transparent)",
           position: "absolute",
@@ -147,6 +186,8 @@ const Slider = ({
           h: "100%",
           left: 0,
           top: 0,
+          opacity: hasScrolled ? 0.8 : 0.3,
+          transition: "opacity 0.7s ease-out",
         }}
         _after={{
           bgGradient: "linear(to-l, base.d400, transparent)",
@@ -157,6 +198,8 @@ const Slider = ({
           h: "100%",
           right: 0,
           top: 0,
+          opacity: hasScrolled ? 0.8 : 0.3,
+          transition: "opacity 0.7s ease-out",
         }}
       >
         {children}
@@ -169,7 +212,6 @@ const Slider = ({
           mr={`${gap / 3}px`}
           variant="link"
           minW={0}
-          // When pressed, the svg (arrow icon) will have no fill and a black stroke.
           _active={{
             svg: {
               fill: "none",
@@ -190,7 +232,7 @@ const Slider = ({
           sx={{
             "> div": {
               backgroundColor: "black",
-              transition: "width 0.4s linear", // Smoothly animate width changes
+              transition: "width 0.4s linear",
             },
           }}
         />
@@ -202,7 +244,6 @@ const Slider = ({
           variant="link"
           zIndex={2}
           minW={0}
-          // Apply the same active styles to the right arrow.
           _active={{
             svg: {
               fill: "none",
@@ -227,13 +268,17 @@ const Track = ({
   itemWidth,
   positions,
   children,
+  setHasScrolled,
 }) => {
   const [dragStartPosition, setDragStartPosition] = useState(0);
   const controls = useAnimation();
   const x = useMotionValue(0);
   const node = useRef(null);
 
-  const handleDragStart = () => setDragStartPosition(positions[activeItem]);
+  const handleDragStart = () => {
+    setDragStartPosition(positions[activeItem]);
+    setHasScrolled(true);
+  };
 
   const handleDragEnd = (_, info) => {
     const distance = info.offset.x;
@@ -261,6 +306,10 @@ const Track = ({
         transition: { velocity: info.velocity.x, ...transitionProps },
       });
     }
+
+    if (positions.indexOf(closestPosition) === 0) {
+      setHasScrolled(false);
+    }
   };
 
   const handleResize = useCallback(
@@ -284,17 +333,19 @@ const Track = ({
           if (event.key === "ArrowRight" || event.key === "ArrowUp") {
             event.preventDefault();
             setActiveItem((prev) => prev + 1);
+            setHasScrolled(true);
           }
         }
         if (activeItem > 0) {
           if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
             event.preventDefault();
             setActiveItem((prev) => prev - 1);
+            setHasScrolled(true);
           }
         }
       }
     },
-    [trackIsActive, setActiveItem, activeItem, constraint, positions.length],
+    [trackIsActive, setActiveItem, activeItem, constraint, positions.length, setHasScrolled],
   );
 
   useEffect(() => {

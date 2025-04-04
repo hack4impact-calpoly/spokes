@@ -29,6 +29,8 @@ export default function AdminJobs() {
   const [liveJobData, setLiveJobData] = useState<null | IJob[]>(null);
   const [completeJobData, setCompleteJobData] = useState<null | IJob[]>(null);
   const [expiredJobData, setExpiredJobData] = useState<null | IJob[]>(null);
+  const [hasScrolled, setHasScrolled] = useState(false);
+  const [carouselScrolled, setCarouselScrolled] = useState(false);
 
   const setExpiredJobs = async (jobs: IJob[]) => {
     const thirtyDaysAgo = new Date();
@@ -152,8 +154,10 @@ export default function AdminJobs() {
   const [tab, setTab] = useState(1);
 
   return (
-    <div className="w-full">
-      <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
+    <div className={`w-full ${carouselScrolled ? "overflow-x-hidden" : ""}`}>
+      <div
+        className={`mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black ${carouselScrolled ? "relative" : ""}`}
+      >
         <div className="flex flex-col gap-24 mb-20">
           <div className="flex flex-col gap-8">
             <div className="text-3xl font-semibold">Pending Jobs</div>
@@ -170,24 +174,37 @@ export default function AdminJobs() {
                 onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
               />
             ) : (
-              <ChakraCarousel gap={20}>
-                {incomingJobData && incomingJobData.length > 0 ? (
-                  incomingJobData.map((job) => (
-                    <Flex
-                      key={job._id}
-                      justifyContent="space-between"
-                      flexDirection="column"
-                      overflow="hidden"
-                      rounded={5}
-                      flex={1}
-                    >
-                      <AdminJobCard job={job} onUpdateJob={updateJobStatus} />
-                    </Flex>
-                  ))
-                ) : (
-                  <div>No jobs available</div>
-                )}
-              </ChakraCarousel>
+              <div
+                className={`transition-all duration-700 ${
+                  // Dynamically adjust margins and width based on scroll state
+                  hasScrolled ? "-mx-8 md:-mx-16 lg:-mx-20 w-screen" : "mx-0 w-full"
+                }`}
+              >
+                <ChakraCarousel
+                  gap={32}
+                  onScrollStateChange={(isScrolled: boolean) => {
+                    setHasScrolled(isScrolled);
+                    setCarouselScrolled(isScrolled);
+                  }}
+                >
+                  {incomingJobData && incomingJobData.length > 0 ? (
+                    incomingJobData.map((job) => (
+                      <Flex
+                        key={job._id}
+                        justifyContent="space-between"
+                        flexDirection="column"
+                        overflow="hidden"
+                        rounded={5}
+                        flex={1}
+                      >
+                        <AdminJobCard job={job} onUpdateJob={updateJobStatus} />
+                      </Flex>
+                    ))
+                  ) : (
+                    <div>No jobs available</div>
+                  )}
+                </ChakraCarousel>
+              </div>
             )}
           </div>
 
