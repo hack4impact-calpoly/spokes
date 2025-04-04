@@ -53,8 +53,9 @@ export default function JobCard({ job, onJobView, innerRef }: JobCardProps) {
 
   return (
     <div className="max-w-[100%]" ref={innerRef}>
-      <div className="bg-[#f7f7f7] rounded-md px-8 pt-5 pb-2 shadow-sm">
+      <div className="bg-[#f7f7f7] rounded-md px-8 pt-5 pb-2 shadow-sm h-full flex flex-col">
         <JobCardInformation job={job} />
+        <div className="flex-grow"></div> {/* variable padding */}
         <div className="flex flex-row md:flex-col lg:flex-row gap-4 items-end lg:items-end md:items-start mt-5 max-[400px]:flex-col max-[400px]:items-start">
           <div className="flex gap-2">
             <JobBadge badgeType={job.employmentType} />
