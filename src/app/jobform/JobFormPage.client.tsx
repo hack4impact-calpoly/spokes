@@ -49,7 +49,7 @@ export default function JobFormPage() {
     expireDate: "",
     jobDescription: "",
     employmentType: "full-time",
-    compensationType: "paid",
+    compensationType: null as string | null, // Allow null for volunteer jobs
     jobStatus: "pending",
     contactName: "",
     contactPhone: "",
@@ -62,7 +62,7 @@ export default function JobFormPage() {
   const [loadingInfo, setLoadingInfo] = useState(isEditing);
   const [message, setMessage] = useState("");
   const [selectEmployment, setSelectEmployment] = useState("");
-  const [selectCompensation, setSelectCompensation] = useState("");
+  const [selectCompensation, setSelectCompensation] = useState<string | null>(null);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isFailModalOpen, setIsFailModalOpen] = useState(false);
@@ -271,11 +271,11 @@ export default function JobFormPage() {
       setFormData((prev) => ({
         ...prev,
         employmentType: newType,
-        ...(newType === "volunteer" && { compensationType: "" }),
+        ...(newType === "volunteer" && { compensationType: null }),
       }));
       setSelectEmployment(newType);
       if (newType === "volunteer") {
-        setSelectCompensation("");
+        setSelectCompensation(null);
       }
     },
   });
@@ -283,7 +283,7 @@ export default function JobFormPage() {
   const compensationOptions = ["Salary", "Hourly", "Contract"];
   const { getRootProps: getCompensationRootProps, getRadioProps: getCompensationRadioProps } = useRadioGroup({
     name: "compensationType",
-    value: selectCompensation,
+    value: selectCompensation ?? undefined,
     onChange: (value) => {
       setFormData((prev) => ({ ...prev, compensationType: value.toLowerCase() }));
       setSelectCompensation(value.toLowerCase());
