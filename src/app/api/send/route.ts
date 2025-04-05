@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
         organizationName: jobData.organizationName,
         organizationIndustry: jobData.organizationIndustry,
         employmentType: jobData.employmentType,
-        compensationType: jobData.compensationType,
+        compensationType: jobData.compensationType ?? "None",
         contactName: jobData.contactName,
         contactPhone: jobData.contactPhone,
         contactEmail: jobData.contactEmail,
