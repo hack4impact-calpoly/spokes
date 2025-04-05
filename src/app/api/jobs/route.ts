@@ -50,7 +50,9 @@ export async function GET(req: Request) {
 
     if (compensationFilters.length > 0) {
       filter.compensationType = {
-        $in: compensationFilters,
+        $in: compensationFilters.includes("null")
+          ? [...compensationFilters.filter((c) => c !== "null"), null]
+          : compensationFilters,
       };
     }
 
@@ -95,7 +97,6 @@ export async function POST(request: Request) {
       !jobData.title ||
       !jobData.postDate ||
       !jobData.employmentType ||
-      !jobData.compensationType ||
       !jobData.jobStatus ||
       !jobData.detailURL
     ) {
