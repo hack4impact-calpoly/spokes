@@ -50,8 +50,8 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
   }
 
   return (
-    <div className="max-w-[100%]" ref={innerRef}>
-      <div className="relative bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm">
+    <div className="w-full h-full" ref={innerRef}>
+      <div className="relative bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm h-full flex flex-col">
         <IconButton
           aria-label="Edit Application"
           // eslint-disable-next-line react/jsx-no-undef
@@ -66,6 +66,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
           <JobStatusBadge jobStatus={job.jobStatus} />
         </div>
         <JobCardInformation job={job} />
+        <div className="flex-grow"></div>
         <div className="flex flex-wrap justify-between flex-row min-[1000px]:gap-4 gap-2 items-center">
           <div className="flex flex-wrap gap-2">
             <JobBadge badgeType={job.employmentType} />
