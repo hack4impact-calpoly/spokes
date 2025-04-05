@@ -69,7 +69,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
         <div className="flex flex-wrap justify-between flex-row min-[1000px]:gap-4 gap-2 items-center">
           <div className="flex flex-wrap gap-2">
             <JobBadge badgeType={job.employmentType} />
-            <JobBadge badgeType={job.compensationType || ""} />
+            {job.compensationType && <JobBadge badgeType={job.compensationType} />}
           </div>
 
           <div className="flex flex-wrap gap-2 justify min-[1000px]:mt-0 mt-5">
