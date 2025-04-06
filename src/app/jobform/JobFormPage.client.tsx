@@ -16,6 +16,7 @@ import {
   useRadioGroup,
   HStack,
   Link,
+  Collapse,
 } from "@chakra-ui/react";
 import RadioCard from "@/components/RadioCard";
 import TagSelect from "@/components/TagSelect";
@@ -25,7 +26,6 @@ import JobConfirmationModal from "@/components/JobConfirmationModal";
 import JobDeletedModal from "@/components/JobDeletedModal";
 import JobFailModal from "@/components/JobFailModal";
 
-// converts the formData string array to a Option object array necessary for use in the TagSelect componenet
 function formatIndustries(industries: string[]): Option[] {
   return industries.map((industry) => ({
     value: industry,
@@ -49,7 +49,7 @@ export default function JobFormPage() {
     expireDate: "",
     jobDescription: "",
     employmentType: "full-time",
-    compensationType: "paid",
+    compensationType: null as string | null, // Allow null for volunteer jobs
     jobStatus: "pending",
     contactName: "",
     contactPhone: "",
@@ -59,10 +59,10 @@ export default function JobFormPage() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [loadingInfo, setLoadingInfo] = useState(isEditing); // for setting loading state of job info fetching
+  const [loadingInfo, setLoadingInfo] = useState(isEditing);
   const [message, setMessage] = useState("");
   const [selectEmployment, setSelectEmployment] = useState("");
-  const [selectCompensation, setSelectCompensation] = useState("");
+  const [selectCompensation, setSelectCompensation] = useState<string | null>(null);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isFailModalOpen, setIsFailModalOpen] = useState(false);
@@ -80,7 +80,6 @@ export default function JobFormPage() {
     Contract: "#FAC791",
   };
 
-  // if we have a jobId, fetch the existing job
   useEffect(() => {
     if (!jobId) return;
     const fetchJob = async () => {
@@ -115,14 +114,12 @@ export default function JobFormPage() {
     fetchJob();
   }, [jobId]);
 
-  // Reset form when resetForm state changes
   useEffect(() => {
     if (resetForm) {
       reset();
     }
   }, [resetForm, reset]);
 
-  // formats phone number input to filter non-numbers an add -
   const formatPhoneNumber = (value: string): string => {
     const cleaned = value.replace(/\D/g, "");
     const match = cleaned.match(/^(\d{3})(\d{0,3})(\d{0,4})$/);
@@ -144,7 +141,6 @@ export default function JobFormPage() {
     setLoading(true);
     setMessage("");
 
-    //set expire date to null
     const formattedFormData = {
       ...formData,
       expireDate: formData.expireDate ? formData.expireDate : null,
@@ -161,7 +157,6 @@ export default function JobFormPage() {
         throw new Error("Failed to submit job.");
       }
 
-      // send email noti to admin
       const emailResponse = await fetch("/api/send", {
         method: "POST",
         headers: {
@@ -204,7 +199,6 @@ export default function JobFormPage() {
     }
   };
 
-  // update -> (only if jobId)
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!jobId) return;
@@ -237,7 +231,6 @@ export default function JobFormPage() {
     }
   };
 
-  // delete -> (only if jobId)
   const handleDelete = async () => {
     if (!jobId) return;
     setLoading(true);
@@ -269,22 +262,28 @@ export default function JobFormPage() {
     }
   };
 
-  //For custom radio selection buttons, job type field
   const typeOptions = ["Full-Time", "Part-Time", "Volunteer"];
   const { getRootProps: getJobRootProps, getRadioProps: getJobRadioProps } = useRadioGroup({
     name: "employmentType",
     value: selectEmployment,
     onChange: (value) => {
-      setFormData((prev) => ({ ...prev, employmentType: value.toLowerCase() }));
-      setSelectEmployment(value.toLowerCase());
+      const newType = value.toLowerCase();
+      setFormData((prev) => ({
+        ...prev,
+        employmentType: newType,
+        ...(newType === "volunteer" && { compensationType: null }),
+      }));
+      setSelectEmployment(newType);
+      if (newType === "volunteer") {
+        setSelectCompensation(null);
+      }
     },
   });
 
-  //For custom radio selection buttons, compensation type field
   const compensationOptions = ["Salary", "Hourly", "Contract"];
   const { getRootProps: getCompensationRootProps, getRadioProps: getCompensationRadioProps } = useRadioGroup({
     name: "compensationType",
-    value: selectCompensation,
+    value: selectCompensation ?? undefined,
     onChange: (value) => {
       setFormData((prev) => ({ ...prev, compensationType: value.toLowerCase() }));
       setSelectCompensation(value.toLowerCase());
@@ -397,27 +396,8 @@ export default function JobFormPage() {
             />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel>Compensation Type</FormLabel>
-            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getCompensationRootProps()}>
-              {compensationOptions.map((value) => {
-                const radio = getCompensationRadioProps({ value });
-                return (
-                  <RadioCard
-                    key={value}
-                    value={value}
-                    {...radio}
-                    isChecked={selectCompensation === value.toLowerCase()}
-                    checkedColor={compensationColorMapping[value as keyof typeof compensationColorMapping]}
-                  >
-                    {value}
-                  </RadioCard>
-                );
-              })}
-            </Stack>
-          </FormControl>
-          <FormControl isRequired>
             <FormLabel>Employment Type</FormLabel>
-            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getJobRootProps()}>
+            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getJobRootProps()} justify="flex-start">
               {typeOptions.map((value) => {
                 const radio = getJobRadioProps({ value });
                 return (
@@ -434,6 +414,29 @@ export default function JobFormPage() {
               })}
             </Stack>
           </FormControl>
+          <Box w="full">
+            <Collapse in={selectEmployment !== "volunteer"} animateOpacity>
+              <FormControl isRequired={false} mt={4}>
+                <FormLabel>Compensation Type</FormLabel>
+                <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getCompensationRootProps()}>
+                  {compensationOptions.map((value) => {
+                    const radio = getCompensationRadioProps({ value });
+                    return (
+                      <RadioCard
+                        key={value}
+                        value={value}
+                        {...radio}
+                        isChecked={selectCompensation === value.toLowerCase()}
+                        checkedColor={compensationColorMapping[value as keyof typeof compensationColorMapping]}
+                      >
+                        {value}
+                      </RadioCard>
+                    );
+                  })}
+                </Stack>
+              </FormControl>
+            </Collapse>
+          </Box>
           <FormControl isRequired>
             <FormLabel>Job Description</FormLabel>
             <Input
@@ -509,7 +512,6 @@ export default function JobFormPage() {
             <FormErrorMessage>Please enter a valid email address.</FormErrorMessage>
           </FormControl>
           {isEditing ? (
-            // if editing, show update & delete
             <HStack>
               <Button
                 isLoading={loading}
@@ -537,7 +539,6 @@ export default function JobFormPage() {
               </Button>
             </HStack>
           ) : (
-            // if creating, show Submit
             <Button
               isLoading={loading}
               loadingText="Submitting..."
