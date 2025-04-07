@@ -26,7 +26,7 @@ export enum JobStatus {
 export interface IJob {
   _id: string;
   organizationName: string;
-  organizationIndustry: [string];
+  organizationIndustry: string[];
   title: string;
   postDate: Date;
   modifiedDate: Date;
