@@ -73,7 +73,8 @@ export default function DashboardJobCard({
           {renderJobStatusInfo()}
         </div>
         <div className="w-full md:flex-1 flex justify-start md:justify-center">
-          <div className="flex flex-wrap gap-2 md:gap-4">
+          {/* Commented Out Tags In Case Needed in Future */}
+          {/* <div className="flex flex-wrap gap-2 md:gap-4">
             <div className="bg-blue-200 text-sm text-gray-500 border-[1px] border-gray-300 rounded-full px-3 md:px-5 py-1 md:py-2">
               tag 1
             </div>
@@ -83,7 +84,7 @@ export default function DashboardJobCard({
             <div className="bg-red-100 text-sm text-gray-500 border-[1px] border-gray-300 rounded-full px-3 md:px-5 py-1 md:py-2">
               tag 3
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="w-full md:flex-1 flex justify-start md:justify-end gap-2 md:gap-4 items-center">
           {job.jobStatus === "Expired" && (
