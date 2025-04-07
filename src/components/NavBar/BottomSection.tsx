@@ -53,6 +53,7 @@ export default function BottomSection() {
         <div className="flex">
           <NavBarLink title="Job Board" href="/jobs" />
           <NavBarLink title="List Job" href="/jobform" onClick={handleListJobClick} />
+          <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />
           {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
           {has && has({ role: "org:admin" }) && <NavBarLink title="Spokes Dashboard" href="/admin" />}
         </div>
@@ -83,6 +84,7 @@ export default function BottomSection() {
         >
           <NavBarLink title="Job Board" href="/jobs" onClick={() => setIsMobileMenuOpen(false)} />
           <NavBarLink title="List Job" href="/jobform" onClick={() => setIsMobileMenuOpen(false)} />
+          <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />
           {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
           {has && has({ role: "org:admin" }) && (
             <NavBarLink title="Spokes Dashboard" href="/admin" onClick={() => setIsMobileMenuOpen(false)} />
