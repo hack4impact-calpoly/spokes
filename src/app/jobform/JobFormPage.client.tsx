@@ -23,7 +23,7 @@ import TagSelect from "@/components/TagSelect";
 import { Option } from "@/components/TagsMultiselect/multiselect";
 import { cn } from "@/lib/utils";
 import JobConfirmationModal from "@/components/JobConfirmationModal";
-import JobDeletedModal from "@/components/JobDeletedModal";
+import JobActionConfirmationModal from "@/components/JobActionConfirmationModal";
 import JobFailModal from "@/components/JobFailModal";
 
 function formatIndustries(industries: string[]): Option[] {
@@ -65,9 +65,10 @@ export default function JobFormPage() {
   const [selectEmployment, setSelectEmployment] = useState("");
   const [selectCompensation, setSelectCompensation] = useState<string | null>(null);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isActionConfirmationModalOpen, setIsActionConfirmationModalOpen] = useState(false);
   const [isFailModalOpen, setIsFailModalOpen] = useState(false);
   const [showMaxError, setShowMaxError] = useState(false);
+  const [action, setAction] = useState("");
 
   const employmentColorMapping = {
     "Full-Time": "#F8B1B8",
@@ -235,34 +236,41 @@ export default function JobFormPage() {
     }
   };
 
-  const handleDelete = async () => {
+  const handleAction = async () => {
     if (!jobId) return;
     setLoading(true);
     setMessage("");
 
-    const updatedFormData = {
-      ...formData,
-      jobStatus: "rejected",
-      expireDate: formData.expireDate || null,
-    };
+    if (action == "Reject") {
+      const updatedFormData = {
+        ...formData,
+        jobStatus: "rejected",
+        expireDate: formData.expireDate || null,
+      };
 
-    try {
-      const response = await fetch(`/api/jobs/${jobId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedFormData),
-      });
+      try {
+        const response = await fetch(`/api/jobs/${jobId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedFormData),
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to delete job.");
+        if (!response.ok) {
+          throw new Error("Failed to reject job.");
+        }
+        setIsActionConfirmationModalOpen(false);
+        setMessage("Successfully reject job");
+        setLoading(false);
+        router.push("/admin");
+      } catch (error) {
+        console.error(`Error deleting job: ${error}`);
+        setMessage("Error occurred while attempting to reject job");
       }
-      setIsDeleteModalOpen(false);
-      setMessage("Successfully deleted job");
-      setLoading(false);
-      router.push("/admin");
-    } catch (error) {
-      console.error(`Error deleting job: ${error}`);
-      setMessage("Error occurred while attempting to delete job");
+    } else if (action == "Delete") {
+      //code to delete listing here
+    } else {
+      setMessage("Cannot find listed action");
+      console.error(`Error matching specific action to handler`);
     }
   };
 
@@ -308,8 +316,9 @@ export default function JobFormPage() {
     }
   };
 
-  const closeDeleteModal = () => {
-    setIsDeleteModalOpen(false);
+  const closeActionConfirmationModal = () => {
+    setIsActionConfirmationModalOpen(false);
+    setAction("");
   };
 
   const closeFailModal = () => {
@@ -531,13 +540,31 @@ export default function JobFormPage() {
               </Button>
               <Button
                 isLoading={loading}
+                loadingText="Rejecting..."
+                mt={10}
+                size="lg"
+                colorScheme="orange"
+                bg="#ff9d4f"
+                _hover={{ bg: "#ffbe8b" }}
+                onClick={() => {
+                  setIsActionConfirmationModalOpen(true);
+                  setAction("Reject");
+                }}
+              >
+                Reject
+              </Button>
+              <Button
+                isLoading={loading}
                 loadingText="Deleting..."
                 mt={10}
                 size="lg"
                 colorScheme="red"
                 bg="red"
-                _hover={{ bg: "#5E5E5E" }}
-                onClick={() => setIsDeleteModalOpen(true)}
+                _hover={{ bg: "#ff8b8b" }}
+                onClick={() => {
+                  setIsActionConfirmationModalOpen(true);
+                  setAction("Delete");
+                }}
               >
                 Delete
               </Button>
@@ -566,7 +593,12 @@ export default function JobFormPage() {
       </form>
 
       <JobConfirmationModal isOpen={isSubmitModalOpen} onClose={closeSubmitModal} />
-      <JobDeletedModal isOpen={isDeleteModalOpen} onClose={closeDeleteModal} onConfirm={handleDelete} />
+      <JobActionConfirmationModal
+        isOpen={isActionConfirmationModalOpen}
+        onClose={closeActionConfirmationModal}
+        onConfirm={handleAction}
+        action={action}
+      />
       <JobFailModal isOpen={isFailModalOpen} onClose={closeFailModal} />
     </Box>
   );
