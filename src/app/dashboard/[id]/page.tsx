@@ -39,7 +39,7 @@ export default function JobDetails() {
         <Heading size="lg">{job.title}</Heading>
         <Button
           fontWeight="medium"
-          size={{ base: "xs", sm: "sm", md: "md" }}
+          size={{ base: "sm", md: "md" }}
           colorScheme="blue"
           bg="#045F87"
           w={{ base: "full", md: "auto" }}
@@ -60,7 +60,7 @@ export default function JobDetails() {
             target="_blank"
             rel="noopener noreferrer"
             fontWeight="medium"
-            size="lg"
+            size={{ base: "sm", md: "lg" }}
             colorScheme="blue"
             borderRadius="xl"
             bg="#045F87"
