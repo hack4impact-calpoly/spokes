@@ -1,10 +1,12 @@
+"use client";
 import React from "react";
 import { IJob } from "@/database/jobSchema";
-import { Box, Heading, Button, Flex, Text } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
+import { Box, Heading, Button, Flex, Text, Link } from "@chakra-ui/react";
 
 // Mock data, to be replaced
 const mockJob: IJob = {
-  _id: "8uw849tu89u45",
+  _id: "67f63757eb010c929ff8a1ec",
   organizationName: "The Community Foundation",
   organizationIndustry: ["Humanitarian Aid", "Philanthropic Foundation"],
   title: "Philanthropy Assistant",
@@ -18,12 +20,18 @@ const mockJob: IJob = {
   contactName: "John Doe",
   contactPhone: "n/a",
   contactEmail: "job@cfsloco.org",
-  detailURL: "https://test.com",
+  detailURL: "https://www.cfsloco.org/",
   applyNowURL: "",
 };
 
 export default function JobDetails() {
   const job = mockJob;
+  const router = useRouter();
+
+  function handleEditApplicationButton(e: React.ChangeEvent<any>) {
+    e.preventDefault();
+    router.push(`/jobform?jobId=${job._id}`);
+  }
 
   return (
     <Box mt="50px" p={{ base: 8, md: 16, lg: 20 }} width="100%">
@@ -35,6 +43,7 @@ export default function JobDetails() {
           colorScheme="blue"
           bg="#045F87"
           w={{ base: "full", md: "auto" }}
+          onClick={handleEditApplicationButton}
         >
           Edit
         </Button>
@@ -42,33 +51,63 @@ export default function JobDetails() {
       <Heading size="md" mt="5">
         {job.organizationName} • {job.organizationIndustry.join(", ")}
       </Heading>
-      <Flex direction={{ base: "column", md: "row" }} justify="space-between" align="stretch" gap={8} w="full" mt={5}>
-        <Text flex="1" fontSize="md">
-          {job.jobDescription}
-        </Text>
-        <Box w={{ base: "full", md: "auto" }} bg="#F0F0F0" borderRadius="lg" p={8} flex="1">
+      <Flex direction={{ base: "column", md: "row" }} justify="space-between" align="stretch" gap={8} w="full" mt="5">
+        <Box flex="1">
+          <Text fontSize="md">{job.jobDescription}</Text>
+          <Button
+            as="a"
+            href={job.detailURL}
+            target="_blank"
+            rel="noopener noreferrer"
+            fontWeight="medium"
+            size={{ base: "xs", sm: "sm", md: "md" }}
+            colorScheme="blue"
+            borderRadius="xl"
+            bg="#045F87"
+            w={{ base: "full", md: "auto" }}
+            mt={5}
+          >
+            Click Here to Go to Job Listing
+          </Button>
+          <Heading size="md" mt="5">
+            Person of Contact
+          </Heading>
+          <Text fontSize="md" mt="5">
+            Name: {job.contactName}
+          </Text>
+          <Text fontSize="md" mt="1">
+            Phone Number: {job.contactPhone}
+          </Text>
+          <Text fontSize="md" mt="1">
+            Email:{" "}
+            <Link href={`mailto:${job.contactEmail}`} textDecoration="underline">
+              {job.contactEmail}
+            </Link>
+          </Text>
+        </Box>
+        <Box w={{ base: "full", md: "auto" }} bg="#F0F0F0" borderRadius="lg" p="8" flex="1">
           <Heading size="md">Position Type</Heading>
           <Text fontSize="md" textTransform="capitalize" mt={1}>
             {job.employmentType}
           </Text>
-          <Heading size="md" mt={4}>
+          <Heading size="md" mt="4">
             Analytics
           </Heading>
-          <Text fontSize="md" mt={1}>
+          <Text fontSize="md" mt="1">
             {/* To be implementd later */}
             Last updated: 3/10/2025
           </Text>
-          <Text fontSize="md" mt={1}>
+          <Text fontSize="md" mt="1">
             Job posted: {job.postDate.toLocaleDateString()}
           </Text>
-          <Text fontSize="md" mt={1}>
+          <Text fontSize="md" mt="1">
             {/* To be implemented later */}
             Job deadline: 3/31/2025
           </Text>
-          <Text fontSize="md" mt={1}>
+          <Text fontSize="md" mt="1">
             Views: 120
           </Text>
-          <Text fontSize="md" mt={1}>
+          <Text fontSize="md" mt="1">
             Clicks: 57
           </Text>
         </Box>
