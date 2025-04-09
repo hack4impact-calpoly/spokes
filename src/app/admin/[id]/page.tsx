@@ -18,7 +18,7 @@ const mockJob: IJob = {
   compensationType: "salary",
   jobStatus: "pending",
   contactName: "John Doe",
-  contactPhone: "n/a",
+  contactPhone: "384-923-4023",
   contactEmail: "job@cfsloco.org",
   detailURL: "https://www.cfsloco.org/",
   applyNowURL: "",
@@ -60,16 +60,16 @@ export default function JobDetails() {
             target="_blank"
             rel="noopener noreferrer"
             fontWeight="medium"
-            size={{ base: "xs", sm: "sm", md: "md" }}
+            size="lg"
             colorScheme="blue"
             borderRadius="xl"
             bg="#045F87"
             w={{ base: "full", md: "auto" }}
-            mt={5}
+            mt="10"
           >
             Click Here to Go to Job Listing
           </Button>
-          <Heading size="md" mt="5">
+          <Heading size="md" mt="10">
             Person of Contact
           </Heading>
           <Text fontSize="md" mt="5">
@@ -105,9 +105,11 @@ export default function JobDetails() {
             Job deadline: 3/31/2025
           </Text>
           <Text fontSize="md" mt="1">
+            {/* To be implemented later */}
             Views: 120
           </Text>
           <Text fontSize="md" mt="1">
+            {/* To be implemented later */}
             Clicks: 57
           </Text>
         </Box>
