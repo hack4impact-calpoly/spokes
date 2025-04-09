@@ -5,10 +5,11 @@ type JobBadgeProps = {
 };
 
 interface FormatBadgeName {
-  (badgeName: String): String;
+  (badgeName: String | null): String | null;
 }
 
 export const formatBadgeName: FormatBadgeName = (badgeName) => {
+  if (!badgeName) return null;
   return badgeName
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // capitalize the first letter of each word
