@@ -237,7 +237,7 @@ export default function JobFormPage() {
     setLoading(true);
     setMessage("");
 
-    if (action == "Reject") {
+    if (action === "Reject") {
       const updatedFormData = {
         ...formData,
         jobStatus: "rejected",
@@ -259,13 +259,31 @@ export default function JobFormPage() {
         setLoading(false);
         router.push("/admin");
       } catch (error) {
-        console.error(`Error deleting job: ${error}`);
+        console.error(`Error rejecting job: ${error}`);
         setMessage("Error occurred while attempting to reject job");
       }
-    } else if (action == "Delete") {
-      //code to delete listing here
+    } else if (action === "Delete") {
+      try {
+        const response = await fetch(`/api/jobs/${jobId}`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jobId }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete job");
+        }
+
+        setIsActionConfirmationModalOpen(false);
+        setMessage("Successfully deleted job");
+        setLoading(false);
+        router.push("/admin");
+      } catch (error) {
+        console.error(`Error deleting job: ${error}`);
+        setMessage("Error occurred while attempting to delete job");
+      }
     } else {
-      setMessage("Cannot find listed action");
+      setMessage("Cannot find intended action");
       console.error(`Error matching specific action to handler`);
     }
   };
