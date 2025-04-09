@@ -217,6 +217,13 @@ This view is designed for your client’s internal team and handles the review a
 - **Dev Note:**  
   The helper function `filterJobs` is used to filter jobs by status. Ensure that the carousel is responsive and handles dynamic data updates.
 
+### Job Details
+
+- **What it does**
+  Displays information on job details and analytics for Spokes admin.
+- **Dev Note:**
+  Clicking edit is the same as clicking the edit icon in the admin dashboard. The page is currently using mock data.
+
 ### Live & Complete Applications
 
 - **What it does:**  
