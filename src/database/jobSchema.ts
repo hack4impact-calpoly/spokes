@@ -29,6 +29,7 @@ export interface IJob {
   organizationIndustry: string[];
   title: string;
   postDate: Date;
+  modifiedDate: Date;
   approvedDate?: Date;
   jobDescription: string;
   employmentType: string;
@@ -47,6 +48,7 @@ const JobSchema = new Schema({
   organizationIndustry: { type: Array<String>, required: true },
   title: { type: String, required: true },
   postDate: { type: Date, required: true },
+  modifiedDate: { type: Date, required: true },
   approvedDate: { type: Date, required: false },
   jobDescription: { type: String, required: true },
   employmentType: { type: String, enum: Object.values(EmploymentType), required: true },

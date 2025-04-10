@@ -11,6 +11,7 @@ const mockJob: IJob = {
   organizationIndustry: ["Humanitarian Aid", "Philanthropic Foundation"],
   title: "Philanthropy Assistant",
   postDate: new Date("2025-03-06T06:48:01.998+00:00"),
+  modifiedDate: new Date("2025-03-10T06:48.01.998+00:00"),
   approvedDate: new Date("2025-03-10T06:48.01.998+00:00"),
   jobDescription:
     "The Philanthropy Assistant, reporting to the Director of Philanthropy, is a key member of the donor services team. This position focuses on the administrative functions of the Foundation's donor services team, delivering excellent customer service to fund holders and prospective donors while assisting with fund administration and reporting. This role requires meticulous attention to detail, outstanding organizational skills, and proficiency with computer systems. This is a full-time, non-exempt position that offers comprehensive benefits.",

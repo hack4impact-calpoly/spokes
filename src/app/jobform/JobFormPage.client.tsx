@@ -46,6 +46,7 @@ export default function JobFormPage() {
     organizationIndustry: [],
     title: "",
     postDate: new Date().toISOString(),
+    modifiedDate: new Date().toISOString(),
     expireDate: "",
     jobDescription: "",
     employmentType: "full-time",
@@ -100,6 +101,7 @@ export default function JobFormPage() {
           detailURL: data.detailURL || "",
           applyNowURL: data.applyNowURL || "",
           postDate: data.postDate || new Date().toISOString(),
+          modifiedDate: data.modifiedDate || new Date().toISOString(),
         });
 
         setSelectEmployment(data.employmentType);
@@ -175,6 +177,7 @@ export default function JobFormPage() {
         organizationIndustry: [],
         title: "",
         postDate: new Date().toISOString(),
+        modifiedDate: new Date().toISOString(),
         expireDate: "",
         jobDescription: "",
         employmentType: "full-time",
@@ -209,6 +212,7 @@ export default function JobFormPage() {
     const formattedFormData = {
       ...formData,
       expireDate: formData.expireDate || null,
+      modifiedDate: new Date().toISOString(),
     };
 
     try {
