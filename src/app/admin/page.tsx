@@ -98,8 +98,7 @@ export default function AdminJobs() {
         organizationIndustry: currentJob.organizationIndustry,
         title: currentJob.title,
         postDate: currentJob.postDate,
-        // TODO not sure if it should be the same right here
-        modifiedDate: currentJob.postDate,
+        modifiedDate: currentJob.modifiedDate,
         jobDescription: currentJob.jobDescription,
         employmentType: currentJob.employmentType,
         compensationType: currentJob.compensationType,
