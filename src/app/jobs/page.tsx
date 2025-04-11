@@ -204,8 +204,8 @@ export default function Jobs() {
             <div className="flex gap-8 max-[500px]:justify-center max-[500px]:gap-4">
               <div
                 className={twMerge(
-                  "text-black text-xl sm:text-2xl md:text-3xl cursor-pointer select-none",
-                  tab == 1 ? "font-semibold" : "font-normal text-[#C3C3C3]",
+                  "text-black text-xl sm:text-2xl md:text-3xl font-semibold cursor-pointer select-none",
+                  tab == 1 ? "opacity-100" : "opacity-50",
                 )}
                 onClick={() => handleTabChange(1)}
               >
@@ -213,8 +213,8 @@ export default function Jobs() {
               </div>
               <div
                 className={twMerge(
-                  "text-black text-xl sm:text-2xl md:text-3xl cursor-pointer select-none",
-                  tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
+                  "text-black text-xl sm:text-2xl md:text-3xl font-semibold cursor-pointer select-none",
+                  tab == 2 ? "opacity-100" : "opacity-50",
                 )}
                 onClick={() => handleTabChange(2)}
               >
