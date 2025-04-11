@@ -41,7 +41,7 @@ interface NoJobsFoundProps {
 function NoJobsFound({ isAdmin }: NoJobsFoundProps) {
   if (isAdmin) {
     return (
-      <div className="grow flex flex-col gap-1 justify-center justify-self-center items-center mt-10">
+      <div className="grow flex flex-col gap-1 justify-center justify-self-center items-center min-h-[400px]">
         <h1 className="text-2xl font-bold">No Jobs Found</h1>
       </div>
     );
