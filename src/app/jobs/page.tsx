@@ -229,34 +229,36 @@ export default function Jobs() {
               </div>
             )}
           </div>
-          {tab == 1 ? (
-            <>
-              {fetchedJobs ? (
-                <>
-                  <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} onJobView={handleJobView} />
-                  {isFetchingNextPage && <Loader size="xl" label="Loading more jobs..." />}
-                </>
-              ) : (
-                <Loader
-                  size="xl"
-                  label="Loading Jobs..."
-                  className="flex flex-col items-center justify-center gap-6 grow lg:-mt-28 mt-28"
-                />
-              )}
-            </>
-          ) : (
-            <>
-              {filteredRecentJobs ? (
-                <JobGrid jobs={filteredRecentJobs} onJobView={handleJobView} />
-              ) : (
-                <Loader
-                  size="xl"
-                  label="Loading Jobs..."
-                  className="flex flex-col items-center justify-center gap-6 grow lg:-mt-28 mt-28"
-                />
-              )}
-            </>
-          )}
+          <div className="flex flex-col gap-4">
+            {tab == 1 ? (
+              <>
+                {fetchedJobs ? (
+                  <>
+                    <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} onJobView={handleJobView} />
+                    {isFetchingNextPage && <Loader size="xl" label="Loading more jobs..." />}
+                  </>
+                ) : (
+                  <Loader
+                    size="xl"
+                    label="Loading Jobs..."
+                    className="flex flex-col items-center justify-center gap-6 grow pt-10"
+                  />
+                )}
+              </>
+            ) : (
+              <>
+                {filteredRecentJobs ? (
+                  <JobGrid jobs={filteredRecentJobs} onJobView={handleJobView} />
+                ) : (
+                  <Loader
+                    size="xl"
+                    label="Loading Jobs..."
+                    className="flex flex-col items-center justify-center gap-6 grow lg:-mt-28 mt-28"
+                  />
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
 
