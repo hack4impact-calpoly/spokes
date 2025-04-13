@@ -204,8 +204,8 @@ export default function Jobs() {
             <div className="flex gap-8 max-[500px]:justify-center max-[500px]:gap-4">
               <div
                 className={twMerge(
-                  "text-black text-xl sm:text-2xl md:text-3xl cursor-pointer select-none",
-                  tab == 1 ? "font-semibold" : "font-normal text-[#C3C3C3]",
+                  "text-black text-xl sm:text-2xl md:text-3xl font-semibold cursor-pointer select-none",
+                  tab == 1 ? "opacity-100" : "opacity-50",
                 )}
                 onClick={() => handleTabChange(1)}
               >
@@ -213,8 +213,8 @@ export default function Jobs() {
               </div>
               <div
                 className={twMerge(
-                  "text-black text-xl sm:text-2xl md:text-3xl cursor-pointer select-none",
-                  tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
+                  "text-black text-xl sm:text-2xl md:text-3xl font-semibold cursor-pointer select-none",
+                  tab == 2 ? "opacity-100" : "opacity-50",
                 )}
                 onClick={() => handleTabChange(2)}
               >
@@ -229,34 +229,36 @@ export default function Jobs() {
               </div>
             )}
           </div>
-          {tab == 1 ? (
-            <>
-              {fetchedJobs ? (
-                <>
-                  <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} onJobView={handleJobView} />
-                  {isFetchingNextPage && <Loader size="xl" label="Loading more jobs..." />}
-                </>
-              ) : (
-                <Loader
-                  size="xl"
-                  label="Loading Jobs..."
-                  className="flex flex-col items-center justify-center gap-6 grow lg:-mt-28 mt-28"
-                />
-              )}
-            </>
-          ) : (
-            <>
-              {filteredRecentJobs ? (
-                <JobGrid jobs={filteredRecentJobs} onJobView={handleJobView} />
-              ) : (
-                <Loader
-                  size="xl"
-                  label="Loading Jobs..."
-                  className="flex flex-col items-center justify-center gap-6 grow lg:-mt-28 mt-28"
-                />
-              )}
-            </>
-          )}
+          <div className="flex flex-col gap-4">
+            {tab == 1 ? (
+              <>
+                {fetchedJobs ? (
+                  <>
+                    <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} onJobView={handleJobView} />
+                    {isFetchingNextPage && <Loader size="xl" label="Loading more jobs..." />}
+                  </>
+                ) : (
+                  <Loader
+                    size="xl"
+                    label="Loading Jobs..."
+                    className="flex flex-col items-center justify-center gap-6 grow pt-10"
+                  />
+                )}
+              </>
+            ) : (
+              <>
+                {filteredRecentJobs ? (
+                  <JobGrid jobs={filteredRecentJobs} onJobView={handleJobView} />
+                ) : (
+                  <Loader
+                    size="xl"
+                    label="Loading Jobs..."
+                    className="flex flex-col items-center justify-center gap-6 grow lg:-mt-28 mt-28"
+                  />
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
 

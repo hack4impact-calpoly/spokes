@@ -117,14 +117,18 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
           </div>
           <div>
             <div
-              className="flex gap-1 items-center mb-1 text-lg font-semibold text-black select-none whitespace-nowrap hover:underline"
+              className="flex gap-1 items-center mb-1 text-lg font-semibold text-black select-none whitespace-nowrap hover:underline cursor-pointer"
               onClick={() => setIndustryOpen(!industryOpen)}
             >
               Industry
               {industryOpen ? <FiChevronUp /> : <FiChevronDown />}
             </div>
-            {industryOpen && (
-              <div className="flex flex-col gap-[2px]">
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                industryOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+              }`}
+            >
+              <div className="flex flex-col gap-[2px] pt-1">
                 {industries.map((industry) => (
                   <Checkbox
                     key={industry}
@@ -134,7 +138,7 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
                   />
                 ))}
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>

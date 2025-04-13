@@ -185,8 +185,8 @@ export default function AdminJobs() {
             <div className="flex gap-8 w-full">
               <div
                 className={twMerge(
-                  "text-black text-2xl sm:text-3xl text-center cursor-pointer select-none",
-                  tab == 1 ? "font-semibold" : "font-normal text-[#C3C3C3]",
+                  "text-black text-2xl sm:text-3xl font-semibold text-center cursor-pointer select-none",
+                  tab == 1 ? "opacity-100" : "opacity-50",
                 )}
                 onClick={() => {
                   // Later add functionally to display listings
@@ -197,8 +197,8 @@ export default function AdminJobs() {
               </div>
               <div
                 className={twMerge(
-                  "text-black text-2xl sm:text-3xl text-center cursor-pointer select-none",
-                  tab == 2 ? "font-semibold" : "font-normal text-[#C3C3C3]",
+                  "text-black text-2xl sm:text-3xl font-semibold text-center cursor-pointer select-none",
+                  tab == 2 ? "opacity-100" : "opacity-50",
                 )}
                 onClick={() => {
                   // Later add functionally to display listings
