@@ -2,11 +2,12 @@
 import { useState, useEffect } from "react";
 import ChakraCarousel from "@/components/ChakraCarousel/carousel";
 import AdminJobCard from "@/components/JobCard/AdminCard";
-import JobGrid from "@/components/JobGrid";
+import JobGrid from "@/components//JobGrid/JobGrid";
 import { Loader } from "@/components/Loader";
 import { IJob } from "@/database/jobSchema";
 import { Flex } from "@chakra-ui/react";
 import { twMerge } from "tailwind-merge";
+import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
 
 // Helper function to filter the job data into the three categories
 function filterJobs(jobs: IJob[], filterBy: "pending" | "approved" | "rejected" | "expired") {
