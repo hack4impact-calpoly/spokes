@@ -122,6 +122,15 @@ export default function Jobs() {
   };
 
   const handleFilterChange = (category: string, value: string) => {
+    if (category == "clear-all") {
+      setFilters({
+        employment: [],
+        compensation: [],
+        industry: [],
+      });
+      return;
+    }
+
     setFilters((prev) => {
       const currentFilters = prev[category];
       const mappedValue =

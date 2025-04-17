@@ -46,8 +46,24 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
       onFilterChange("industry", industry);
     };
 
+    function handleClearFilters() {
+      setFullTimeChecked(false);
+      setPartTimeChecked(false);
+      setVolunteerChecked(false);
+      setSalaryChecked(false);
+      setHourlyChecked(false);
+      setContractChecked(false);
+      setIndustryOpen(false);
+      setSelectedIndustries([]);
+
+      onFilterChange("clear-all", "");
+    }
+
     return (
       <div className="sticky top-[155px]">
+        <button onClick={handleClearFilters} className={"pb-3 hover:text-gray-500 underline"}>
+          Clear Filters
+        </button>
         <div
           ref={ref}
           className={twMerge(
