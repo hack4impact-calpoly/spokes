@@ -2,11 +2,12 @@
 import { useState, useEffect } from "react";
 import ChakraCarousel from "@/components/ChakraCarousel/carousel";
 import AdminJobCard from "@/components/JobCard/AdminCard";
-import JobGrid from "@/components/JobGrid";
+import JobGrid from "@/components//JobGrid/JobGrid";
 import { Loader } from "@/components/Loader";
 import { IJob } from "@/database/jobSchema";
 import { Flex } from "@chakra-ui/react";
 import { twMerge } from "tailwind-merge";
+import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
 
 // Helper function to filter the job data into the three categories
 function filterJobs(jobs: IJob[], filterBy: "pending" | "approved" | "rejected" | "expired") {
@@ -159,11 +160,7 @@ export default function AdminJobs() {
           <div className="flex flex-col gap-8">
             <div className="text-3xl font-semibold">Pending Jobs</div>
             {!incomingJobData ? (
-              <Loader
-                size="md"
-                label="Loading Jobs..."
-                className="mt-8 grow flex flex-col gap-6 justify-center items-center"
-              />
+              <JobGridSkeleton count={2} />
             ) : incomingJobData.length === 0 ? (
               <JobGrid
                 jobs={incomingJobData}
@@ -216,11 +213,7 @@ export default function AdminJobs() {
                   onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
                 />
               ) : (
-                <Loader
-                  size="md"
-                  label="Loading Jobs..."
-                  className="mt-8 grow flex flex-col gap-6 justify-center items-center"
-                />
+                <JobGridSkeleton count={4} />
               )
             ) : expiredJobData ? (
               <JobGrid
@@ -229,11 +222,7 @@ export default function AdminJobs() {
                 onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
               />
             ) : (
-              <Loader
-                size="md"
-                label="Loading Jobs..."
-                className="mt-8 grow flex flex-col gap-6 justify-center items-center"
-              />
+              <JobGridSkeleton count={4} />
             )}
           </div>
         </div>

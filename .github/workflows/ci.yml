@@ -46,6 +46,6 @@ jobs:
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           # Add additional environment variables here
-      
+
       - name: Run tests
         run: npm test

@@ -2,7 +2,7 @@
 import { FilterCard } from "@/components/FilterCard";
 import { useState, useEffect } from "react";
 import { twMerge } from "tailwind-merge";
-import JobGrid from "@/components/JobGrid";
+import JobGrid from "@/components//JobGrid/JobGrid";
 import { IJob } from "@/database/jobSchema";
 import { Loader } from "@/components/Loader";
 import {
@@ -14,10 +14,12 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Skeleton,
 } from "@chakra-ui/react";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
+import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
 
 // Interfaces to make TS happy
 interface FilterCategories {
@@ -247,11 +249,7 @@ export default function Jobs() {
                     {isFetchingNextPage && <Loader size="xl" label="Loading more jobs..." />}
                   </>
                 ) : (
-                  <Loader
-                    size="xl"
-                    label="Loading Jobs..."
-                    className="flex flex-col items-center justify-center gap-6 grow pt-10"
-                  />
+                  <JobGridSkeleton count={4} />
                 )}
               </>
             ) : (
@@ -259,11 +257,7 @@ export default function Jobs() {
                 {filteredRecentJobs ? (
                   <JobGrid jobs={filteredRecentJobs} onJobView={handleJobView} />
                 ) : (
-                  <Loader
-                    size="xl"
-                    label="Loading Jobs..."
-                    className="flex flex-col items-center justify-center gap-6 grow lg:-mt-28 mt-28"
-                  />
+                  <JobGridSkeleton count={4} />
                 )}
               </>
             )}

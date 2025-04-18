@@ -25,10 +25,10 @@ The Spokes team consists of 16 Cal Poly students. Over the course of about 9 mon
 - [Neal Parthasarathy](https://www.linkedin.com/in/nealparthslo/) - Designer
 - [Noah Giboney](https://www.linkedin.com/in/noah-giboney-896847261/) - Tech Lead
 - [Shawn Gill](https://www.linkedin.com/in/shawngill404/) - Tech Lead
+- [Mark McGuire](https://www.linkedin.com/in/mark-mcguire011/) - Tech Lead
 - [Stearman Rubey](https://www.linkedin.com/in/stearman-rubey-963423309) - Software Developer
 - [Nolan Knievel](https://www.linkedin.com/in/nolan-knievel-aa8243317) - Software Developer
 - [Ellie Pearson](https://www.linkedin.com/in/ellie-pearson-b21099295/) - Software Developer
-- [Mark McGuire](https://www.linkedin.com/in/mark-mcguire011/) - Software Developer
 - [John Ieng](https://www.linkedin.com/in/johnieng/) - Software Developer
 - [Matthew Blam](https://www.linkedin.com/in/matthew-blam/) - Software Developer
 - [Kyler Nord](https://www.linkedin.com/in/1kylernord1/) - Software Developer
