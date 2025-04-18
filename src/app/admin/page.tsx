@@ -160,11 +160,7 @@ export default function AdminJobs() {
           <div className="flex flex-col gap-8">
             <div className="text-3xl font-semibold">Pending Jobs</div>
             {!incomingJobData ? (
-              <Loader
-                size="md"
-                label="Loading Jobs..."
-                className="mt-8 grow flex flex-col gap-6 justify-center items-center"
-              />
+              <JobGridSkeleton count={2} />
             ) : incomingJobData.length === 0 ? (
               <JobGrid
                 jobs={incomingJobData}
@@ -217,11 +213,7 @@ export default function AdminJobs() {
                   onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
                 />
               ) : (
-                <Loader
-                  size="md"
-                  label="Loading Jobs..."
-                  className="mt-8 grow flex flex-col gap-6 justify-center items-center"
-                />
+                <JobGridSkeleton count={4} />
               )
             ) : expiredJobData ? (
               <JobGrid
@@ -230,11 +222,7 @@ export default function AdminJobs() {
                 onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
               />
             ) : (
-              <Loader
-                size="md"
-                label="Loading Jobs..."
-                className="mt-8 grow flex flex-col gap-6 justify-center items-center"
-              />
+              <JobGridSkeleton count={4} />
             )}
           </div>
         </div>
