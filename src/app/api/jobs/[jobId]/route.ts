@@ -76,15 +76,3 @@ export async function GET(_request: NextRequest, { params }: { params: { jobId: 
     return NextResponse.json({ message: "Error fetching job" }, { status: 500 });
   }
 }
-
-export async function POST(req: NextRequest) {
-  try {
-    await connectDB();
-    const jobData: IJob = await req.json();
-    console.log(jobData);
-    const newJob = await new Job(jobData).save();
-    return NextResponse.json(newJob, { status: 201 });
-  } catch (error) {
-    return NextResponse.json({ message: "Failed to create job." }, { status: 500 });
-  }
-}
