@@ -14,10 +14,9 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Skeleton,
 } from "@chakra-ui/react";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
 
@@ -30,9 +29,97 @@ interface FilterState {
   [key: string]: string[];
 }
 
-const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filters: FilterState }) => {
-  console.log("fetching: ", pageParam);
+const useJobsQuery = (filters: FilterState) => {
+  return useInfiniteQuery({
+    queryKey: ["jobs", filters],
+    queryFn: ({ pageParam = 1 }) => fetchJobs({ pageParam, filters }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === 12 ? allPages.length + 1 : undefined;
+    },
+    staleTime: 60000, // Keep data fresh for 60 seconds
+    gcTime: 300000, // Keep unused data in cache for 5 minutes
+    refetchOnWindowFocus: false, // Don't refetch when window regains focus
+  });
+};
 
+const useRecentJobs = (filters: FilterState) => {
+  const [recentJobIds, setRecentJobIds] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    const raw = localStorage.getItem("myJobs");
+    return raw ? JSON.parse(raw) : [];
+  });
+
+  const {
+    data: recentJobs,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["recentJobs", recentJobIds],
+    queryFn: async () => {
+      if (recentJobIds.length === 0) return [];
+
+      const response = await fetch("/api/jobs/recent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rawJobIdArray: recentJobIds }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch recent jobs");
+      }
+
+      return response.json();
+    },
+    enabled: recentJobIds.length > 0,
+    staleTime: 60000,
+    gcTime: 300000,
+    refetchOnWindowFocus: false,
+  });
+
+  const addToRecentJobs = (job: IJob) => {
+    if (!recentJobIds.includes(job._id)) {
+      const updatedIds = [...recentJobIds, job._id];
+      setRecentJobIds(updatedIds);
+      localStorage.setItem("myJobs", JSON.stringify(updatedIds));
+      refetch();
+    }
+  };
+
+  const clearRecentJobs = () => {
+    localStorage.removeItem("myJobs");
+    setRecentJobIds([]);
+  };
+
+  const fetchRecentJobs = () => {
+    refetch();
+  };
+
+  const filteredRecentJobs = recentJobs
+    ? Array.from(recentJobs as IJob[])?.filter(
+        (job) =>
+          (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
+          (filters.compensation.length === 0 ||
+            (job.compensationType
+              ? filters.compensation.includes(job.compensationType)
+              : filters.compensation.length === 0)) &&
+          (filters.industry.length === 0 ||
+            filters.industry.some((industry) => job.organizationIndustry.includes(industry))),
+      )
+    : [];
+
+  return {
+    recentJobs: filteredRecentJobs,
+    isLoading,
+    error,
+    fetchRecentJobs,
+    addToRecentJobs,
+    clearRecentJobs,
+  };
+};
+
+const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filters: FilterState }) => {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || (typeof window !== "undefined" ? window.location.origin : "");
 
   const url = new URL(`${baseUrl}/api/jobs`);
@@ -54,29 +141,17 @@ const fetchJobs = async ({ pageParam = 1, filters }: { pageParam?: number; filte
   // Only fetch approved jobs
   url.searchParams.append("jobStatus", "approved");
 
-  console.log(url.toString());
   const response = await fetch(url.toString());
-  const data = await response.json();
-  return data;
+  if (!response.ok) {
+    throw new Error("Failed to fetch jobs");
+  }
+  return response.json();
 };
 
 export default function Jobs() {
   const [tab, setTab] = useState(1);
-
-  const [jobData, setJobData] = useState<null | IJob[]>(null);
-  const [recentJobs, setRecentJobs] = useState<null | IJob[]>(null);
-
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [hasLoadedRecentJobs, setHasLoadedRecentJobs] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch("/api/jobs");
-      const result = await response.json();
-      setJobData(result);
-    };
-    fetchData();
-  }, []);
 
   // Maps shorter filter name to longer job industry name
   const industryValueMapping = {
@@ -105,23 +180,16 @@ export default function Jobs() {
     compensation: ["Paid", "Volunteer"],
   };
 
-  // Handler to fetch recent jobs by IDs
-  const fetchRecentJobs = async () => {
-    const raw = localStorage.getItem("myJobs");
-    const recentJobIds = raw ? JSON.parse(raw) : [];
+  //use custom hooks
+  const { data: fetchedJobs, fetchNextPage, hasNextPage, isFetchingNextPage } = useJobsQuery(filters);
 
-    if (recentJobIds.length > 0) {
-      const recentJobsresponse = await fetch("/api/jobs/recent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rawJobIdArray: recentJobIds }),
-      });
-      const recentJobsResult = await recentJobsresponse.json();
-      setRecentJobs(recentJobsResult);
-    } else {
-      setRecentJobs([]);
-    }
-  };
+  const {
+    recentJobs: filteredRecentJobs,
+    isLoading: isLoadingRecentJobs,
+    fetchRecentJobs,
+    addToRecentJobs,
+    clearRecentJobs,
+  } = useRecentJobs(filters);
 
   const handleFilterChange = (category: string, value: string) => {
     if (category == "clear-all") {
@@ -146,57 +214,22 @@ export default function Jobs() {
     });
   };
 
-  const handleJobView = (job: IJob) => {
-    if (recentJobs) {
-      setRecentJobs([...recentJobs, job]);
-    }
-  };
-
-  const handleClearRecentJobs = () => {
-    localStorage.removeItem("myJobs");
-    setRecentJobs([]);
-    onClose();
-  };
-
   const handleTabChange = async (tabNumber: number) => {
     setTab(tabNumber);
     if (tabNumber === 2 && !hasLoadedRecentJobs) {
-      await fetchRecentJobs();
+      fetchRecentJobs();
       setHasLoadedRecentJobs(true);
     }
   };
 
-  const filteredRecentJobs =
-    recentJobs &&
-    Array.from(recentJobs)?.filter(
-      (job) =>
-        (filters.employment.length === 0 || filters.employment.includes(job.employmentType)) &&
-        (filters.compensation.length === 0 ||
-          (job.compensationType
-            ? filters.compensation.includes(job.compensationType)
-            : filters.compensation.length === 0)) &&
-        (filters.industry.length === 0 ||
-          filters.industry.some((industry) => job.organizationIndustry.includes(industry))),
-    );
-
-  const {
-    data: fetchedJobs,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    status,
-  } = useInfiniteQuery({
-    queryKey: ["jobs", filters],
-    queryFn: ({ pageParam = 1 }) => fetchJobs({ pageParam, filters }),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length === 12 ? allPages.length + 1 : undefined;
-    },
-  });
+  const handleClearRecentJobs = () => {
+    clearRecentJobs();
+    onClose();
+  };
 
   const { ref, inView } = useInView();
 
+  // Set up infinite scroll observer
   useEffect(() => {
     if (inView && hasNextPage) {
       fetchNextPage();
@@ -245,7 +278,7 @@ export default function Jobs() {
               <>
                 {fetchedJobs ? (
                   <>
-                    <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} onJobView={handleJobView} />
+                    <JobGrid jobs={fetchedJobs.pages.flat()} innerRef={ref} onJobView={addToRecentJobs} />
                     {isFetchingNextPage && <Loader size="xl" label="Loading more jobs..." />}
                   </>
                 ) : (
@@ -254,8 +287,8 @@ export default function Jobs() {
               </>
             ) : (
               <>
-                {filteredRecentJobs ? (
-                  <JobGrid jobs={filteredRecentJobs} onJobView={handleJobView} />
+                {!isLoadingRecentJobs ? (
+                  <JobGrid jobs={filteredRecentJobs} onJobView={addToRecentJobs} />
                 ) : (
                   <JobGridSkeleton count={4} />
                 )}

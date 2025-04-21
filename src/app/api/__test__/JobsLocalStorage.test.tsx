@@ -15,6 +15,7 @@ const dummyJob = {
   jobStatus: "pending",
   detailURL: "http://example.com/job",
   applyNowURL: "http://example.com/apply",
+  modifiedDate: new Date(),
 };
 
 describe("Local Storage Addition for JobCard", () => {
