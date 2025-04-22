@@ -1,12 +1,14 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
-import { WebhookEvent } from "@clerk/nextjs/server";
+import { WebhookEvent, clerkClient } from "@clerk/nextjs/server";
 
 export async function POST(req: Request) {
-  const headerPayload = headers();
+  const headerPayload = await headers();
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
   const svix_signature = headerPayload.get("svix-signature");
+
+  const client = await clerkClient();
 
   if (!svix_id || !svix_timestamp || !svix_signature) {
     return new Response("Missing svix headers", { status: 400 });
@@ -44,7 +46,14 @@ export async function POST(req: Request) {
     }
 
     try {
-      // create user in db
+      // Set a flag in Clerk user metadata to indicate onboarding is needed
+      await client.users.updateUserMetadata(id, {
+        publicMetadata: {
+          onboardingComplete: false,
+        },
+      });
+
+      // Create minimal user in db
       const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/users`, {
         method: "POST",
         headers: {
@@ -55,10 +64,9 @@ export async function POST(req: Request) {
           firstName: first_name || "",
           lastName: last_name || "",
           email: primaryEmail,
+          onboardingComplete: false,
         }),
       });
-
-      console.log("response", response);
 
       if (!response.ok) {
         const errorText = await response.text();
