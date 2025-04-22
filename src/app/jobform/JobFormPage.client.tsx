@@ -181,7 +181,7 @@ export default function JobFormPage() {
         expireDate: "",
         jobDescription: "",
         employmentType: "full-time",
-        compensationType: "paid",
+        compensationType: "salary",
         jobStatus: "pending",
         contactName: "",
         contactPhone: "",
@@ -490,6 +490,20 @@ export default function JobFormPage() {
               border="0"
               name="detailURL"
               value={loadingInfo ? "Loading..." : formData.detailURL}
+              onChange={handleChange}
+              disabled={loadingInfo}
+            />
+            <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
+          </FormControl>
+          <FormControl>
+            <FormLabel>Link to Additional Job Details</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter your response"
+              bg="#F6F6F6"
+              border="0"
+              name="applyNowURL"
+              value={loadingInfo ? "Loading..." : formData.applyNowURL}
               onChange={handleChange}
               disabled={loadingInfo}
             />
