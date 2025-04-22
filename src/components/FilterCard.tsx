@@ -61,9 +61,6 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
 
     return (
       <div className="sticky top-[155px]">
-        <button onClick={handleClearFilters} className={"pb-3 hover:text-gray-500 underline"}>
-          Clear Filters
-        </button>
         <div
           ref={ref}
           className={twMerge(
@@ -74,7 +71,15 @@ export const FilterCard = forwardRef<HTMLDivElement, FilterCardProps>(
           {...props}
         >
           <div>
-            <div className="mb-1 text-lg font-semibold text-black select-none">Employment</div>
+            <div className="flex justify-between">
+              <div className="mb-1 text-lg font-semibold text-black select-none">Employment</div>
+              <button
+                onClick={handleClearFilters}
+                className="text-md font-medium px-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-all duration-200 mb-1"
+              >
+                Clear
+              </button>
+            </div>
             <div className="flex flex-col gap-[2px]">
               <Checkbox
                 label="Full-Time"
