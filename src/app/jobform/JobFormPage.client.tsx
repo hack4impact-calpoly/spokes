@@ -482,7 +482,7 @@ export default function JobFormPage() {
             />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel>Link to Job Listing</FormLabel>
+            <FormLabel>Link to Job Details</FormLabel>
             <Input
               type="text"
               placeholder="Enter your response"
@@ -496,7 +496,7 @@ export default function JobFormPage() {
             <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
           </FormControl>
           <FormControl>
-            <FormLabel>Link to Additional Job Details</FormLabel>
+            <FormLabel>Link to Job Application</FormLabel>
             <Input
               type="text"
               placeholder="Enter your response"
