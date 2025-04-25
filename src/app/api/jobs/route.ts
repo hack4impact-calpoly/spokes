@@ -83,7 +83,10 @@ export async function POST(request: Request) {
     ) {
       return NextResponse.json({ message: "Invalid job input" }, { status: 400 });
     }
-    const newJob = await Job.create(jobData);
+    const newJob = await Job.create({
+      ...jobData,
+      applyNowURL: jobData.applyNowURL || "",
+    });
     return NextResponse.json({ message: "Job posted succesfully!", job: newJob }, { status: 201 });
   } catch (error: any) {
     return NextResponse.json({ message: "Could not submit job ", error }, { status: 500 });
