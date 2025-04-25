@@ -10,6 +10,7 @@ import {
   VStack,
   FormControl,
   FormLabel,
+  FormHelperText,
   Input,
   Stack,
   FormErrorMessage,
@@ -497,6 +498,11 @@ export default function JobFormPage() {
           </FormControl>
           <FormControl>
             <FormLabel>Link to Job Application</FormLabel>
+            <FormHelperText>
+              Provide a direct link to the job application. If left blank, the contact email will be used as the default
+              method for applications.
+            </FormHelperText>
+
             <Input
               type="text"
               placeholder="Enter your response"
