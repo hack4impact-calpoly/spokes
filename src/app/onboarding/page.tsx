@@ -70,8 +70,12 @@ export default function OnboardingPage() {
     setIsSubmitting(true);
     setError(null);
 
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL || (typeof window !== "undefined" ? window.location.origin : "");
+    const url = `${baseUrl}/api/users`;
+
     try {
-      const response = await fetch("http://localhost:3000/api/users", {
+      const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
