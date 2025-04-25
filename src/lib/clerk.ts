@@ -9,6 +9,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 export async function updateUserMetadata(userId: string, metadata: Record<string, any>) {
   try {
     const client = await clerkClient();
+
     await client.users.updateUserMetadata(userId, {
       publicMetadata: metadata,
     });
