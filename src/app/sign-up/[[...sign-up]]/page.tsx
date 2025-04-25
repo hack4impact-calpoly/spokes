@@ -1,6 +1,7 @@
 "use client";
 import { SignUp } from "@clerk/nextjs";
 import { Center } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   return (
