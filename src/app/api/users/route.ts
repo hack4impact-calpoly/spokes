@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     // Update Clerk user metadata
     await updateUserMetadata(userId, {
-      paidMember: paidMember,
+      onboardingComplete: true,
     });
 
     return NextResponse.json(newUser, { status: 201 });
