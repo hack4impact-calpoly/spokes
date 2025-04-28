@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaArrowUp } from "react-icons/fa";
 import { FiMenu, FiX } from "react-icons/fi";
 import { usePathname } from "next/navigation";
@@ -112,17 +112,17 @@ type ScrollDirection = "up" | "down" | null;
 
 function useScrollDirection() {
   const [scrollDirection, setScrollDirection] = useState<ScrollDirection>(null);
-  let lastScrollY = 0;
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     const updateScrollDirection = () => {
       const scrollY = window.scrollY;
-      const direction = scrollY > lastScrollY ? "down" : "up";
+      const direction = scrollY > lastScrollY.current ? "down" : "up";
 
-      if (direction !== scrollDirection && Math.abs(scrollY - lastScrollY) > 10) {
+      if (direction !== scrollDirection && Math.abs(scrollY - lastScrollY.current) > 10) {
         console.log(`Scroll direction changed to: ${direction}`);
         setScrollDirection(direction);
-        lastScrollY = scrollY > 0 ? scrollY : 0;
+        lastScrollY.current = scrollY > 0 ? scrollY : 0;
       }
     };
 
