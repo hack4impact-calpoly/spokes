@@ -20,6 +20,7 @@ export default function Page() {
       display="flex"
       flexDirection={{ base: "column", md: "row" }}
       gap={10}
+      minH="65vh"
     >
       <WelcomeInfo />
       <SignIn />
