@@ -57,10 +57,10 @@ export async function PUT(_request: NextRequest, { params }: { params: { jobId: 
   }
 }
 
-export async function GET(_request: NextRequest, context: { params: { jobId: string } }) {
+export async function GET(req: NextRequest) {
   try {
     await connectDB();
-    const { jobId } = context.params;
+    const jobId = req.nextUrl.pathname.split("/").pop();
 
     console.log("Received jobId:", jobId);
 
