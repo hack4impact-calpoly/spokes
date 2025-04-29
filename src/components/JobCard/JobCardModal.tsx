@@ -7,6 +7,7 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
+  Textarea,
 } from "@chakra-ui/react";
 
 type JobModalProps = {
@@ -14,19 +15,36 @@ type JobModalProps = {
   onClose: () => void;
   onConfirm: () => void;
   action: "approve" | "reject" | "renew";
+  rejectionReason?: string;
+  setRejectionReason?: (reason: string) => void;
 };
 
-function JobModal({ isOpen, onClose, onConfirm, action }: JobModalProps) {
+function JobModal({ isOpen, onClose, onConfirm, action, rejectionReason, setRejectionReason }: JobModalProps) {
   // Map action to user friendly text
-  const actionText = action === "reject" ? "rejection" : action === "renew" ? "renewal" : "approval";
-
+  const actionHeaderText = action === "reject" ? "rejection" : action === "renew" ? "renewal" : "approval";
+  const actionText = action;
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Confirm {actionText}</ModalHeader>
+        <ModalHeader>Confirm {actionHeaderText}</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>Are you sure you would like to {actionText} this job posting?</ModalBody>
+        <ModalBody>
+          Are you sure you would like to {actionText.toLowerCase()} this job posting?
+          {action === "reject" ? (
+            <>
+              <Textarea
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason && setRejectionReason(e.target.value)}
+                placeholder="Enter reason for rejection..."
+                size="sm"
+                mt={2}
+              />
+            </>
+          ) : (
+            ``
+          )}
+        </ModalBody>
         <ModalFooter className="flex flex-wrap gap-2 mt-4 justify-end">
           <Button
             px="10"
