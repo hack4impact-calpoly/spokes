@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
+// import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import connectDB from "@/database/db";
 import User from "@/database/userSchema"; // Import your User model
 
@@ -34,5 +34,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
     return NextResponse.json({ message: "Failed to connect user to database.", error }, { status: 500 });
+  }
+}
+
+export async function GET() {
+  try {
+    await connectDB();
+
+    const users = await User.find({});
+    return NextResponse.json(users, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ message: "Failed to fetch users from database.", error }, { status: 500 });
   }
 }
