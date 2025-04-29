@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 import Job from "@/database/jobSchema";
 import { IJob } from "@/database/jobSchema";
 
-export async function DELETE(_request: NextRequest, { params }: { params: { jobId: string } }) {
+export async function DELETE(req: NextRequest) {
   try {
     await connectDB();
-    const { jobId } = params;
+    const jobId = req.nextUrl.pathname.split("/").pop();
 
     //Requires id
     if (!jobId) {
@@ -33,12 +33,12 @@ export async function DELETE(_request: NextRequest, { params }: { params: { jobI
  * accepts a job object and updates the job in the database
  * @returns {Promise<NextResponse>}
  */
-export async function PUT(_request: NextRequest, { params }: { params: { jobId: string } }) {
+export async function PUT(req: NextRequest) {
   try {
     await connectDB();
-    const { jobId } = params;
+    const jobId = req.nextUrl.pathname.split("/").pop();
 
-    const job: IJob = await _request.json();
+    const job: IJob = await req.json();
     console.log("Received Job Data:", job);
 
     if (!jobId) {
@@ -57,10 +57,10 @@ export async function PUT(_request: NextRequest, { params }: { params: { jobId: 
   }
 }
 
-export async function GET(_request: NextRequest, { params }: { params: { jobId: string } }) {
+export async function GET(req: NextRequest) {
   try {
     await connectDB();
-    const { jobId } = params;
+    const jobId = req.nextUrl.pathname.split("/").pop();
 
     console.log("Received jobId:", jobId);
 
