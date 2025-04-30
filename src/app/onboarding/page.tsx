@@ -97,7 +97,12 @@ export default function OnboardingPage() {
           duration: 5000,
           isClosable: true,
         });
-        router.push("/");
+
+        if (formData.paidMember === "true") {
+          router.push("/dashboard");
+        } else {
+          router.push("/jobform");
+        }
       } else {
         const error = await response.json();
         setError("We couldn't complete your profile at this time. Please try again or return to the job board.");
