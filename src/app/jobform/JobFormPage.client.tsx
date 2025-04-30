@@ -148,6 +148,16 @@ export default function JobFormPage() {
     const formattedFormData = {
       ...formData,
       expireDate: formData.expireDate ? formData.expireDate : null,
+      detailURL:
+        formData.detailURL && !formData.detailURL.startsWith("http://") && !formData.detailURL.startsWith("https://")
+          ? `https://${formData.detailURL}`
+          : formData.detailURL,
+      applyNowURL:
+        formData.applyNowURL &&
+        !formData.applyNowURL.startsWith("http://") &&
+        !formData.applyNowURL.startsWith("https://")
+          ? `https://${formData.applyNowURL}`
+          : formData.applyNowURL,
     };
 
     try {

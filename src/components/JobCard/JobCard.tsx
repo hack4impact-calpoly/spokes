@@ -38,7 +38,7 @@ function JobCard({ job, onJobView, innerRef }: JobCardProps) {
     if (job.applyNowURL) {
       window.open(job.applyNowURL, "_blank");
     } else {
-      const email = "jobposter@example.com";
+      const email = job.contactEmail;
       const subject = `Application for ${job.title}`;
       const body = `Dear ${job.organizationName},%0D%0A%0D%0AI am interested in the ${job.title} position. Please find my application attached.%0D%0A%0D%0AThank you,%0D%0A[Your Name]`;
       window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
