@@ -124,7 +124,10 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
                 >
                   Approve
                 </Button>
-                <RejectButton onClick={() => openModal("reject")} />
+                <RejectButton
+                  className="px-9 w-[120px] text-[14px] text-[#2D3748] border rounded-md border-black bg-[#f7f7f7] hover:bg-red-400"
+                  onClick={() => openModal("reject")}
+                />
               </>
             )}
 

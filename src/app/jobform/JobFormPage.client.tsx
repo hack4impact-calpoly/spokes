@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import JobConfirmationModal from "@/components/JobConfirmationModal";
 import JobActionConfirmationModal from "@/components/JobActionConfirmationModal";
 import JobFailModal from "@/components/JobFailModal";
+import RejectButton from "@/components/RejectButton";
 
 function formatIndustries(industries: string[]): Option[] {
   return industries.map((industry) => ({
@@ -556,21 +557,14 @@ export default function JobFormPage() {
               >
                 Update
               </Button>
-              <Button
+              <RejectButton
                 isLoading={loading}
-                loadingText="Rejecting..."
-                mt={10}
-                size="lg"
-                colorScheme="orange"
-                bg="#ff9d4f"
-                _hover={{ bg: "#ffbe8b" }}
                 onClick={() => {
                   setIsActionConfirmationModalOpen(true);
                   setAction("Reject");
                 }}
-              >
-                Reject
-              </Button>
+                className="px-6 mt-10 py-3 rounded-md bg-[#ff9d4f] hover:bg-[#ffbe8b] text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              />
               <Button
                 isLoading={loading}
                 loadingText="Deleting..."
