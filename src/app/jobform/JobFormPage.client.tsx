@@ -34,6 +34,11 @@ function formatIndustries(industries: string[]): Option[] {
   }));
 }
 
+const ensureHttps = (url: string | undefined): string | undefined => {
+  if (!url) return url;
+  return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
+};
+
 export default function JobFormPage() {
   const { register, handleSubmit: formHandleSubmit, reset } = useForm();
   const router = useRouter();
@@ -147,17 +152,9 @@ export default function JobFormPage() {
 
     const formattedFormData = {
       ...formData,
-      expireDate: formData.expireDate ? formData.expireDate : null,
-      detailURL:
-        formData.detailURL && !formData.detailURL.startsWith("http://") && !formData.detailURL.startsWith("https://")
-          ? `https://${formData.detailURL}`
-          : formData.detailURL,
-      applyNowURL:
-        formData.applyNowURL &&
-        !formData.applyNowURL.startsWith("http://") &&
-        !formData.applyNowURL.startsWith("https://")
-          ? `https://${formData.applyNowURL}`
-          : formData.applyNowURL,
+      expireDate: formData.expireDate || null,
+      detailURL: ensureHttps(formData.detailURL),
+      applyNowURL: ensureHttps(formData.applyNowURL),
     };
 
     try {
