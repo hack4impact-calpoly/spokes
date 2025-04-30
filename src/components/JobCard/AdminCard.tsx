@@ -8,6 +8,7 @@ import JobPostedDate from "@/components/JobCard/JobPostedDate";
 import { useState } from "react";
 import JobCardModal from "./JobCardModal";
 import { useRouter } from "next/navigation";
+import RejectButton from "@/components/RejectButton";
 
 interface JobCardProps {
   job: IJob;
@@ -18,6 +19,7 @@ interface JobCardProps {
 export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<"approve" | "reject" | "renew" | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
   const router = useRouter();
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -35,12 +37,41 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
   };
 
   // Handles confirmation action if action was approved
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
+    if (selectedAction === "reject") {
+      await sendRejectionEmail(job, rejectionReason);
+      if (onUpdateJob) {
+        onUpdateJob(job._id, "rejected", new Date());
+      }
+    }
     if (selectedAction && onUpdateJob) {
       onUpdateJob(job._id, selectedAction === "reject" ? "rejected" : "approved", new Date());
     }
     closeModal();
   };
+
+  async function sendRejectionEmail(job: IJob, reason: string) {
+    const formattedData = {
+      ...job,
+      rejectionReason: reason,
+    };
+
+    try {
+      const emailResponse = await fetch("/api/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedData),
+      });
+
+      if (!emailResponse.ok) {
+        console.error("Failed toe send notification email");
+      }
+    } catch (error) {
+      console.error("Faild to send rejection email:", error);
+    }
+  }
 
   const isExpired = job.approvedDate && new Date(job.approvedDate) < thirtyDaysAgo;
 
@@ -93,23 +124,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
                 >
                   Approve
                 </Button>
-                <Button
-                  className="border"
-                  px="10"
-                  width="120px"
-                  fontSize="small"
-                  fontWeight="normal"
-                  borderColor="black"
-                  backgroundColor={"#f7f7f7"}
-                  onClick={() => openModal("reject")}
-                  sx={{
-                    _hover: {
-                      backgroundColor: "red.300",
-                    },
-                  }}
-                >
-                  Deny
-                </Button>
+                <RejectButton onClick={() => openModal("reject")} />
               </>
             )}
 
@@ -139,9 +154,20 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
           <JobPostedDate date={job.postDate} />
         </div>
       </div>
-      {selectedAction && (
-        <JobCardModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleConfirm} action={selectedAction} />
-      )}
+      {selectedAction &&
+        isModalOpen &&
+        (selectedAction === "reject" ? (
+          <JobCardModal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            onConfirm={handleConfirm}
+            action={selectedAction}
+            rejectionReason={rejectionReason}
+            setRejectionReason={setRejectionReason}
+          />
+        ) : (
+          <JobCardModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleConfirm} action={selectedAction} />
+        ))}
     </div>
   );
 }
