@@ -46,8 +46,8 @@ export default function Users() {
 
   return (
     <div className="px-10">
-      <h1 className="font-bold text-3xl my-5">Admin Dashboard</h1>
-      <h2 className="font-[600] text-2xl">Spokes Member List</h2>
+      <h1 className="font-bold text-3xl my-7">Admin Dashboard</h1>
+      <h2 className="font-[600] text-2xl mb-7">Spokes Member List</h2>
       <div className="flex flex-col sm:flex-row mt-5 gap-4">
         <Select placeholder="Filter List" border="1px solid black" width={"121px"} height={"40px"}>
           <option>test</option>
@@ -62,40 +62,51 @@ export default function Users() {
         </button>
       </div>
       {users.length > 0 ? (
-        <Box overflowX="auto">
-          <Table className="mt-5 min-w-[600px]">
+        <Box overflowX="auto" className="px-2">
+          <Table className="my-5 min-w-[600px] w-full" variant="simple" borderColor="gray.300">
             <Thead>
               <Tr>
-                <Th fontWeight="bold" color="black" fontSize="lg">
+                <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.300" pl={0}>
                   Name
                 </Th>
-                <Th fontWeight="bold" color="black" fontSize="lg">
+                <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.300">
                   Email
                 </Th>
-                <Th fontWeight="bold" color="black" fontSize="lg">
+                <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.300">
                   Organization
                 </Th>
-                <Th fontWeight="bold" color="black" fontSize="lg">
-                  Member Status
+                <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.300" pr={0}>
+                  Member status
                 </Th>
               </Tr>
             </Thead>
             <Tbody>
               {users.map((item) => (
-                <Tr key={item._id}>
-                  <Td>{item.name}</Td>
-                  <Td>{item.email}</Td>
-                  <Td> {item.org ?? "N/A"}</Td>
-                  <Td>
-                    <div className="flex items-center">
-                      <span className={item.isadmin ? "inline-block w-20 text-green-500" : "inline-block w-20"}>
-                        {item.isadmin ? "Member" : "Non-Member"}
+                <Tr key={item._id} className="transition-colors hover:bg-gray-50" borderColor="gray.300">
+                  <Td className="w-1/4" borderColor="gray.300" pl={0}>
+                    <span className="text-md pl-2">{item.name}</span>
+                  </Td>
+                  <Td className="w-1/3" borderColor="gray.300">
+                    {item.email}
+                  </Td>
+                  <Td className="w-1/4" borderColor="gray.300">
+                    {item.org ?? "N/A"}
+                  </Td>
+                  <Td className="w-1/6" borderColor="gray.300" pr={0}>
+                    <div className="flex items-center justify-between py-2 pr-2">
+                      <span
+                        className={`inline-block w-28 text-md font-medium transition-colors ${
+                          item.isadmin ? "text-green-600" : "text-gray-600"
+                        }`}
+                      >
+                        {item.isadmin ? "Member" : "Non-member"}
                       </span>
                       <Switch
                         size="md"
-                        className="ml-4"
+                        colorScheme="blue"
                         isChecked={item.isadmin}
                         onChange={() => handleSwitchChange(item._id)}
+                        className="transition-transform hover:scale-105 [&>span[data-checked]]:bg-[#045F87]"
                       />
                     </div>
                   </Td>
