@@ -15,7 +15,7 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/next-js": "^2.4.2",
-    "@chakra-ui/react": "^2.10.4",
+    "@chakra-ui/react": "^2.10.7",
     "@clerk/backend": "^1.24.3",
     "@clerk/nextjs": "^6.9.10",
     "@emotion/react": "^11.14.0",
