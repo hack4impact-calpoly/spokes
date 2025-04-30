@@ -52,7 +52,11 @@ export default function Users() {
         <Select placeholder="Filter List" border="1px solid black" width={"121px"} height={"40px"}>
           <option>test</option>
         </Select>
-        <button className="border border-black rounded-[5px] w-[210px] h-[40px]">Search by Name or Email</button>
+        <input
+          type="text"
+          placeholder="Search by Name or Email"
+          className="border border-black rounded-[5px] w-[210px] h-[40px] px-2"
+        />
         <button className="border border-black bg-[#045F87] text-white rounded-[5px] w-[130px] h-[40px]">
           Download <DownloadIcon className="ml-2" />
         </button>
