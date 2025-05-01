@@ -34,6 +34,7 @@ function JobModal({ isOpen, onClose, onConfirm, action, rejectionReason, setReje
           {action === "reject" ? (
             <>
               <Textarea
+                isRequired={true}
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason && setRejectionReason(e.target.value)}
                 placeholder="Enter reason for rejection..."

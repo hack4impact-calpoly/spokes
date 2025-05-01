@@ -57,7 +57,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
     };
 
     try {
-      const emailResponse = await fetch("/api/send", {
+      const emailResponse = await fetch("/api/reject", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
