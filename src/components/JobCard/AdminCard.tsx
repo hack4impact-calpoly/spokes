@@ -102,6 +102,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
           <Link
             href={job.detailURL}
             className="text-sm font-medium px-3 py-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-all duration-200 w-fit"
+            target="_blank"
           >
             View Job Details
           </Link>
@@ -110,6 +111,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
             <Link
               href={job.applyNowURL}
               className="text-sm font-medium px-3 py-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-all duration-200 w-fit"
+              target="_blank"
             >
               Apply Now
             </Link>
