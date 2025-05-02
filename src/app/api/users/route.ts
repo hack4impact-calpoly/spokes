@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   try {
     await connectDB();
 
-    const { userId, firstName, lastName, email, paidMember } = await req.json();
+    const { userId, firstName, lastName, email, paidMember, organizationName } = await req.json();
     if (!userId || !email) {
       return NextResponse.json({ message: "Missing user data" }, { status: 400 });
     }
@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
       isadmin: false,
       postedJobs: [],
       paidMember: paidMember,
+      organizationName: organizationName,
     });
     await newUser.save();
 

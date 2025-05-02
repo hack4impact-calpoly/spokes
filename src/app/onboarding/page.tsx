@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useUser, useSession } from "@clerk/nextjs";
 import {
   Box,
   Button,
@@ -21,14 +21,20 @@ import {
   AlertTitle,
   AlertDescription,
   useToast,
+  Input,
 } from "@chakra-ui/react";
+import Image from "next/image";
 
 export default function OnboardingPage() {
   const { user, isLoaded } = useUser();
+  const { session } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnUrl = searchParams.get("returnUrl") || "/";
   const toast = useToast();
   const [formData, setFormData] = useState({
     paidMember: "",
+    organizationName: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,6 +71,10 @@ export default function OnboardingPage() {
     setFormData((prev) => ({ ...prev, paidMember: value }));
   };
 
+  const handleOrganizationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, organizationName: e.target.value }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -90,6 +100,9 @@ export default function OnboardingPage() {
       });
 
       if (response.ok) {
+        // Force a session refresh to update user data
+        await session?.reload();
+
         toast({
           title: "Profile completed!",
           description: "Your profile has been successfully updated.",
@@ -98,11 +111,8 @@ export default function OnboardingPage() {
           isClosable: true,
         });
 
-        if (formData.paidMember === "true") {
-          router.push("/dashboard");
-        } else {
-          router.push("/jobform");
-        }
+        // "unlock" the page they were trying to access
+        router.push(returnUrl);
       } else {
         const error = await response.json();
         setError("We couldn't complete your profile at this time. Please try again or return to the job board.");
@@ -126,8 +136,18 @@ export default function OnboardingPage() {
 
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
-      <Box className="w-full max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+      <Box className="w-full max-w-md mx-auto my-10 p-6 bg-white rounded-lg shadow-md">
         <VStack spacing={6} align="stretch">
+          <div className="flex justify-center">
+            <Image
+              src="/Spokes Brand/spoke_upscaled_no_bg.png"
+              alt="Spokes Logo"
+              width={56}
+              height={56}
+              style={{ color: "#000000" }}
+              className="mb-2"
+            />
+          </div>
           <Heading as="h1" size="lg" textAlign="center">
             Complete Your Profile
           </Heading>
@@ -164,6 +184,20 @@ export default function OnboardingPage() {
 
               <form onSubmit={handleSubmit}>
                 <FormControl isRequired mb={6}>
+                  <FormLabel fontWeight="medium">Organization Name</FormLabel>
+                  <Input
+                    value={formData.organizationName}
+                    onChange={handleOrganizationChange}
+                    placeholder="Enter your organization name"
+                    bg="#F6F6F6"
+                    _focus={{
+                      borderColor: "#BDEABD",
+                      boxShadow: "0 0 0 1px #BDEABD",
+                    }}
+                  />
+                </FormControl>
+
+                <FormControl isRequired mb={6}>
                   <FormLabel fontWeight="medium">Are you a paid member of Spokes?</FormLabel>
                   <RadioGroup onChange={handleChange} value={formData.paidMember} name="paidMember">
                     <Stack direction="column" spacing={4}>
@@ -193,7 +227,7 @@ export default function OnboardingPage() {
 
                 <Button
                   type="submit"
-                  disabled={isSubmitting || !formData.paidMember}
+                  disabled={isSubmitting || !formData.paidMember || !formData.organizationName}
                   isLoading={isSubmitting}
                   loadingText="Submitting..."
                   w="full"

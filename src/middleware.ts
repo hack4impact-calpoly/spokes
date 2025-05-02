@@ -33,13 +33,14 @@ export default clerkMiddleware(async (auth, req) => {
 
   const client = await clerkClient();
   const user = await client.users.getUser(userId);
-  console.log(userId);
 
   const onboardingComplete = user.publicMetadata?.onboardingComplete === true;
 
   // if user hasn't completed onboarding and isn't on the onboarding page, redirect them
   if (!onboardingComplete && !isOnboardingRoute(req)) {
     const onboardingUrl = new URL("/onboarding", req.url);
+    onboardingUrl.searchParams.set("returnUrl", req.url);
+    console.log(onboardingUrl);
     return NextResponse.redirect(onboardingUrl);
   }
 

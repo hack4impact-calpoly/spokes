@@ -3,14 +3,17 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { UserResource } from "@clerk/types";
-import { Button } from "@chakra-ui/react";
-import { UserButton, OrganizationSwitcher } from "@clerk/nextjs";
+import { Button, Tooltip, Box } from "@chakra-ui/react";
+import { UserButton, OrganizationSwitcher, useSession } from "@clerk/nextjs";
 
 interface TopSectionProps {
   user: UserResource | null | undefined;
 }
 
 export default function TopSection({ user }: TopSectionProps) {
+  const { session } = useSession();
+  const onboardingComplete = session?.user?.publicMetadata?.onboardingComplete === true;
+
   return (
     <>
       <main className="flex items-center justify-between px-10 bg-white sm:px-14 py-7">
@@ -25,7 +28,32 @@ export default function TopSection({ user }: TopSectionProps) {
         </Link>
         {user ? (
           <div className="flex flex-col items-center gap-3">
-            <UserButton showName={true} />
+            <div className="flex items-center gap-4">
+              {!onboardingComplete && (
+                <Tooltip label="Complete your profile setup" placement="bottom">
+                  <Box
+                    w="2"
+                    h="2"
+                    borderRadius="full"
+                    bg="orange.400"
+                    position="relative"
+                    _after={{
+                      content: '""',
+                      position: "absolute",
+                      top: "-2px",
+                      left: "-2px",
+                      right: "-2px",
+                      bottom: "-2px",
+                      borderRadius: "full",
+                      border: "1px solid",
+                      borderColor: "orange.400",
+                      animation: "pulse 2s infinite",
+                    }}
+                  />
+                </Tooltip>
+              )}
+              <UserButton showName={true} />
+            </div>
             <OrganizationSwitcher />
           </div>
         ) : (

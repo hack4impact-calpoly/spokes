@@ -8,6 +8,7 @@ interface UserInterface {
   isadmin: Boolean;
   postedJobs: [String];
   paidMember: Boolean;
+  organizationName: String;
 }
 
 //User Schema
@@ -18,6 +19,7 @@ const UserSchema = new Schema<UserInterface>({
   isadmin: { type: Boolean, required: true },
   postedJobs: { type: [String], required: true, default: [] },
   paidMember: { type: Boolean, required: true },
+  organizationName: { type: String, required: true },
 });
 
 //Export Schema
