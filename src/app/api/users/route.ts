@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 // import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import connectDB from "@/database/db";
 import User from "@/database/userSchema"; // Import your User model
-
+import { updateUserMetadata } from "@/lib/clerk";
 // Connect to the database before handling requests
 
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
 
-    const { userId, firstName, lastName, email } = await req.json();
+    const { userId, firstName, lastName, email, paidMember, organizationName } = await req.json();
     if (!userId || !email) {
       return NextResponse.json({ message: "Missing user data" }, { status: 400 });
     }
@@ -29,8 +29,16 @@ export async function POST(req: NextRequest) {
       email: email,
       isadmin: false,
       postedJobs: [],
+      paidMember: paidMember,
+      organizationName: organizationName,
     });
     await newUser.save();
+
+    // Update Clerk user metadata
+    await updateUserMetadata(userId, {
+      onboardingComplete: true,
+    });
+
     return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
     return NextResponse.json({ message: "Failed to connect user to database.", error }, { status: 500 });
