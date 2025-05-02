@@ -202,7 +202,7 @@ export default function JobFormPage() {
         throw new Error("Failed to submit job.");
       }
 
-      const emailResponse = await fetch("/api/send", {
+      const emailResponse = await fetch("/api/send/new", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

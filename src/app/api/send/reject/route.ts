@@ -1,4 +1,4 @@
-import { RejectionEmailTemplate } from "@/components/RejectEmailTemplate";
+import { RejectJob } from "@/components/EmailTemplates/RejectJob";
 import { Resend } from "resend";
 import { NextRequest } from "next/server";
 
@@ -16,9 +16,9 @@ export async function POST(request: NextRequest) {
 
     const { data, error } = await resend.emails.send({
       from: "Spokes Job Board <onboarding@resend.dev>",
-      to: `${jobData.contactEmail}`,
+      to: [`${jobData.contactEmail}`],
       subject: `Your Job Post for ${jobData.title} Was Rejected`,
-      react: RejectionEmailTemplate({
+      react: RejectJob({
         title: jobData.title,
         organizationName: jobData.organizationName,
         contactName: jobData.contactName,
