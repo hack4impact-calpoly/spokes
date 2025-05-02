@@ -26,12 +26,43 @@ import JobConfirmationModal from "@/components/JobConfirmationModal";
 import JobActionConfirmationModal from "@/components/JobActionConfirmationModal";
 import JobFailModal from "@/components/JobFailModal";
 import RejectButton from "@/components/RejectButton";
+import JobCardModal from "@/components/JobCard/JobCardModal";
 
 function formatIndustries(industries: string[]): Option[] {
   return industries.map((industry) => ({
     value: industry,
     label: industry,
   }));
+}
+
+type RejectionEmailPayload = {
+  title: string;
+  organizationName: string;
+  contactName: string;
+  contactEmail: string;
+};
+
+async function sendRejectionEmail(jobData: RejectionEmailPayload, reason: string = "No reason provided.") {
+  const payload = {
+    ...jobData,
+    rejectionReason: reason,
+  };
+
+  try {
+    const emailResponse = await fetch(`/api/send/reject`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!emailResponse.ok) {
+      console.error("Failed to send rejection email");
+    }
+  } catch (error) {
+    console.error("Error sending rejection email:", error);
+  }
 }
 
 export default function JobFormPage() {
@@ -70,6 +101,8 @@ export default function JobFormPage() {
   const [isFailModalOpen, setIsFailModalOpen] = useState(false);
   const [showMaxError, setShowMaxError] = useState(false);
   const [action, setAction] = useState("");
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
 
   const employmentColorMapping = {
     "Full-Time": "#F8B1B8",
@@ -238,9 +271,11 @@ export default function JobFormPage() {
   };
 
   const handleAction = async () => {
+    console.log("handleAction called with action:", action);
     if (!jobId) return;
     setLoading(true);
     setMessage("");
+    console.log(action);
 
     if (action === "Reject") {
       const updatedFormData = {
@@ -250,6 +285,20 @@ export default function JobFormPage() {
       };
 
       try {
+        try {
+          console.log("!!Attempting to send email...");
+          await sendRejectionEmail(
+            {
+              title: formData.title,
+              organizationName: formData.organizationName,
+              contactName: formData.contactName,
+              contactEmail: formData.contactEmail,
+            },
+            rejectionReason,
+          );
+        } catch (emailError) {
+          console.error("Failed to send rejection email:", emailError);
+        }
         const response = await fetch(`/api/jobs/${jobId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -259,7 +308,9 @@ export default function JobFormPage() {
         if (!response.ok) {
           throw new Error("Failed to reject job.");
         }
-        setIsActionConfirmationModalOpen(false);
+
+        setIsRejectModalOpen(false);
+        setAction("");
         setMessage("Successfully reject job");
         setLoading(false);
         router.push("/admin");
@@ -560,7 +611,7 @@ export default function JobFormPage() {
               <RejectButton
                 isLoading={loading}
                 onClick={() => {
-                  setIsActionConfirmationModalOpen(true);
+                  setIsRejectModalOpen(true);
                   setAction("Reject");
                 }}
                 className="px-6 mt-10 py-3 rounded-md bg-[#ff9d4f] hover:bg-[#ffbe8b] text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
@@ -610,6 +661,16 @@ export default function JobFormPage() {
         onClose={closeActionConfirmationModal}
         onConfirm={handleAction}
         action={action}
+      />
+      <JobCardModal
+        isOpen={isRejectModalOpen}
+        onClose={() => {
+          setIsRejectModalOpen(false);
+        }}
+        onConfirm={handleAction}
+        action="reject"
+        rejectionReason={rejectionReason}
+        setRejectionReason={setRejectionReason}
       />
       <JobFailModal isOpen={isFailModalOpen} onClose={closeFailModal} />
     </Box>
