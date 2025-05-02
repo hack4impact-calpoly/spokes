@@ -101,7 +101,7 @@ export default function OnboardingPage() {
 
       if (response.ok) {
         // Force a session refresh to update user data
-        // await session?.reload();
+        await session?.reload();
 
         toast({
           title: "Profile completed!",
@@ -111,8 +111,9 @@ export default function OnboardingPage() {
           isClosable: true,
         });
 
-        // "unlock" the page they were trying to access
-        router.push(returnUrl);
+        // Ensure the returnUrl starts with a forward slash
+        const safeReturnUrl = returnUrl.startsWith("/") ? returnUrl : `/${returnUrl}`;
+        router.push(safeReturnUrl);
       } else {
         const error = await response.json();
         setError("We couldn't complete your profile at this time. Please try again or return to the job board.");

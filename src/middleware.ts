@@ -39,8 +39,8 @@ export default clerkMiddleware(async (auth, req) => {
   // if user hasn't completed onboarding and isn't on the onboarding page, redirect them
   if (!onboardingComplete && !isOnboardingRoute(req)) {
     const onboardingUrl = new URL("/onboarding", req.url);
-    onboardingUrl.searchParams.set("returnUrl", req.url);
-    console.log(onboardingUrl);
+    const returnPath = new URL(req.url).pathname;
+    onboardingUrl.searchParams.set("returnUrl", returnPath);
     return NextResponse.redirect(onboardingUrl);
   }
 
