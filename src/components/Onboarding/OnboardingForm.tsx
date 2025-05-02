@@ -30,16 +30,6 @@ export default function OnboardingForm({ onSubmit, isSubmitting }: OnboardingFor
 
   return (
     <VStack spacing={6} align="stretch">
-      <div className="flex justify-center">
-        <Image
-          src="/Spokes Brand/spoke_upscaled_no_bg.png"
-          alt="Spokes Logo"
-          width={56}
-          height={56}
-          style={{ color: "#000000" }}
-          className="mb-2"
-        />
-      </div>
       <Text>Please verify your membership status with Spokes to complete your profile.</Text>
 
       <form onSubmit={handleSubmit}>

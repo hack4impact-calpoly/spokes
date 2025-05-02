@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useUser, useSession } from "@clerk/nextjs";
 import { Box, Heading, useToast } from "@chakra-ui/react";
+import Image from "next/image";
 import OnboardingForm from "@/components/Onboarding/OnboardingForm";
 import OnboardingError from "@/components/Onboarding/OnboardingError";
 import OnboardingSkeleton from "@/components/Onboarding/OnboardingSkeleton";
@@ -93,10 +94,19 @@ export default function OnboardingPage() {
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
       <Box className="w-full max-w-md mx-auto my-10 p-6 bg-white rounded-lg shadow-md">
+        <div className="flex justify-center my-3">
+          <Image
+            src="/Spokes Brand/spoke_upscaled_no_bg.png"
+            alt="Spokes Logo"
+            width={56}
+            height={56}
+            style={{ color: "#000000" }}
+            className="mb-2"
+          />
+        </div>
         <Heading as="h1" size="lg" textAlign="center" mb={6}>
           Complete Your Profile
         </Heading>
-
         {error ? (
           <OnboardingError error={error} onRetry={handleRetry} onReturnToJobBoard={handleReturnToJobBoard} />
         ) : (
