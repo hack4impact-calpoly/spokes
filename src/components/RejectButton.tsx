@@ -6,7 +6,7 @@ type RejectButtonProps = {
 
 export default function RejectButton({ isLoading = false, onClick, className = "" }: RejectButtonProps) {
   return (
-    <button onClick={onClick} disabled={isLoading} className={className}>
+    <button type="button" onClick={onClick} disabled={isLoading} className={className}>
       {isLoading ? "Rejecting..." : "Reject"}
     </button>
   );

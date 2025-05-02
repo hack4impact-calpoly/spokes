@@ -32,16 +32,15 @@ function JobModal({ isOpen, onClose, onConfirm, action, rejectionReason, setReje
         <ModalBody>
           Are you sure you would like to {actionText.toLowerCase()} this job posting?
           {action === "reject" ? (
-            <>
+            <div>
               <Textarea
-                isRequired={true}
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason && setRejectionReason(e.target.value)}
                 placeholder="Enter reason for rejection..."
                 size="sm"
                 mt={2}
               />
-            </>
+            </div>
           ) : (
             ``
           )}
