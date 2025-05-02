@@ -29,8 +29,8 @@ export default function OnboardingPage() {
   const { user, isLoaded } = useUser();
   const { session } = useSession();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const returnUrl = searchParams.get("returnUrl") || "/";
+  // const searchParams = useSearchParams();
+  // const returnUrl = searchParams.get("returnUrl") || "/";
   const toast = useToast();
   const [formData, setFormData] = useState({
     paidMember: "",
@@ -101,7 +101,7 @@ export default function OnboardingPage() {
 
       if (response.ok) {
         // Force a session refresh to update user data
-        await session?.reload();
+        // await session?.reload();
 
         toast({
           title: "Profile completed!",
@@ -112,7 +112,7 @@ export default function OnboardingPage() {
         });
 
         // "unlock" the page they were trying to access
-        router.push(returnUrl);
+        router.push("/");
       } else {
         const error = await response.json();
         setError("We couldn't complete your profile at this time. Please try again or return to the job board.");
