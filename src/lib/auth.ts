@@ -10,8 +10,10 @@ interface AuthWithRole {
 
 export async function getAuthWithRole(): Promise<AuthWithRole> {
   const session = auth();
+  //job-seekers will not be authenticated
   if (!session || !(await session).userId) {
-    throw new Error("User is not Authenticated");
+    console.log("No user found, assigning job_seeker role");
+    return { userId: null, role: "job_seeker" };
   }
 
   const userId = (await session).userId;

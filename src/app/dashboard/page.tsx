@@ -3,7 +3,8 @@ import DashboardJobCard from "@/components/DashboardJobCard";
 import { IJob } from "@/database/jobSchema";
 import { getAuthWithRole } from "@/lib/auth";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const { userId, role } = await getAuthWithRole();
   const testJobs: IJob[] = [
     {
       _id: "1",
