@@ -143,7 +143,7 @@ The Job Board is the main hub for job seekers. It consists of API endpoints to m
 #### Job Card Modal (Admin Dashboard View)
 
 - **What it does:**  
-  Displays a modal to confirm proposed action (rejection, approval, or renewal) on a job application as an Admin.
+  Displays a modal to confirm proposed action (rejection, approval, or renewal) on a job application as an Admin. If the job was rejected displays a text box to enter a reason for rejection and sends an email to the person of contact notifying them of the rejection.
 - **Dev Note:**  
   Uses Chakra UI modals for confirmation dialogs. The component accepts `isOpen`, `onClose`, `onConfirm`, and `action` props, where action can be "approve", "reject", or "renew". The modal automatically adjusts text based on the action type. Uses consistent button styling with hover effects (green for confirm, red for cancel).
 
