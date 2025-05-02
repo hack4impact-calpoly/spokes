@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import connectDB from "@/database/db";
 import User from "@/database/userSchema"; // Import your User model
+import { getAuthWithRole } from "@/lib/auth";
 
 // Connect to the database before handling requests
 

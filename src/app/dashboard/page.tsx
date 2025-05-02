@@ -1,6 +1,7 @@
 import { Box, Text } from "@chakra-ui/react";
 import DashboardJobCard from "@/components/DashboardJobCard";
 import { IJob } from "@/database/jobSchema";
+import { getAuthWithRole } from "@/lib/auth";
 
 export default function DashboardPage() {
   const testJobs: IJob[] = [

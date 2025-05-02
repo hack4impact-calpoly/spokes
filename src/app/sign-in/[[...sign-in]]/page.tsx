@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { SignIn } from "@clerk/nextjs";
 import { Center } from "@chakra-ui/react";
+import { getAuthWithRole } from "@/lib/auth";
 
 export default function Page() {
   const [isClient, setIsClient] = useState(false);
