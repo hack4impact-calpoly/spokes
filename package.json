@@ -15,7 +15,7 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/next-js": "^2.4.2",
-    "@chakra-ui/react": "^2.10.4",
+    "@chakra-ui/react": "^2.10.7",
     "@clerk/backend": "^1.24.3",
     "@clerk/nextjs": "^6.9.10",
     "@emotion/react": "^11.14.0",
@@ -30,7 +30,7 @@
     "framer-motion": "^11.15.0",
     "lucide-react": "^0.475.0",
     "mongoose": "^8.9.4",
-    "next": "^14",
+    "next": ">=14.2.25",
     "next-themes": "^0.4.4",
     "react": "^18",
     "react-dom": "^18",

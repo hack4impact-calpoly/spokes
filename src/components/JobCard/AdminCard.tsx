@@ -1,5 +1,5 @@
 import { Button, IconButton } from "@chakra-ui/react";
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiMail } from "react-icons/fi";
 import { IJob } from "@/database/jobSchema";
 import JobStatusBadge from "@/components/JobCard/JobStatusBadge";
 import JobBadge from "@/components/JobCard/JobBadge";
@@ -9,6 +9,7 @@ import { useState } from "react";
 import JobCardModal from "./JobCardModal";
 import { useRouter } from "next/navigation";
 import RejectButton from "@/components/RejectButton";
+import Link from "next/link";
 
 interface JobCardProps {
   job: IJob;
@@ -97,6 +98,29 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
           <JobStatusBadge jobStatus={job.jobStatus} />
         </div>
         <JobCardInformation job={job} />
+        <div className="flex flex-row gap-2 mb-2">
+          <Link
+            href={job.detailURL}
+            className="text-sm font-medium px-3 py-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-all duration-200 w-fit"
+          >
+            View Job Details
+          </Link>
+
+          {job.applyNowURL ? (
+            <Link
+              href={job.applyNowURL}
+              className="text-sm font-medium px-3 py-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-all duration-200 w-fit"
+            >
+              Apply Now
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-md text-gray-600 bg-[#f7f7f7] w-fit">
+              <FiMail className="w-5 h-5" />
+              <span>Email Apply</span>
+            </div>
+          )}
+        </div>
+
         <div className="flex-grow"></div>
         <div className="flex flex-wrap justify-between flex-row min-[1000px]:gap-4 gap-2 items-center">
           <div className="flex flex-wrap gap-2">

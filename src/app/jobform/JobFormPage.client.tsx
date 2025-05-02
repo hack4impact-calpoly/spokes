@@ -10,6 +10,7 @@ import {
   VStack,
   FormControl,
   FormLabel,
+  FormHelperText,
   Input,
   Stack,
   FormErrorMessage,
@@ -64,6 +65,11 @@ async function sendRejectionEmail(jobData: RejectionEmailPayload, reason: string
     console.error("Error sending rejection email:", error);
   }
 }
+
+const ensureHttps = (url: string | undefined): string | undefined => {
+  if (!url) return url;
+  return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
+};
 
 export default function JobFormPage() {
   const { register, handleSubmit: formHandleSubmit, reset } = useForm();
@@ -180,7 +186,9 @@ export default function JobFormPage() {
 
     const formattedFormData = {
       ...formData,
-      expireDate: formData.expireDate ? formData.expireDate : null,
+      expireDate: formData.expireDate || null,
+      detailURL: ensureHttps(formData.detailURL),
+      applyNowURL: ensureHttps(formData.applyNowURL),
     };
 
     try {
@@ -215,7 +223,7 @@ export default function JobFormPage() {
         expireDate: "",
         jobDescription: "",
         employmentType: "full-time",
-        compensationType: "paid",
+        compensationType: "salary",
         jobStatus: "pending",
         contactName: "",
         contactPhone: "",
@@ -534,7 +542,7 @@ export default function JobFormPage() {
             />
           </FormControl>
           <FormControl isRequired>
-            <FormLabel>Link to Job Listing</FormLabel>
+            <FormLabel>Link to Job Details</FormLabel>
             <Input
               type="text"
               placeholder="Enter your response"
@@ -542,6 +550,42 @@ export default function JobFormPage() {
               border="0"
               name="detailURL"
               value={loadingInfo ? "Loading..." : formData.detailURL}
+              onChange={handleChange}
+              disabled={loadingInfo}
+            />
+            <FormErrorMessage>Please enter a valid link.</FormErrorMessage>
+          </FormControl>
+          <FormControl>
+            <div className="flex items-center">
+              <FormLabel className="mb-0">Link to Job Application</FormLabel>
+              <div className="group relative">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-4 h-4 text-gray-400 cursor-help -translate-y-1 -translate-x-2"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <div className="absolute sm:-translate-x-0 -translate-x-[75%] left-0 top-6 w-64 p-2 bg-white border border-gray-200 rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                  <p className="text-sm text-gray-600">
+                    Add a direct application link if available. If not provided, applicants will be directed to contact
+                    the provided email address.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <Input
+              type="text"
+              placeholder="Enter your response"
+              bg="#F6F6F6"
+              border="0"
+              name="applyNowURL"
+              value={loadingInfo ? "Loading..." : formData.applyNowURL}
               onChange={handleChange}
               disabled={loadingInfo}
             />

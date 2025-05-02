@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/database/db";
 import User from "@/database/userSchema"; // Import your User model
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest) {
   try {
     await connectDB(); // Connect to MongoDB
-    const id = params.id; // Fetch the user ID from params
+    const id = req.nextUrl.pathname.split("/").pop(); // Fetch the user ID from params
 
     // Validate ID
     if (!id) {

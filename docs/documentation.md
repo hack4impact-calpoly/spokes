@@ -27,6 +27,7 @@ This guide outlines the core features and components of the Automated Job Board.
   - [Incoming Applications](#incoming-applications)
   - [Live & Complete Applications](#live--complete-applications)
   - [Admin Account Management](#admin-account-management)
+- [Users View](#users-page-admin-dashboard)
 - [User Authentication](#user-authentication)
 - [Database](#database)
 - [Additional Developer Notes](#additional-developer-notes)
@@ -203,6 +204,26 @@ The Nav Bar is split into two sections (Top and Bottom) and provides navigation 
   Provides a dedicated interface for nonprofits to manage job postings, including editing and monitoring job listings.
 - **Dev Note:**  
   Ensure role-based access is enforced and that metrics/monitoring tools are kept secure and accurate. (Implementation details may be expanded as features are developed.)
+
+---
+
+## Users Page Admin Dashboard
+
+- **What it does:**  
+  Displays a list of all users in a table format for admin review and management.  
+  Allows admins to:
+
+  - View user details (name, email, organization, member status)
+  - Toggle a user's admin/member status using a switch (UI only; database update not yet implemented)
+  - Filter and search users (UI elements present; functionality to be implemented)
+  - Download user data (button present; functionality to be implemented)
+
+- **Dev Notes:**
+  - The page fetches user data from `/api/users` on mount.
+  - Toggling the member status switch updates the UI state but does **not** persist changes to the database yet.
+  - Search and filter features are placeholders for future development.
+  - Ensure only authorized admins can access this page.
+  - Update this section as backend integration and features are completed.
 
 ---
 

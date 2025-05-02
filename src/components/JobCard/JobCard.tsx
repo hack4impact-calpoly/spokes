@@ -3,7 +3,7 @@ import { IJob } from "@/database/jobSchema";
 import JobBadge from "@/components/JobCard/JobBadge";
 import JobCardInformation from "@/components/JobCard/JobCardInformation";
 import JobPostedDate from "@/components/JobCard/JobPostedDate";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 
 interface JobCardProps {
   job: IJob;
@@ -11,7 +11,7 @@ interface JobCardProps {
   onJobView?: (job: IJob) => void;
 }
 
-export default function JobCard({ job, onJobView, innerRef }: JobCardProps) {
+function JobCard({ job, onJobView, innerRef }: JobCardProps) {
   const [recentJobs, setRecentJobs] = useState<string[]>(() => {
     const storedJobs = localStorage.getItem("myJobs");
     return storedJobs ? JSON.parse(storedJobs) : [];
@@ -21,25 +21,7 @@ export default function JobCard({ job, onJobView, innerRef }: JobCardProps) {
     localStorage.setItem("myJobs", JSON.stringify(recentJobs));
   }, [recentJobs]);
 
-  const handleApplyNowClick = () => {
-    updateLocalStorage();
-    if (job.applyNowURL) {
-      window.open(job.applyNowURL, "_blank");
-    } else {
-      const email = "jobposter@example.com";
-      const subject = `Application for ${job.title}`;
-      const body = `Dear ${job.organizationName},%0D%0A%0D%0AI am interested in the ${job.title} position. Please find my application attached.%0D%0A%0D%0AThank you,%0D%0A[Your Name]`;
-      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-    }
-  };
-
-  const handleSeeMoreClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    updateLocalStorage();
-    event.preventDefault();
-    window.open(job.detailURL, "_blank");
-  };
-
-  const updateLocalStorage = () => {
+  const updateLocalStorage = useCallback(() => {
     const newJob = job._id;
     if (!recentJobs.includes(newJob)) {
       const updatedJobs = [...recentJobs, newJob];
@@ -49,7 +31,28 @@ export default function JobCard({ job, onJobView, innerRef }: JobCardProps) {
         onJobView(job);
       }
     }
-  };
+  }, [job, onJobView, recentJobs]);
+
+  const handleApplyNowClick = useCallback(() => {
+    updateLocalStorage();
+    if (job.applyNowURL) {
+      window.open(job.applyNowURL, "_blank");
+    } else {
+      const email = job.contactEmail;
+      const subject = `Application for ${job.title}`;
+      const body = `Dear ${job.organizationName},%0D%0A%0D%0AI am interested in the ${job.title} position. Please find my application attached.%0D%0A%0D%0AThank you,%0D%0A[Your Name]`;
+      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    }
+  }, [job, updateLocalStorage]);
+
+  const handleSeeMoreClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      event.preventDefault();
+      updateLocalStorage();
+      window.open(job.detailURL, "_blank");
+    },
+    [job.detailURL, updateLocalStorage],
+  );
 
   return (
     <div className="max-w-[100%]" ref={innerRef}>
@@ -91,3 +94,5 @@ export default function JobCard({ job, onJobView, innerRef }: JobCardProps) {
     </div>
   );
 }
+
+export default memo(JobCard);
