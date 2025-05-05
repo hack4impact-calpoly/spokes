@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/database/db";
 import User from "@/database/userSchema"; // Import your User model
 import { updateUserMetadata } from "@/lib/clerk";
+
 // Connect to the database before handling requests
 
 export async function POST(req: NextRequest) {
