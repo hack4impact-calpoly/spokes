@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { models, model, Schema } from "mongoose";
 
 //User interface
 interface UserInterface {
@@ -23,4 +23,5 @@ const UserSchema = new Schema<UserInterface>({
 });
 
 //Export Schema
-export default mongoose.models.User || mongoose.model("User", UserSchema);
+const User = models.User || model("User", UserSchema);
+export default User;
