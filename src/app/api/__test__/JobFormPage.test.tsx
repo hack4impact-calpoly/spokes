@@ -75,7 +75,10 @@ describe("JobFormPage", () => {
     fireEvent.change(screen.getByLabelText(/Job Description/i), {
       target: { value: "Test description." },
     });
-    fireEvent.change(screen.getByLabelText(/Link to Job Listing/i), {
+    fireEvent.change(screen.getByLabelText(/Link to Job Details/i), {
+      target: { value: "http://example.com/job" },
+    });
+    fireEvent.change(screen.getByLabelText(/Link to Job Application/i), {
       target: { value: "http://example.com/job" },
     });
 
@@ -121,7 +124,7 @@ describe("JobFormPage", () => {
         contactPhone: "",
         contactEmail: "test@example.com",
         detailURL: "http://example.com/job",
-        applyNowURL: "",
+        applyNowURL: "http://example.com/job",
       }),
     );
   });
@@ -160,8 +163,11 @@ describe("JobFormPage", () => {
     fireEvent.change(screen.getByLabelText(/Job Description/i), {
       target: { value: "Test description." },
     });
-    fireEvent.change(screen.getByLabelText(/Link to Job Listing/i), {
+    fireEvent.change(screen.getByLabelText(/Link to Job Details/i), {
       target: { value: "http://example.com/job" },
+    });
+    fireEvent.change(screen.getByLabelText(/Link to Job Application/i), {
+      target: { value: "http://example.com/apply" },
     });
     const nameFields = screen.getAllByLabelText(/Name/i);
     fireEvent.change(nameFields[1], {
