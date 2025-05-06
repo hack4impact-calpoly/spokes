@@ -17,21 +17,20 @@ interface AuthWithRole {
  */
 export async function getAuthWithRole(): Promise<AuthWithRole> {
   const session = auth();
-  
+
   //job-seekers will not be authenticated
   if (!(await session)?.userId) {
     console.log("No user found, assigning job_seeker role");
     return { userId: null, role: "job_seeker" };
   }
-  
+
   const user = await session;
   const userId = user.userId;
 
   // Check if user is part of spokes-admin organization
   const isSpokesAdmin = user.orgSlug === "spokes-admin";
 
-  // check if user is part of spokes-admin organization
-  if (orgSlug === "spokes-admin") {
+  if (isSpokesAdmin) {
     return { userId, role: "spokes_admin" };
   }
 
