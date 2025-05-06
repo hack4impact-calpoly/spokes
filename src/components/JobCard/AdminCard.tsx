@@ -1,5 +1,5 @@
 import { Button, IconButton } from "@chakra-ui/react";
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiMail } from "react-icons/fi";
 import { IJob } from "@/database/jobSchema";
 import JobStatusBadge from "@/components/JobCard/JobStatusBadge";
 import JobBadge from "@/components/JobCard/JobBadge";
@@ -8,6 +8,8 @@ import JobPostedDate from "@/components/JobCard/JobPostedDate";
 import { useState } from "react";
 import JobCardModal from "./JobCardModal";
 import { useRouter } from "next/navigation";
+import RejectButton from "@/components/RejectButton";
+import Link from "next/link";
 
 interface JobCardProps {
   job: IJob;
@@ -18,6 +20,7 @@ interface JobCardProps {
 export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<"approve" | "reject" | "renew" | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
   const router = useRouter();
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -35,12 +38,41 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
   };
 
   // Handles confirmation action if action was approved
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
+    if (selectedAction === "reject") {
+      await sendRejectionEmail(job, rejectionReason);
+      if (onUpdateJob) {
+        onUpdateJob(job._id, "rejected", new Date());
+      }
+    }
     if (selectedAction && onUpdateJob) {
       onUpdateJob(job._id, selectedAction === "reject" ? "rejected" : "approved", new Date());
     }
     closeModal();
   };
+
+  async function sendRejectionEmail(job: IJob, reason: string) {
+    const formattedData = {
+      ...job,
+      rejectionReason: reason,
+    };
+
+    try {
+      const emailResponse = await fetch(`/api/send/reject`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedData),
+      });
+
+      if (!emailResponse.ok) {
+        console.error("Failed toe send notification email");
+      }
+    } catch (error) {
+      console.error("Faild to send rejection email:", error);
+    }
+  }
 
   const isExpired = job.approvedDate && new Date(job.approvedDate) < thirtyDaysAgo;
 
@@ -66,6 +98,31 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
           <JobStatusBadge jobStatus={job.jobStatus} />
         </div>
         <JobCardInformation job={job} />
+        <div className="flex flex-row gap-2 mb-2">
+          <Link
+            href={job.detailURL}
+            className="text-sm font-medium px-3 py-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-all duration-200 w-fit"
+            target="_blank"
+          >
+            View Job Details
+          </Link>
+
+          {job.applyNowURL ? (
+            <Link
+              href={job.applyNowURL}
+              className="text-sm font-medium px-3 py-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-all duration-200 w-fit"
+              target="_blank"
+            >
+              Apply Now
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-md text-gray-600 bg-[#f7f7f7] w-fit">
+              <FiMail className="w-5 h-5" />
+              <span>Email Apply</span>
+            </div>
+          )}
+        </div>
+
         <div className="flex-grow"></div>
         <div className="flex flex-wrap justify-between flex-row min-[1000px]:gap-4 gap-2 items-center">
           <div className="flex flex-wrap gap-2">
@@ -93,23 +150,10 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
                 >
                   Approve
                 </Button>
-                <Button
-                  className="border"
-                  px="10"
-                  width="120px"
-                  fontSize="small"
-                  fontWeight="normal"
-                  borderColor="black"
-                  backgroundColor={"#f7f7f7"}
+                <RejectButton
+                  className="px-9 w-[120px] text-[14px] text-[#2D3748] border rounded-md border-black bg-[#f7f7f7] hover:bg-red-400"
                   onClick={() => openModal("reject")}
-                  sx={{
-                    _hover: {
-                      backgroundColor: "red.300",
-                    },
-                  }}
-                >
-                  Deny
-                </Button>
+                />
               </>
             )}
 
@@ -139,9 +183,20 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
           <JobPostedDate date={job.postDate} />
         </div>
       </div>
-      {selectedAction && (
-        <JobCardModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleConfirm} action={selectedAction} />
-      )}
+      {selectedAction &&
+        isModalOpen &&
+        (selectedAction === "reject" ? (
+          <JobCardModal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            onConfirm={handleConfirm}
+            action={selectedAction}
+            rejectionReason={rejectionReason}
+            setRejectionReason={setRejectionReason}
+          />
+        ) : (
+          <JobCardModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleConfirm} action={selectedAction} />
+        ))}
     </div>
   );
 }

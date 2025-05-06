@@ -19,6 +19,10 @@ export default function JobStatusBadge({ jobStatus }: JobStatusBadgeProps) {
       badgeColor = "#E2F5FF"; // blue
       textColor = "#59A8D4";
       break;
+    case "expired":
+      badgeColor = "#FFE5E5"; // red
+      textColor = "#D45959";
+      break;
     default:
       badgeColor = "#e6e6e6"; // grey
       break;

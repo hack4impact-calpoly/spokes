@@ -2,6 +2,15 @@ import { clerkMiddleware, createRouteMatcher, clerkClient } from "@clerk/nextjs/
 import { NextResponse } from "next/server";
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
+const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
+const isAuthRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
+const isPublicRoute = createRouteMatcher([
+  "/api/webhooks(.*)",
+  "/api/users(.*)",
+  "/jobs",
+  "/api/jobs(.*)",
+  "/admin(.*)",
+]);
 
 export default clerkMiddleware(async (auth, req) => {
   // if (isAdminRoute(req)) {
@@ -12,51 +21,33 @@ export default clerkMiddleware(async (auth, req) => {
 
   const { userId } = await auth();
 
-  //if not signed in, ignore
-  if (!userId) {
+  // if not signed in or on a public route, proceed normally
+  if (isPublicRoute(req) || isAuthRoute(req)) {
     return NextResponse.next();
+  }
+
+  if (!userId) {
+    const signInUrl = new URL("/sign-in", req.url);
+    return NextResponse.redirect(signInUrl);
   }
 
   const client = await clerkClient();
   const user = await client.users.getUser(userId);
 
-  const hasSignedInBefore = user.privateMetadata?.hasSignedInBefore ?? false;
+  const onboardingComplete = user.publicMetadata?.onboardingComplete === true;
 
-  // if first log in, call POST request to ad user to mongoDB
-  if (!hasSignedInBefore) {
-    try {
-      const cookies = req.headers.get("cookie") || "";
-      const baseUrl = process.env.BASE_URL || "http://localhost:3000";
-      const response = await fetch(`${baseUrl}/api/users`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: cookies,
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.primaryEmailAddress?.emailAddress,
-        }),
-      });
+  // if user hasn't completed onboarding and isn't on the onboarding page, redirect them
+  if (!onboardingComplete && !isOnboardingRoute(req)) {
+    const onboardingUrl = new URL("/onboarding", req.url);
+    const returnPath = new URL(req.url).pathname;
+    onboardingUrl.searchParams.set("returnUrl", returnPath);
+    return NextResponse.redirect(onboardingUrl);
+  }
 
-      if (response.ok) {
-        console.log("User added via middleware");
-
-        await client.users.updateUserMetadata(userId, {
-          privateMetadata: {
-            ...user.privateMetadata,
-            hasSignedInBefore: true,
-          },
-        });
-      } else {
-        const errorData = await response.json();
-        console.log("user creation failed:", errorData.message);
-      }
-    } catch (error) {
-      console.log("Error in adding user in middleware", error);
-    }
+  // if user has completed onboarding but is trying to access the onboarding page, redirect to dashboard
+  if (onboardingComplete && isOnboardingRoute(req)) {
+    const dashboardUrl = new URL("/", req.url);
+    return NextResponse.redirect(dashboardUrl);
   }
 
   return NextResponse.next();

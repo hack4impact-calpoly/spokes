@@ -1,6 +1,8 @@
 import connectDB from "@/database/db";
 import { NextRequest, NextResponse } from "next/server";
+import { currentUser } from "@clerk/nextjs/server";
 import Job from "@/database/jobSchema";
+import User from "@/database/userSchema";
 
 // no filters: GET /api/jobs?page=1&limit=10
 // filter by employment type: GET /api/jobs?employmentType=full-time&employment=part-time
@@ -83,7 +85,25 @@ export async function POST(request: Request) {
     ) {
       return NextResponse.json({ message: "Invalid job input" }, { status: 400 });
     }
-    const newJob = await Job.create(jobData);
+    const newJob = await Job.create({
+      ...jobData,
+      applyNowURL: jobData.applyNowURL || "",
+    });
+
+    const clerkUser = await currentUser();
+    const clerkUserId = clerkUser?.id;
+    if (!clerkUserId) {
+      return NextResponse.json({ message: "No authenticated user found" }, { status: 401 });
+    }
+
+    const mongoUser = await User.findOne({ _id: clerkUserId });
+    if (!mongoUser) {
+      return NextResponse.json({ message: "User not found in DB" }, { status: 404 });
+    }
+
+    mongoUser.postedJobs.push(newJob._id);
+    await mongoUser.save();
+
     return NextResponse.json({ message: "Job posted succesfully!", job: newJob }, { status: 201 });
   } catch (error: any) {
     return NextResponse.json({ message: "Could not submit job ", error }, { status: 500 });

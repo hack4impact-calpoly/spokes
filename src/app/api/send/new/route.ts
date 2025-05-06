@@ -1,4 +1,4 @@
-import { EmailTemplate } from "@/components/EmailTemplate";
+import { NewJob } from "@/components/EmailTemplates/NewJob";
 import { Resend } from "resend";
 import { NextRequest } from "next/server";
 
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       from: "Spokes Job Board <onboarding@resend.dev>", // replace with our email
       to: [""], // replace with michael
       subject: `${jobData.organizationName} submitted a job and is pending approval...`,
-      react: EmailTemplate({
+      react: NewJob({
         title: jobData.title,
         jobDescription: jobData.jobDescription,
         organizationName: jobData.organizationName,

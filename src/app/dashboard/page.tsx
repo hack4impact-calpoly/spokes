@@ -1,90 +1,69 @@
+"use client";
 import { Box, Text } from "@chakra-ui/react";
 import DashboardJobCard from "@/components/DashboardJobCard";
+import connectDB from "@/database/db";
+import User from "@/database/userSchema";
+import Job from "@/database/jobSchema";
 import { IJob } from "@/database/jobSchema";
-import { getAuthWithRole } from "@/lib/auth";
+import { Loader } from "@/components/Loader";
+import { useEffect, useState } from "react";
+import { useUser } from "@clerk/nextjs";
+import JobConfirmationlModal from "@/components/JobConfirmationModal";
+import Link from "next/link";
 
-export default async function DashboardPage() {
-  const { userId, role } = await getAuthWithRole();
-  const testJobs: IJob[] = [
-    {
-      _id: "1",
-      organizationName: "Organization 1",
-      organizationIndustry: ["Industry 1"],
-      title: "Job 1",
-      postDate: new Date("2025-02-04"),
-      modifiedDate: new Date("2025-02-04"),
-      approvedDate: new Date("2025-03-04"),
-      jobDescription: "Job 1 description",
-      employmentType: "Full-time",
-      compensationType: "Salary",
-      jobStatus: "Live",
-      detailURL: "https://www.google.com",
-      applyNowURL: "https://www.google.com",
-    },
-    {
-      _id: "2",
-      organizationName: "Organization 2",
-      organizationIndustry: ["Industry 2"],
-      title: "Job 2",
-      postDate: new Date("2025-02-04"),
-      modifiedDate: new Date("2025-02-04"),
-      approvedDate: new Date("2025-03-04"),
-      jobDescription: "Job 2 description",
-      employmentType: "Full-time",
-      compensationType: "Salary",
-      jobStatus: "Live",
-      detailURL: "https://www.google.com",
-      applyNowURL: "https://www.google.com",
-    },
-    {
-      _id: "3",
-      organizationName: "Organization 3",
-      organizationIndustry: ["Industry 3"],
-      title: "Job 3",
-      postDate: new Date("2025-02-04"),
-      modifiedDate: new Date("2025-02-04"),
-      jobDescription: "Job 3 description",
-      employmentType: "Full-time",
-      compensationType: "Salary",
-      jobStatus: "Pending",
-      detailURL: "https://www.google.com",
-      applyNowURL: "https://www.google.com",
-    },
-    {
-      _id: "4",
-      organizationName: "Organization 4",
-      organizationIndustry: ["Industry 4"],
-      title: "Job 4",
-      postDate: new Date("2025-02-04"),
-      modifiedDate: new Date("2025-02-04"),
-      approvedDate: new Date("2025-03-04"),
-      jobDescription: "Job 4 description",
-      employmentType: "Full-time",
-      compensationType: "Salary",
-      jobStatus: "Expired",
-      detailURL: "https://www.google.com",
-      applyNowURL: "https://www.google.com",
-    },
-    {
-      _id: "5",
-      organizationName: "Organization 5",
-      organizationIndustry: ["Industry 5"],
-      title: "Job 5",
-      postDate: new Date("2025-02-04"),
-      modifiedDate: new Date("2025-02-04"),
-      approvedDate: new Date("2025-03-04"),
-      jobDescription: "Job 5 description",
-      employmentType: "Full-time",
-      compensationType: "Salary",
-      jobStatus: "Expired",
-      detailURL: "https://www.google.com",
-      applyNowURL: "https://www.google.com",
-    },
-  ];
+export default function DashboardPage() {
+  const [loading, setLoading] = useState(true);
+  const [userJobs, setUserJobs] = useState<IJob[]>([]);
+  const { user, isLoaded } = useUser();
 
-  const liveJobs = testJobs.filter((job) => job.jobStatus === "Live");
-  const pendingJobs = testJobs.filter((job) => job.jobStatus === "Pending");
-  const expiredJobs = testJobs.filter((job) => job.jobStatus === "Expired");
+  // Fetch jobs
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // Get user id
+        const clerkUserId = user?.id;
+        if (!clerkUserId) throw new Error("User not authenticated");
+
+        // Get user's postedJobs
+        const res = await fetch(`/api/userjobs?userId=${clerkUserId}`);
+        const jobs = await res.json();
+
+        if (!res.ok) throw new Error(jobs.error || "Unknown error");
+
+        setUserJobs(jobs);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user?.id, isLoaded]);
+
+  if (loading) {
+    return (
+      <div className="py-32">
+        <Loader size="lg"></Loader>
+      </div>
+    );
+  }
+
+  if (userJobs.length === 0) {
+    return (
+      <div className="w-full h-full py-32 flex justify-center align-middle">
+        <Link href="/jobform" className="text-3xl underline underline-offset-8 font-semibold select-none">
+          Submit a new job listing
+        </Link>
+      </div>
+    );
+  }
+
+  const liveJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "live");
+  const pendingJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "pending");
+  const expiredJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "expired");
 
   return (
     <div className="w-full">
