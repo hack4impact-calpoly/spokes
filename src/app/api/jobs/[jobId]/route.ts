@@ -39,7 +39,11 @@ export async function PUT(req: NextRequest) {
     const jobId = req.nextUrl.pathname.split("/").pop();
 
     const job: IJob = await req.json();
-    console.log("Received Job Data:", job);
+    const updatedJob = {
+      ...job,
+      modifiedDate: new Date(),
+    };
+    console.log("Received Job Data:", updatedJob);
 
     if (!jobId) {
       return NextResponse.json({ message: "Job ID is required" }, { status: 400 });
@@ -49,7 +53,7 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ message: "Job status is required" }, { status: 400 });
     }
 
-    await Job.findByIdAndUpdate(jobId, job, { new: true }).orFail(new Error("Job not found"));
+    await Job.findByIdAndUpdate(jobId, updatedJob, { new: true }).orFail(new Error("Job not found"));
     return NextResponse.json({ message: "Job updated successfully" });
   } catch (error: any) {
     console.error("PUT Error:", error);
