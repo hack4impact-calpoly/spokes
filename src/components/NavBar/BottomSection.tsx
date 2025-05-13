@@ -14,7 +14,7 @@ export default function BottomSection() {
   const pathname = usePathname();
   const { triggerReset } = useFormReset();
   const { orgSlug, isSignedIn } = useAuth();
-  const isSpokesAdmin = orgSlug === "test-admin";
+  const isSpokesAdmin = orgSlug === "spokes-admin";
 
   useEffect(() => {
     const handleScroll: EventListener = () => {
@@ -52,11 +52,16 @@ export default function BottomSection() {
       {/* Desktop Navigation (visible on sm and up) */}
       <div className="hidden sm:flex justify-between items-center px-9 py-.5 text-xs sm:text-sm md:text-md lg:text-lg">
         <div className="flex">
+          {/* dev/testing */}
           <NavBarLink title="Job Board" href="/jobs" />
           <NavBarLink title="List Job" href="/jobform" onClick={handleListJobClick} />
           <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />
-          {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
-          {/* {isSignedIn && isSpokesAdmin && <NavBarLink title="Spokes Dashboard" href="/admin" />} */}
+          <NavBarLink title="Spokes Dashboard" href="/admin" />
+          {/* prod */}
+          {/* <NavBarLink title="Job Board" href="/jobs" />
+          {isSignedIn && <NavBarLink title="List Job" href="/jobform" onClick={handleListJobClick} />}
+          {isSignedIn && <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />}
+          {isSignedIn && isSpokesAdmin && <NavBarLink title="Spokes Dashboard" href="/admin" />} */}
         </div>
         {showScrollToTop && (
           <div
@@ -83,11 +88,15 @@ export default function BottomSection() {
             isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
           } space-y-1`}
         >
+          {/* dev/testing */}
           <NavBarLink title="Job Board" href="/jobs" onClick={() => setIsMobileMenuOpen(false)} />
           <NavBarLink title="List Job" href="/jobform" onClick={() => setIsMobileMenuOpen(false)} />
           <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />
-          {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
-          {/* {isSignedIn && isSpokesAdmin && (
+          <NavBarLink title="Spokes Dashboard" href="/admin" onClick={() => setIsMobileMenuOpen(false)} />
+          {/* prod */}
+          {/* {isSignedIn && <NavBarLink title="List Job" href="/jobform" onClick={() => setIsMobileMenuOpen(false)} />}
+          {isSignedIn && <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />}
+          {isSignedIn && isSpokesAdmin && (
             <NavBarLink title="Spokes Dashboard" href="/admin" onClick={() => setIsMobileMenuOpen(false)} />
           )} */}
           {showScrollToTop && (
