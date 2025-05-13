@@ -1,16 +1,12 @@
 import { clerkMiddleware, createRouteMatcher, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { getAuthWithRole } from "@/lib/auth";
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
 const isAuthRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
-const isPublicRoute = createRouteMatcher([
-  "/api/webhooks(.*)",
-  "/api/users(.*)",
-  "/jobs",
-  "/api/jobs(.*)",
-  "/admin(.*)",
-]);
+const isPublicRoute = createRouteMatcher(["/api/webhooks(.*)", "/api/users(.*)", "/jobs", "/api/jobs(.*)"]);
+const isNonprofitRoute = createRouteMatcher(["/dashboard(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
   // if (isAdminRoute(req)) {
@@ -19,7 +15,8 @@ export default clerkMiddleware(async (auth, req) => {
   //   });
   // }
 
-  const { userId } = await auth();
+  const { userId, orgSlug } = await auth();
+  const { role } = getAuthWithRole({ userId, orgSlug });
 
   // if not signed in or on a public route, proceed normally
   if (isPublicRoute(req) || isAuthRoute(req)) {
@@ -48,6 +45,12 @@ export default clerkMiddleware(async (auth, req) => {
   if (onboardingComplete && isOnboardingRoute(req)) {
     const dashboardUrl = new URL("/", req.url);
     return NextResponse.redirect(dashboardUrl);
+  }
+
+  // if user trying to access admin, and is not spokes_admin
+  if (isAdminRoute(req) && !(role === "spokes_admin")) {
+    const jobUrl = new URL("/jobs", req.url);
+    return NextResponse.redirect(jobUrl);
   }
 
   return NextResponse.next();

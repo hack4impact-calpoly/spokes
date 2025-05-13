@@ -23,7 +23,7 @@ export function getAuthWithRole({ userId, orgSlug }: { userId: string | null; or
   }
 
   // Check if user is part of spokes-admin organization
-  const isSpokesAdmin = orgSlug === "test-admin";
+  const isSpokesAdmin = orgSlug === "spokes-admin";
 
   if (isSpokesAdmin) {
     console.log("User is", orgSlug);
