@@ -6,15 +6,8 @@ const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
 const isAuthRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
 const isPublicRoute = createRouteMatcher(["/api/webhooks(.*)", "/api/users(.*)", "/jobs", "/api/jobs(.*)"]);
-const isNonprofitRoute = createRouteMatcher(["/dashboard(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
-  // if (isAdminRoute(req)) {
-  //   await auth.protect((has) => {
-  //     return has({ role: "org:admin" });
-  //   });
-  // }
-
   const { userId, orgSlug } = await auth();
   const { role } = getAuthWithRole({ userId, orgSlug });
 
