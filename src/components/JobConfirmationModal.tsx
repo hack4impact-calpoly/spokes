@@ -10,7 +10,9 @@ import {
   ModalBody,
   ModalFooter,
   ModalCloseButton,
+  Flex,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 
 interface JobComfirmationModalProps {
   isOpen: boolean;
@@ -18,6 +20,8 @@ interface JobComfirmationModalProps {
 }
 
 export default function JobConfirmationlModal({ isOpen, onClose }: JobComfirmationModalProps) {
+  const router = useRouter();
+
   return (
     <div className="modal">
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -35,12 +39,17 @@ export default function JobConfirmationlModal({ isOpen, onClose }: JobComfirmati
             An admin will review this job listing, and you will be notified once it is approved.
           </ModalBody>
           <ModalFooter
-            as="a"
-            href="/jobform"
             alignSelf={"center"}
-            className="text-black text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-normal underline"
+            className="text-black text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-normal"
           >
-            Submit new job listing
+            <Flex className="flex justify-center items-center">
+              <Button onClick={onClose} className="mx-4">
+                Submit Another Job
+              </Button>
+              <Button onClick={() => router.push("/dashboard")} className="mx-4">
+                Return to Dashboard
+              </Button>
+            </Flex>
           </ModalFooter>
         </ModalContent>
       </Modal>

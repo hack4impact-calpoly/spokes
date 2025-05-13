@@ -389,8 +389,6 @@ export default function JobFormPage() {
     setIsSubmitModalOpen(false);
     if (isEditing) {
       router.push("/admin");
-    } else {
-      router.push("/jobs");
     }
   };
 
