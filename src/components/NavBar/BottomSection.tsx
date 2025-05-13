@@ -13,7 +13,8 @@ export default function BottomSection() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const { triggerReset } = useFormReset();
-  const { has } = useAuth();
+  const { orgSlug, isSignedIn } = useAuth();
+  const isSpokesAdmin = orgSlug === "test-admin";
 
   useEffect(() => {
     const handleScroll: EventListener = () => {
@@ -55,7 +56,7 @@ export default function BottomSection() {
           <NavBarLink title="List Job" href="/jobform" onClick={handleListJobClick} />
           <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />
           {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
-          {has && has({ role: "org:admin" }) && <NavBarLink title="Spokes Dashboard" href="/admin" />}
+          {/* {isSignedIn && isSpokesAdmin && <NavBarLink title="Spokes Dashboard" href="/admin" />} */}
         </div>
         {showScrollToTop && (
           <div
@@ -86,9 +87,9 @@ export default function BottomSection() {
           <NavBarLink title="List Job" href="/jobform" onClick={() => setIsMobileMenuOpen(false)} />
           <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />
           {/* uncomment this to only allow org admins, in the future we only want spokes admin on this page  */}
-          {has && has({ role: "org:admin" }) && (
+          {/* {isSignedIn && isSpokesAdmin && (
             <NavBarLink title="Spokes Dashboard" href="/admin" onClick={() => setIsMobileMenuOpen(false)} />
-          )}
+          )} */}
           {showScrollToTop && (
             <div
               onClick={() => {
