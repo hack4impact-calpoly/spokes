@@ -1,10 +1,16 @@
 import { auth } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
 
-type Role = "job_seeker" | "nonprofit" | "spokes_admin";
+export type Role = "job_seeker" | "nonprofit" | "spokes_admin";
 
-interface AuthWithRole {
+export interface AuthWithRole {
   userId: string | null;
   role: Role;
+}
+
+export interface ApiAuthOptions {
+  allowedRoles?: Role[];
+  requireAuth?: boolean;
 }
 
 /**
@@ -33,4 +39,27 @@ export function getAuthWithRole({ userId, orgSlug }: { userId: string | null; or
   // Default to nonprofit for logged-in users who aren't admins
   console.log(`User ${userId} is a nonprofit`);
   return { userId, role: "nonprofit" };
+}
+
+export function withApiAuth(
+  handler: (req: NextRequest, context: { params?: any; auth: AuthWithRole }) => Promise<NextResponse>,
+  options: ApiAuthOptions = {},
+) {
+  return async (req: NextRequest, context: { params?: any } = {}) => {
+    const { userId, orgSlug } = await auth();
+    const authWithRole = getAuthWithRole({ userId, orgSlug });
+
+    // Check if authentication is required and the user is not authenticated
+    if (options.requireAuth && !authWithRole.userId) {
+      return NextResponse.json({ message: "Authentication required" }, { status: 401 });
+    }
+
+    // Check if the user has the required role
+    if (options.allowedRoles && options.allowedRoles.length > 0 && authWithRole.userId) {
+      if (!options.allowedRoles.includes(authWithRole.role)) {
+        return NextResponse.json({ message: "Insufficient permissions" }, { status: 403 });
+      }
+    }
+    return handler(req, { ...context, auth: authWithRole });
+  };
 }
