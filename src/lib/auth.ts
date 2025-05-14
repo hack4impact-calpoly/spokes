@@ -42,10 +42,10 @@ export function getAuthWithRole({ userId, orgSlug }: { userId: string | null; or
 }
 
 export function withApiAuth(
-  handler: (req: NextRequest, context: { params?: any; auth: AuthWithRole }) => Promise<NextResponse>,
+  handler: (req: NextRequest, context: any) => Promise<NextResponse>,
   options: ApiAuthOptions = {},
 ) {
-  return async (req: NextRequest, context: { params?: any } = {}) => {
+  return async (req: NextRequest, context: any) => {
     const { userId, orgSlug } = await auth();
     const authWithRole = getAuthWithRole({ userId, orgSlug });
 
