@@ -4,7 +4,7 @@ import User from "@/database/userSchema"; // Import your User model
 import { withApiAuth } from "@/lib/auth";
 
 export const GET = withApiAuth(
-  async (req: NextRequest, { auth, params }) => {
+  async (req: NextRequest, { auth }) => {
     try {
       await connectDB(); // Connect to MongoDB
       const id = req.nextUrl.pathname.split("/").pop(); // Fetch the user ID from params
@@ -14,8 +14,8 @@ export const GET = withApiAuth(
         return NextResponse.json({ message: "User ID is required" }, { status: 400 });
       }
 
-      // Only allow users to access their own data or admins to access anyone's data
-      if (auth.role !== "spokes_admin" && auth.userId !== id) {
+      // Only allow users to access their own data
+      if (auth.userId !== id) {
         return NextResponse.json({ error: "Insufficient permissions to view this user" }, { status: 403 });
       }
 

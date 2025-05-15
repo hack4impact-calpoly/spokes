@@ -16,8 +16,8 @@ export const GET = withApiAuth(
         return NextResponse.json({ error: "User ID missing" }, { status: 400 });
       }
 
-      // Only allow users to access their own jobs or admins to access anyone's jobs
-      if (auth.role !== "spokes_admin" && auth.userId !== userId) {
+      // Only allow users to access their own jobs
+      if (auth.userId !== userId) {
         return NextResponse.json({ error: "Insufficient permissions to view these jobs" }, { status: 403 });
       }
 

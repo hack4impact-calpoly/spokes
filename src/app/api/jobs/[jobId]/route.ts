@@ -5,7 +5,7 @@ import { IJob } from "@/database/jobSchema";
 import { withApiAuth } from "@/lib/auth";
 
 export const DELETE = withApiAuth(
-  async (req: NextRequest, { auth, params }) => {
+  async (req: NextRequest, { auth }) => {
     try {
       await connectDB();
       const jobId = req.nextUrl.pathname.split("/").pop();
@@ -21,8 +21,8 @@ export const DELETE = withApiAuth(
         return NextResponse.json({ error: "ID not found" }, { status: 404 });
       }
 
-      // admins can delete any job, owners can only delete their own jobs
-      if (auth.role !== "spokes_admin" && job.userId !== auth.userId) {
+      // owners can only delete their own jobs
+      if (job.userId !== auth.userId) {
         return NextResponse.json({ error: "Insufficient permissions to delete this job" }, { status: 403 });
       }
 
@@ -68,8 +68,8 @@ export const PUT = withApiAuth(
         return NextResponse.json({ message: "Job not found" }, { status: 404 });
       }
 
-      // Check if user is the owner of the job or an admin
-      if (auth.role !== "spokes_admin" && existingJob.userId !== auth.userId) {
+      // Check if nonprofit is the owner of the job
+      if (existingJob.userId !== auth.userId) {
         return NextResponse.json({ error: "Insufficient permissions to update this job" }, { status: 403 });
       }
 
