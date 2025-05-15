@@ -95,6 +95,7 @@ export default function AdminJobs() {
       // Create the updated job object with all required fields
       const updatedJob: IJob = {
         _id: currentJob._id,
+        userId: currentJob.userId,
         organizationName: currentJob.organizationName,
         organizationIndustry: currentJob.organizationIndustry,
         title: currentJob.title,
