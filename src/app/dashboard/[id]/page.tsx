@@ -7,6 +7,7 @@ import { Box, Heading, Button, Flex, Text, Link } from "@chakra-ui/react";
 // Mock data, to be replaced
 const mockJob: IJob = {
   _id: "67f63757eb010c929ff8a1ec",
+  userId: "67f63757eb010c929ff8a123",
   organizationName: "The Community Foundation",
   organizationIndustry: ["Humanitarian Aid", "Philanthropic Foundation"],
   title: "Philanthropy Assistant",
