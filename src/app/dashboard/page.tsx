@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import JobConfirmationlModal from "@/components/JobConfirmationModal";
 import Link from "next/link";
+import { OrgCard } from "@/components/JobCard/OrgCard";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -61,7 +62,7 @@ export default function DashboardPage() {
     );
   }
 
-  const liveJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "live");
+  const liveJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "approved");
   const pendingJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "pending");
   const expiredJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "expired");
 
@@ -74,39 +75,27 @@ export default function DashboardPage() {
             <div className="flex flex-col gap-4">
               <div className="flex flex-col mb-12">
                 <div className="text-2xl font-semibold mb-4">Live Applications</div>
-                {liveJobs.map((job, index) => (
-                  <DashboardJobCard
-                    key={index}
-                    job={job}
-                    isFirst={index === 0}
-                    isLast={index === liveJobs.length - 1}
-                    isOnly={liveJobs.length === 1}
-                  />
-                ))}
+                <div className="flex flex-col gap-4">
+                  {liveJobs.map((job, index) => (
+                    <OrgCard key={index} job={job} types={["posted", "updated", "expires"]} />
+                  ))}
+                </div>
               </div>
               <div className="flex flex-col mb-12">
                 <div className="text-2xl font-semibold mb-4">Pending Applications</div>
-                {pendingJobs.map((job, index) => (
-                  <DashboardJobCard
-                    key={index}
-                    job={job}
-                    isFirst={index === 0}
-                    isLast={index === pendingJobs.length - 1}
-                    isOnly={pendingJobs.length === 1}
-                  />
-                ))}
+                <div className="flex flex-col gap-4">
+                  {pendingJobs.map((job, index) => (
+                    <OrgCard key={index} job={job} types={["submitted"]} />
+                  ))}
+                </div>
               </div>
               <div className="flex flex-col mb-12">
                 <div className="text-2xl font-semibold mb-4">Expired Applications</div>
-                {expiredJobs.map((job, index) => (
-                  <DashboardJobCard
-                    key={index}
-                    job={job}
-                    isFirst={index === 0}
-                    isLast={index === expiredJobs.length - 1}
-                    isOnly={expiredJobs.length === 1}
-                  />
-                ))}
+                <div className="flex flex-col gap-4">
+                  {expiredJobs.map((job, index) => (
+                    <OrgCard key={index} job={job} types={["expired"]} />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
