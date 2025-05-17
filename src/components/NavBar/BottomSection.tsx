@@ -56,12 +56,12 @@ export default function BottomSection() {
           <NavBarLink title="Job Board" href="/jobs" />
           <NavBarLink title="List Job" href="/jobform" onClick={handleListJobClick} />
           <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />
-          <NavBarLink title="Spokes Dashboard" href="/admin" />
+          <NavBarLink title="Admin" href="/admin" />
           {/* prod */}
           {/* <NavBarLink title="Job Board" href="/jobs" />
           {isSignedIn && <NavBarLink title="List Job" href="/jobform" onClick={handleListJobClick} />}
           {isSignedIn && <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />}
-          {isSignedIn && isSpokesAdmin && <NavBarLink title="Spokes Dashboard" href="/admin" />} */}
+          {isSignedIn && isSpokesAdmin && <NavBarLink title="Admin" href="/admin" />} */}
         </div>
         {showScrollToTop && (
           <div
@@ -92,12 +92,12 @@ export default function BottomSection() {
           <NavBarLink title="Job Board" href="/jobs" onClick={() => setIsMobileMenuOpen(false)} />
           <NavBarLink title="List Job" href="/jobform" onClick={() => setIsMobileMenuOpen(false)} />
           <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />
-          <NavBarLink title="Spokes Dashboard" href="/admin" onClick={() => setIsMobileMenuOpen(false)} />
+          <NavBarLink title="Admin" href="/admin" onClick={() => setIsMobileMenuOpen(false)} />
           {/* prod */}
           {/* {isSignedIn && <NavBarLink title="List Job" href="/jobform" onClick={() => setIsMobileMenuOpen(false)} />}
           {isSignedIn && <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />}
           {isSignedIn && isSpokesAdmin && (
-            <NavBarLink title="Spokes Dashboard" href="/admin" onClick={() => setIsMobileMenuOpen(false)} />
+            <NavBarLink title="Admin" href="/admin" onClick={() => setIsMobileMenuOpen(false)} />
           )} */}
           {showScrollToTop && (
             <div
