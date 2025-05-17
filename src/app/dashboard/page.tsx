@@ -1,16 +1,11 @@
 "use client";
-import { Box, Text } from "@chakra-ui/react";
-import DashboardJobCard from "@/components/DashboardJobCard";
-import connectDB from "@/database/db";
-import User from "@/database/userSchema";
-import Job from "@/database/jobSchema";
 import { IJob } from "@/database/jobSchema";
 import { Loader } from "@/components/Loader";
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import JobConfirmationlModal from "@/components/JobConfirmationModal";
 import Link from "next/link";
 import { OrgCard } from "@/components/JobCard/OrgCard";
+import OrgCardSkeleton from "@/components/JobCard/OrgCardSkeleton";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -25,7 +20,6 @@ export default function DashboardPage() {
 
         // Get user id
         const clerkUserId = user?.id;
-        if (!clerkUserId) throw new Error("User not authenticated");
 
         // Get user's postedJobs
         const res = await fetch(`/api/userjobs?userId=${clerkUserId}`);
@@ -46,8 +40,28 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="py-32">
-        <Loader size="lg"></Loader>
+      <div className="w-full">
+        <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
+          <div className="flex flex-col gap-24 mb-20">
+            <div className="flex flex-col gap-8">
+              <div className="text-3xl font-semibold">Admin Dashboard</div>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col mb-12">
+                  <div className="text-2xl font-semibold mb-4">Live Applications</div>
+                  <OrgCardSkeleton count={2} type="multi" />
+                </div>
+                <div className="flex flex-col mb-12">
+                  <div className="text-2xl font-semibold mb-4">Pending Applications</div>
+                  <OrgCardSkeleton count={1} type="single" />
+                </div>
+                <div className="flex flex-col mb-12">
+                  <div className="text-2xl font-semibold mb-4">Expired Applications</div>
+                  <OrgCardSkeleton count={1} type="single" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -76,25 +90,39 @@ export default function DashboardPage() {
               <div className="flex flex-col mb-12">
                 <div className="text-2xl font-semibold mb-4">Live Applications</div>
                 <div className="flex flex-col gap-4">
-                  {liveJobs.map((job, index) => (
-                    <OrgCard key={index} job={job} types={["posted", "updated", "expires"]} />
-                  ))}
+                  {liveJobs.length > 0 ? (
+                    liveJobs.map((job, index) => (
+                      <OrgCard key={index} job={job} types={["posted", "updated", "expires"]} />
+                    ))
+                  ) : (
+                    <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">
+                      No live applications available
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex flex-col mb-12">
                 <div className="text-2xl font-semibold mb-4">Pending Applications</div>
                 <div className="flex flex-col gap-4">
-                  {pendingJobs.map((job, index) => (
-                    <OrgCard key={index} job={job} types={["submitted"]} />
-                  ))}
+                  {pendingJobs.length > 0 ? (
+                    pendingJobs.map((job, index) => <OrgCard key={index} job={job} types={["submitted"]} />)
+                  ) : (
+                    <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">
+                      No pending applications available
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex flex-col mb-12">
                 <div className="text-2xl font-semibold mb-4">Expired Applications</div>
                 <div className="flex flex-col gap-4">
-                  {expiredJobs.map((job, index) => (
-                    <OrgCard key={index} job={job} types={["expired"]} />
-                  ))}
+                  {expiredJobs.length > 0 ? (
+                    expiredJobs.map((job, index) => <OrgCard key={index} job={job} types={["expired"]} />)
+                  ) : (
+                    <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">
+                      No expired applications available
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
