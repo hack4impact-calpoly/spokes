@@ -15,7 +15,7 @@ export const GET = withApiAuth(
       }
 
       // Only allow users to access their own data
-      if (auth.userId !== id) {
+      if (auth.role === "nonprofit" && auth.userId !== id) {
         return NextResponse.json({ error: "Insufficient permissions to view this user" }, { status: 403 });
       }
 
