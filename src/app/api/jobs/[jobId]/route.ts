@@ -22,7 +22,7 @@ export const DELETE = withApiAuth(
       }
 
       // owners can only delete their own jobs
-      if (job.userId !== auth.userId) {
+      if (auth.role === "nonprofit" && job.userId !== auth.userId) {
         return NextResponse.json({ error: "Insufficient permissions to delete this job" }, { status: 403 });
       }
 
@@ -69,7 +69,7 @@ export const PUT = withApiAuth(
       }
 
       // Check if nonprofit is the owner of the job
-      if (existingJob.userId !== auth.userId) {
+      if (auth.role === "nonprofit" && existingJob.userId !== auth.userId) {
         return NextResponse.json({ error: "Insufficient permissions to update this job" }, { status: 403 });
       }
 

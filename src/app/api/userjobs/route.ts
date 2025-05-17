@@ -17,7 +17,7 @@ export const GET = withApiAuth(
       }
 
       // Only allow users to access their own jobs
-      if (auth.userId !== userId) {
+      if (auth.role === "nonprofit" && auth.userId !== userId) {
         return NextResponse.json({ error: "Insufficient permissions to view these jobs" }, { status: 403 });
       }
 

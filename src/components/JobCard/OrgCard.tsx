@@ -51,10 +51,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
     return (
       <div
         ref={ref}
-        className={twMerge(
-          "w-full flex flex-col gap-3 py-4 px-5 rounded-md border-2 border-[#e2e8f0] shadow-[0px_2px_4px_0px_rgba(0,_0,_0,_0.05)]",
-          className,
-        )}
+        className={twMerge("w-full flex flex-col gap-3 py-4 px-5 rounded-md bg-[#f7f7f7]", className)}
         {...props}
       >
         <div className="w-full h-fit flex flex-row items-center">
