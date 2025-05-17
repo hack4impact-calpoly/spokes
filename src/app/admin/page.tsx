@@ -9,22 +9,6 @@ import { Flex } from "@chakra-ui/react";
 import { twMerge } from "tailwind-merge";
 import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
 
-// Helper function to filter the job data into the three categories
-function filterJobs(jobs: IJob[], filterBy: "pending" | "approved" | "rejected" | "expired") {
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-  return jobs.filter((job) => {
-    const approvalDate = job.approvedDate ? new Date(job.approvedDate) : null;
-
-    // If the job is approved and its approvedDate is older than 30 days, mark it as expired
-    if (job.jobStatus === "approved" && approvalDate && approvalDate < thirtyDaysAgo) {
-      return filterBy === "expired";
-    }
-    return job.jobStatus === filterBy;
-  });
-}
-
 export default function AdminJobs() {
   const [incomingJobData, setIncomingJobData] = useState<null | IJob[]>(null);
   const [liveJobData, setLiveJobData] = useState<null | IJob[]>(null);
@@ -53,16 +37,16 @@ export default function AdminJobs() {
       // Check and update expired jobs
       await setExpiredJobs(result);
 
-      // Filter jobs after updating
-      const incoming = filterJobs(result, "pending");
-      const live = filterJobs(result, "approved");
-      const complete = filterJobs(result, "rejected");
-      const expired = filterJobs(result, "expired");
+      // Fetch all job statuses in parallel
+      const jobStatuses = ["pending", "approved", "rejected", "expired"];
+      const responses = await Promise.all(jobStatuses.map((status) => fetch(`/api/jobs?jobStatus=${status}`)));
 
-      setIncomingJobData(incoming);
-      setLiveJobData(live);
-      setCompleteJobData(complete);
-      setExpiredJobData(expired);
+      const [incomingData, liveData, completeData, expiredData] = await Promise.all(responses.map((res) => res.json()));
+
+      setIncomingJobData(incomingData);
+      setLiveJobData(liveData);
+      setCompleteJobData(completeData);
+      setExpiredJobData(expiredData);
     } catch (error) {
       console.error("Error fetching job data:", error);
     }
@@ -78,7 +62,11 @@ export default function AdminJobs() {
     return () => clearInterval(interval);
   }, []);
 
-  const updateJobStatus = async (jobId: string, status: "approved" | "rejected" | "expired", approvedDate?: Date) => {
+  const updateJobStatus = async (
+    jobId: string,
+    status: "approved" | "pending" | "rejected" | "expired",
+    approvedDate?: Date,
+  ) => {
     try {
       // First fetch the current job data
       const response = await fetch(`/api/jobs/${jobId}`);
@@ -142,6 +130,9 @@ export default function AdminJobs() {
           break;
         case "rejected":
           setCompleteJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
+          break;
+        case "pending":
+          setIncomingJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
           break;
         case "expired":
           setExpiredJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
