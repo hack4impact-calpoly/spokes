@@ -38,8 +38,10 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
       }
     };
 
-    fetchData();
-  }, [user?.id, isLoaded]);
+    if (isLoaded && user) {
+      fetchData();
+    }
+  }, [user, isLoaded]);
 
   if (loading) {
     return (
