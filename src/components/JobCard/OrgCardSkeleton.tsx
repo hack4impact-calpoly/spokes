@@ -13,7 +13,7 @@ export default function OrgCardSkeleton({ count = 3, type = "default" }: OrgCard
         <div className="skeleton-container" key={index}>
           <div className="w-full py-4 px-5 rounded-md bg-[#f7f7f7]">
             <div className="w-full h-fit flex flex-row items-center mb-3">
-              <Skeleton className="mb-1" height={24} width="60%" />
+              <Skeleton className="mb-1" height={24} width={200} />
               <div className="ml-auto">
                 <Skeleton height={24} width={80} />
               </div>
