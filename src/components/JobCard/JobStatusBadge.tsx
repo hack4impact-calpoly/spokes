@@ -1,11 +1,13 @@
 import { Badge } from "@chakra-ui/react";
 import { formatBadgeName } from "@/components/JobCard/JobBadge";
+import { twMerge } from "tailwind-merge";
 
 type JobStatusBadgeProps = {
+  className?: string;
   jobStatus: String;
 };
 
-export default function JobStatusBadge({ jobStatus }: JobStatusBadgeProps) {
+export default function JobStatusBadge({ jobStatus, className }: JobStatusBadgeProps) {
   let badgeColor;
   let textColor = "black"; // default text color to black
 
@@ -32,7 +34,7 @@ export default function JobStatusBadge({ jobStatus }: JobStatusBadgeProps) {
 
   return (
     <Badge
-      className="text-center"
+      className={twMerge("text-center", className)}
       rounded="md"
       p="1"
       px="2"
