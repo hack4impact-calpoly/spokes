@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { OrgCard } from "@/components/JobCard/OrgCard";
+import OrgCardSkeleton from "@/components/JobCard/OrgCardSkeleton";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -39,8 +40,28 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="py-32">
-        <Loader size="lg"></Loader>
+      <div className="w-full">
+        <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
+          <div className="flex flex-col gap-24 mb-20">
+            <div className="flex flex-col gap-8">
+              <div className="text-3xl font-semibold">Admin Dashboard</div>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col mb-12">
+                  <div className="text-2xl font-semibold mb-4">Live Applications</div>
+                  <OrgCardSkeleton count={2} type="multi" />
+                </div>
+                <div className="flex flex-col mb-12">
+                  <div className="text-2xl font-semibold mb-4">Pending Applications</div>
+                  <OrgCardSkeleton count={1} type="single" />
+                </div>
+                <div className="flex flex-col mb-12">
+                  <div className="text-2xl font-semibold mb-4">Expired Applications</div>
+                  <OrgCardSkeleton count={1} type="single" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
