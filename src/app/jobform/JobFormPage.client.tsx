@@ -27,7 +27,7 @@ import JobActionConfirmationModal from "@/components/JobActionConfirmationModal"
 import JobFailModal from "@/components/JobFailModal";
 import RejectButton from "@/components/RejectButton";
 import JobCardModal from "@/components/JobCard/JobCardModal";
-import { useAuth } from "@clerk/nextjs";
+import { useOrganization } from "@clerk/nextjs";
 
 function formatIndustries(industries: string[]): Option[] {
   return industries.map((industry) => ({
@@ -78,8 +78,7 @@ export default function JobFormPage() {
   const jobId = searchParams.get("jobId");
   const isEditing = Boolean(jobId);
   const { resetForm } = useFormReset();
-  const { orgSlug, isSignedIn } = useAuth();
-  const isSpokesAdmin = orgSlug === "spokes-admin";
+  const { organization } = useOrganization();
 
   const [formData, setFormData] = useState({
     organizationName: "",
@@ -652,7 +651,7 @@ export default function JobFormPage() {
               >
                 Update
               </Button>
-              {isSpokesAdmin && (
+              {organization?.slug == "spokes-admin" && (
                 <RejectButton
                   isLoading={loading}
                   onClick={() => {
