@@ -16,9 +16,11 @@ if (typeof global.ResizeObserver === "undefined") {
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: jest.fn(),
+    replace: jest.fn(), // Add mock for replace
+    prefetch: jest.fn(), // Optional: add other router methods for robustness
   }),
   useSearchParams: () => new URLSearchParams(""),
-  usePathname: () => "/jobform", // Added mock for usePathname
+  usePathname: () => "/jobform",
 }));
 
 global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>;
