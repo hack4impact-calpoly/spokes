@@ -66,6 +66,45 @@ async function sendRejectionEmail(jobData: RejectionEmailPayload, reason: string
   }
 }
 
+type FormDataType = {
+  organizationName: string;
+  organizationIndustry: string[];
+  title: string;
+  postDate: string;
+  modifiedDate: string;
+  expireDate: string | null;
+  jobDescription: string;
+  employmentType: string;
+  compensationType: string | null;
+  jobStatus: string;
+  contactName: string;
+  contactPhone: string;
+  contactEmail: string;
+  detailURL: string;
+  applyNowURL: string;
+};
+
+async function sendUpdateEmail(jobData: FormDataType) {
+  try {
+    const emailResponse = await fetch("/api/send/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(jobData),
+    });
+
+    if (!emailResponse.ok) {
+      console.error("Failed to send update notification email:", await emailResponse.text());
+      return;
+    }
+
+    console.log("Update notification email sent successfully");
+  } catch (error) {
+    console.error("Error sending update notification email:", error);
+  }
+}
+
 const ensureHttps = (url: string | undefined): string | undefined => {
   if (!url) return url;
   return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
@@ -79,8 +118,9 @@ export default function JobFormPage() {
   const isEditing = Boolean(jobId);
   const { resetForm } = useFormReset();
   const { organization } = useOrganization();
+  const isSpokesAdmin = organization?.slug == "spokes-admin";
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataType>({
     organizationName: "",
     organizationIndustry: [],
     title: "",
@@ -267,6 +307,10 @@ export default function JobFormPage() {
 
       if (!response.ok) {
         throw new Error("Failed to update job.");
+      }
+
+      if (!isSpokesAdmin) {
+        await sendUpdateEmail(formattedFormData);
       }
 
       setMessage("Successfully updated job.");
@@ -651,7 +695,7 @@ export default function JobFormPage() {
               >
                 Update
               </Button>
-              {organization?.slug == "spokes-admin" && (
+              {isSpokesAdmin && (
                 <RejectButton
                   isLoading={loading}
                   onClick={() => {
