@@ -5,6 +5,8 @@ import JobFormPage from "@/app/jobform/JobFormPage.client";
 import "@testing-library/jest-dom";
 import { ClerkProvider } from "@clerk/nextjs";
 
+const clerk_key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
 if (typeof global.ResizeObserver === "undefined") {
   global.ResizeObserver = class {
     observe() {}
@@ -32,7 +34,7 @@ describe("JobFormPage", () => {
 
   it("sanity check: renders JobFormPage", () => {
     const { container } = render(
-      <ClerkProvider publishableKey="test_pk_123">
+      <ClerkProvider publishableKey={clerk_key}>
         <Suspense fallback={<div>Loading...</div>}>
           <JobFormPage />
         </Suspense>
@@ -57,7 +59,7 @@ describe("JobFormPage", () => {
     });
 
     render(
-      <ClerkProvider publishableKey="test_pk_123">
+      <ClerkProvider publishableKey={clerk_key}>
         <Suspense fallback={<div>Loading...</div>}>
           <JobFormPage />
         </Suspense>
@@ -147,7 +149,7 @@ describe("JobFormPage", () => {
     });
 
     render(
-      <ClerkProvider publishableKey="test_pk_123">
+      <ClerkProvider publishableKey={clerk_key}>
         <Suspense fallback={<div>Loading...</div>}>
           <JobFormPage />
         </Suspense>
