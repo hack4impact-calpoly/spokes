@@ -32,7 +32,7 @@ describe("JobFormPage", () => {
 
   it("sanity check: renders JobFormPage", () => {
     const { container } = render(
-      <ClerkProvider>
+      <ClerkProvider publishableKey="test_pk_123">
         <Suspense fallback={<div>Loading...</div>}>
           <JobFormPage />
         </Suspense>
@@ -57,7 +57,7 @@ describe("JobFormPage", () => {
     });
 
     render(
-      <ClerkProvider>
+      <ClerkProvider publishableKey="test_pk_123">
         <Suspense fallback={<div>Loading...</div>}>
           <JobFormPage />
         </Suspense>
@@ -147,7 +147,7 @@ describe("JobFormPage", () => {
     });
 
     render(
-      <ClerkProvider>
+      <ClerkProvider publishableKey="test_pk_123">
         <Suspense fallback={<div>Loading...</div>}>
           <JobFormPage />
         </Suspense>
