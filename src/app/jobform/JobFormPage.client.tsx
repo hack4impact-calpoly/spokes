@@ -110,15 +110,17 @@ const ensureHttps = (url: string | undefined): string | undefined => {
   return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
 };
 
-export default function JobFormPage() {
+type JobFormPageProps = {
+  isSpokesAdmin: Boolean;
+};
+
+export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
   const { register, handleSubmit: formHandleSubmit, reset } = useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
   const jobId = searchParams.get("jobId");
   const isEditing = Boolean(jobId);
   const { resetForm } = useFormReset();
-  const { organization } = useOrganization();
-  const isSpokesAdmin = organization?.slug == "spokes-admin";
 
   const [formData, setFormData] = useState<FormDataType>({
     organizationName: "",

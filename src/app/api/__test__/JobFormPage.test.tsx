@@ -3,9 +3,6 @@ import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import JobFormPage from "@/app/jobform/JobFormPage.client";
 import "@testing-library/jest-dom";
-import { ClerkProvider } from "@clerk/nextjs";
-
-const clerk_key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 if (typeof global.ResizeObserver === "undefined") {
   global.ResizeObserver = class {
@@ -18,11 +15,8 @@ if (typeof global.ResizeObserver === "undefined") {
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: jest.fn(),
-    replace: jest.fn(), // Add mock for replace
-    prefetch: jest.fn(), // Optional: add other router methods for robustness
   }),
   useSearchParams: () => new URLSearchParams(""),
-  usePathname: () => "/jobform",
 }));
 
 global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>;
@@ -34,11 +28,9 @@ describe("JobFormPage", () => {
 
   it("sanity check: renders JobFormPage", () => {
     const { container } = render(
-      <ClerkProvider publishableKey={clerk_key}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <JobFormPage />
-        </Suspense>
-      </ClerkProvider>,
+      <Suspense fallback={<div>Loading...</div>}>
+        <JobFormPage isSpokesAdmin={false} />
+      </Suspense>,
     );
     expect(container).toBeInTheDocument();
   });
@@ -59,11 +51,9 @@ describe("JobFormPage", () => {
     });
 
     render(
-      <ClerkProvider publishableKey={clerk_key}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <JobFormPage />
-        </Suspense>
-      </ClerkProvider>,
+      <Suspense fallback={<div>Loading...</div>}>
+        <JobFormPage isSpokesAdmin={false} />
+      </Suspense>,
     );
 
     // Fill out the form fields
@@ -149,11 +139,9 @@ describe("JobFormPage", () => {
     });
 
     render(
-      <ClerkProvider publishableKey={clerk_key}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <JobFormPage />
-        </Suspense>
-      </ClerkProvider>,
+      <Suspense fallback={<div>Loading...</div>}>
+        <JobFormPage isSpokesAdmin={false} />
+      </Suspense>,
     );
 
     // Fill out the form fields
