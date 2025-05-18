@@ -477,14 +477,14 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
       <form onSubmit={onSubmit}>
         <VStack spacing={4}>
           <FormControl isRequired>
-            <FormLabel>Organization Name</FormLabel>
+            <FormLabel>Job Title</FormLabel>
             <Input
               type="text"
               placeholder="Enter your response"
               bg="#F6F6F6"
               border="0"
-              name="organizationName"
-              value={loadingInfo ? "Loading..." : formData.organizationName}
+              name="title"
+              value={loadingInfo ? "Loading..." : formData.title}
               onChange={handleChange}
               disabled={loadingInfo}
             />
@@ -516,19 +516,6 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
                   setShowMaxError(false);
                 }
               }}
-            />
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel>Job Title</FormLabel>
-            <Input
-              type="text"
-              placeholder="Enter your response"
-              bg="#F6F6F6"
-              border="0"
-              name="title"
-              value={loadingInfo ? "Loading..." : formData.title}
-              onChange={handleChange}
-              disabled={loadingInfo}
             />
           </FormControl>
           <FormControl isRequired>
