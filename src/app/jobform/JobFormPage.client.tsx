@@ -10,7 +10,6 @@ import {
   VStack,
   FormControl,
   FormLabel,
-  FormHelperText,
   Input,
   Stack,
   FormErrorMessage,
@@ -28,6 +27,7 @@ import JobActionConfirmationModal from "@/components/JobActionConfirmationModal"
 import JobFailModal from "@/components/JobFailModal";
 import RejectButton from "@/components/RejectButton";
 import JobCardModal from "@/components/JobCard/JobCardModal";
+import { useOrganization } from "@clerk/nextjs";
 
 function formatIndustries(industries: string[]): Option[] {
   return industries.map((industry) => ({
@@ -66,12 +66,55 @@ async function sendRejectionEmail(jobData: RejectionEmailPayload, reason: string
   }
 }
 
+type FormDataType = {
+  organizationName: string;
+  organizationIndustry: string[];
+  title: string;
+  postDate: string;
+  modifiedDate: string;
+  expireDate: string | null;
+  jobDescription: string;
+  employmentType: string;
+  compensationType: string | null;
+  jobStatus: string;
+  contactName: string;
+  contactPhone: string;
+  contactEmail: string;
+  detailURL: string;
+  applyNowURL: string;
+};
+
+async function sendUpdateEmail(jobData: FormDataType) {
+  try {
+    const emailResponse = await fetch("/api/send/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(jobData),
+    });
+
+    if (!emailResponse.ok) {
+      console.error("Failed to send update notification email:", await emailResponse.text());
+      return;
+    }
+
+    console.log("Update notification email sent successfully");
+  } catch (error) {
+    console.error("Error sending update notification email:", error);
+  }
+}
+
 const ensureHttps = (url: string | undefined): string | undefined => {
   if (!url) return url;
   return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
 };
 
-export default function JobFormPage() {
+type JobFormPageProps = {
+  isSpokesAdmin: Boolean;
+};
+
+export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
   const { register, handleSubmit: formHandleSubmit, reset } = useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -79,7 +122,7 @@ export default function JobFormPage() {
   const isEditing = Boolean(jobId);
   const { resetForm } = useFormReset();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataType>({
     organizationName: "",
     organizationIndustry: [],
     title: "",
@@ -266,6 +309,10 @@ export default function JobFormPage() {
 
       if (!response.ok) {
         throw new Error("Failed to update job.");
+      }
+
+      if (!isSpokesAdmin) {
+        await sendUpdateEmail(formattedFormData);
       }
 
       setMessage("Successfully updated job.");
@@ -645,19 +692,21 @@ export default function JobFormPage() {
                 type="submit"
                 size="lg"
                 colorScheme="blackAlpha"
-                bg="black"
-                _hover={{ bg: "#5E5E5E" }}
+                bg="#045F87"
+                _hover={{ bg: "#2A80A8" }}
               >
                 Update
               </Button>
-              <RejectButton
-                isLoading={loading}
-                onClick={() => {
-                  setIsRejectModalOpen(true);
-                  setAction("Reject");
-                }}
-                className="px-6 mt-10 py-3 rounded-md bg-[#ff9d4f] hover:bg-[#ffbe8b] text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              />
+              {isSpokesAdmin && (
+                <RejectButton
+                  isLoading={loading}
+                  onClick={() => {
+                    setIsRejectModalOpen(true);
+                    setAction("Reject");
+                  }}
+                  className="px-6 mt-10 py-3 rounded-md bg-[#ff9d4f] hover:bg-[#ffbe8b] text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+              )}
               <Button
                 isLoading={loading}
                 loadingText="Deleting..."
@@ -682,8 +731,8 @@ export default function JobFormPage() {
               type="submit"
               size="lg"
               colorScheme="blackAlpha"
-              bg="black"
-              _hover={{ bg: "#5E5E5E" }}
+              bg="#045F87"
+              _hover={{ bg: "#2A80A8" }}
             >
               Submit
             </Button>
