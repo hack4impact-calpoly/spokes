@@ -18,6 +18,7 @@ jest.mock("next/navigation", () => ({
     push: jest.fn(),
   }),
   useSearchParams: () => new URLSearchParams(""),
+  usePathname: () => "/jobform", // Added mock for usePathname
 }));
 
 global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>;
