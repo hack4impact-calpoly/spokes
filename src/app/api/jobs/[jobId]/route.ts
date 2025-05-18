@@ -27,14 +27,8 @@ export const DELETE = withApiAuth(
         return NextResponse.json({ error: "Insufficient permissions to delete this job" }, { status: 403 });
       }
 
-      const updatedJob = {
-        ...job,
-        modifiedDate: new Date(),
-        jobStatus: auth.role === "nonprofit" ? JobStatus.pending : job.jobStatus,
-      };
-
-      // update job
-      await Job.findByIdAndUpdate(jobId, updatedJob, { new: true });
+      //Deleting based on _id
+      const result = await Job.findByIdAndDelete(jobId);
 
       return NextResponse.json({ message: "Deleted successfully" }, { status: 200 });
     } catch (error) {
@@ -55,11 +49,6 @@ export const PUT = withApiAuth(
       const jobId = req.nextUrl.pathname.split("/").pop();
 
       const job: IJob = await req.json();
-      const updatedJob = {
-        ...job,
-        modifiedDate: new Date(),
-      };
-      console.log("Received Job Data:", updatedJob);
 
       if (!jobId) {
         return NextResponse.json({ message: "Job ID is required" }, { status: 400 });
@@ -79,6 +68,13 @@ export const PUT = withApiAuth(
       if (auth.role === "nonprofit" && existingJob.userId !== auth.userId) {
         return NextResponse.json({ error: "Insufficient permissions to update this job" }, { status: 403 });
       }
+
+      const updatedJob = {
+        ...job,
+        jobStatus: auth.role === "nonprofit" ? JobStatus.pending : job.jobStatus,
+        modifiedDate: new Date(),
+      };
+      console.log("Received Job Data:", updatedJob);
 
       await Job.findByIdAndUpdate(jobId, updatedJob, { new: true });
       return NextResponse.json({ message: "Job updated successfully" });
