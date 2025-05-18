@@ -59,7 +59,6 @@ describe("JobFormPage", () => {
         <Suspense fallback={<div>Loading...</div>}>
           <JobFormPage />
         </Suspense>
-        ,
       </ClerkProvider>,
     );
 
