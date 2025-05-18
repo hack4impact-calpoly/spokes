@@ -55,9 +55,12 @@ describe("JobFormPage", () => {
     });
 
     render(
-      <Suspense fallback={<div>Loading...</div>}>
-        <JobFormPage />
-      </Suspense>,
+      <ClerkProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+          <JobFormPage />
+        </Suspense>
+        ,
+      </ClerkProvider>,
     );
 
     // Fill out the form fields
@@ -143,9 +146,11 @@ describe("JobFormPage", () => {
     });
 
     render(
-      <Suspense fallback={<div>Loading...</div>}>
-        <JobFormPage />
-      </Suspense>,
+      <ClerkProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+          <JobFormPage />
+        </Suspense>
+      </ClerkProvider>,
     );
 
     // Fill out the form fields
