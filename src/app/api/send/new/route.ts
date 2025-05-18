@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { withApiAuth } from "@/lib/auth";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const adminEmail = process.env.ADMIN_EMAIL || "";
 
 export const POST = withApiAuth(
   async (req: NextRequest, { auth }) => {
@@ -14,8 +15,8 @@ export const POST = withApiAuth(
       console.log("📧 ATTEMPTING TO SEND: ", jobData.title);
 
       const { data, error } = await resend.emails.send({
-        from: "Spokes Job Board <onboarding@resend.dev>", // replace with our email
-        to: [""], // replace with michael
+        from: "Spokes Job Board <onboarding@resend.dev>",
+        to: [adminEmail],
         subject: `${jobData.organizationName} submitted a job and is pending approval...`,
         react: NewJob({
           title: jobData.title,

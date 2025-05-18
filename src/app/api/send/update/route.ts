@@ -4,6 +4,7 @@ import { Resend } from "resend";
 import { UpdatedJob } from "@/components/EmailTemplates/UpdatedJob";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const adminEmail = process.env.ADMIN_EMAIL || "";
 
 export const POST = withApiAuth(
   async (req: NextRequest, { auth }) => {
@@ -19,7 +20,7 @@ export const POST = withApiAuth(
 
       const { data, error } = await resend.emails.send({
         from: "Spokes Job Board <onboarding@resend.dev>",
-        to: ["noahgiboney@gmail.com"],
+        to: [adminEmail],
         subject: `${jobData.organizationName} updated a job and is pending approval`,
         react: UpdatedJob({
           title: jobData.title,
