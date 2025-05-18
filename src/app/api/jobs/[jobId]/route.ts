@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Job from "@/database/jobSchema";
 import { IJob } from "@/database/jobSchema";
 import { withApiAuth } from "@/lib/auth";
+import { JobStatus } from "@/database/jobSchema";
 
 export const DELETE = withApiAuth(
   async (req: NextRequest, { auth }) => {
@@ -26,8 +27,14 @@ export const DELETE = withApiAuth(
         return NextResponse.json({ error: "Insufficient permissions to delete this job" }, { status: 403 });
       }
 
-      //Deleting based on _id
-      const result = await Job.findByIdAndDelete(jobId);
+      const updatedJob = {
+        ...job,
+        modifiedDate: new Date(),
+        jobStatus: auth.role === "nonprofit" ? JobStatus.pending : job.jobStatus,
+      };
+
+      // update job
+      await Job.findByIdAndUpdate(jobId, updatedJob, { new: true });
 
       return NextResponse.json({ message: "Deleted successfully" }, { status: 200 });
     } catch (error) {
