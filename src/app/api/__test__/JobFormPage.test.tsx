@@ -3,6 +3,7 @@ import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import JobFormPage from "@/app/jobform/JobFormPage.client";
 import "@testing-library/jest-dom";
+import { ClerkProvider } from "@clerk/nextjs";
 
 if (typeof global.ResizeObserver === "undefined") {
   global.ResizeObserver = class {
@@ -28,9 +29,12 @@ describe("JobFormPage", () => {
 
   it("sanity check: renders JobFormPage", () => {
     const { container } = render(
-      <Suspense fallback={<div>Loading...</div>}>
-        <JobFormPage />
-      </Suspense>,
+      <ClerkProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+          <JobFormPage />
+        </Suspense>
+        ,
+      </ClerkProvider>,
     );
     expect(container).toBeInTheDocument();
   });
