@@ -8,6 +8,7 @@ import { IJob } from "@/database/jobSchema";
 import { Flex } from "@chakra-ui/react";
 import { twMerge } from "tailwind-merge";
 import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
+import Link from "next/link";
 
 export default function AdminJobs() {
   const [incomingJobData, setIncomingJobData] = useState<null | IJob[]>(null);
@@ -150,7 +151,15 @@ export default function AdminJobs() {
       <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
         <div className="flex flex-col gap-24 mb-20">
           <div className="flex flex-col gap-8">
-            <div className="text-3xl font-semibold">Pending Jobs</div>
+            <div className="flex justify-between">
+              <h1 className="text-3xl font-semibold">Pending Jobs</h1>
+              <Link
+                href="/users"
+                className="px-4 py-2 bg-[#045F87] text-white rounded-md hover:bg-[#034A6B] transition-colors"
+              >
+                Manage Users
+              </Link>
+            </div>
             {!incomingJobData ? (
               <JobGridSkeleton count={2} />
             ) : incomingJobData.length === 0 ? (
