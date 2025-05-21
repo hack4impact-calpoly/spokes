@@ -24,6 +24,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import TableSkeleton from "@/components/UserTableSkeleton";
 
 interface User {
   _id: string;
@@ -249,7 +250,7 @@ export default function Users() {
             </Table>
           </Box>
         ) : (
-          <h1 className="mx-auto my-10 text-3xl">Loading...</h1>
+          <TableSkeleton />
         )}
       </div>
     </div>
