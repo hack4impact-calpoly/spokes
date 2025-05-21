@@ -1,6 +1,27 @@
 "use client";
 import { DownloadIcon } from "@chakra-ui/icons/Download";
-import { Table, Thead, Tbody, Tr, Th, Td, Switch, Box, Select } from "@chakra-ui/react";
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Switch,
+  Box,
+  Select,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+  useDisclosure,
+  Radio,
+  RadioGroup,
+  Stack,
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
@@ -11,8 +32,11 @@ interface User {
   org?: string;
   isadmin: boolean;
 }
+
 export default function Users() {
   const [users, setUsers] = useState<User[]>([]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [fileFormat, setFileFormat] = useState("csv");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -45,12 +69,46 @@ export default function Users() {
     throw new Error("Function not implemented.");
   }
 
+  const handleDownload = () => {
+    let content = "";
+    let filename = "spokes-users";
+    let mimeType = "";
+
+    // Prepare headers
+    const headers = ["Name", "Email", "Organization", "Member Status"];
+
+    if (fileFormat === "csv") {
+      mimeType = "text/csv";
+      filename += ".csv";
+      content = headers.join(",") + "\n";
+      users.forEach((user) => {
+        content += `${user.name},${user.email},${user.org || "N/A"},${user.isadmin ? "Member" : "Non-member"}\n`;
+      });
+    } else if (fileFormat === "json") {
+      mimeType = "application/json";
+      filename += ".json";
+      content = JSON.stringify(users, null, 2);
+    }
+
+    // Create and trigger download
+    const blob = new Blob([content], { type: mimeType });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    onClose();
+  };
+
   return (
     <div className="w-full">
       <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col text-black">
         <h1 className="font-bold text-3xl mb-16">Admin Dashboard</h1>
         <div className="flex justify-between items-center mb-7">
-          <h2 className="font-[600] text-2xl">Spokes Member List</h2>
+          <h2 className="font-semibold text-3xl">Spokes Member List</h2>
           <Link
             href="/admin"
             className="px-4 py-2 bg-[#045F87] text-white rounded-md hover:bg-[#034A6B] transition-colors flex items-center gap-2"
@@ -83,10 +141,59 @@ export default function Users() {
             placeholder="Search by Name or Email"
             className="border border-black rounded-[5px] w-[210px] h-[40px] px-2"
           />
-          <button className="border border-black bg-[#045F87] text-white rounded-[5px] w-[130px] h-[40px]">
+          <button
+            onClick={onOpen}
+            className="border border-black bg-[#045F87] text-white rounded-[5px] w-[130px] h-[40px] flex items-center justify-center gap-2"
+          >
             Download <DownloadIcon className="ml-2" />
           </button>
         </div>
+
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent className="rounded-lg">
+            <ModalHeader className="text-2xl font-semibold border-b pb-4">Download User List</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6} className="pt-6">
+              <div className="flex flex-col gap-6">
+                <p className="text-gray-600 font-medium">Select file format:</p>
+                <RadioGroup value={fileFormat} onChange={setFileFormat}>
+                  <Stack direction="row" spacing={8}>
+                    <Radio
+                      value="csv"
+                      colorScheme="blue"
+                      className="[&>span[data-checked]]:bg-[#045F87] [&>span[data-checked]]:border-[#045F87]"
+                    >
+                      <span className="font-medium">CSV</span>
+                    </Radio>
+                    <Radio
+                      value="json"
+                      colorScheme="blue"
+                      className="[&>span[data-checked]]:bg-[#045F87] [&>span[data-checked]]:border-[#045F87]"
+                    >
+                      <span className="font-medium">JSON</span>
+                    </Radio>
+                  </Stack>
+                </RadioGroup>
+                <div className="flex justify-end gap-3 mt-2">
+                  <Button onClick={onClose} variant="ghost" className="hover:bg-gray-100">
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleDownload}
+                    bg="#045F87"
+                    color="white"
+                    _hover={{ bg: "#034A6B" }}
+                    className="font-medium"
+                  >
+                    Download
+                  </Button>
+                </div>
+              </div>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+
         {users.length > 0 ? (
           <Box overflowX="auto" className="px-2">
             <Table className="my-5 min-w-[600px] w-full" variant="simple" borderColor="gray.300">
