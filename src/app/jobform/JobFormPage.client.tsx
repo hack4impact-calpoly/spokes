@@ -27,7 +27,6 @@ import JobActionConfirmationModal from "@/components/JobModals/JobActionConfirma
 import JobFailModal from "@/components/JobModals/JobFailModal";
 import RejectButton from "@/components/RejectButton";
 import JobCardModal from "@/components/JobCard/JobCardModal";
-import { useOrganization } from "@clerk/nextjs";
 
 function formatIndustries(industries: string[]): Option[] {
   return industries.map((industry) => ({
@@ -112,9 +111,10 @@ const ensureHttps = (url: string | undefined): string | undefined => {
 
 type JobFormPageProps = {
   isSpokesAdmin: Boolean;
+  returnURL: string;
 };
 
-export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
+export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPageProps) {
   const { register, handleSubmit: formHandleSubmit, reset } = useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -316,7 +316,7 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
       }
 
       setMessage("Successfully updated job.");
-      router.push("/admin");
+      router.push(returnURL);
     } catch (error) {
       console.error("Error updating job:", error);
       setMessage("Error updating job.");
@@ -388,7 +388,7 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
         setIsActionConfirmationModalOpen(false);
         setMessage("Successfully deleted job");
         setLoading(false);
-        router.push("/admin");
+        router.push(returnURL);
       } catch (error) {
         console.error(`Error deleting job: ${error}`);
         setMessage("Error occurred while attempting to delete job");
@@ -435,7 +435,7 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
   const closeSubmitModal = () => {
     setIsSubmitModalOpen(false);
     if (isEditing) {
-      router.push("/admin");
+      router.push(returnURL);
     }
   };
 

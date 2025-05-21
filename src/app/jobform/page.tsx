@@ -4,10 +4,21 @@ import JobFormPage from "./JobFormPage.client";
 import { getAuthWithRole } from "@/lib/auth";
 import { auth } from "@clerk/nextjs/server";
 
-export default async function JobFormParentPage() {
+export default async function JobFormParentPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const { userId, orgSlug } = await auth();
   const authWithRole = getAuthWithRole({ userId, orgSlug });
   const isSpokesAdmin = authWithRole.role == "spokes_admin";
+
+  const returnURL =
+    typeof searchParams.returnURL === "string"
+      ? searchParams.returnURL
+      : Array.isArray(searchParams.returnURL)
+        ? searchParams.returnURL[0]
+        : "/admin";
 
   return (
     <Suspense
@@ -17,7 +28,7 @@ export default async function JobFormParentPage() {
         </Center>
       }
     >
-      <JobFormPage isSpokesAdmin={isSpokesAdmin} />
+      <JobFormPage isSpokesAdmin={isSpokesAdmin} returnURL={returnURL} />
     </Suspense>
   );
 }
