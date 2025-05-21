@@ -2,10 +2,8 @@
 import { useState, useEffect } from "react";
 import ChakraCarousel from "@/components/ChakraCarousel/carousel";
 import AdminJobCard from "@/components/JobCard/AdminCard";
-import JobGrid from "@/components//JobGrid/JobGrid";
-import { Loader } from "@/components/Loader";
+import JobGrid from "@/components/JobGrid/JobGrid";
 import { IJob } from "@/database/jobSchema";
-import { Flex } from "@chakra-ui/react";
 import { twMerge } from "tailwind-merge";
 import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
 import Link from "next/link";
@@ -196,7 +194,7 @@ export default function AdminJobs() {
             ) : incomingJobData.length === 0 ? (
               <JobGrid
                 jobs={incomingJobData}
-                isAdmin={true}
+                isPending={true}
                 onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
               />
             ) : (
@@ -241,7 +239,7 @@ export default function AdminJobs() {
               liveJobData ? (
                 <JobGrid
                   jobs={liveJobData}
-                  isAdmin={true}
+                  isLive={true}
                   onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
                 />
               ) : (
@@ -250,7 +248,7 @@ export default function AdminJobs() {
             ) : expiredJobData ? (
               <JobGrid
                 jobs={expiredJobData}
-                isAdmin={true}
+                isExpired={true}
                 onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
               />
             ) : (

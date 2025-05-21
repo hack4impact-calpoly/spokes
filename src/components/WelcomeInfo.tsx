@@ -1,6 +1,5 @@
 "use client";
-import React, { useState } from "react";
-import { Text, Heading, OrderedList, ListItem } from "@chakra-ui/react";
+import React from "react";
 
 export default function WelcomeInfo() {
   return (
