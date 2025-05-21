@@ -5,19 +5,31 @@ import JobGridSkeleton from "./JobGridSkeleton";
 
 interface JobGridProps {
   jobs: IJob[];
-  isAdmin?: boolean;
+  isPending?: boolean;
+  isJobBoard?: boolean;
+  isLive?: boolean;
+  isExpired?: boolean;
   innerRef?: (node?: Element | null | undefined) => void;
   onJobView?: (job: IJob) => void;
   onUpdateJob?: (jobId: string, status: "approved" | "rejected", approvedDate?: Date) => void;
 }
 
-export default function JobGrid({ jobs, isAdmin = false, onJobView, onUpdateJob, innerRef }: JobGridProps) {
-  const CardComponent = isAdmin ? AdminCard : JobCard;
+export default function JobGrid({
+  jobs,
+  isPending = false,
+  isJobBoard = false,
+  isLive = false,
+  isExpired = false,
+  onJobView,
+  onUpdateJob,
+  innerRef,
+}: JobGridProps) {
+  const CardComponent = isPending || isLive || isExpired ? AdminCard : JobCard;
 
   return (
     <>
       {jobs.length === 0 ? (
-        <NoJobsFound isAdmin={isAdmin} />
+        <NoJobsFound isPending={isPending} isJobBoard={isJobBoard} isLive={isLive} isExpired={isExpired} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
           {Array.from(jobs).map((job, index) => (
@@ -36,22 +48,65 @@ export default function JobGrid({ jobs, isAdmin = false, onJobView, onUpdateJob,
 }
 
 interface NoJobsFoundProps {
-  isAdmin: boolean;
+  isPending: boolean;
+  isJobBoard: boolean;
+  isLive: boolean;
+  isExpired: boolean;
 }
 
-function NoJobsFound({ isAdmin }: NoJobsFoundProps) {
-  if (isAdmin) {
-    return (
-      <div className="grow flex flex-col gap-1 justify-center justify-self-center items-center min-h-[400px]">
-        <h1 className="text-2xl font-bold">No Jobs Found</h1>
-      </div>
-    );
-  }
+function NoJobsFound({ isPending, isJobBoard, isLive, isExpired }: NoJobsFoundProps) {
+  const getEmptyStateContent = () => {
+    if (isPending) {
+      return {
+        title: "No Pending Jobs",
+        message: "There are no jobs requiring review at this time. Check back later for new submissions.",
+      };
+    }
+    if (isLive) {
+      return {
+        title: "No Live Jobs",
+        message: "There are no active job listings at the moment. Approved jobs will appear here.",
+      };
+    }
+    if (isExpired) {
+      return {
+        title: "No Expired Jobs",
+        message: "There are no expired job listings. Jobs will automatically move here after 30 days.",
+      };
+    }
+    // Default job board empty state
+    return {
+      title: "No Jobs Found",
+      message:
+        "We couldn't find any jobs matching your criteria. Try adjusting your filters or check back later for new opportunities.",
+      icon: (
+        <svg
+          width="48"
+          height="48"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="text-gray-400"
+        >
+          <path
+            d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+    };
+  };
+
+  const { title, message, icon } = getEmptyStateContent();
 
   return (
-    <div className="grow flex flex-col gap-1 justify-center justify-self-center items-center min-h-[400px]">
-      <h1 className="text-3xl font-bold">No Jobs Found</h1>
-      <p className="text-lg text-center">Try again with some different filters!</p>
+    <div className="grow flex flex-col gap-4 justify-center justify-self-center items-center min-h-[400px] p-8 rounded-lg">
+      {icon}
+      <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
+      <p className="text-base text-center text-gray-600 max-w-md">{message}</p>
     </div>
   );
 }

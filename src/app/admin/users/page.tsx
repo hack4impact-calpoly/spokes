@@ -150,7 +150,7 @@ export default function Users() {
           </button>
         </div>
 
-        <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal isOpen={isOpen} onClose={onClose} isCentered>
           <ModalOverlay />
           <ModalContent className="rounded-lg">
             <ModalHeader className="text-2xl font-semibold border-b pb-4">Download User List</ModalHeader>
