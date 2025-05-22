@@ -30,7 +30,7 @@ interface User {
   _id: string;
   name: string;
   email: string;
-  org?: string;
+  organizationName?: string;
   isadmin: boolean;
 }
 
@@ -83,7 +83,7 @@ export default function Users() {
       filename += ".csv";
       content = headers.join(",") + "\n";
       users.forEach((user) => {
-        content += `${user.name},${user.email},${user.org || "N/A"},${user.isadmin ? "Member" : "Non-member"}\n`;
+        content += `${user.name},${user.email},${user.organizationName || "N/A"},${user.isadmin ? "Member" : "Non-member"}\n`;
       });
     } else if (fileFormat === "json") {
       mimeType = "application/json";
@@ -224,7 +224,7 @@ export default function Users() {
                       {item.email}
                     </Td>
                     <Td className="w-1/4" borderColor="gray.300">
-                      {item.org ?? "N/A"}
+                      {item.organizationName ?? "N/A"}
                     </Td>
                     <Td className="w-1/6" borderColor="gray.300" pr={0}>
                       <div className="flex items-center justify-between py-2 pr-2">
