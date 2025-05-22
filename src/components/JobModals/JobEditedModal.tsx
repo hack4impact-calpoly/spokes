@@ -35,7 +35,7 @@ function JobEditedModal({ isOpen, onClose, onConfirm }: JobEditedModalProps) {
           administrator before the job listing becomes live on the job board.
         </ModalBody>
         <ModalFooter>
-          <form onSubmit={handleSubmit} className="flex gap-2 justify-end">
+          <form onSubmit={handleSubmit} className="flex gap-2 justify-center w-full">
             <Button
               type="submit"
               px="10"
