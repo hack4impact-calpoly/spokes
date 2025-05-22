@@ -28,6 +28,7 @@ import JobFailModal from "@/components/JobModals/JobFailModal";
 import RejectButton from "@/components/RejectButton";
 import JobCardModal from "@/components/JobCard/JobCardModal";
 import JobEditedModal from "@/components/JobModals/JobEditedModal";
+import { useUser } from "@clerk/nextjs";
 
 function formatIndustries(industries: string[]): Option[] {
   return industries.map((industry) => ({
@@ -115,13 +116,25 @@ type JobFormPageProps = {
   returnURL: string;
 };
 
-export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPageProps) {
+async function getOrganizationName(clerkUserId: string): Promise<string> {
+  const response = await fetch(`/api/users/${clerkUserId}`);
+  const data = await response.json();
+
+  if (!response.ok || !data.organizationName) {
+    throw new Error(data.message || "Failed to fetch organization name");
+  }
+
+  return data.organizationName;
+}
+
+export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
   const { register, handleSubmit: formHandleSubmit, reset } = useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
   const jobId = searchParams.get("jobId");
   const isEditing = Boolean(jobId);
   const { resetForm } = useFormReset();
+  const { user } = useUser();
 
   const [formData, setFormData] = useState<FormDataType>({
     organizationName: "",
@@ -229,14 +242,18 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
     setLoading(true);
     setMessage("");
 
-    const formattedFormData = {
-      ...formData,
-      expireDate: formData.expireDate || null,
-      detailURL: ensureHttps(formData.detailURL),
-      applyNowURL: ensureHttps(formData.applyNowURL),
-    };
-
     try {
+      if (!user) throw new Error("User not authenticated");
+      const orgName = await getOrganizationName(user.id);
+
+      const formattedFormData = {
+        ...formData,
+        organizationName: orgName,
+        expireDate: formData.expireDate || null,
+        detailURL: ensureHttps(formData.detailURL),
+        applyNowURL: ensureHttps(formData.applyNowURL),
+      };
+
       const response = await fetch("/api/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -342,12 +359,15 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       };
 
       try {
+        if (!user) throw new Error("User not authenticated");
+        const orgName = await getOrganizationName(user.id);
+
         try {
           console.log("!!Attempting to send email...");
           await sendRejectionEmail(
             {
               title: formData.title,
-              organizationName: formData.organizationName,
+              organizationName: orgName,
               contactName: formData.contactName,
               contactEmail: formData.contactEmail,
             },
@@ -483,14 +503,14 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       <form onSubmit={onSubmit}>
         <VStack spacing={4}>
           <FormControl isRequired>
-            <FormLabel>Organization Name</FormLabel>
+            <FormLabel>Job Title</FormLabel>
             <Input
               type="text"
               placeholder="Enter your response"
               bg="#F6F6F6"
               border="0"
-              name="organizationName"
-              value={loadingInfo ? "Loading..." : formData.organizationName}
+              name="title"
+              value={loadingInfo ? "Loading..." : formData.title}
               onChange={handleChange}
               disabled={loadingInfo}
             />
@@ -522,19 +542,6 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
                   setShowMaxError(false);
                 }
               }}
-            />
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel>Job Title</FormLabel>
-            <Input
-              type="text"
-              placeholder="Enter your response"
-              bg="#F6F6F6"
-              border="0"
-              name="title"
-              value={loadingInfo ? "Loading..." : formData.title}
-              onChange={handleChange}
-              disabled={loadingInfo}
             />
           </FormControl>
           <FormControl isRequired>
