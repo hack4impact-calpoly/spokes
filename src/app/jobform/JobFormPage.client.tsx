@@ -743,8 +743,8 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
               Submit
             </Button>
           )}
-          {isEditing ? (
-            isSpokesAdmin ? (
+          {isEditing &&
+            (isSpokesAdmin ? (
               <Link variant="underline" href="/admin" mt="2">
                 Return to Admin Dashboard
               </Link>
@@ -752,8 +752,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
               <Link variant="underline" href="/dashboard" mt="2">
                 Return to Dashboard
               </Link>
-            )
-          ) : null}
+            ))}
           {message && <p>{message}</p>}
         </VStack>
       </form>
