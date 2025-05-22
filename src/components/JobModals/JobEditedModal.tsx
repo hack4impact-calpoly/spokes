@@ -31,11 +31,11 @@ function JobEditedModal({ isOpen, onClose, onConfirm }: JobEditedModalProps) {
         <ModalHeader>Confirm {actionText}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          Are you sure you would like to {actionText} this job posting? Your job will no longer be visible and will
-          require additional review from a Spokes admin.
+          Are you sure you would like to {actionText} this job posting? Your job will require approval from spokes admin
+          before the it is live on the job board.
         </ModalBody>
-        <ModalFooter className="flex flex-wrap gap-2 mt-4 justify-end">
-          <form onSubmit={handleSubmit}>
+        <ModalFooter>
+          <form onSubmit={handleSubmit} className="flex gap-2 justify-end">
             <Button
               type="submit"
               px="10"
@@ -43,11 +43,7 @@ function JobEditedModal({ isOpen, onClose, onConfirm }: JobEditedModalProps) {
               fontSize="small"
               fontWeight="normal"
               borderColor="black"
-              sx={{
-                _hover: {
-                  backgroundColor: "green.300",
-                },
-              }}
+              sx={{ _hover: { backgroundColor: "green.300" } }}
             >
               Confirm
             </Button>
@@ -58,11 +54,7 @@ function JobEditedModal({ isOpen, onClose, onConfirm }: JobEditedModalProps) {
               fontWeight="normal"
               borderColor="black"
               onClick={onClose}
-              sx={{
-                _hover: {
-                  backgroundColor: "red.300",
-                },
-              }}
+              sx={{ _hover: { backgroundColor: "red.300" } }}
             >
               Cancel
             </Button>
