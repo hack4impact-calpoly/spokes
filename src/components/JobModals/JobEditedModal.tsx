@@ -31,8 +31,8 @@ function JobEditedModal({ isOpen, onClose, onConfirm }: JobEditedModalProps) {
         <ModalHeader>Confirm {actionText}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          Are you sure you would like to {actionText} this job posting? Your job will require approval from spokes admin
-          before the it is live on the job board.
+          Are you sure you would like to {actionText} this job posting? Your changes will require approval from a Spokes
+          administrator before the job listing becomes live on the job board.
         </ModalBody>
         <ModalFooter>
           <form onSubmit={handleSubmit} className="flex gap-2 justify-end">
