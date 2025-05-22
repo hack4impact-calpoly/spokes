@@ -45,8 +45,8 @@ export async function PATCH(req: NextRequest) {
     // Extract the userId from the route parameters
     const id = req.nextUrl.pathname.split("/").pop();
 
-    // Extract the newAdminStatus from the request body
-    const { isadmin: newAdminStatus } = await req.json(); // Renamed for clarity
+    // Extract the newMemberStatus from the request body
+    const { paidMember: newMemberStatus } = await req.json();
     // Validate ID
     if (!id) {
       return NextResponse.json({ message: "User ID is required" }, { status: 400 });
@@ -60,7 +60,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    user.isadmin = newAdminStatus;
+    user.paidMember = newMemberStatus;
     await user.save();
 
     return NextResponse.json(user, { status: 200 });
