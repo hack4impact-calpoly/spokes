@@ -38,6 +38,8 @@ export default function Users() {
   const [users, setUsers] = useState<User[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [fileFormat, setFileFormat] = useState("csv");
+  const [filterType, setFilterType] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -55,6 +57,16 @@ export default function Users() {
     };
     fetchUsers();
   }, []);
+
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (user.org?.toLowerCase() ?? "").includes(searchQuery.toLowerCase());
+
+    const matchesFilter = filterType === "all" ? true : filterType === "members" ? user.isadmin : !user.isadmin;
+
+    return matchesSearch && matchesFilter;
+  });
 
   /**
    * ToDo: Disable or enable user's admin status on database
@@ -134,12 +146,23 @@ export default function Users() {
           </Link>
         </div>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Select placeholder="Filter List" border="1px solid black" width={"121px"} height={"40px"}>
-            <option>test</option>
+          <Select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            border="1px solid black"
+            width={"150px"}
+            height={"40px"}
+          >
+            <option value="all">All</option>
+            <option value="members">Members</option>
+            <option value="non-members">Non-Members</option>
           </Select>
+
           <input
             type="text"
-            placeholder="Search by Name or Email"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by Name or Org"
             className="border border-black rounded-[5px] w-[210px] h-[40px] px-2"
           />
           <button
@@ -215,7 +238,7 @@ export default function Users() {
                 </Tr>
               </Thead>
               <Tbody>
-                {users.map((item) => (
+                {filteredUsers.map((item) => (
                   <Tr key={item._id} className="transition-colors hover:bg-gray-50" borderColor="gray.300">
                     <Td className="w-1/4" borderColor="gray.300" pl={0}>
                       <span className="text-md pl-2">{item.name}</span>
