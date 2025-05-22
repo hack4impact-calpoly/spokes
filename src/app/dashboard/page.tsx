@@ -1,117 +1,25 @@
-"use client";
-import { Box, Text } from "@chakra-ui/react";
-import DashboardJobCard from "@/components/DashboardJobCard";
-import connectDB from "@/database/db";
-import User from "@/database/userSchema";
-import Job from "@/database/jobSchema";
-import { IJob } from "@/database/jobSchema";
-import { Loader } from "@/components/Loader";
-import { useEffect, useState } from "react";
-import { useUser } from "@clerk/nextjs";
-import JobConfirmationlModal from "@/components/JobConfirmationModal";
-import Link from "next/link";
+import { getMongoUser } from "@/lib/getMongoUser";
+import { UserInterface } from "@/database/userSchema";
+import { auth } from "@clerk/nextjs/server";
+import DashboardPage from "./DashboardPage";
 
-export default function DashboardPage() {
-  const [loading, setLoading] = useState(true);
-  const [userJobs, setUserJobs] = useState<IJob[]>([]);
-  const { user, isLoaded } = useUser();
+export default async function DashboardServerPage() {
+  const authData = await auth();
+  const { userId } = authData;
 
-  // Fetch jobs
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-
-        // Get user id
-        const clerkUserId = user?.id;
-        if (!clerkUserId) throw new Error("User not authenticated");
-
-        // Get user's postedJobs
-        const res = await fetch(`/api/userjobs?userId=${clerkUserId}`);
-        const jobs = await res.json();
-
-        if (!res.ok) throw new Error(jobs.error || "Unknown error");
-
-        setUserJobs(jobs);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+  let organizationName = "Your Organization";
+  if (userId) {
+    try {
+      const response = await getMongoUser(userId);
+      const data = await response.json();
+      if (response.status === 200) {
+        const user: UserInterface = data;
+        organizationName = user.organizationName as string;
       }
-    };
-
-    fetchData();
-  }, [user?.id, isLoaded]);
-
-  if (loading) {
-    return (
-      <div className="py-32">
-        <Loader size="lg"></Loader>
-      </div>
-    );
+    } catch (error) {
+      console.error("Error fetching MongoDB user:", error);
+    }
   }
 
-  if (userJobs.length === 0) {
-    return (
-      <div className="w-full h-full py-32 flex justify-center align-middle">
-        <Link href="/jobform" className="text-3xl underline underline-offset-8 font-semibold select-none">
-          Submit a new job listing
-        </Link>
-      </div>
-    );
-  }
-
-  const liveJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "live");
-  const pendingJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "pending");
-  const expiredJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "expired");
-
-  return (
-    <div className="w-full">
-      <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
-        <div className="flex flex-col gap-24 mb-20">
-          <div className="flex flex-col gap-8">
-            <div className="text-3xl font-semibold">Admin Dashboard</div>
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col mb-12">
-                <div className="text-2xl font-semibold mb-4">Live Applications</div>
-                {liveJobs.map((job, index) => (
-                  <DashboardJobCard
-                    key={index}
-                    job={job}
-                    isFirst={index === 0}
-                    isLast={index === liveJobs.length - 1}
-                    isOnly={liveJobs.length === 1}
-                  />
-                ))}
-              </div>
-              <div className="flex flex-col mb-12">
-                <div className="text-2xl font-semibold mb-4">Pending Applications</div>
-                {pendingJobs.map((job, index) => (
-                  <DashboardJobCard
-                    key={index}
-                    job={job}
-                    isFirst={index === 0}
-                    isLast={index === pendingJobs.length - 1}
-                    isOnly={pendingJobs.length === 1}
-                  />
-                ))}
-              </div>
-              <div className="flex flex-col mb-12">
-                <div className="text-2xl font-semibold mb-4">Expired Applications</div>
-                {expiredJobs.map((job, index) => (
-                  <DashboardJobCard
-                    key={index}
-                    job={job}
-                    isFirst={index === 0}
-                    isLast={index === expiredJobs.length - 1}
-                    isOnly={expiredJobs.length === 1}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return <DashboardPage organizationName={organizationName} />;
 }

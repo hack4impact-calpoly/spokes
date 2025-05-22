@@ -4,6 +4,14 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import JobFormPage from "@/app/jobform/JobFormPage.client";
 import "@testing-library/jest-dom";
 
+// Mock Clerk completely
+jest.mock("@clerk/nextjs", () => ({
+  useUser: jest.fn(() => ({
+    user: { id: "mock-user-id" },
+  })),
+  ClerkProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+
 if (typeof global.ResizeObserver === "undefined") {
   global.ResizeObserver = class {
     observe() {}
@@ -24,43 +32,57 @@ global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 describe("JobFormPage", () => {
   beforeEach(() => {
     (global.fetch as jest.Mock).mockClear();
+    // Mock the getOrganizationName API call
+    (global.fetch as jest.Mock).mockImplementation((...args: any[]) => {
+      const url = args[0];
+      if (typeof url === "string" && url.includes("/api/users/mock-user-id")) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ organizationName: "Test Org" }),
+        });
+      }
+      return Promise.resolve({
+        ok: false,
+        json: async () => ({ message: "Not found" }),
+      });
+    });
   });
 
   it("sanity check: renders JobFormPage", () => {
     const { container } = render(
       <Suspense fallback={<div>Loading...</div>}>
-        <JobFormPage />
+        <JobFormPage isSpokesAdmin={false} />
       </Suspense>,
     );
     expect(container).toBeInTheDocument();
   });
 
   it("submits the form successfully", async () => {
-    // Mock the fetch call to return a valid response for the first API call
+    // Mock the fetch calls for job submission and email notification
     const fetchMock = global.fetch as jest.Mock<any>;
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: async () => ({ id: "123", message: "Job posted successfully!" }),
-    });
-
-    // Mock the second API call to /api/send (optional)
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-    });
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ organizationName: "Test Org" }),
+      }) // /api/users/mock-user-id
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ id: "123", message: "Job posted successfully!" }),
+      }) // /api/jobs
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+      }); // /api/send/new
 
     render(
       <Suspense fallback={<div>Loading...</div>}>
-        <JobFormPage />
+        <JobFormPage isSpokesAdmin={false} />
       </Suspense>,
     );
 
     // Fill out the form fields
-    fireEvent.change(screen.getByLabelText(/Organization Name/i), {
-      target: { value: "Test Org" },
-    });
-
     // Simulate clicking the dropdown to open it
     const dropdownTrigger = screen.getByPlaceholderText(/Select industries/i);
     fireEvent.click(dropdownTrigger);
@@ -82,9 +104,8 @@ describe("JobFormPage", () => {
       target: { value: "http://example.com/job" },
     });
 
-    // Assuming the "Name" field for Person of Contact is the second one in the list:
-    const nameFields = screen.getAllByLabelText(/Name/i);
-    fireEvent.change(nameFields[1], {
+    // Assuming the "Name" field for Person of Contact
+    fireEvent.change(screen.getByLabelText(/Name/i), {
       target: { value: "Test Name" },
     });
     fireEvent.change(screen.getByLabelText(/Email/i), {
@@ -99,10 +120,10 @@ describe("JobFormPage", () => {
     fireEvent.click(submitButton);
 
     // Wait for the asynchronous operations to finish
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(3));
 
-    // Extract and parse the body for the first call:
-    const [url, options] = fetchMock.mock.calls[0] as [string, RequestInit];
+    // Verify the /api/jobs fetch call
+    const [url, options] = fetchMock.mock.calls[1] as [string, RequestInit];
     expect(url).toBe("/api/jobs");
     expect(options.method).toBe("POST");
     expect(options.headers).toEqual({ "Content-Type": "application/json" });
@@ -115,6 +136,7 @@ describe("JobFormPage", () => {
         organizationIndustry: ["Arts & Culture"],
         title: "Software Engineer",
         postDate: expect.any(String),
+        modifiedDate: expect.any(String),
         expireDate: null,
         jobDescription: "Test description.",
         employmentType: "full-time",
@@ -127,33 +149,38 @@ describe("JobFormPage", () => {
         applyNowURL: "http://example.com/job",
       }),
     );
+
+    // Verify the JobConfirmationModal appears
+    await waitFor(() => {
+      expect(screen.getByText("Job listing successfully submitted")).toBeInTheDocument();
+    });
   });
 
   it("displays JobFailModal on submission failure with HTTP error code", async () => {
-    // Mock fetch to return a failure for the first API call
+    // Mock fetch to return organization name and then a failure for the job submission
     const fetchMock = global.fetch as jest.Mock<any>;
-    fetchMock.mockResolvedValueOnce({
-      ok: false,
-      status: 500,
-      json: async () => ({ message: "Internal Server Error" }),
-    });
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ organizationName: "Test Org" }),
+      }) // /api/users/mock-user-id
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        json: async () => ({ message: "Internal Server Error" }),
+      }); // /api/jobs
 
     render(
       <Suspense fallback={<div>Loading...</div>}>
-        <JobFormPage />
+        <JobFormPage isSpokesAdmin={false} />
       </Suspense>,
     );
 
     // Fill out the form fields
-    fireEvent.change(screen.getByLabelText(/Organization Name/i), {
-      target: { value: "Test Org" },
-    });
-
-    // Simulate clicking the industry dropdown
     const dropdownTrigger = screen.getByPlaceholderText(/Select industries/i);
     fireEvent.click(dropdownTrigger);
 
-    // Select an industry
     const dropdownOption = await screen.findByText("Arts & Culture");
     fireEvent.click(dropdownOption);
 
@@ -169,8 +196,7 @@ describe("JobFormPage", () => {
     fireEvent.change(screen.getByLabelText(/Link to Job Application/i), {
       target: { value: "http://example.com/apply" },
     });
-    const nameFields = screen.getAllByLabelText(/Name/i);
-    fireEvent.change(nameFields[1], {
+    fireEvent.change(screen.getByLabelText(/Name/i), {
       target: { value: "Test Name" },
     });
     fireEvent.change(screen.getByLabelText(/Email/i), {
@@ -190,12 +216,12 @@ describe("JobFormPage", () => {
     });
 
     // Verify the fetch call details
-    const [url, options] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const [url, options] = fetchMock.mock.calls[1] as [string, RequestInit];
     expect(url).toBe("/api/jobs");
     expect(options.method).toBe("POST");
 
     // Check the response
-    const response = await fetchMock.mock.results[0].value;
+    const response = await fetchMock.mock.results[1].value;
     expect(response.status).toBe(500);
     expect(response.ok).toBe(false);
 

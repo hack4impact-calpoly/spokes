@@ -25,6 +25,7 @@ export enum JobStatus {
 // Interface for job object
 export interface IJob {
   _id: string;
+  userId: string;
   organizationName: string;
   organizationIndustry: string[];
   title: string;
@@ -35,16 +36,17 @@ export interface IJob {
   employmentType: string;
   compensationType?: string;
   jobStatus: string;
+  detailURL: string;
   contactName?: string;
   contactPhone?: string;
   contactEmail?: string;
-  detailURL: string;
   applyNowURL?: string;
 }
 
 // Schema for the job object
 const JobSchema = new Schema({
   organizationName: { type: String, required: true },
+  userId: { type: String, required: true },
   organizationIndustry: { type: Array<String>, required: true },
   title: { type: String, required: true },
   postDate: { type: Date, required: true },
@@ -54,11 +56,11 @@ const JobSchema = new Schema({
   employmentType: { type: String, enum: Object.values(EmploymentType), required: true },
   compensationType: { type: String, enum: Object.values(CompensationType), required: false },
   jobStatus: { type: String, enum: Object.values(JobStatus), required: true },
+  detailURL: { type: String, required: true },
   contactName: { type: String, required: false },
   contactPhone: { type: String, required: false },
   contactEmail: { type: String, required: false },
-  detailURL: { type: String, required: true },
-  applyNowURL: { type: String }, // this field is optional
+  applyNowURL: { type: String, required: false }, // this field is optional
 });
 
 const Job = models.Job || model("Job", JobSchema);

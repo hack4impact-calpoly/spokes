@@ -1,7 +1,7 @@
-import mongoose, { models, model, Schema } from "mongoose";
+import { models, model, Schema } from "mongoose";
 
 //User interface
-interface UserInterface {
+export interface UserInterface {
   _id: String;
   name: String;
   email: String;

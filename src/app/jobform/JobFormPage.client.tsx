@@ -10,7 +10,6 @@ import {
   VStack,
   FormControl,
   FormLabel,
-  FormHelperText,
   Input,
   Stack,
   FormErrorMessage,
@@ -23,11 +22,13 @@ import RadioCard from "@/components/RadioCard";
 import TagSelect from "@/components/TagSelect";
 import { Option } from "@/components/TagsMultiselect/multiselect";
 import { cn } from "@/lib/utils";
-import JobConfirmationModal from "@/components/JobConfirmationModal";
-import JobActionConfirmationModal from "@/components/JobActionConfirmationModal";
-import JobFailModal from "@/components/JobFailModal";
+import JobConfirmationModal from "@/components/JobModals/JobConfirmationModal";
+import JobActionConfirmationModal from "@/components/JobModals/JobActionConfirmationModal";
+import JobFailModal from "@/components/JobModals/JobFailModal";
 import RejectButton from "@/components/RejectButton";
 import JobCardModal from "@/components/JobCard/JobCardModal";
+import JobEditedModal from "@/components/JobModals/JobEditedModal";
+import { useUser } from "@clerk/nextjs";
 
 function formatIndustries(industries: string[]): Option[] {
   return industries.map((industry) => ({
@@ -66,20 +67,76 @@ async function sendRejectionEmail(jobData: RejectionEmailPayload, reason: string
   }
 }
 
+type FormDataType = {
+  organizationName: string;
+  organizationIndustry: string[];
+  title: string;
+  postDate: string;
+  modifiedDate: string;
+  expireDate: string | null;
+  jobDescription: string;
+  employmentType: string;
+  compensationType: string | null;
+  jobStatus: string;
+  contactName: string;
+  contactPhone: string;
+  contactEmail: string;
+  detailURL: string;
+  applyNowURL: string;
+};
+
+async function sendUpdateEmail(jobData: FormDataType) {
+  try {
+    const emailResponse = await fetch("/api/send/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(jobData),
+    });
+
+    if (!emailResponse.ok) {
+      console.error("Failed to send update notification email:", await emailResponse.text());
+      return;
+    }
+
+    console.log("Update notification email sent successfully");
+  } catch (error) {
+    console.error("Error sending update notification email:", error);
+  }
+}
+
 const ensureHttps = (url: string | undefined): string | undefined => {
   if (!url) return url;
   return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
 };
 
-export default function JobFormPage() {
+type JobFormPageProps = {
+  isSpokesAdmin: Boolean;
+  returnURL: string;
+};
+
+async function getOrganizationName(clerkUserId: string): Promise<string> {
+  const response = await fetch(`/api/users/${clerkUserId}`);
+  const data = await response.json();
+
+  if (!response.ok || !data.organizationName) {
+    throw new Error(data.message || "Failed to fetch organization name");
+  }
+
+  return data.organizationName;
+}
+
+export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPageProps) {
   const { register, handleSubmit: formHandleSubmit, reset } = useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
   const jobId = searchParams.get("jobId");
   const isEditing = Boolean(jobId);
   const { resetForm } = useFormReset();
+  const { user } = useUser();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataType>({
     organizationName: "",
     organizationIndustry: [],
     title: "",
@@ -109,6 +166,7 @@ export default function JobFormPage() {
   const [action, setAction] = useState("");
   const [rejectionReason, setRejectionReason] = useState("");
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const employmentColorMapping = {
     "Full-Time": "#F8B1B8",
@@ -184,14 +242,18 @@ export default function JobFormPage() {
     setLoading(true);
     setMessage("");
 
-    const formattedFormData = {
-      ...formData,
-      expireDate: formData.expireDate || null,
-      detailURL: ensureHttps(formData.detailURL),
-      applyNowURL: ensureHttps(formData.applyNowURL),
-    };
-
     try {
+      if (!user) throw new Error("User not authenticated");
+      const orgName = await getOrganizationName(user.id);
+
+      const formattedFormData = {
+        ...formData,
+        organizationName: orgName,
+        expireDate: formData.expireDate || null,
+        detailURL: ensureHttps(formData.detailURL),
+        applyNowURL: ensureHttps(formData.applyNowURL),
+      };
+
       const response = await fetch("/api/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -268,8 +330,12 @@ export default function JobFormPage() {
         throw new Error("Failed to update job.");
       }
 
+      if (!isSpokesAdmin) {
+        await sendUpdateEmail(formattedFormData);
+      }
+
       setMessage("Successfully updated job.");
-      router.push("/admin");
+      router.push(returnURL);
     } catch (error) {
       console.error("Error updating job:", error);
       setMessage("Error updating job.");
@@ -293,12 +359,15 @@ export default function JobFormPage() {
       };
 
       try {
+        if (!user) throw new Error("User not authenticated");
+        const orgName = await getOrganizationName(user.id);
+
         try {
           console.log("!!Attempting to send email...");
           await sendRejectionEmail(
             {
               title: formData.title,
-              organizationName: formData.organizationName,
+              organizationName: orgName,
               contactName: formData.contactName,
               contactEmail: formData.contactEmail,
             },
@@ -341,7 +410,7 @@ export default function JobFormPage() {
         setIsActionConfirmationModalOpen(false);
         setMessage("Successfully deleted job");
         setLoading(false);
-        router.push("/admin");
+        router.push(returnURL);
       } catch (error) {
         console.error(`Error deleting job: ${error}`);
         setMessage("Error occurred while attempting to delete job");
@@ -388,7 +457,7 @@ export default function JobFormPage() {
   const closeSubmitModal = () => {
     setIsSubmitModalOpen(false);
     if (isEditing) {
-      router.push("/admin");
+      router.push(returnURL);
     }
   };
 
@@ -411,7 +480,11 @@ export default function JobFormPage() {
     }
 
     if (isEditing) {
-      handleUpdate(e);
+      if (formData.jobStatus == "approved" && !isSpokesAdmin) {
+        setIsEditModalOpen(true);
+      } else {
+        handleUpdate(e);
+      }
     } else {
       handleFormSubmit(e);
     }
@@ -424,20 +497,20 @@ export default function JobFormPage() {
       </div>
 
       <Heading as="h2" size="md" mb={5}>
-        Job Information
+        Job Inforsmation
       </Heading>
 
       <form onSubmit={onSubmit}>
         <VStack spacing={4}>
           <FormControl isRequired>
-            <FormLabel>Organization Name</FormLabel>
+            <FormLabel>Job Title</FormLabel>
             <Input
               type="text"
               placeholder="Enter your response"
               bg="#F6F6F6"
               border="0"
-              name="organizationName"
-              value={loadingInfo ? "Loading..." : formData.organizationName}
+              name="title"
+              value={loadingInfo ? "Loading..." : formData.title}
               onChange={handleChange}
               disabled={loadingInfo}
             />
@@ -469,19 +542,6 @@ export default function JobFormPage() {
                   setShowMaxError(false);
                 }
               }}
-            />
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel>Job Title</FormLabel>
-            <Input
-              type="text"
-              placeholder="Enter your response"
-              bg="#F6F6F6"
-              border="0"
-              name="title"
-              value={loadingInfo ? "Loading..." : formData.title}
-              onChange={handleChange}
-              disabled={loadingInfo}
             />
           </FormControl>
           <FormControl isRequired>
@@ -645,19 +705,21 @@ export default function JobFormPage() {
                 type="submit"
                 size="lg"
                 colorScheme="blackAlpha"
-                bg="black"
-                _hover={{ bg: "#5E5E5E" }}
+                bg="#045F87"
+                _hover={{ bg: "#2A80A8" }}
               >
                 Update
               </Button>
-              <RejectButton
-                isLoading={loading}
-                onClick={() => {
-                  setIsRejectModalOpen(true);
-                  setAction("Reject");
-                }}
-                className="px-6 mt-10 py-3 rounded-md bg-[#ff9d4f] hover:bg-[#ffbe8b] text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              />
+              {isSpokesAdmin && (
+                <RejectButton
+                  isLoading={loading}
+                  onClick={() => {
+                    setIsRejectModalOpen(true);
+                    setAction("Reject");
+                  }}
+                  className="px-6 mt-10 py-3 rounded-md bg-[#ff9d4f] hover:bg-[#ffbe8b] text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+              )}
               <Button
                 isLoading={loading}
                 loadingText="Deleting..."
@@ -682,17 +744,22 @@ export default function JobFormPage() {
               type="submit"
               size="lg"
               colorScheme="blackAlpha"
-              bg="black"
-              _hover={{ bg: "#5E5E5E" }}
+              bg="#045F87"
+              _hover={{ bg: "#2A80A8" }}
             >
               Submit
             </Button>
           )}
-          {isEditing && (
-            <Link variant="underline" href="/admin" mt="2">
-              Return to Admin Dashboard
-            </Link>
-          )}
+          {isEditing &&
+            (isSpokesAdmin ? (
+              <Link variant="underline" href="/admin" mt="2">
+                Return to Admin Dashboard
+              </Link>
+            ) : (
+              <Link variant="underline" href="/dashboard" mt="2">
+                Return to Dashboard
+              </Link>
+            ))}
           {message && <p>{message}</p>}
         </VStack>
       </form>
@@ -715,6 +782,7 @@ export default function JobFormPage() {
         setRejectionReason={setRejectionReason}
       />
       <JobFailModal isOpen={isFailModalOpen} onClose={closeFailModal} />
+      <JobEditedModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onConfirm={handleUpdate} />
     </Box>
   );
 }

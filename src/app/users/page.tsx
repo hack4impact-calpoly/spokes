@@ -35,30 +35,12 @@ export default function Users() {
    *
    * @param _id - User Id of the row where button was toggled
    */
-  async function handleSwitchChange(_id: string): Promise<void> {
+  function handleSwitchChange(_id: string): void {
     const userIndex = users.findIndex((user) => user._id === _id);
     const newAdminStatus = !users[userIndex].isadmin;
     setUsers((currentUsers) =>
       currentUsers.map((user) => (user._id === _id ? { ...user, isadmin: newAdminStatus } : user)),
     );
-    try {
-      const res = await fetch(`/api/users/${_id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ isadmin: newAdminStatus }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to update users admin status");
-      }
-      const data = await res.json();
-      console.log(data);
-      setUsers(data);
-    } catch (error) {
-      console.error("Failed to fetch users:", error);
-    }
     throw new Error("Function not implemented.");
   }
 
