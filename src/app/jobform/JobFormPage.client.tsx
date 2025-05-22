@@ -27,6 +27,7 @@ import JobActionConfirmationModal from "@/components/JobModals/JobActionConfirma
 import JobFailModal from "@/components/JobModals/JobFailModal";
 import RejectButton from "@/components/RejectButton";
 import JobCardModal from "@/components/JobCard/JobCardModal";
+import JobEditedModal from "@/components/JobModals/JobEditedModal";
 
 function formatIndustries(industries: string[]): Option[] {
   return industries.map((industry) => ({
@@ -152,6 +153,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
   const [action, setAction] = useState("");
   const [rejectionReason, setRejectionReason] = useState("");
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const employmentColorMapping = {
     "Full-Time": "#F8B1B8",
@@ -458,7 +460,11 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
     }
 
     if (isEditing) {
-      handleUpdate(e);
+      if (formData.jobStatus == "approved" && !isSpokesAdmin) {
+        setIsEditModalOpen(true);
+      } else {
+        handleUpdate(e);
+      }
     } else {
       handleFormSubmit(e);
     }
@@ -471,7 +477,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       </div>
 
       <Heading as="h2" size="md" mb={5}>
-        Job Information
+        Job Inforsmation
       </Heading>
 
       <form onSubmit={onSubmit}>
@@ -770,6 +776,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         setRejectionReason={setRejectionReason}
       />
       <JobFailModal isOpen={isFailModalOpen} onClose={closeFailModal} />
+      <JobEditedModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onConfirm={handleUpdate} />
     </Box>
   );
 }
