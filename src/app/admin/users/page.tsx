@@ -30,7 +30,7 @@ interface User {
   _id: string;
   name: string;
   email: string;
-  org?: string;
+  organizationName?: string;
   isadmin: boolean;
 }
 
@@ -38,6 +38,8 @@ export default function Users() {
   const [users, setUsers] = useState<User[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [fileFormat, setFileFormat] = useState("csv");
+  const [filterType, setFilterType] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -55,6 +57,16 @@ export default function Users() {
     };
     fetchUsers();
   }, []);
+
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (user.organizationName?.toLowerCase() ?? "").includes(searchQuery.toLowerCase());
+
+    const matchesFilter = filterType === "all" ? true : filterType === "members" ? user.isadmin : !user.isadmin;
+
+    return matchesSearch && matchesFilter;
+  });
 
   /**
    * ToDo: Disable or enable user's admin status on database
@@ -83,7 +95,7 @@ export default function Users() {
       filename += ".csv";
       content = headers.join(",") + "\n";
       users.forEach((user) => {
-        content += `${user.name},${user.email},${user.org || "N/A"},${user.isadmin ? "Member" : "Non-member"}\n`;
+        content += `${user.name},${user.email},${user.organizationName || "N/A"},${user.isadmin ? "Member" : "Non-member"}\n`;
       });
     } else if (fileFormat === "json") {
       mimeType = "application/json";
@@ -134,12 +146,23 @@ export default function Users() {
           </Link>
         </div>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Select placeholder="Filter List" border="1px solid black" width={"121px"} height={"40px"}>
-            <option>test</option>
+          <Select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            border="1px solid black"
+            width={"150px"}
+            height={"40px"}
+          >
+            <option value="all">All</option>
+            <option value="members">Members</option>
+            <option value="non-members">Non-Members</option>
           </Select>
+
           <input
             type="text"
-            placeholder="Search by Name or Email"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by Name or Org"
             className="border border-black rounded-[5px] w-[210px] h-[40px] px-2"
           />
           <button
@@ -150,7 +173,7 @@ export default function Users() {
           </button>
         </div>
 
-        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent className="rounded-lg">
             <ModalHeader className="text-2xl font-semibold border-b pb-4">Download User List</ModalHeader>
@@ -215,7 +238,7 @@ export default function Users() {
                 </Tr>
               </Thead>
               <Tbody>
-                {users.map((item) => (
+                {filteredUsers.map((item) => (
                   <Tr key={item._id} className="transition-colors hover:bg-gray-50" borderColor="gray.300">
                     <Td className="w-1/4" borderColor="gray.300" pl={0}>
                       <span className="text-md pl-2">{item.name}</span>
@@ -224,7 +247,7 @@ export default function Users() {
                       {item.email}
                     </Td>
                     <Td className="w-1/4" borderColor="gray.300">
-                      {item.org ?? "N/A"}
+                      {item.organizationName ?? "N/A"}
                     </Td>
                     <Td className="w-1/6" borderColor="gray.300" pr={0}>
                       <div className="flex items-center justify-between py-2 pr-2">
