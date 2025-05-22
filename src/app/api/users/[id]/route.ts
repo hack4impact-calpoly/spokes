@@ -26,12 +26,12 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest) {
   try {
     await connectDB();
 
     // Extract the userId from the route parameters
-    const { id } = params;
+    const id = req.nextUrl.pathname.split("/").pop();
 
     // Extract the newAdminStatus from the request body
     const { isadmin: newAdminStatus } = await req.json(); // Renamed for clarity
