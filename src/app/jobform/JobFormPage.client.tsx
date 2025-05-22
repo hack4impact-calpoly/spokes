@@ -27,6 +27,7 @@ import JobActionConfirmationModal from "@/components/JobModals/JobActionConfirma
 import JobFailModal from "@/components/JobModals/JobFailModal";
 import RejectButton from "@/components/RejectButton";
 import JobCardModal from "@/components/JobCard/JobCardModal";
+import JobEditedModal from "@/components/JobModals/JobEditedModal";
 import { useUser } from "@clerk/nextjs";
 
 function formatIndustries(industries: string[]): Option[] {
@@ -112,6 +113,7 @@ const ensureHttps = (url: string | undefined): string | undefined => {
 
 type JobFormPageProps = {
   isSpokesAdmin: Boolean;
+  returnURL: string;
 };
 
 async function getOrganizationName(clerkUserId: string): Promise<string> {
@@ -125,7 +127,7 @@ async function getOrganizationName(clerkUserId: string): Promise<string> {
   return data.organizationName;
 }
 
-export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
+export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPageProps) {
   const { register, handleSubmit: formHandleSubmit, reset } = useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -164,6 +166,7 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
   const [action, setAction] = useState("");
   const [rejectionReason, setRejectionReason] = useState("");
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const employmentColorMapping = {
     "Full-Time": "#F8B1B8",
@@ -332,7 +335,7 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
       }
 
       setMessage("Successfully updated job.");
-      router.push("/admin");
+      router.push(returnURL);
     } catch (error) {
       console.error("Error updating job:", error);
       setMessage("Error updating job.");
@@ -407,7 +410,7 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
         setIsActionConfirmationModalOpen(false);
         setMessage("Successfully deleted job");
         setLoading(false);
-        router.push("/admin");
+        router.push(returnURL);
       } catch (error) {
         console.error(`Error deleting job: ${error}`);
         setMessage("Error occurred while attempting to delete job");
@@ -454,7 +457,7 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
   const closeSubmitModal = () => {
     setIsSubmitModalOpen(false);
     if (isEditing) {
-      router.push("/admin");
+      router.push(returnURL);
     }
   };
 
@@ -477,7 +480,11 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
     }
 
     if (isEditing) {
-      handleUpdate(e);
+      if (formData.jobStatus == "approved" && !isSpokesAdmin) {
+        setIsEditModalOpen(true);
+      } else {
+        handleUpdate(e);
+      }
     } else {
       handleFormSubmit(e);
     }
@@ -490,7 +497,7 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
       </div>
 
       <Heading as="h2" size="md" mb={5}>
-        Job Information
+        Job Inforsmation
       </Heading>
 
       <form onSubmit={onSubmit}>
@@ -743,11 +750,16 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
               Submit
             </Button>
           )}
-          {isEditing && (
-            <Link variant="underline" href="/admin" mt="2">
-              Return to Admin Dashboard
-            </Link>
-          )}
+          {isEditing &&
+            (isSpokesAdmin ? (
+              <Link variant="underline" href="/admin" mt="2">
+                Return to Admin Dashboard
+              </Link>
+            ) : (
+              <Link variant="underline" href="/dashboard" mt="2">
+                Return to Dashboard
+              </Link>
+            ))}
           {message && <p>{message}</p>}
         </VStack>
       </form>
@@ -770,6 +782,7 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
         setRejectionReason={setRejectionReason}
       />
       <JobFailModal isOpen={isFailModalOpen} onClose={closeFailModal} />
+      <JobEditedModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onConfirm={handleUpdate} />
     </Box>
   );
 }

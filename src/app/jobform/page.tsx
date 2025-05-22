@@ -3,11 +3,26 @@ import { Center, Spinner } from "@chakra-ui/react";
 import JobFormPage from "./JobFormPage.client";
 import { getAuthWithRole } from "@/lib/auth";
 import { auth } from "@clerk/nextjs/server";
+import { type NextPage } from "next"; // Import NextPage type
 
-export default async function JobFormParentPage() {
+// Define the props type using NextPage
+interface JobFormParentPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+// Use NextPage type for the component
+const JobFormParentPage: NextPage<JobFormParentPageProps> = async ({ searchParams }) => {
   const { userId, orgSlug } = await auth();
   const authWithRole = getAuthWithRole({ userId, orgSlug });
-  const isSpokesAdmin = authWithRole.role == "spokes_admin";
+  const isSpokesAdmin = authWithRole.role === "spokes_admin";
+
+  const resolvedSearchParams = await searchParams;
+  const returnURL =
+    typeof resolvedSearchParams.returnURL === "string"
+      ? resolvedSearchParams.returnURL
+      : Array.isArray(resolvedSearchParams.returnURL)
+        ? resolvedSearchParams.returnURL[0]
+        : "/admin";
 
   return (
     <Suspense
@@ -17,7 +32,9 @@ export default async function JobFormParentPage() {
         </Center>
       }
     >
-      <JobFormPage isSpokesAdmin={isSpokesAdmin} />
+      <JobFormPage isSpokesAdmin={isSpokesAdmin} returnURL={returnURL} />
     </Suspense>
   );
-}
+};
+
+export default JobFormParentPage;
