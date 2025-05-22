@@ -127,7 +127,7 @@ async function getOrganizationName(clerkUserId: string): Promise<string> {
   return data.organizationName;
 }
 
-export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
+export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPageProps) {
   const { register, handleSubmit: formHandleSubmit, reset } = useForm();
   const router = useRouter();
   const searchParams = useSearchParams();

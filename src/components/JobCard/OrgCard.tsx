@@ -44,7 +44,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
 
     function handleEditApplicationButton(e: React.ChangeEvent<any>) {
       e.preventDefault();
-      router.push(`/jobform?jobId=${job._id}`);
+      router.push(`/jobform?jobId=${job._id}&returnURL=/dashboard`);
     }
 
     return (
