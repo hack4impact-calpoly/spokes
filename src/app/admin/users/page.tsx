@@ -271,36 +271,56 @@ export default function Users() {
 
         {users.length > 0 ? (
           <Box overflowX="auto" className="px-2">
-            <Table className="-mt-3 mb-5 min-w-[600px] w-full" variant="simple" borderColor="gray.300">
+            <Table className="mb-5 min-w-[600px] w-full" variant="simple" borderColor="gray.300">
               <Thead>
-                <Tr>
-                  <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.300" pl={0}>
+                <Tr className="">
+                  <Th
+                    fontWeight="bold"
+                    color="black"
+                    fontSize="xl"
+                    textTransform="none"
+                    borderColor="gray.200"
+                    pl={0}
+                    py={4}
+                  >
                     Name
                   </Th>
-                  <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.300">
+                  <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.200" py={4}>
                     Email
                   </Th>
-                  <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.300">
+                  <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.200" py={4}>
                     Organization
                   </Th>
-                  <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.300" pr={0}>
+                  <Th
+                    fontWeight="bold"
+                    color="black"
+                    fontSize="xl"
+                    textTransform="none"
+                    borderColor="gray.200"
+                    pr={0}
+                    py={4}
+                  >
                     Member status
                   </Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {filteredUsers.map((item) => (
-                  <Tr key={item._id} className="transition-colors hover:bg-gray-50" borderColor="gray.300">
-                    <Td className="w-1/4" borderColor="gray.300" pl={0}>
-                      <span className="text-md pl-2">{item.name}</span>
+                  <Tr
+                    key={item._id}
+                    className="transition-colors hover:bg-gray-50 border-b border-gray-200"
+                    borderColor="gray.200"
+                  >
+                    <Td className="w-1/4" borderColor="gray.200" pl={0} py={4}>
+                      <span className="text-md font-medium text-gray-900">{item.name}</span>
                     </Td>
-                    <Td className="w-1/3" borderColor="gray.300">
-                      {item.email}
+                    <Td className="w-1/3" borderColor="gray.200" py={4}>
+                      <span className="text-md text-gray-600">{item.email}</span>
                     </Td>
-                    <Td className="w-1/4" borderColor="gray.300">
-                      {item.organizationName ?? "N/A"}
+                    <Td className="w-1/4" borderColor="gray.200" py={4}>
+                      <span className="text-md text-gray-600">{item.organizationName ?? "N/A"}</span>
                     </Td>
-                    <Td className="w-1/6" borderColor="gray.300" pr={0}>
+                    <Td className="w-1/6" borderColor="gray.200" pr={0} py={4}>
                       <div className="flex items-center justify-between py-2 pr-2">
                         <span
                           className={`inline-block w-28 text-md font-medium transition-colors ${
@@ -320,7 +340,6 @@ export default function Users() {
                     </Td>
                   </Tr>
                 ))}
-                <Tr className="h-8 border-b border-gray-300"></Tr>
               </Tbody>
             </Table>
             <div className="relative h-32 -mt-8">
