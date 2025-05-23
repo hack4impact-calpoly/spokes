@@ -48,16 +48,19 @@ export default function JobStatusBadge({ jobStatus, className }: JobStatusBadgeP
     <ChakraTooltip
       label={tooltipText}
       hasArrow
-      placement="left"
+      placement="top"
       bg="#2B2B2B"
       color="white"
       fontSize="sm"
       borderRadius="md"
       padding="2"
       boxShadow="md"
+      offset={[0, 5]}
+      maxW="220px"
+      openDelay={400}
     >
       <Badge
-        className={twMerge("text-center", className)}
+        className={twMerge("text-center cursor-default", className)}
         rounded="md"
         p="1"
         px="2"
