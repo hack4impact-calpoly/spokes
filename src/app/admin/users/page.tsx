@@ -309,10 +309,11 @@ export default function Users() {
                     </Td>
                   </Tr>
                 ))}
+                <Tr className="h-8 border-b border-gray-300"></Tr>
               </Tbody>
             </Table>
-            <div className="relative h-24 mt-8">
-              <div className="absolute inset-0 bg-gradient-to-b from-white via-white/80 to-transparent"></div>
+            <div className="relative h-32 -mt-8">
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/90 to-white"></div>
             </div>
           </Box>
         ) : (
