@@ -37,3 +37,35 @@ export const GET = withApiAuth(
     allowedRoles: ["nonprofit", "spokes_admin"],
   },
 );
+
+export async function PATCH(req: NextRequest) {
+  try {
+    await connectDB();
+
+    // Extract the userId from the route parameters
+    const id = req.nextUrl.pathname.split("/").pop();
+
+    // Extract the newMemberStatus from the request body
+    const { paidMember: newMemberStatus } = await req.json();
+    // Validate ID
+    if (!id) {
+      return NextResponse.json({ message: "User ID is required" }, { status: 400 });
+    }
+
+    // Find user by ID
+    const user = await User.findById(id);
+
+    // If user not found, return 404
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    user.paidMember = newMemberStatus;
+    await user.save();
+
+    return NextResponse.json(user, { status: 200 });
+  } catch (error: any) {
+    console.error("Error updating user admin status:", error); // Log the error for debugging
+    return NextResponse.json({ message: "Failed to update user admin status", error: error.message }, { status: 500 });
+  }
+}

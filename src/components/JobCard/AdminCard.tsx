@@ -5,7 +5,7 @@ import JobStatusBadge from "@/components/JobCard/JobStatusBadge";
 import JobBadge from "@/components/JobCard/JobBadge";
 import JobCardInformation from "@/components/JobCard/JobCardInformation";
 import JobPostedDate from "@/components/JobCard/JobPostedDate";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import JobCardModal from "./JobCardModal";
 import { useRouter } from "next/navigation";
 import RejectButton from "@/components/RejectButton";
@@ -21,9 +21,23 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<"approve" | "reject" | "renew" | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [isNewIndicatorDismissed, setIsNewIndicatorDismissed] = useState(false);
   const router = useRouter();
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  // Check localStorage for dismissed state on component mount
+  useEffect(() => {
+    const dismissedState = localStorage.getItem(`new-indicator-${job._id}`);
+    if (dismissedState === "true") {
+      setIsNewIndicatorDismissed(true);
+    }
+  }, [job._id]);
+
+  const handleDismissIndicator = () => {
+    setIsNewIndicatorDismissed(true);
+    localStorage.setItem(`new-indicator-${job._id}`, "true");
+  };
 
   // Opens modal with the appropriate action
   const openModal = (action: "approve" | "reject" | "renew") => {
@@ -78,12 +92,21 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
 
   function handleEditApplicationButton(e: React.ChangeEvent<any>) {
     e.preventDefault();
-    router.push(`/jobform?jobId=${job._id}`);
+    router.push(`/jobform?jobId=${job._id}&returnURL=/admin`);
   }
 
   return (
     <div className="w-full h-full" ref={innerRef}>
       <div className="relative bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm h-full flex flex-col">
+        {new Date(job.postDate).getTime() > Date.now() - 24 * 60 * 60 * 1000 && !isNewIndicatorDismissed && (
+          <div
+            className="absolute -top-1 -right-1 cursor-pointer"
+            onClick={handleDismissIndicator}
+            title="Dismiss new indicator"
+          >
+            <div className="w-4 h-4 bg-[#045F87] rounded-full border-2 border-white shadow-sm"></div>
+          </div>
+        )}
         <IconButton
           aria-label="Edit Application"
           // eslint-disable-next-line react/jsx-no-undef

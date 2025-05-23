@@ -22,12 +22,13 @@ import RadioCard from "@/components/RadioCard";
 import TagSelect from "@/components/TagSelect";
 import { Option } from "@/components/TagsMultiselect/multiselect";
 import { cn } from "@/lib/utils";
-import JobConfirmationModal from "@/components/JobConfirmationModal";
-import JobActionConfirmationModal from "@/components/JobActionConfirmationModal";
-import JobFailModal from "@/components/JobFailModal";
+import JobConfirmationModal from "@/components/JobModals/JobConfirmationModal";
+import JobActionConfirmationModal from "@/components/JobModals/JobActionConfirmationModal";
+import JobFailModal from "@/components/JobModals/JobFailModal";
 import RejectButton from "@/components/RejectButton";
 import JobCardModal from "@/components/JobCard/JobCardModal";
-import { useOrganization } from "@clerk/nextjs";
+import JobEditedModal from "@/components/JobModals/JobEditedModal";
+import { useUser } from "@clerk/nextjs";
 
 function formatIndustries(industries: string[]): Option[] {
   return industries.map((industry) => ({
@@ -112,15 +113,28 @@ const ensureHttps = (url: string | undefined): string | undefined => {
 
 type JobFormPageProps = {
   isSpokesAdmin: Boolean;
+  returnURL: string;
 };
 
-export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
+async function getOrganizationName(clerkUserId: string): Promise<string> {
+  const response = await fetch(`/api/users/${clerkUserId}`);
+  const data = await response.json();
+
+  if (!response.ok || !data.organizationName) {
+    throw new Error(data.message || "Failed to fetch organization name");
+  }
+
+  return data.organizationName;
+}
+
+export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPageProps) {
   const { register, handleSubmit: formHandleSubmit, reset } = useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
   const jobId = searchParams.get("jobId");
   const isEditing = Boolean(jobId);
   const { resetForm } = useFormReset();
+  const { user } = useUser();
 
   const [formData, setFormData] = useState<FormDataType>({
     organizationName: "",
@@ -152,6 +166,7 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
   const [action, setAction] = useState("");
   const [rejectionReason, setRejectionReason] = useState("");
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const employmentColorMapping = {
     "Full-Time": "#F8B1B8",
@@ -227,14 +242,18 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
     setLoading(true);
     setMessage("");
 
-    const formattedFormData = {
-      ...formData,
-      expireDate: formData.expireDate || null,
-      detailURL: ensureHttps(formData.detailURL),
-      applyNowURL: ensureHttps(formData.applyNowURL),
-    };
-
     try {
+      if (!user) throw new Error("User not authenticated");
+      const orgName = await getOrganizationName(user.id);
+
+      const formattedFormData = {
+        ...formData,
+        organizationName: orgName,
+        expireDate: formData.expireDate || null,
+        detailURL: ensureHttps(formData.detailURL),
+        applyNowURL: ensureHttps(formData.applyNowURL),
+      };
+
       const response = await fetch("/api/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -316,7 +335,7 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
       }
 
       setMessage("Successfully updated job.");
-      router.push("/admin");
+      router.push(returnURL);
     } catch (error) {
       console.error("Error updating job:", error);
       setMessage("Error updating job.");
@@ -340,12 +359,15 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
       };
 
       try {
+        if (!user) throw new Error("User not authenticated");
+        const orgName = await getOrganizationName(user.id);
+
         try {
           console.log("!!Attempting to send email...");
           await sendRejectionEmail(
             {
               title: formData.title,
-              organizationName: formData.organizationName,
+              organizationName: orgName,
               contactName: formData.contactName,
               contactEmail: formData.contactEmail,
             },
@@ -388,7 +410,7 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
         setIsActionConfirmationModalOpen(false);
         setMessage("Successfully deleted job");
         setLoading(false);
-        router.push("/admin");
+        router.push(returnURL);
       } catch (error) {
         console.error(`Error deleting job: ${error}`);
         setMessage("Error occurred while attempting to delete job");
@@ -435,7 +457,7 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
   const closeSubmitModal = () => {
     setIsSubmitModalOpen(false);
     if (isEditing) {
-      router.push("/admin");
+      router.push(returnURL);
     }
   };
 
@@ -458,7 +480,11 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
     }
 
     if (isEditing) {
-      handleUpdate(e);
+      if (formData.jobStatus == "approved" && !isSpokesAdmin) {
+        setIsEditModalOpen(true);
+      } else {
+        handleUpdate(e);
+      }
     } else {
       handleFormSubmit(e);
     }
@@ -477,14 +503,14 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
       <form onSubmit={onSubmit}>
         <VStack spacing={4}>
           <FormControl isRequired>
-            <FormLabel>Organization Name</FormLabel>
+            <FormLabel>Job Title</FormLabel>
             <Input
               type="text"
               placeholder="Enter your response"
               bg="#F6F6F6"
               border="0"
-              name="organizationName"
-              value={loadingInfo ? "Loading..." : formData.organizationName}
+              name="title"
+              value={loadingInfo ? "Loading..." : formData.title}
               onChange={handleChange}
               disabled={loadingInfo}
             />
@@ -516,19 +542,6 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
                   setShowMaxError(false);
                 }
               }}
-            />
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel>Job Title</FormLabel>
-            <Input
-              type="text"
-              placeholder="Enter your response"
-              bg="#F6F6F6"
-              border="0"
-              name="title"
-              value={loadingInfo ? "Loading..." : formData.title}
-              onChange={handleChange}
-              disabled={loadingInfo}
             />
           </FormControl>
           <FormControl isRequired>
@@ -684,65 +697,95 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
             <FormErrorMessage>Please enter a valid email address.</FormErrorMessage>
           </FormControl>
           {isEditing ? (
-            <HStack>
+            <div className="mt-10 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+              <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+                {(!loading || action === "Update") && (
+                  <Button
+                    isLoading={loading && action === "Update"}
+                    loadingText="Updating..."
+                    type="submit"
+                    size="lg"
+                    colorScheme="blackAlpha"
+                    bg="#045F87"
+                    _hover={{ bg: "#2A80A8" }}
+                    className="w-full sm:w-auto min-w-[120px]"
+                    onClick={() => setAction("Update")}
+                  >
+                    Update
+                  </Button>
+                )}
+                {isSpokesAdmin && (!loading || action === "Reject") && (
+                  <RejectButton
+                    isLoading={loading && action === "Reject"}
+                    onClick={() => {
+                      setIsRejectModalOpen(true);
+                      setAction("Reject");
+                    }}
+                    className="w-full sm:w-auto min-w-[120px] px-6 py-3 rounded-md bg-[#ff9d4f] hover:bg-[#ffbe8b] text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                )}
+                {(!loading || action === "Delete") && (
+                  <Button
+                    isLoading={loading && action === "Delete"}
+                    loadingText="Deleting..."
+                    size="lg"
+                    colorScheme="red"
+                    bg="red"
+                    _hover={{ bg: "#ff8b8b" }}
+                    onClick={() => {
+                      setIsActionConfirmationModalOpen(true);
+                      setAction("Delete");
+                    }}
+                    className="w-full sm:w-auto min-w-[120px]"
+                  >
+                    Delete
+                  </Button>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="mt-10 flex justify-center">
               <Button
                 isLoading={loading}
-                loadingText="Updating..."
-                mt={10}
+                loadingText="Submitting..."
                 type="submit"
                 size="lg"
                 colorScheme="blackAlpha"
                 bg="#045F87"
                 _hover={{ bg: "#2A80A8" }}
+                className="w-full sm:w-auto min-w-[200px]"
               >
-                Update
+                Submit
               </Button>
-              {isSpokesAdmin && (
-                <RejectButton
-                  isLoading={loading}
-                  onClick={() => {
-                    setIsRejectModalOpen(true);
-                    setAction("Reject");
-                  }}
-                  className="px-6 mt-10 py-3 rounded-md bg-[#ff9d4f] hover:bg-[#ffbe8b] text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-              )}
-              <Button
-                isLoading={loading}
-                loadingText="Deleting..."
-                mt={10}
-                size="lg"
-                colorScheme="red"
-                bg="red"
-                _hover={{ bg: "#ff8b8b" }}
-                onClick={() => {
-                  setIsActionConfirmationModalOpen(true);
-                  setAction("Delete");
-                }}
+            </div>
+          )}
+          {isEditing &&
+            (isSpokesAdmin ? (
+              <Link
+                href="/admin"
+                className="mt-1 block text-center text-gray-500 text-sm hover:text-[#045F87] transition-colors duration-200"
               >
-                Delete
-              </Button>
-            </HStack>
-          ) : (
-            <Button
-              isLoading={loading}
-              loadingText="Submitting..."
-              mt={10}
-              type="submit"
-              size="lg"
-              colorScheme="blackAlpha"
-              bg="#045F87"
-              _hover={{ bg: "#2A80A8" }}
+                ← Return to Admin Dashboard
+              </Link>
+            ) : (
+              <Link
+                href="/dashboard"
+                className="mt-1 block text-center text-gray-500 text-sm hover:text-[#045F87] transition-colors duration-200"
+              >
+                ← Return to Dashboard
+              </Link>
+            ))}
+          {message && (
+            <div
+              className={`mt-4 p-3 rounded-md text-center text-sm font-medium ${
+                message.includes("Error")
+                  ? "bg-red-50 text-red-600 border border-red-200"
+                  : "bg-green-50 text-green-600 border border-green-200"
+              }`}
             >
-              Submit
-            </Button>
+              {message}
+            </div>
           )}
-          {isEditing && (
-            <Link variant="underline" href="/admin" mt="2">
-              Return to Admin Dashboard
-            </Link>
-          )}
-          {message && <p>{message}</p>}
         </VStack>
       </form>
 
@@ -764,6 +807,7 @@ export default function JobFormPage({ isSpokesAdmin }: JobFormPageProps) {
         setRejectionReason={setRejectionReason}
       />
       <JobFailModal isOpen={isFailModalOpen} onClose={closeFailModal} />
+      <JobEditedModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onConfirm={handleUpdate} />
     </Box>
   );
 }

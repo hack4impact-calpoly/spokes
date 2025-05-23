@@ -2,7 +2,6 @@ import { twMerge } from "tailwind-merge";
 import { ComponentProps, forwardRef } from "react";
 import { IJob } from "@/database/jobSchema";
 import JobStatusBadge from "./JobStatusBadge";
-import JobPostedDate from "./JobPostedDate";
 import JobBadge from "./JobBadge";
 import { IconButton } from "@chakra-ui/react";
 import { FiEdit } from "react-icons/fi";
@@ -45,7 +44,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
 
     function handleEditApplicationButton(e: React.ChangeEvent<any>) {
       e.preventDefault();
-      router.push(`/jobform?jobId=${job._id}`);
+      router.push(`/jobform?jobId=${job._id}&returnURL=/dashboard`);
     }
 
     return (
