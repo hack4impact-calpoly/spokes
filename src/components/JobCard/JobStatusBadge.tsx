@@ -30,9 +30,15 @@ export default function JobStatusBadge({ jobStatus, className }: JobStatusBadgeP
       textColor = "#D45959";
       tooltipText = "This job posting is no longer active. Renew to make it visible to potential applicants again.";
       break;
+    case "rejected":
+      badgeColor = "#FFE5E5"; // red
+      textColor = "#D45959";
+      tooltipText =
+        "This job posting was not approved. Please review the provided feedback and implement necessary changes.";
+      break;
     default:
       badgeColor = "#e6e6e6"; // grey
-      tooltipText = "Job Status Information Unavailable";
+      tooltipText = "Job status information unvailable.";
       break;
   }
 
