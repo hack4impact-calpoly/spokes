@@ -31,6 +31,8 @@ interface User {
   name: string;
   email: string;
   organizationName?: string;
+  paidMember: boolean;
+  postedJobs: [string];
   isadmin: boolean;
 }
 
@@ -59,11 +61,15 @@ export default function Users() {
   }, []);
 
   const filteredUsers = users.filter((user) => {
+    const searchQueryLower = (searchQuery || "").toLowerCase();
     const matchesSearch =
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (user.organizationName?.toLowerCase() ?? "").includes(searchQuery.toLowerCase());
+      (user.name || "").toLowerCase().includes(searchQueryLower) ||
+      (user.organizationName || "").toLowerCase().includes(searchQueryLower);
 
-    const matchesFilter = filterType === "all" ? true : filterType === "members" ? user.isadmin : !user.isadmin;
+    const matchesFilter =
+      filterType === "all" ||
+      (filterType === "members" && user.paidMember) ||
+      (filterType === "non-members" && !user.paidMember);
 
     return matchesSearch && matchesFilter;
   });
@@ -73,13 +79,27 @@ export default function Users() {
    *
    * @param _id - User Id of the row where button was toggled
    */
-  function handleSwitchChange(_id: string): void {
+  async function handleSwitchChange(_id: string): Promise<void> {
     const userIndex = users.findIndex((user) => user._id === _id);
-    const newAdminStatus = !users[userIndex].isadmin;
+    const newMemberStatus = !users[userIndex].paidMember;
     setUsers((currentUsers) =>
-      currentUsers.map((user) => (user._id === _id ? { ...user, isadmin: newAdminStatus } : user)),
+      currentUsers.map((user) => (user._id === _id ? { ...user, paidMember: newMemberStatus } : user)),
     );
-    throw new Error("Function not implemented.");
+    try {
+      const res = await fetch(`/api/users/${_id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ paidMember: newMemberStatus }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to update users admin status");
+      }
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+    }
   }
 
   const handleDownload = () => {
@@ -95,7 +115,7 @@ export default function Users() {
       filename += ".csv";
       content = headers.join(",") + "\n";
       users.forEach((user) => {
-        content += `${user.name},${user.email},${user.organizationName || "N/A"},${user.isadmin ? "Member" : "Non-member"}\n`;
+        content += `${user.name},${user.email},${user.organizationName || "N/A"},${user.paidMember ? "Member" : "Non-member"}\n`;
       });
     } else if (fileFormat === "json") {
       mimeType = "application/json";
@@ -253,15 +273,15 @@ export default function Users() {
                       <div className="flex items-center justify-between py-2 pr-2">
                         <span
                           className={`inline-block w-28 text-md font-medium transition-colors ${
-                            item.isadmin ? "text-green-600" : "text-gray-600"
+                            item.paidMember ? "text-green-600" : "text-gray-600"
                           }`}
                         >
-                          {item.isadmin ? "Member" : "Non-member"}
+                          {item.paidMember ? "Member" : "Non-member"}
                         </span>
                         <Switch
                           size="md"
                           colorScheme="blue"
-                          isChecked={item.isadmin}
+                          isChecked={item.paidMember}
                           onChange={() => handleSwitchChange(item._id)}
                           className="transition-transform hover:scale-105 [&>span[data-checked]]:bg-[#045F87]"
                         />
