@@ -744,21 +744,19 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
               </div>
             </div>
           ) : (
-            <div className="mt-10 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-              <div className="flex justify-center">
-                <Button
-                  isLoading={loading}
-                  loadingText="Submitting..."
-                  type="submit"
-                  size="lg"
-                  colorScheme="blackAlpha"
-                  bg="#045F87"
-                  _hover={{ bg: "#2A80A8" }}
-                  className="w-full sm:w-auto min-w-[200px]"
-                >
-                  Submit
-                </Button>
-              </div>
+            <div className="mt-10 flex justify-center">
+              <Button
+                isLoading={loading}
+                loadingText="Submitting..."
+                type="submit"
+                size="lg"
+                colorScheme="blackAlpha"
+                bg="#045F87"
+                _hover={{ bg: "#2A80A8" }}
+                className="w-full sm:w-auto min-w-[200px]"
+              >
+                Submit
+              </Button>
             </div>
           )}
           {isEditing &&
