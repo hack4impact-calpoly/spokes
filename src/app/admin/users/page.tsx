@@ -137,7 +137,7 @@ export default function Users() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full min-h-[calc(100vh-100px)]">
       <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col text-black gap-8">
         <div className="flex items-center gap-3">
           <div className="h-8 w-1 bg-[#045F87] rounded-full"></div>
@@ -294,7 +294,9 @@ export default function Users() {
                 ))}
               </Tbody>
             </Table>
-            <div className="h-16 border-t border-gray-200 mt-8"></div>
+            <div className="relative h-24 mt-8">
+              <div className="absolute inset-0 bg-gradient-to-b from-white via-white/80 to-transparent"></div>
+            </div>
           </Box>
         ) : (
           <TableSkeleton />
