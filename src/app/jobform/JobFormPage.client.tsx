@@ -765,14 +765,14 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
             (isSpokesAdmin ? (
               <Link
                 href="/admin"
-                className="mt-6 block text-center text-gray-500 text-sm hover:text-[#045F87] transition-colors duration-200"
+                className="mt-1 block text-center text-gray-500 text-sm hover:text-[#045F87] transition-colors duration-200"
               >
                 ← Return to Admin Dashboard
               </Link>
             ) : (
               <Link
                 href="/dashboard"
-                className="mt-6 block text-center text-gray-500 text-sm hover:text-[#045F87] transition-colors duration-200"
+                className="mt-1 block text-center text-gray-500 text-sm hover:text-[#045F87] transition-colors duration-200"
               >
                 ← Return to Dashboard
               </Link>
