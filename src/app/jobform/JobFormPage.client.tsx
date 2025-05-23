@@ -497,7 +497,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       </div>
 
       <Heading as="h2" size="md" mb={5}>
-        Job Inforsmation
+        Job Information
       </Heading>
 
       <form onSubmit={onSubmit}>
@@ -697,70 +697,97 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
             <FormErrorMessage>Please enter a valid email address.</FormErrorMessage>
           </FormControl>
           {isEditing ? (
-            <HStack>
-              <Button
-                isLoading={loading}
-                loadingText="Updating..."
-                mt={10}
-                type="submit"
-                size="lg"
-                colorScheme="blackAlpha"
-                bg="#045F87"
-                _hover={{ bg: "#2A80A8" }}
-              >
-                Update
-              </Button>
-              {isSpokesAdmin && (
-                <RejectButton
-                  isLoading={loading}
-                  onClick={() => {
-                    setIsRejectModalOpen(true);
-                    setAction("Reject");
-                  }}
-                  className="px-6 mt-10 py-3 rounded-md bg-[#ff9d4f] hover:bg-[#ffbe8b] text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-              )}
-              <Button
-                isLoading={loading}
-                loadingText="Deleting..."
-                mt={10}
-                size="lg"
-                colorScheme="red"
-                bg="red"
-                _hover={{ bg: "#ff8b8b" }}
-                onClick={() => {
-                  setIsActionConfirmationModalOpen(true);
-                  setAction("Delete");
-                }}
-              >
-                Delete
-              </Button>
-            </HStack>
+            <div className="mt-10 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+              <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+                {(!loading || action === "Update") && (
+                  <Button
+                    isLoading={loading && action === "Update"}
+                    loadingText="Updating..."
+                    type="submit"
+                    size="lg"
+                    colorScheme="blackAlpha"
+                    bg="#045F87"
+                    _hover={{ bg: "#2A80A8" }}
+                    className="w-full sm:w-auto min-w-[120px]"
+                    onClick={() => setAction("Update")}
+                  >
+                    Update
+                  </Button>
+                )}
+                {isSpokesAdmin && (!loading || action === "Reject") && (
+                  <RejectButton
+                    isLoading={loading && action === "Reject"}
+                    onClick={() => {
+                      setIsRejectModalOpen(true);
+                      setAction("Reject");
+                    }}
+                    className="w-full sm:w-auto min-w-[120px] px-6 py-3 rounded-md bg-[#ff9d4f] hover:bg-[#ffbe8b] text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                )}
+                {(!loading || action === "Delete") && (
+                  <Button
+                    isLoading={loading && action === "Delete"}
+                    loadingText="Deleting..."
+                    size="lg"
+                    colorScheme="red"
+                    bg="red"
+                    _hover={{ bg: "#ff8b8b" }}
+                    onClick={() => {
+                      setIsActionConfirmationModalOpen(true);
+                      setAction("Delete");
+                    }}
+                    className="w-full sm:w-auto min-w-[120px]"
+                  >
+                    Delete
+                  </Button>
+                )}
+              </div>
+            </div>
           ) : (
-            <Button
-              isLoading={loading}
-              loadingText="Submitting..."
-              mt={10}
-              type="submit"
-              size="lg"
-              colorScheme="blackAlpha"
-              bg="#045F87"
-              _hover={{ bg: "#2A80A8" }}
-            >
-              Submit
-            </Button>
+            <div className="mt-10 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+              <div className="flex justify-center">
+                <Button
+                  isLoading={loading}
+                  loadingText="Submitting..."
+                  type="submit"
+                  size="lg"
+                  colorScheme="blackAlpha"
+                  bg="#045F87"
+                  _hover={{ bg: "#2A80A8" }}
+                  className="w-full sm:w-auto min-w-[200px]"
+                >
+                  Submit
+                </Button>
+              </div>
+            </div>
           )}
           {isEditing &&
             (isSpokesAdmin ? (
-              <Link variant="underline" href="/admin" mt="2">
-                Return to Admin Dashboard
+              <Link
+                href="/admin"
+                className="mt-6 block text-center text-gray-500 text-sm hover:text-[#045F87] transition-colors duration-200"
+              >
+                ← Return to Admin Dashboard
               </Link>
             ) : (
-              <Link variant="underline" href="/dashboard" mt="2">
-                Return to Dashboard
+              <Link
+                href="/dashboard"
+                className="mt-6 block text-center text-gray-500 text-sm hover:text-[#045F87] transition-colors duration-200"
+              >
+                ← Return to Dashboard
               </Link>
             ))}
-          {message && <p>{message}</p>}
+          {message && (
+            <div
+              className={`mt-4 p-3 rounded-md text-center text-sm font-medium ${
+                message.includes("Error")
+                  ? "bg-red-50 text-red-600 border border-red-200"
+                  : "bg-green-50 text-green-600 border border-green-200"
+              }`}
+            >
+              {message}
+            </div>
+          )}
         </VStack>
       </form>
 

@@ -216,7 +216,7 @@ export default function Users() {
               <label className="text-sm font-medium text-gray-700">Export</label>
               <button
                 onClick={onOpen}
-                className="cursor-pointer border border-[#045F87] bg-[#045F87] text-white rounded-md h-[40px] px-4 flex items-center justify-center gap-2 hover:bg-[#034A6B] transition-all whitespace-nowrap"
+                className="cursor-pointer border-2 border-[#045F87] bg-[#045F87] text-white rounded-md h-[40px] px-4 flex items-center justify-center gap-2 hover:bg-[#034A6B] transition-all whitespace-nowrap font-medium shadow-sm hover:shadow-md"
               >
                 Download <DownloadIcon className="ml-1" />
               </button>
