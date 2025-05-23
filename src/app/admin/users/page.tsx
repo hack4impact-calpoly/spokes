@@ -169,48 +169,59 @@ export default function Users() {
           </Link>
         </div>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            border="1px solid #E2E8F0"
-            width={"150px"}
-            height={"40px"}
-            className="rounded-md focus:ring-1 focus:ring-[#045F87] focus:border-[#045F87] transition-all"
-          >
-            <option value="all">All</option>
-            <option value="members">Members</option>
-            <option value="non-members">Non-Members</option>
-          </Select>
+          <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-lg border border-gray-200 shadow-sm w-full">
+            <div className="flex flex-col gap-2 flex-1">
+              <label className="text-sm font-medium text-gray-700">Filter by Status</label>
+              <Select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                border="1px solid #E2E8F0"
+                height={"40px"}
+                className="rounded-md focus:ring-1 focus:ring-[#045F87] focus:border-[#045F87] transition-all"
+              >
+                <option value="all">All Users</option>
+                <option value="members">Members Only</option>
+                <option value="non-members">Non-Members Only</option>
+              </Select>
+            </div>
 
-          <div className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by Name or Org"
-              className="border border-[#E2E8F0] rounded-md w-[230px] h-[40px] pl-3 pr-8 focus:outline-none focus:ring-1 focus:ring-[#045F87] focus:border-[#045F87] transition-all"
-            />
-            <svg
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
+            <div className="flex flex-col gap-2 flex-1">
+              <label className="text-sm font-medium text-gray-700">Search</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by name or organization"
+                  className="border border-[#E2E8F0] rounded-md w-full h-[40px] pl-3 pr-8 focus:outline-none focus:ring-1 focus:ring-[#045F87] focus:border-[#045F87] transition-all"
+                />
+                <svg
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">Export</label>
+              <button
+                onClick={onOpen}
+                className="cursor-pointer border border-[#045F87] bg-[#045F87] text-white rounded-md h-[40px] px-4 flex items-center justify-center gap-2 hover:bg-[#034A6B] transition-all whitespace-nowrap"
+              >
+                Download <DownloadIcon className="ml-1" />
+              </button>
+            </div>
           </div>
-          <button
-            onClick={onOpen}
-            className="cursor-pointer border border-[#045F87] bg-[#045F87] text-white rounded-md w-[130px] h-[40px] flex items-center justify-center gap-2 hover:bg-[#034A6B] transition-all"
-          >
-            Download <DownloadIcon className="ml-1" />
-          </button>
         </div>
 
         <Modal isOpen={isOpen} onClose={onClose}>
