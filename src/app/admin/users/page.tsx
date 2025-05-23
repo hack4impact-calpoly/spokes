@@ -244,7 +244,7 @@ export default function Users() {
 
         {users.length > 0 ? (
           <Box overflowX="auto" className="px-2">
-            <Table className="my-5 min-w-[600px] w-full" variant="simple" borderColor="gray.300">
+            <Table className="-mt-3 mb-5 min-w-[600px] w-full" variant="simple" borderColor="gray.300">
               <Thead>
                 <Tr>
                   <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.300" pl={0}>
