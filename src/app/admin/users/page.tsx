@@ -291,6 +291,7 @@ export default function Users() {
                 ))}
               </Tbody>
             </Table>
+            <div className="h-16 border-t border-gray-200 mt-8"></div>
           </Box>
         ) : (
           <TableSkeleton />
