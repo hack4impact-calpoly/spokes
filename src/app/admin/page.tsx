@@ -146,8 +146,11 @@ export default function AdminJobs() {
 
   return (
     <div className="w-full">
-      <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
-        <h1 className="font-bold text-3xl">Admin Dashboard</h1>
+      <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-8 text-black">
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-1 bg-[#045F87] rounded-full"></div>
+          <h1 className="text-3xl font-semibold tracking-tight">Admin Dashboard</h1>
+        </div>
         <div className="flex flex-col gap-24 mb-20">
           <div className="flex flex-col gap-8">
             <div className="flex justify-between">
