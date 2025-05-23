@@ -85,7 +85,9 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
   }
 
   const liveJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "approved");
-  const pendingJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "pending");
+  const pendingJobs = userJobs.filter(
+    (job) => job.jobStatus.toLowerCase() === "pending" || job.jobStatus.toLowerCase() === "rejected",
+  );
   const expiredJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "expired");
 
   return (
