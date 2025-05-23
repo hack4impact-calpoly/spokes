@@ -138,9 +138,12 @@ export default function Users() {
 
   return (
     <div className="w-full">
-      <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col text-black">
-        <h1 className="font-bold text-3xl mb-16">Admin Dashboard</h1>
-        <div className="flex justify-between items-center mb-7">
+      <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col text-black gap-8">
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-1 bg-[#045F87] rounded-full"></div>
+          <h1 className="text-3xl font-semibold tracking-tight">Admin Dashboard</h1>
+        </div>
+        <div className="flex justify-between items-center">
           <h2 className="font-semibold text-3xl">Spokes Member List</h2>
           <Link
             href="/admin"
