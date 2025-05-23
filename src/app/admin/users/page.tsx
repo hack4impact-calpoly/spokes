@@ -172,9 +172,10 @@ export default function Users() {
           <Select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            border="1px solid black"
+            border="1px solid #E2E8F0"
             width={"150px"}
             height={"40px"}
+            className="rounded-md focus:ring-1 focus:ring-[#045F87] focus:border-[#045F87] transition-all"
           >
             <option value="all">All</option>
             <option value="members">Members</option>
@@ -186,13 +187,13 @@ export default function Users() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by Name or Org"
-            className="border border-black rounded-[5px] w-[210px] h-[40px] px-2"
+            className="border border-[#E2E8F0] rounded-md w-[210px] h-[40px] px-3 focus:outline-none focus:ring-1 focus:ring-[#045F87] focus:border-[#045F87] transition-all"
           />
           <button
             onClick={onOpen}
-            className="border border-black bg-[#045F87] text-white rounded-[5px] w-[130px] h-[40px] flex items-center justify-center gap-2"
+            className="border border-[#045F87] bg-[#045F87] text-white rounded-md w-[130px] h-[40px] flex items-center justify-center gap-2 hover:bg-[#034A6B] transition-all"
           >
-            Download <DownloadIcon className="ml-2" />
+            Download <DownloadIcon className="ml-1" />
           </button>
         </div>
 
