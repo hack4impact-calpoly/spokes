@@ -182,16 +182,32 @@ export default function Users() {
             <option value="non-members">Non-Members</option>
           </Select>
 
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by Name or Org"
-            className="border border-[#E2E8F0] rounded-md w-[210px] h-[40px] px-3 focus:outline-none focus:ring-1 focus:ring-[#045F87] focus:border-[#045F87] transition-all"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by Name or Org"
+              className="border border-[#E2E8F0] rounded-md w-[230px] h-[40px] pl-3 pr-8 focus:outline-none focus:ring-1 focus:ring-[#045F87] focus:border-[#045F87] transition-all"
+            />
+            <svg
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
           <button
             onClick={onOpen}
-            className="border border-[#045F87] bg-[#045F87] text-white rounded-md w-[130px] h-[40px] flex items-center justify-center gap-2 hover:bg-[#034A6B] transition-all"
+            className="cursor-pointer border border-[#045F87] bg-[#045F87] text-white rounded-md w-[130px] h-[40px] flex items-center justify-center gap-2 hover:bg-[#034A6B] transition-all"
           >
             Download <DownloadIcon className="ml-1" />
           </button>
