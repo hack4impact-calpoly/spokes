@@ -9,6 +9,7 @@ interface JobGridProps {
   isJobBoard?: boolean;
   isLive?: boolean;
   isExpired?: boolean;
+  isRejected?: boolean;
   innerRef?: (node?: Element | null | undefined) => void;
   onJobView?: (job: IJob) => void;
   onUpdateJob?: (jobId: string, status: "approved" | "rejected", approvedDate?: Date) => void;
@@ -20,16 +21,23 @@ export default function JobGrid({
   isJobBoard = false,
   isLive = false,
   isExpired = false,
+  isRejected = false,
   onJobView,
   onUpdateJob,
   innerRef,
 }: JobGridProps) {
-  const CardComponent = isPending || isLive || isExpired ? AdminCard : JobCard;
+  const CardComponent = isPending || isLive || isExpired || isRejected ? AdminCard : JobCard;
 
   return (
     <>
       {jobs.length === 0 ? (
-        <NoJobsFound isPending={isPending} isJobBoard={isJobBoard} isLive={isLive} isExpired={isExpired} />
+        <NoJobsFound
+          isPending={isPending}
+          isJobBoard={isJobBoard}
+          isLive={isLive}
+          isExpired={isExpired}
+          isRejected={isRejected}
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
           {Array.from(jobs).map((job, index) => (
@@ -52,9 +60,10 @@ interface NoJobsFoundProps {
   isJobBoard: boolean;
   isLive: boolean;
   isExpired: boolean;
+  isRejected?: boolean;
 }
 
-function NoJobsFound({ isPending, isJobBoard, isLive, isExpired }: NoJobsFoundProps) {
+function NoJobsFound({ isPending, isJobBoard, isLive, isExpired, isRejected }: NoJobsFoundProps) {
   const getEmptyStateContent = () => {
     if (isPending) {
       return {
@@ -72,6 +81,12 @@ function NoJobsFound({ isPending, isJobBoard, isLive, isExpired }: NoJobsFoundPr
       return {
         title: "No Expired Jobs",
         message: "There are no expired job listings. Jobs will automatically move here after 30 days.",
+      };
+    }
+    if (isRejected) {
+      return {
+        title: "No Rejected Jobs",
+        message: "There are no rejected job listings at the moment.",
       };
     }
     // Default job board empty state
