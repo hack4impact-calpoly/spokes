@@ -237,6 +237,18 @@ export default function AdminJobs() {
               >
                 Expired Jobs
               </div>
+              <div
+                className={twMerge(
+                  "text-black text-2xl sm:text-3xl font-semibold text-center cursor-pointer select-none",
+                  tab == 3 ? "opacity-100" : "opacity-50",
+                )}
+                onClick={() => {
+                  // Later add functionally to display listings
+                  setTab(3);
+                }}
+              >
+                Rejected Jobs
+              </div>
             </div>
             {tab == 1 ? (
               liveJobData ? (
@@ -248,10 +260,20 @@ export default function AdminJobs() {
               ) : (
                 <JobGridSkeleton count={4} />
               )
-            ) : expiredJobData ? (
+            ) : tab == 2 ? (
+              expiredJobData ? (
+                <JobGrid
+                  jobs={expiredJobData}
+                  isExpired={true}
+                  onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
+                />
+              ) : (
+                <JobGridSkeleton count={4} />
+              )
+            ) : completeJobData ? (
               <JobGrid
-                jobs={expiredJobData}
-                isExpired={true}
+                jobs={completeJobData}
+                isRejected={true}
                 onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
               />
             ) : (

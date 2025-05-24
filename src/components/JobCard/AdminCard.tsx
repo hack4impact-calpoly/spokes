@@ -34,13 +34,16 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
     }
   }, [job._id]);
 
-  const handleDismissIndicator = () => {
-    setIsNewIndicatorDismissed(true);
-    localStorage.setItem(`new-indicator-${job._id}`, "true");
+  const dismissNewIndicator = () => {
+    if (!isNewIndicatorDismissed) {
+      setIsNewIndicatorDismissed(true);
+      localStorage.setItem(`new-indicator-${job._id}`, "true");
+    }
   };
 
   // Opens modal with the appropriate action
   const openModal = (action: "approve" | "reject" | "renew") => {
+    dismissNewIndicator();
     setSelectedAction(action);
     setModalOpen(true);
   };
@@ -92,6 +95,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
 
   function handleEditApplicationButton(e: React.ChangeEvent<any>) {
     e.preventDefault();
+    dismissNewIndicator();
     router.push(`/jobform?jobId=${job._id}&returnURL=/admin`);
   }
 
@@ -101,7 +105,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
         {new Date(job.postDate).getTime() > Date.now() - 24 * 60 * 60 * 1000 && !isNewIndicatorDismissed && (
           <div
             className="absolute -top-1 -right-1 cursor-pointer"
-            onClick={handleDismissIndicator}
+            onClick={dismissNewIndicator}
             title="Dismiss new indicator"
           >
             <div className="w-4 h-4 bg-[#045F87] rounded-full border-2 border-white shadow-sm"></div>
@@ -109,7 +113,6 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
         )}
         <IconButton
           aria-label="Edit Application"
-          // eslint-disable-next-line react/jsx-no-undef
           icon={<FiEdit />}
           size="sm"
           borderColor="black"
@@ -126,6 +129,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
             href={job.detailURL}
             className="text-sm font-medium px-3 py-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-all duration-200 w-fit"
             target="_blank"
+            onClick={dismissNewIndicator}
           >
             View Job Details
           </Link>
@@ -135,6 +139,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
               href={job.applyNowURL}
               className="text-sm font-medium px-3 py-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-all duration-200 w-fit"
               target="_blank"
+              onClick={dismissNewIndicator}
             >
               Apply Now
             </Link>
