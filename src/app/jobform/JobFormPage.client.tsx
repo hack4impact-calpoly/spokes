@@ -83,6 +83,7 @@ type FormDataType = {
   contactEmail: string;
   detailURL: string;
   applyNowURL: string;
+  rejectionMessage: string;
 };
 
 async function sendUpdateEmail(jobData: FormDataType) {
@@ -152,6 +153,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
     contactEmail: "",
     detailURL: "",
     applyNowURL: "",
+    rejectionMessage: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -292,6 +294,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         contactEmail: "",
         detailURL: "",
         applyNowURL: "",
+        rejectionMessage: rejectionReason,
       });
       setSelectEmployment("");
       setSelectCompensation("");
@@ -354,8 +357,9 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
     if (action === "Reject") {
       const updatedFormData = {
         ...formData,
-        jobStatus: "rejected",
+        jobStatus: "rejection",
         expireDate: formData.expireDate || null,
+        rejectionMessage: "testing", // this doesnt even show up as testing - set to rejectionReason
       };
 
       try {
