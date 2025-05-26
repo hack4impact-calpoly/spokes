@@ -357,9 +357,9 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
     if (action === "Reject") {
       const updatedFormData = {
         ...formData,
-        jobStatus: "rejection",
+        jobStatus: "rejected",
         expireDate: formData.expireDate || null,
-        rejectionMessage: "testing", // this doesnt even show up as testing - set to rejectionReason
+        rejectionMessage: rejectionReason,
       };
 
       try {
