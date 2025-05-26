@@ -65,6 +65,7 @@ export default function AdminJobs() {
     jobId: string,
     status: "approved" | "pending" | "rejected" | "expired",
     approvedDate?: Date,
+    rejectionMessage?: string,
   ) => {
     try {
       // First fetch the current job data
@@ -94,6 +95,7 @@ export default function AdminJobs() {
         jobStatus: status,
         detailURL: currentJob.detailURL,
         approvedDate: approvedDate ? approvedDate : currentJob.approvedDate,
+        rejectionMessage: rejectionMessage,
       };
 
       // Send the complete updated job object
