@@ -43,7 +43,7 @@ function getJobDate(job: IJob, type: JobDateKind) {
     case "expired":
       let date = job.approvedDate ? new Date(job.approvedDate) : undefined;
       if (date) {
-        date.setDate(date.getDate() + 31);
+        date.setDate(date.getDate() + 30);
       }
       return date;
 
