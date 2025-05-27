@@ -89,7 +89,6 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
     (job) => job.jobStatus.toLowerCase() === "pending" || job.jobStatus.toLowerCase() === "rejected",
   );
   const expiredJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "expired");
-  const rejectedJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "rejected");
 
   return (
     <div className="w-full">
@@ -127,16 +126,6 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
                   )}
                 </div>
               </div>
-              {rejectedJobs.length > 0 && (
-                <div className="flex flex-col mb-12">
-                  <div className="text-2xl font-semibold mb-4">Rejected Applications</div>
-                  <div className="flex flex-col gap-4">
-                    {rejectedJobs.map((job, index) => (
-                      <OrgCard key={index} job={job} types={["updated"]} />
-                    ))}
-                  </div>
-                </div>
-              )}
               <div className="flex flex-col mb-12">
                 <div className="text-2xl font-semibold mb-4">Expired Applications</div>
                 <div className="flex flex-col gap-4">
