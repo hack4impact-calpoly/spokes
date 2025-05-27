@@ -34,10 +34,11 @@ export function timeAgo(date: Date): string {
   return formatTime(years, "year") + " ago";
 }
 
+export function getThirtyDaysAgo(): Date {
+  return new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+}
+
 export function isMoreThanThirtyDaysAgo(approvedDate?: Date): boolean {
   if (!approvedDate) return false;
-
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  return new Date(approvedDate) < thirtyDaysAgo;
+  return new Date(approvedDate) < getThirtyDaysAgo();
 }

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Job from "@/database/jobSchema";
 import User from "@/database/userSchema";
 import { withApiAuth } from "@/lib/auth";
+import { getThirtyDaysAgo } from "@/lib/utils";
 
 // no filters: GET /api/jobs?page=1&limit=10
 // filter by employment type: GET /api/jobs?employmentType=full-time&employment=part-time
@@ -51,12 +52,10 @@ export const GET = withApiAuth(
           $in: statusFilter,
         };
 
-        // Filter out expired jobs that are already approved, expired status might not have been updated.
+        // Filter out expired jobs that are already approved
         if (statusFilter == "approved") {
-          const THIRTY_DAYS_AGO = new Date();
-          THIRTY_DAYS_AGO.setDate(THIRTY_DAYS_AGO.getDate() - 30);
           filter.approvedDate = {
-            $gte: THIRTY_DAYS_AGO,
+            $gte: getThirtyDaysAgo(),
           };
         }
       }
