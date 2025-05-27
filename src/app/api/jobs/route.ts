@@ -1,6 +1,5 @@
 import connectDB from "@/database/db";
 import { NextRequest, NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs/server";
 import Job from "@/database/jobSchema";
 import User from "@/database/userSchema";
 import { withApiAuth } from "@/lib/auth";
@@ -51,11 +50,19 @@ export const GET = withApiAuth(
         filter.jobStatus = {
           $in: statusFilter,
         };
+
+        // Filter out expired jobs that are already approved, expired status might not have been updated.
+        if (statusFilter == "approved") {
+          const THIRTY_DAYS_AGO = new Date();
+          THIRTY_DAYS_AGO.setDate(THIRTY_DAYS_AGO.getDate() - 30);
+          filter.approvedDate = {
+            $gte: THIRTY_DAYS_AGO,
+          };
+        }
       }
 
       // Fetch jobs with filters, sorting, and pagination
       const jobs = await Job.find(filter).sort({ postDate: -1 }).skip(skip).limit(limit);
-      // return NextResponse.json(jobs, { status: 200 });
 
       return new NextResponse(JSON.stringify(jobs), {
         status: 200,
