@@ -33,11 +33,3 @@ export function timeAgo(date: Date): string {
   if (months < 12) return formatTime(months, "month") + " ago";
   return formatTime(years, "year") + " ago";
 }
-
-export function isMoreThanThirtyDaysAgo(approvedDate?: Date): boolean {
-  if (!approvedDate) return false;
-
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  return new Date(approvedDate) < thirtyDaysAgo;
-}

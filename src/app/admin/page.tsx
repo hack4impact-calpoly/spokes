@@ -18,9 +18,7 @@ export default function AdminJobs() {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const jobsToExpire = jobs.filter(
-      (job) => job.jobStatus !== "expired" && job.approvedDate && new Date(job.approvedDate) < thirtyDaysAgo,
-    );
+    const jobsToExpire = jobs.filter((job) => job.jobStatus !== "expired" && new Date(job.postDate) < thirtyDaysAgo);
 
     for (const job of jobsToExpire) {
       await updateJobStatus(job._id, "expired");

@@ -5,7 +5,6 @@ import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { OrgCard } from "@/components/JobCard/OrgCard";
 import OrgCardSkeleton from "@/components/JobCard/OrgCardSkeleton";
-import { isMoreThanThirtyDaysAgo } from "@/lib/utils";
 
 type DashboardProps = {
   organizationName: string;
@@ -85,15 +84,11 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
     );
   }
 
-  const liveJobs = userJobs.filter(
-    (job) => job.jobStatus.toLowerCase() === "approved" && !isMoreThanThirtyDaysAgo(job.approvedDate),
-  );
+  const liveJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "approved");
   const pendingJobs = userJobs.filter(
     (job) => job.jobStatus.toLowerCase() === "pending" || job.jobStatus.toLowerCase() === "rejected",
   );
-
-  // Filter expired jobs by if the approval date is greater than 30 days ago, this does not check for expired status
-  const expiredJobs = userJobs.filter((job) => isMoreThanThirtyDaysAgo(job.approvedDate));
+  const expiredJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "expired");
 
   return (
     <div className="w-full">
