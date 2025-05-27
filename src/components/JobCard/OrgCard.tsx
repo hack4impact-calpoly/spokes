@@ -19,6 +19,7 @@ import {
 import { FiEdit, FiMessageSquare } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import JobDateInfo, { JobDateKind } from "./JobDateInfo";
+import { isMoreThanThirtyDaysAgo } from "@/lib/utils";
 
 export interface OrgCardProps extends ComponentProps<"div"> {
   className?: string;
@@ -54,8 +55,8 @@ function getJobDate(job: IJob, type: JobDateKind) {
 export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
   ({ children, className, job, types, ...props }, ref) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-
     const router = useRouter();
+    const isActuallyExpired = isMoreThanThirtyDaysAgo(job.approvedDate);
 
     function handleEditApplicationButton(e: React.ChangeEvent<any>) {
       e.preventDefault();
@@ -71,7 +72,10 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
         >
           <div className="w-full h-fit flex flex-row items-center">
             <div className="text-lg font-semibold">{job.title}</div>
-            <JobStatusBadge jobStatus={job.jobStatus} className="ml-auto"></JobStatusBadge>
+            <JobStatusBadge
+              jobStatus={isActuallyExpired ? "expired" : job.jobStatus}
+              className="ml-auto"
+            ></JobStatusBadge>
           </div>
 
           <div className="w-full h-fit flex flex-col sm:flex-row sm:gap-4">
