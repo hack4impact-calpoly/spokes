@@ -120,7 +120,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
               <div className="flex flex-col gap-4">
                 <div className="text-lg text-black font-semibold">Reason for Rejection:</div>
                 <Text className="text-sm text-gray-800 font-normal bg-gray-100 px-2 py-3 rounded-md">
-                  Your Job is wack
+                  {job.rejectionMessage || "No feedback provided."}
                 </Text>
               </div>
             </ModalBody>
