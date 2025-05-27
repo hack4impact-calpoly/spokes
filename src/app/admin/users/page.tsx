@@ -31,6 +31,8 @@ interface User {
   name: string;
   email: string;
   organizationName?: string;
+  paidMember: boolean;
+  postedJobs: [string];
   isadmin: boolean;
 }
 
@@ -59,11 +61,15 @@ export default function Users() {
   }, []);
 
   const filteredUsers = users.filter((user) => {
+    const searchQueryLower = (searchQuery || "").toLowerCase();
     const matchesSearch =
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (user.organizationName?.toLowerCase() ?? "").includes(searchQuery.toLowerCase());
+      (user.name || "").toLowerCase().includes(searchQueryLower) ||
+      (user.organizationName || "").toLowerCase().includes(searchQueryLower);
 
-    const matchesFilter = filterType === "all" ? true : filterType === "members" ? user.isadmin : !user.isadmin;
+    const matchesFilter =
+      filterType === "all" ||
+      (filterType === "members" && user.paidMember) ||
+      (filterType === "non-members" && !user.paidMember);
 
     return matchesSearch && matchesFilter;
   });
@@ -73,13 +79,27 @@ export default function Users() {
    *
    * @param _id - User Id of the row where button was toggled
    */
-  function handleSwitchChange(_id: string): void {
+  async function handleSwitchChange(_id: string): Promise<void> {
     const userIndex = users.findIndex((user) => user._id === _id);
-    const newAdminStatus = !users[userIndex].isadmin;
+    const newMemberStatus = !users[userIndex].paidMember;
     setUsers((currentUsers) =>
-      currentUsers.map((user) => (user._id === _id ? { ...user, isadmin: newAdminStatus } : user)),
+      currentUsers.map((user) => (user._id === _id ? { ...user, paidMember: newMemberStatus } : user)),
     );
-    throw new Error("Function not implemented.");
+    try {
+      const res = await fetch(`/api/users/${_id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ paidMember: newMemberStatus }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to update users admin status");
+      }
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+    }
   }
 
   const handleDownload = () => {
@@ -95,7 +115,7 @@ export default function Users() {
       filename += ".csv";
       content = headers.join(",") + "\n";
       users.forEach((user) => {
-        content += `${user.name},${user.email},${user.organizationName || "N/A"},${user.isadmin ? "Member" : "Non-member"}\n`;
+        content += `${user.name},${user.email},${user.organizationName || "N/A"},${user.paidMember ? "Member" : "Non-member"}\n`;
       });
     } else if (fileFormat === "json") {
       mimeType = "application/json";
@@ -117,10 +137,13 @@ export default function Users() {
   };
 
   return (
-    <div className="w-full">
-      <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col text-black">
-        <h1 className="font-bold text-3xl mb-16">Admin Dashboard</h1>
-        <div className="flex justify-between items-center mb-7">
+    <div className="w-full min-h-[calc(100vh-100px)]">
+      <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col text-black gap-8">
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-1 bg-[#045F87] rounded-full"></div>
+          <h1 className="text-3xl font-semibold tracking-tight">Admin Dashboard</h1>
+        </div>
+        <div className="flex justify-between items-center">
           <h2 className="font-semibold text-3xl">Spokes Member List</h2>
           <Link
             href="/admin"
@@ -146,31 +169,59 @@ export default function Users() {
           </Link>
         </div>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            border="1px solid black"
-            width={"150px"}
-            height={"40px"}
-          >
-            <option value="all">All</option>
-            <option value="members">Members</option>
-            <option value="non-members">Non-Members</option>
-          </Select>
+          <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-lg border border-gray-200 shadow-sm w-full">
+            <div className="flex flex-col gap-2 flex-1">
+              <label className="text-sm font-medium text-gray-700">Filter by Status</label>
+              <Select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                border="1px solid #E2E8F0"
+                height={"40px"}
+                className="rounded-md focus:ring-1 focus:ring-[#045F87] focus:border-[#045F87] transition-all"
+              >
+                <option value="all">All Users</option>
+                <option value="members">Members Only</option>
+                <option value="non-members">Non-Members Only</option>
+              </Select>
+            </div>
 
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by Name or Org"
-            className="border border-black rounded-[5px] w-[210px] h-[40px] px-2"
-          />
-          <button
-            onClick={onOpen}
-            className="border border-black bg-[#045F87] text-white rounded-[5px] w-[130px] h-[40px] flex items-center justify-center gap-2"
-          >
-            Download <DownloadIcon className="ml-2" />
-          </button>
+            <div className="flex flex-col gap-2 flex-1">
+              <label className="text-sm font-medium text-gray-700">Search</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by name or organization"
+                  className="border border-[#E2E8F0] rounded-md w-full h-[40px] pl-3 pr-8 focus:outline-none focus:ring-1 focus:ring-[#045F87] focus:border-[#045F87] transition-all"
+                />
+                <svg
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">Export</label>
+              <button
+                onClick={onOpen}
+                className="cursor-pointer border-2 border-[#045F87] bg-[#045F87] text-white rounded-md h-[40px] px-4 flex items-center justify-center gap-2 hover:bg-[#034A6B] transition-all whitespace-nowrap font-medium shadow-sm hover:shadow-md"
+              >
+                Download <DownloadIcon className="ml-1" />
+              </button>
+            </div>
+          </div>
         </div>
 
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -220,48 +271,68 @@ export default function Users() {
 
         {users.length > 0 ? (
           <Box overflowX="auto" className="px-2">
-            <Table className="my-5 min-w-[600px] w-full" variant="simple" borderColor="gray.300">
+            <Table className="mb-5 min-w-[600px] w-full" variant="simple" borderColor="gray.300">
               <Thead>
-                <Tr>
-                  <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.300" pl={0}>
+                <Tr className="">
+                  <Th
+                    fontWeight="bold"
+                    color="black"
+                    fontSize="xl"
+                    textTransform="none"
+                    borderColor="gray.200"
+                    pl={0}
+                    py={4}
+                  >
                     Name
                   </Th>
-                  <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.300">
+                  <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.200" py={4}>
                     Email
                   </Th>
-                  <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.300">
+                  <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.200" py={4}>
                     Organization
                   </Th>
-                  <Th fontWeight="bold" color="black" fontSize="xl" textTransform="none" borderColor="gray.300" pr={0}>
+                  <Th
+                    fontWeight="bold"
+                    color="black"
+                    fontSize="xl"
+                    textTransform="none"
+                    borderColor="gray.200"
+                    pr={0}
+                    py={4}
+                  >
                     Member status
                   </Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {filteredUsers.map((item) => (
-                  <Tr key={item._id} className="transition-colors hover:bg-gray-50" borderColor="gray.300">
-                    <Td className="w-1/4" borderColor="gray.300" pl={0}>
-                      <span className="text-md pl-2">{item.name}</span>
+                  <Tr
+                    key={item._id}
+                    className="transition-colors hover:bg-gray-50 border-b border-gray-200"
+                    borderColor="gray.200"
+                  >
+                    <Td className="w-1/4" borderColor="gray.200" pl={0} py={4}>
+                      <span className="text-md font-medium text-gray-900">{item.name}</span>
                     </Td>
-                    <Td className="w-1/3" borderColor="gray.300">
-                      {item.email}
+                    <Td className="w-1/3" borderColor="gray.200" py={4}>
+                      <span className="text-md text-gray-600">{item.email}</span>
                     </Td>
-                    <Td className="w-1/4" borderColor="gray.300">
-                      {item.organizationName ?? "N/A"}
+                    <Td className="w-1/4" borderColor="gray.200" py={4}>
+                      <span className="text-md text-gray-600">{item.organizationName ?? "N/A"}</span>
                     </Td>
-                    <Td className="w-1/6" borderColor="gray.300" pr={0}>
+                    <Td className="w-1/6" borderColor="gray.200" pr={0} py={4}>
                       <div className="flex items-center justify-between py-2 pr-2">
                         <span
                           className={`inline-block w-28 text-md font-medium transition-colors ${
-                            item.isadmin ? "text-green-600" : "text-gray-600"
+                            item.paidMember ? "text-green-600" : "text-gray-600"
                           }`}
                         >
-                          {item.isadmin ? "Member" : "Non-member"}
+                          {item.paidMember ? "Member" : "Non-member"}
                         </span>
                         <Switch
                           size="md"
                           colorScheme="blue"
-                          isChecked={item.isadmin}
+                          isChecked={item.paidMember}
                           onChange={() => handleSwitchChange(item._id)}
                           className="transition-transform hover:scale-105 [&>span[data-checked]]:bg-[#045F87]"
                         />
@@ -271,6 +342,9 @@ export default function Users() {
                 ))}
               </Tbody>
             </Table>
+            <div className="relative h-32 -mt-8">
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/90 to-white"></div>
+            </div>
           </Box>
         ) : (
           <TableSkeleton />

@@ -49,7 +49,10 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
         <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
           <div className="flex flex-col gap-24 mb-20">
             <div className="flex flex-col gap-8">
-              <div className="text-3xl font-semibold">{organizationName} Dashboard</div>
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-1 bg-[#045F87] rounded-full"></div>
+                <h1 className="text-3xl font-semibold tracking-tight">{organizationName} Dashboard</h1>
+              </div>
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col mb-12">
                   <div className="text-2xl font-semibold mb-4">Live Applications</div>
@@ -82,7 +85,9 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
   }
 
   const liveJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "approved");
-  const pendingJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "pending");
+  const pendingJobs = userJobs.filter(
+    (job) => job.jobStatus.toLowerCase() === "pending" || job.jobStatus.toLowerCase() === "rejected",
+  );
   const expiredJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "expired");
   const rejectedJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "rejected");
 
@@ -91,7 +96,10 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
       <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
         <div className="flex flex-col gap-24 mb-20">
           <div className="flex flex-col gap-8">
-            <div className="text-3xl font-semibold">{organizationName} Dashboard</div>
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-1 bg-[#045F87] rounded-full"></div>
+              <h1 className="text-3xl font-semibold tracking-tight">{organizationName} Dashboard</h1>
+            </div>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col mb-12">
                 <div className="text-2xl font-semibold mb-4">Live Applications</div>

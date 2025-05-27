@@ -65,6 +65,7 @@ export default function AdminJobs() {
     jobId: string,
     status: "approved" | "pending" | "rejected" | "expired",
     approvedDate?: Date,
+    rejectionMessage?: string,
   ) => {
     try {
       // First fetch the current job data
@@ -94,6 +95,7 @@ export default function AdminJobs() {
         jobStatus: status,
         detailURL: currentJob.detailURL,
         approvedDate: approvedDate ? approvedDate : currentJob.approvedDate,
+        rejectionMessage: rejectionMessage,
       };
 
       // Send the complete updated job object
@@ -146,8 +148,11 @@ export default function AdminJobs() {
 
   return (
     <div className="w-full">
-      <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
-        <h1 className="font-bold text-3xl">Admin Dashboard</h1>
+      <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-8 text-black">
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-1 bg-[#045F87] rounded-full"></div>
+          <h1 className="text-3xl font-semibold tracking-tight">Admin Dashboard</h1>
+        </div>
         <div className="flex flex-col gap-24 mb-20">
           <div className="flex flex-col gap-8">
             <div className="flex justify-between">
@@ -234,6 +239,18 @@ export default function AdminJobs() {
               >
                 Expired Jobs
               </div>
+              <div
+                className={twMerge(
+                  "text-black text-2xl sm:text-3xl font-semibold text-center cursor-pointer select-none",
+                  tab == 3 ? "opacity-100" : "opacity-50",
+                )}
+                onClick={() => {
+                  // Later add functionally to display listings
+                  setTab(3);
+                }}
+              >
+                Rejected Jobs
+              </div>
             </div>
             {tab == 1 ? (
               liveJobData ? (
@@ -245,10 +262,20 @@ export default function AdminJobs() {
               ) : (
                 <JobGridSkeleton count={4} />
               )
-            ) : expiredJobData ? (
+            ) : tab == 2 ? (
+              expiredJobData ? (
+                <JobGrid
+                  jobs={expiredJobData}
+                  isExpired={true}
+                  onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
+                />
+              ) : (
+                <JobGridSkeleton count={4} />
+              )
+            ) : completeJobData ? (
               <JobGrid
-                jobs={expiredJobData}
-                isExpired={true}
+                jobs={completeJobData}
+                isRejected={true}
                 onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
               />
             ) : (

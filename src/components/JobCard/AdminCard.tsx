@@ -5,7 +5,7 @@ import JobStatusBadge from "@/components/JobCard/JobStatusBadge";
 import JobBadge from "@/components/JobCard/JobBadge";
 import JobCardInformation from "@/components/JobCard/JobCardInformation";
 import JobPostedDate from "@/components/JobCard/JobPostedDate";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import JobCardModal from "./JobCardModal";
 import { useRouter } from "next/navigation";
 import RejectButton from "@/components/RejectButton";
@@ -14,19 +14,36 @@ import Link from "next/link";
 interface JobCardProps {
   job: IJob;
   innerRef?: (node?: Element | null | undefined) => void;
-  onUpdateJob?: (jobId: string, status: "approved" | "rejected", approvedDate?: Date) => void;
+  onUpdateJob?: (jobId: string, status: "approved" | "rejected", approvedDate?: Date, rejectionReason?: string) => void;
 }
 
 export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<"approve" | "reject" | "renew" | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [isNewIndicatorDismissed, setIsNewIndicatorDismissed] = useState(false);
   const router = useRouter();
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
+  // Check localStorage for dismissed state on component mount
+  useEffect(() => {
+    const dismissedState = localStorage.getItem(`new-indicator-${job._id}`);
+    if (dismissedState === "true") {
+      setIsNewIndicatorDismissed(true);
+    }
+  }, [job._id]);
+
+  const dismissNewIndicator = () => {
+    if (!isNewIndicatorDismissed) {
+      setIsNewIndicatorDismissed(true);
+      localStorage.setItem(`new-indicator-${job._id}`, "true");
+    }
+  };
+
   // Opens modal with the appropriate action
   const openModal = (action: "approve" | "reject" | "renew") => {
+    dismissNewIndicator();
     setSelectedAction(action);
     setModalOpen(true);
   };
@@ -42,7 +59,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
     if (selectedAction === "reject") {
       await sendRejectionEmail(job, rejectionReason);
       if (onUpdateJob) {
-        onUpdateJob(job._id, "rejected", new Date());
+        onUpdateJob(job._id, "rejected", new Date(), rejectionReason);
       }
     }
     if (selectedAction && onUpdateJob) {
@@ -78,15 +95,24 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
 
   function handleEditApplicationButton(e: React.ChangeEvent<any>) {
     e.preventDefault();
-    router.push(`/jobform?jobId=${job._id}`);
+    dismissNewIndicator();
+    router.push(`/jobform?jobId=${job._id}&returnURL=/admin`);
   }
 
   return (
     <div className="w-full h-full" ref={innerRef}>
       <div className="relative bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm h-full flex flex-col">
+        {new Date(job.postDate).getTime() > Date.now() - 24 * 60 * 60 * 1000 && !isNewIndicatorDismissed && (
+          <div
+            className="absolute -top-1 -right-1 cursor-pointer"
+            onClick={dismissNewIndicator}
+            title="Dismiss new indicator"
+          >
+            <div className="w-4 h-4 bg-[#045F87] rounded-full border-2 border-white shadow-sm"></div>
+          </div>
+        )}
         <IconButton
           aria-label="Edit Application"
-          // eslint-disable-next-line react/jsx-no-undef
           icon={<FiEdit />}
           size="sm"
           borderColor="black"
@@ -103,6 +129,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
             href={job.detailURL}
             className="text-sm font-medium px-3 py-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-all duration-200 w-fit"
             target="_blank"
+            onClick={dismissNewIndicator}
           >
             View Job Details
           </Link>
@@ -112,6 +139,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
               href={job.applyNowURL}
               className="text-sm font-medium px-3 py-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-all duration-200 w-fit"
               target="_blank"
+              onClick={dismissNewIndicator}
             >
               Apply Now
             </Link>
