@@ -6,8 +6,10 @@ import { usePathname } from "next/navigation";
 import { GrInstagram } from "react-icons/gr";
 import { ImFacebook2 } from "react-icons/im";
 import { SiLinkedin } from "react-icons/si";
+import { useUser } from "@clerk/nextjs";
 
 const Footer: React.FC = () => {
+  const { user } = useUser();
   const pathname = usePathname();
 
   if (pathname === "/jobs") {
@@ -31,14 +33,14 @@ const Footer: React.FC = () => {
 
           <div className="w-full max-w-[582px] text-gray-600 text-[14px] md:text-[16px]">
             <p>
-              Copyright © 2025{" "}
+              Copyright © {new Date().getFullYear()}{" "}
               <Link
                 href="https://www.spokesfornonprofits.org/"
                 className="text-[14px] md:text-[16px] text-gray-600 hover:underline"
               >
                 Spokes | Resources for Nonprofits.
-              </Link>
-              ‎ All Rights Reserved.
+              </Link>{" "}
+              All Rights Reserved.
             </p>
             <p>PO Box 5122, San Luis Obispo, CA 93403</p>
           </div>
@@ -49,9 +51,16 @@ const Footer: React.FC = () => {
             <Link href="/jobs" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
               Job Board
             </Link>
-            <Link href="/jobform" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
-              Post Job
-            </Link>
+            {user && (
+              <>
+                <Link href="/jobform" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
+                  List Job
+                </Link>
+                <Link href="/jobform" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
+                  Dashboard
+                </Link>
+              </>
+            )}
           </div>
 
           <div className="flex space-x-[10px] md:space-x-[14px] mt-4 md:mt-0 md:ml-[40px]">
