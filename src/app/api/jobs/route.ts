@@ -114,7 +114,7 @@ export const POST = withApiAuth(
 
       const newJob = await Job.create({
         userId: auth.userId, // Set the userId from the auth context
-        memberJob: true, // Set memberJob based on user's paid member status
+        memberJob: mongoUser.paidMember, // Set memberJob based on user's paid member status
         ...jobData,
         applyNowURL: jobData.applyNowURL || "",
       });
