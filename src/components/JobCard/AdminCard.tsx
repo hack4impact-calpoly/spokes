@@ -104,11 +104,11 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
       <div className="relative bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm h-full flex flex-col">
         {new Date(job.postDate).getTime() > Date.now() - 24 * 60 * 60 * 1000 && !isNewIndicatorDismissed && (
           <div
-            className="absolute -top-1 -right-1 cursor-pointer"
+            className="absolute top-0 right-0 cursor-pointer"
             onClick={dismissNewIndicator}
             title="Dismiss new indicator"
           >
-            <div className="w-4 h-4 bg-[#045F87] rounded-full border-2 border-white shadow-sm"></div>
+            <div className="w-3 h-3 bg-[#045F87] rounded-full shadow-sm"></div>
           </div>
         )}
         <IconButton
