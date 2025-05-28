@@ -112,16 +112,12 @@ export const POST = withApiAuth(
         return NextResponse.json({ message: "User not found in DB" }, { status: 404 });
       }
 
-      console.log("Mongo user", mongoUser.paidMember);
-
       const newJob = await Job.create({
         userId: auth.userId, // Set the userId from the auth context
         memberJob: true, // Set memberJob based on user's paid member status
         ...jobData,
         applyNowURL: jobData.applyNowURL || "",
       });
-
-      console.log("New job", newJob);
 
       mongoUser.postedJobs.push(newJob._id);
       await mongoUser.save();
