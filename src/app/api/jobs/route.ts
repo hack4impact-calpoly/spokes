@@ -99,17 +99,19 @@ export const POST = withApiAuth(
       ) {
         return NextResponse.json({ message: "Invalid job input" }, { status: 400 });
       }
-      const newJob = await Job.create({
-        ...jobData,
-        applyNowURL: jobData.applyNowURL || "",
-        userId: auth.userId, // Set the userId from the auth context
-      });
 
       // Get the user from the database
       const mongoUser = await User.findOne({ _id: auth.userId });
       if (!mongoUser) {
         return NextResponse.json({ message: "User not found in DB" }, { status: 404 });
       }
+
+      const newJob = await Job.create({
+        ...jobData,
+        applyNowURL: jobData.applyNowURL || "",
+        userId: auth.userId, // Set the userId from the auth context
+        memberJob: mongoUser.paidMember, // Set memberJob based on user's paid member status
+      });
 
       mongoUser.postedJobs.push(newJob._id);
       await mongoUser.save();

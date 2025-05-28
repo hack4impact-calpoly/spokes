@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/database/db";
 import User from "@/database/userSchema"; // Import your User model
 import { withApiAuth } from "@/lib/auth";
+import Job from "@/database/jobSchema";
 
 export const GET = withApiAuth(
   async (req: NextRequest, { auth }) => {
@@ -38,34 +39,55 @@ export const GET = withApiAuth(
   },
 );
 
-export async function PATCH(req: NextRequest) {
-  try {
-    await connectDB();
+export const PATCH = withApiAuth(
+  async (req: NextRequest, { auth }) => {
+    try {
+      await connectDB();
 
-    // Extract the userId from the route parameters
-    const id = req.nextUrl.pathname.split("/").pop();
+      // Extract the userId from the route parameters
+      const id = req.nextUrl.pathname.split("/").pop();
 
-    // Extract the newMemberStatus from the request body
-    const { paidMember: newMemberStatus } = await req.json();
-    // Validate ID
-    if (!id) {
-      return NextResponse.json({ message: "User ID is required" }, { status: 400 });
+      // Extract the newMemberStatus from the request body
+      const { paidMember: newMemberStatus } = await req.json();
+
+      // Validate ID
+      if (!id) {
+        return NextResponse.json({ message: "User ID is required" }, { status: 400 });
+      }
+
+      // Find user by ID
+      const user = await User.findById(id);
+
+      // If user not found, return 404
+      if (!user) {
+        return NextResponse.json({ message: "User not found" }, { status: 404 });
+      }
+
+      user.paidMember = newMemberStatus;
+      await user.save();
+
+      // Update status of all users posted jobs
+      if (user.postedJobs && Array.isArray(user.postedJobs)) {
+        for (const jobId of user.postedJobs) {
+          const job = await Job.findById(jobId);
+          if (job) {
+            job.memberJob = newMemberStatus;
+            await job.save();
+          }
+        }
+      }
+
+      return NextResponse.json(user, { status: 200 });
+    } catch (error: any) {
+      console.error("Error updating user admin status:", error); // Log the error for debugging
+      return NextResponse.json(
+        { message: "Failed to update user admin status", error: error.message },
+        { status: 500 },
+      );
     }
-
-    // Find user by ID
-    const user = await User.findById(id);
-
-    // If user not found, return 404
-    if (!user) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
-    }
-
-    user.paidMember = newMemberStatus;
-    await user.save();
-
-    return NextResponse.json(user, { status: 200 });
-  } catch (error: any) {
-    console.error("Error updating user admin status:", error); // Log the error for debugging
-    return NextResponse.json({ message: "Failed to update user admin status", error: error.message }, { status: 500 });
-  }
-}
+  },
+  {
+    requireAuth: true,
+    allowedRoles: ["spokes_admin"],
+  },
+);
