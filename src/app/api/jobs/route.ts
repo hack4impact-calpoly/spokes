@@ -61,7 +61,14 @@ export const GET = withApiAuth(
       }
 
       // Fetch jobs with filters, sorting, and pagination
-      const jobs = await Job.find(filter).sort({ postDate: -1 }).skip(skip).limit(limit);
+      const jobs = await Job.find(filter)
+        .sort({
+          memberJob: -1, // true → 1, false → 0; so true’s first
+          postDate: -1,
+        })
+        .skip(skip)
+        .limit(limit);
+      console.log("Jobs fetched:", jobs);
 
       return new NextResponse(JSON.stringify(jobs), {
         status: 200,
