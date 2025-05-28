@@ -155,7 +155,7 @@ export default function AdminJobs() {
         <div className="flex flex-col gap-24 mb-20">
           <div className="flex flex-col gap-8">
             <div className="flex justify-between">
-              <h1 className="text-3xl font-semibold">Pending Jobs</h1>
+              <h1 className="font-semibold text-xl sm:text-2xl md:text-3xl">Pending Jobs</h1>
               <Link
                 href="/admin/users"
                 className="px-4 py-2 bg-[#045F87] text-white rounded-md hover:bg-[#034A6B] transition-colors flex items-center gap-2"
@@ -190,7 +190,7 @@ export default function AdminJobs() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                Manage Users
+                <span className="max-[500px]:hidden">Manage Users</span>
               </Link>
             </div>
             {!incomingJobData ? (

@@ -151,7 +151,7 @@ export default function Users() {
           <h1 className="text-3xl font-semibold tracking-tight">Admin Dashboard</h1>
         </div>
         <div className="flex justify-between items-center">
-          <h2 className="font-semibold text-3xl">Spokes Member List</h2>
+          <h2 className="font-semibold text-xl sm:text-2xl md:text-3xl">Spokes Member List</h2>
           <Link
             href="/admin"
             className="px-4 py-2 bg-[#045F87] text-white rounded-md hover:bg-[#034A6B] transition-colors flex items-center gap-2"
@@ -172,7 +172,7 @@ export default function Users() {
                 strokeLinejoin="round"
               />
             </svg>
-            Manage Jobs
+            <span className="max-[500px]:hidden">Manage Jobs</span>
           </Link>
         </div>
         <div className="flex flex-col sm:flex-row gap-4">
