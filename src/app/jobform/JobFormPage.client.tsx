@@ -263,7 +263,8 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       });
 
       if (!response.ok) {
-        throw new Error("Failed to submit job.");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to submit job.");
       }
 
       const emailResponse = await fetch("/api/send/new", {
@@ -504,7 +505,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         Job Information
       </Heading>
 
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} noValidate>
         <VStack spacing={4}>
           <FormControl isRequired>
             <FormLabel>Job Title</FormLabel>

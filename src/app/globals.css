@@ -213,29 +213,3 @@ html {
     opacity: 1;
   }
 }
-
-/* Option 1: Moving gradient shimmer (smoothest and seamless) */
-.shimmer-border-smooth {
-  position: relative;
-  border: 2px solid transparent;
-  background:
-    linear-gradient(#f7f7f7, #f7f7f7) padding-box,
-    linear-gradient(90deg, #ffed29, #fff9a8, #ffffff, #fff9a8, #ffed29, #fff9a8, #ffffff, #fff9a8, #ffed29) border-box;
-  background-size:
-    100% 100%,
-    400% 100%;
-  animation: shimmer-move 14s linear infinite;
-}
-
-@keyframes shimmer-move {
-  0% {
-    background-position:
-      0% 0%,
-      0% 0%;
-  }
-  100% {
-    background-position:
-      0% 0%,
-      400% 0%;
-  }
-}

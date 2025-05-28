@@ -63,7 +63,7 @@ export const GET = withApiAuth(
       // Fetch jobs with filters, sorting, and pagination
       const jobs = await Job.find(filter)
         .sort({
-          memberJob: -1, // true → 1, false → 0; so true’s first
+          memberJob: -1, // true → 1, false → 0; so true's first
           postDate: -1,
         })
         .skip(skip)
@@ -107,17 +107,21 @@ export const POST = withApiAuth(
       }
 
       // Get the user from the database
-      const mongoUser = await User.findOne({ _id: auth.userId });
+      const mongoUser = await User.findById(auth.userId);
       if (!mongoUser) {
         return NextResponse.json({ message: "User not found in DB" }, { status: 404 });
       }
 
+      console.log("Mongo user", mongoUser.paidMember);
+
       const newJob = await Job.create({
+        userId: auth.userId, // Set the userId from the auth context
+        memberJob: true, // Set memberJob based on user's paid member status
         ...jobData,
         applyNowURL: jobData.applyNowURL || "",
-        userId: auth.userId, // Set the userId from the auth context
-        memberJob: mongoUser.paidMember, // Set memberJob based on user's paid member status
       });
+
+      console.log("New job", newJob);
 
       mongoUser.postedJobs.push(newJob._id);
       await mongoUser.save();
