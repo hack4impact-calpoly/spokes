@@ -33,7 +33,6 @@ interface User {
   organizationName?: string;
   paidMember: boolean;
   postedJobs: [string];
-  isadmin: boolean;
 }
 
 export default function Users() {
