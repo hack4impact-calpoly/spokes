@@ -68,7 +68,6 @@ export const GET = withApiAuth(
         })
         .skip(skip)
         .limit(limit);
-      console.log("Jobs fetched:", jobs);
 
       return new NextResponse(JSON.stringify(jobs), {
         status: 200,
