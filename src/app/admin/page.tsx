@@ -224,7 +224,8 @@ export default function AdminJobs() {
                   setTab(1);
                 }}
               >
-                Live Jobs
+                <span className="hidden sm:inline">Live Jobs</span>
+                <span className="sm:hidden">Live</span>
               </div>
               <div
                 className={twMerge(
@@ -236,7 +237,8 @@ export default function AdminJobs() {
                   setTab(2);
                 }}
               >
-                Expired Jobs
+                <span className="hidden sm:inline">Expired Jobs</span>
+                <span className="sm:hidden">Expired</span>
               </div>
               <div
                 className={twMerge(
@@ -248,7 +250,8 @@ export default function AdminJobs() {
                   setTab(3);
                 }}
               >
-                Rejected Jobs
+                <span className="hidden sm:inline">Rejected Jobs</span>
+                <span className="sm:hidden">Rejected</span>
               </div>
             </div>
             {tab == 1 ? (
