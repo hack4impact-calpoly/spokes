@@ -106,6 +106,14 @@ export default function Users() {
     let filename = "spokes-users";
     let mimeType = "";
 
+    // Add filter type to filename
+    if (filterType !== "all") {
+      filename += `-${filterType}`;
+    }
+    if (searchQuery) {
+      filename += `-search-${searchQuery.replace(/[^a-z0-9]/gi, "-").toLowerCase()}`;
+    }
+
     // Prepare headers
     const headers = ["Name", "Email", "Organization", "Member Status"];
 
@@ -113,13 +121,13 @@ export default function Users() {
       mimeType = "text/csv";
       filename += ".csv";
       content = headers.join(",") + "\n";
-      users.forEach((user) => {
+      filteredUsers.forEach((user) => {
         content += `${user.name},${user.email},${user.organizationName || "N/A"},${user.paidMember ? "Member" : "Non-member"}\n`;
       });
     } else if (fileFormat === "json") {
       mimeType = "application/json";
       filename += ".json";
-      content = JSON.stringify(users, null, 2);
+      content = JSON.stringify(filteredUsers, null, 2);
     }
 
     // Create and trigger download
@@ -249,6 +257,27 @@ export default function Users() {
                     </Radio>
                   </Stack>
                 </RadioGroup>
+
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <h3 className="font-medium text-gray-900 mb-2">Download Summary</h3>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <p>
+                      • File will be named:{" "}
+                      <span className="font-mono bg-gray-100 px-2 py-1 rounded">{`spokes-users${filterType !== "all" ? `-${filterType}` : ""}${searchQuery ? `-search-${searchQuery.substring(0, 10)}${searchQuery.length > 10 ? "..." : ""}` : ""}.${fileFormat}`}</span>
+                    </p>
+                    <p>• {filteredUsers.length} users will be included</p>
+                    <p>
+                      • Filter:{" "}
+                      {filterType === "all"
+                        ? "All Users"
+                        : filterType === "members"
+                          ? "Members Only"
+                          : "Non-Members Only"}
+                    </p>
+                    {searchQuery && <p>• Search term: &quot;{searchQuery}&quot;</p>}
+                  </div>
+                </div>
+
                 <div className="flex justify-end gap-3 mt-2">
                   <Button onClick={onClose} variant="ghost" className="hover:bg-gray-100">
                     Cancel
