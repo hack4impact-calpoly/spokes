@@ -101,7 +101,11 @@ export default function AdminJobs() {
       const updateResponse = await fetch(`/api/jobs/${jobId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedJob),
+        body: JSON.stringify({
+          ...updatedJob,
+          previousStatus: currentJob.jobStatus,
+          newStatus: status,
+        }),
       });
 
       if (!updateResponse.ok) {

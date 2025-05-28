@@ -48,14 +48,19 @@ export const PUT = withApiAuth(
       await connectDB();
       const jobId = req.nextUrl.pathname.split("/").pop();
 
-      const job: IJob = await req.json();
+      const requestData = await req.json();
+      const { previousStatus, newStatus, ...jobData } = requestData;
+
+      // Handle both cases - with and without status transition data
+      const hasStatusTransition = previousStatus !== undefined && newStatus !== undefined;
+      console.log("Has Status Transition:", hasStatusTransition);
+      if (hasStatusTransition) {
+        console.log("Previous Status:", previousStatus);
+        console.log("New Status:", newStatus);
+      }
 
       if (!jobId) {
         return NextResponse.json({ message: "Job ID is required" }, { status: 400 });
-      }
-
-      if (!job.jobStatus) {
-        return NextResponse.json({ message: "Job status is required" }, { status: 400 });
       }
 
       // fetch job to check ownership
@@ -64,16 +69,24 @@ export const PUT = withApiAuth(
         return NextResponse.json({ message: "Job not found" }, { status: 404 });
       }
 
+      console.log("Existing Job Status:", existingJob.jobStatus);
+
       // Check if nonprofit is the owner of the job
       if (auth.role === "nonprofit" && existingJob.userId !== auth.userId) {
         return NextResponse.json({ error: "Insufficient permissions to update this job" }, { status: 403 });
       }
 
       const updatedJob = {
-        ...job,
-        jobStatus: auth.role === "nonprofit" || job.jobStatus == "rejected" ? JobStatus.pending : job.jobStatus,
+        ...jobData,
+        jobStatus: hasStatusTransition
+          ? auth.role === "nonprofit" || previousStatus === "rejected"
+            ? JobStatus.pending
+            : newStatus
+          : auth.role === "nonprofit"
+            ? JobStatus.pending
+            : jobData.jobStatus,
         modifiedDate: new Date(),
-        rejectionMessage: job.rejectionMessage ?? existingJob.rejectionMessage ?? "",
+        rejectionMessage: jobData.rejectionMessage ?? existingJob.rejectionMessage ?? "",
       };
       console.log("Received Job Data:", updatedJob);
 
