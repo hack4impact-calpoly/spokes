@@ -30,7 +30,6 @@ export const POST = withApiAuth(
         _id: userId,
         name,
         email: email,
-        isadmin: false,
         postedJobs: [],
         paidMember: paidMember,
         organizationName: organizationName,
