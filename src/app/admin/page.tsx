@@ -94,6 +94,7 @@ export default function AdminJobs() {
         detailURL: currentJob.detailURL,
         approvedDate: approvedDate ? approvedDate : currentJob.approvedDate,
         rejectionMessage: rejectionMessage,
+        memberJob: currentJob.memberJob,
       };
 
       // Send the complete updated job object
