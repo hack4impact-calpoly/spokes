@@ -66,16 +66,7 @@ export const PATCH = withApiAuth(
       user.paidMember = newMemberStatus;
       await user.save();
 
-      // Update status of all users posted jobs
-      if (user.postedJobs && Array.isArray(user.postedJobs)) {
-        for (const jobId of user.postedJobs) {
-          const job = await Job.findById(jobId);
-          if (job) {
-            job.memberJob = newMemberStatus;
-            await job.save();
-          }
-        }
-      }
+      await Job.updateMany({ _id: { $in: user.postedJobs } }, { $set: { memberJob: newMemberStatus } });
 
       return NextResponse.json(user, { status: 200 });
     } catch (error: any) {
