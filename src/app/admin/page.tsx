@@ -7,6 +7,7 @@ import { IJob } from "@/database/jobSchema";
 import { twMerge } from "tailwind-merge";
 import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
 import Link from "next/link";
+import { isMoreThanThirtyDaysAgo } from "@/lib/utils";
 
 export default function AdminJobs() {
   const [incomingJobData, setIncomingJobData] = useState<null | IJob[]>(null);
@@ -15,10 +16,7 @@ export default function AdminJobs() {
   const [expiredJobData, setExpiredJobData] = useState<null | IJob[]>(null);
 
   const setExpiredJobs = async (jobs: IJob[]) => {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-    const jobsToExpire = jobs.filter((job) => job.jobStatus !== "expired" && new Date(job.postDate) < thirtyDaysAgo);
+    const jobsToExpire = jobs.filter((job) => job.jobStatus !== "expired" && isMoreThanThirtyDaysAgo(job.approvedDate));
 
     for (const job of jobsToExpire) {
       await updateJobStatus(job._id, "expired");
