@@ -71,7 +71,7 @@ export const PUT = withApiAuth(
 
       const updatedJob = {
         ...job,
-        jobStatus: auth.role === "nonprofit" ? JobStatus.pending : job.jobStatus,
+        jobStatus: auth.role === "nonprofit" || job.jobStatus == "rejected" ? JobStatus.pending : job.jobStatus,
         modifiedDate: new Date(),
         rejectionMessage: job.rejectionMessage ?? existingJob.rejectionMessage ?? "",
       };
