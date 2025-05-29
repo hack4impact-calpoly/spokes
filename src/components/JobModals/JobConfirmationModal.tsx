@@ -34,22 +34,22 @@ export default function JobConfirmationlModal({ isOpen, onClose }: JobComfirmati
         >
           <ModalCloseButton top={3} size={["md", "md", "lg"]} onClick={onClose} />
           <ModalHeader className="self-stretch text-gray-800 font-medium leading-normal">
-            <p className="text-base sm:text-lg md:text-2xl font-semibold">What&apos;s next?</p>
+            <p className="text-base sm:text-lg md:text-2xl font-semibold">What&apos;s Next?</p>
           </ModalHeader>
           <ModalBody className="self-stretch text-gray-600 text-sm sm:text-base font-normal leading-normal">
-            Your job listing has been submitted for review. Once a spokes admin approves your listing it will be live on
-            the job board.
+            Your job listing has been submitted for review. Upon approval, your listing will be published to the Spokes
+            job board and made available to potential applicants.
           </ModalBody>
           <ModalFooter alignSelf={"center"} className="text-gray-700 text-sm sm:text-base font-normal leading-normal">
             <Flex className="flex justify-center items-center gap-4">
               <Button onClick={onClose} className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800">
-                Submit Another Job
+                Create New Job
               </Button>
               <Button
                 onClick={() => router.push("/dashboard")}
                 className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800"
               >
-                Return to Dashboard
+                View Dashboard
               </Button>
             </Flex>
           </ModalFooter>
