@@ -78,8 +78,28 @@ export default function BottomSection() {
       <div className="sm:hidden flex flex-col">
         {/* Header: Hamburger icon on the right */}
         <div className="flex justify-end items-center px-4 py-4 mt-3">
-          <button onClick={toggleMobileMenu} aria-label="Toggle menu">
-            {isMobileMenuOpen ? <FiX size={27} /> : <FiMenu size={27} />}
+          <button
+            onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
+            className="relative w-8 h-8 flex items-center justify-center"
+          >
+            <div className="relative w-6 h-5">
+              <div
+                className={`absolute rounded-full w-6 h-0.5 bg-white transition-all duration-300 ease-out ${
+                  isMobileMenuOpen ? "top-2 -translate-x-1/2 left-1/2 w-0" : "top-0 left-0"
+                }`}
+              />
+              <div
+                className={`absolute rounded-full w-6 h-0.5 bg-white transition-all duration-300 ease-out ${
+                  isMobileMenuOpen ? "top-2 left-1/2 -translate-x-1/2 rotate-45" : "top-2 left-0"
+                }`}
+              />
+              <div
+                className={`absolute rounded-full w-6 h-0.5 bg-white transition-all duration-300 ease-out ${
+                  isMobileMenuOpen ? "top-2 left-1/2 -translate-x-1/2 -rotate-45" : "top-4 left-0"
+                }`}
+              />
+            </div>
           </button>
         </div>
         {/* Dropdown Menu: Center all text */}

@@ -22,6 +22,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
   const [selectedAction, setSelectedAction] = useState<"approve" | "reject" | "renew" | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [isNewIndicatorDismissed, setIsNewIndicatorDismissed] = useState(false);
+  const [isLoading, setIsLoading] = useState<"approve" | "reject" | null>(null);
   const router = useRouter();
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -57,14 +58,18 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
   // Handles confirmation action if action was approved
   const handleConfirm = async () => {
     if (selectedAction === "reject") {
+      setIsLoading("reject");
       await sendRejectionEmail(job, rejectionReason);
       if (onUpdateJob) {
-        onUpdateJob(job._id, "rejected", new Date(), rejectionReason);
+        await onUpdateJob(job._id, "rejected", new Date(), rejectionReason);
+      }
+    } else if (selectedAction === "approve") {
+      setIsLoading("approve");
+      if (onUpdateJob) {
+        await onUpdateJob(job._id, "approved", new Date());
       }
     }
-    if (selectedAction && onUpdateJob) {
-      onUpdateJob(job._id, selectedAction === "reject" ? "rejected" : "approved", new Date());
-    }
+    setIsLoading(null);
     closeModal();
   };
 
@@ -104,11 +109,11 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
       <div className="relative bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm h-full flex flex-col">
         {new Date(job.postDate).getTime() > Date.now() - 24 * 60 * 60 * 1000 && !isNewIndicatorDismissed && (
           <div
-            className="absolute -top-1 -right-1 cursor-pointer"
+            className="absolute top-0 right-0 cursor-pointer"
             onClick={dismissNewIndicator}
             title="Dismiss new indicator"
           >
-            <div className="w-4 h-4 bg-[#045F87] rounded-full border-2 border-white shadow-sm"></div>
+            <div className="w-3 h-3 bg-[#045F87] rounded-full shadow-sm"></div>
           </div>
         )}
         <IconButton
@@ -169,6 +174,8 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
                   fontWeight="normal"
                   borderColor="black"
                   backgroundColor={"#f7f7f7"}
+                  isLoading={isLoading === "approve"}
+                  loadingText="Approving"
                   sx={{
                     _hover: {
                       backgroundColor: "green.300",
@@ -178,10 +185,25 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
                 >
                   Approve
                 </Button>
-                <RejectButton
-                  className="px-9 w-[120px] text-[14px] text-[#2D3748] border rounded-md border-black bg-[#f7f7f7] hover:bg-red-400"
+                <Button
+                  className="border"
+                  px="10"
+                  width="120px"
+                  fontSize="small"
+                  fontWeight="normal"
+                  borderColor="black"
+                  backgroundColor={"#f7f7f7"}
+                  isLoading={isLoading === "reject"}
+                  loadingText="Rejecting"
+                  sx={{
+                    _hover: {
+                      backgroundColor: "red.300",
+                    },
+                  }}
                   onClick={() => openModal("reject")}
-                />
+                >
+                  Reject
+                </Button>
               </>
             )}
 
@@ -221,9 +243,16 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
             action={selectedAction}
             rejectionReason={rejectionReason}
             setRejectionReason={setRejectionReason}
+            isLoading={isLoading !== null}
           />
         ) : (
-          <JobCardModal isOpen={isModalOpen} onClose={closeModal} onConfirm={handleConfirm} action={selectedAction} />
+          <JobCardModal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            onConfirm={handleConfirm}
+            action={selectedAction}
+            isLoading={isLoading !== null}
+          />
         ))}
     </div>
   );

@@ -327,7 +327,11 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       const response = await fetch(`/api/jobs/${jobId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formattedFormData),
+        body: JSON.stringify({
+          ...formattedFormData,
+          previousStatus: formData.jobStatus,
+          newStatus: "pending",
+        }),
       });
 
       if (!response.ok) {

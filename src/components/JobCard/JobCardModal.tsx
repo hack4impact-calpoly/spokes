@@ -17,9 +17,18 @@ type JobModalProps = {
   action: "approve" | "reject" | "renew";
   rejectionReason?: string;
   setRejectionReason?: (reason: string) => void;
+  isLoading?: boolean;
 };
 
-function JobModal({ isOpen, onClose, onConfirm, action, rejectionReason, setRejectionReason }: JobModalProps) {
+function JobModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  action,
+  rejectionReason,
+  setRejectionReason,
+  isLoading,
+}: JobModalProps) {
   // Map action to user friendly text
   const actionHeaderText = action === "reject" ? "rejection" : action === "renew" ? "renewal" : "approval";
   const actionText = action;
@@ -53,6 +62,8 @@ function JobModal({ isOpen, onClose, onConfirm, action, rejectionReason, setReje
             fontWeight="normal"
             borderColor="black"
             onClick={onConfirm}
+            isLoading={isLoading}
+            loadingText={action === "reject" ? "Rejecting" : action === "renew" ? "Renewing" : "Approving"}
             sx={{
               _hover: {
                 backgroundColor: "green.300",
@@ -68,6 +79,7 @@ function JobModal({ isOpen, onClose, onConfirm, action, rejectionReason, setReje
             fontWeight="normal"
             borderColor="black"
             onClick={onClose}
+            isDisabled={isLoading}
             sx={{
               _hover: {
                 backgroundColor: "red.300",

@@ -1,7 +1,9 @@
 import { Badge } from "@chakra-ui/react";
+import { twMerge } from "tailwind-merge";
 
 type JobBadgeProps = {
   badgeType: String;
+  className?: string;
 };
 
 interface FormatBadgeName {
@@ -16,7 +18,7 @@ export const formatBadgeName: FormatBadgeName = (badgeName) => {
     .join("-");
 };
 
-export default function JobBadge({ badgeType }: JobBadgeProps) {
+export default function JobBadge({ badgeType, className }: JobBadgeProps) {
   let badgeColor;
   // Will need to have a standard typing style for these options or make a parse for it when ready
   switch (badgeType) {
@@ -47,7 +49,7 @@ export default function JobBadge({ badgeType }: JobBadgeProps) {
 
   return (
     <Badge
-      className="text-center w-fit"
+      className={twMerge("text-center w-fit", className)}
       rounded="md"
       px="2"
       py="1"

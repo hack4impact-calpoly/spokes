@@ -241,7 +241,9 @@ export default function Jobs() {
     <div className="w-full flex flex-col pb-10">
       <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col lg:flex-row gap-16 lg:gap-8 grow">
         <div className="flex flex-col gap-4 lg:gap-6">
-          <div className="text-black font-semibold text-3xl select-none lg:sticky lg:top-[110px]">Filters</div>
+          <div className="text-black font-semibold text-xl sm:text-2xl md:text-3xl select-none lg:sticky lg:top-[110px]">
+            Filters
+          </div>
           <FilterCard categories={filterCategories} onFilterChange={handleFilterChange}></FilterCard>
         </div>
         <div className="flex flex-col w-full gap-4 lg:gap-6">
@@ -267,8 +269,15 @@ export default function Jobs() {
               </div>
             </div>
             {tab === 2 && (
-              <div className="max-[500px]:mt-4 max-[500px]:flex max-[500px]:justify-center">
-                <Button onClick={onOpen} fontWeight="normal" variant="outline" borderColor="black" size="sm">
+              <div className="max-[500px]:mt-2 max-[500px]:flex max-[500px]:justify-center max-[500px]:w-full max-[500px]:px-4 max-[500px]:py-2">
+                <Button
+                  onClick={onOpen}
+                  fontWeight="normal"
+                  variant="outline"
+                  borderColor="black"
+                  size="sm"
+                  className="w-full max-w-[200px]"
+                >
                   Clear History
                 </Button>
               </div>

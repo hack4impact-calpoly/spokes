@@ -1,3 +1,5 @@
+import { twMerge } from "tailwind-merge";
+
 function formatDate(date: Date | undefined) {
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
@@ -14,7 +16,15 @@ function formatDate(date: Date | undefined) {
 
 export type JobDateKind = "submitted" | "posted" | "updated" | "expires" | "expired";
 
-export default function JobDateInfo({ date, type }: { date: Date | undefined; type: JobDateKind }) {
+export default function JobDateInfo({
+  date,
+  type,
+  className,
+}: {
+  date: Date | undefined;
+  type: JobDateKind;
+  className?: string;
+}) {
   let label = "";
 
   switch (type) {
@@ -36,7 +46,7 @@ export default function JobDateInfo({ date, type }: { date: Date | undefined; ty
   }
 
   return (
-    <p className="text-sm text-gray-500">
+    <p className={twMerge("text-sm text-gray-500", className)}>
       {label}
       {formatDate(date)}
     </p>
