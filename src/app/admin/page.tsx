@@ -8,8 +8,10 @@ import { twMerge } from "tailwind-merge";
 import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
 import Link from "next/link";
 import { isMoreThanThirtyDaysAgo } from "@/lib/utils";
+import { useToast } from "@chakra-ui/react";
 
 export default function AdminJobs() {
+  const toast = useToast();
   const [incomingJobData, setIncomingJobData] = useState<null | IJob[]>(null);
   const [liveJobData, setLiveJobData] = useState<null | IJob[]>(null);
   const [completeJobData, setCompleteJobData] = useState<null | IJob[]>(null);
@@ -110,6 +112,36 @@ export default function AdminJobs() {
 
       if (!updateResponse.ok) {
         throw new Error("Failed to update job status");
+      }
+
+      // Show toast notification based on status
+      if (status === "approved") {
+        toast({
+          title: "Job Approved",
+          description: `Successfully approved "${currentJob.title}"`,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+      } else if (status === "rejected") {
+        toast({
+          title: "Job Rejected",
+          description: `Successfully rejected "${currentJob.title}"`,
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+      } else if (status === "expired") {
+        toast({
+          title: "Job Expired",
+          description: `"${currentJob.title}" has been marked as expired`,
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
       }
 
       // Remove the job from its current category

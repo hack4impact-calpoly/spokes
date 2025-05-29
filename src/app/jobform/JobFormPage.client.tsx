@@ -17,6 +17,7 @@ import {
   HStack,
   Link,
   Collapse,
+  useToast,
 } from "@chakra-ui/react";
 import RadioCard from "@/components/RadioCard";
 import TagSelect from "@/components/TagSelect";
@@ -129,6 +130,7 @@ async function getOrganizationName(clerkUserId: string): Promise<string> {
 }
 
 export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPageProps) {
+  const toast = useToast();
   const { register, handleSubmit: formHandleSubmit, reset } = useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -279,6 +281,15 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         console.error("Failed to send notification email");
       }
 
+      toast({
+        title: "Success!",
+        description: `"${formData.title}" has been submitted`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+
       setFormData({
         organizationName: "",
         organizationIndustry: [],
@@ -301,9 +312,21 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       setSelectCompensation("");
 
       setMessage("Job posted successfully!");
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
+
       setIsSubmitModalOpen(true);
     } catch (error) {
       console.error("Error submitting job:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit job. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
       setIsFailModalOpen(true);
       setMessage("Error submitting job.");
     } finally {
@@ -342,10 +365,27 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         await sendUpdateEmail(formattedFormData);
       }
 
+      toast({
+        title: "Job Updated",
+        description: `Successfully updated "${formData.title}"`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+
       setMessage("Successfully updated job.");
       router.push(returnURL);
     } catch (error) {
       console.error("Error updating job:", error);
+      toast({
+        title: "Update Failed",
+        description: "There was an error updating the job. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
       setMessage("Error updating job.");
     } finally {
       setLoading(false);
@@ -416,12 +456,29 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
           throw new Error("Failed to delete job");
         }
 
+        toast({
+          title: "Job Deleted",
+          description: `"${formData.title}" has been successfully removed`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+          position: "top-right",
+        });
+
         setIsActionConfirmationModalOpen(false);
         setMessage("Successfully deleted job");
         setLoading(false);
         router.push(returnURL);
       } catch (error) {
         console.error(`Error deleting job: ${error}`);
+        toast({
+          title: "Deletion Failed",
+          description: "There was an error deleting the job. Please try again.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
         setMessage("Error occurred while attempting to delete job");
       }
     } else {
