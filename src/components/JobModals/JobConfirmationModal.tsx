@@ -24,29 +24,31 @@ export default function JobConfirmationlModal({ isOpen, onClose }: JobComfirmati
 
   return (
     <div className="modal">
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent
-          className="flex justify-center items-center flex-shrink-0 rounded-lg border border-black overflow-hidden text-center py-10"
+          className="flex justify-center items-center flex-shrink-0 rounded-lg border border-gray-200 overflow-hidden text-center py-8 mx-4"
           maxW={["350px", "60vw", "55vw"]}
-          h={["270px", "auto"]}
+          h={["auto", "auto"]}
+          mt={["0", "0", "20vh"]}
         >
           <ModalCloseButton top={3} size={["md", "md", "lg"]} onClick={onClose} />
-          <ModalHeader className="self-stretch text-black font-semibold leading-normal">
-            <p className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold">Job listing successfully submitted</p>
+          <ModalHeader className="self-stretch text-gray-800 font-medium leading-normal">
+            <p className="text-base sm:text-lg md:text-2xl font-semibold">What&apos;s next?</p>
           </ModalHeader>
-          <ModalBody className="self-stretch text-black text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-normal">
-            An admin will review this job listing, and you will be notified once it is approved.
+          <ModalBody className="self-stretch text-gray-600 text-sm sm:text-base font-normal leading-normal">
+            Your job listing has been submitted for review. Once a spokes admin approves your listing it will be live on
+            the job board.
           </ModalBody>
-          <ModalFooter
-            alignSelf={"center"}
-            className="text-black text-sm sm:text-base md:text-lg lg:text-xl font-normal leading-normal"
-          >
-            <Flex className="flex justify-center items-center">
-              <Button onClick={onClose} className="mx-4">
+          <ModalFooter alignSelf={"center"} className="text-gray-700 text-sm sm:text-base font-normal leading-normal">
+            <Flex className="flex justify-center items-center gap-4">
+              <Button onClick={onClose} className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800">
                 Submit Another Job
               </Button>
-              <Button onClick={() => router.push("/dashboard")} className="mx-4">
+              <Button
+                onClick={() => router.push("/dashboard")}
+                className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800"
+              >
                 Return to Dashboard
               </Button>
             </Flex>
