@@ -51,7 +51,7 @@ describe("JobFormPage", () => {
   it("sanity check: renders JobFormPage", () => {
     const { container } = render(
       <Suspense fallback={<div>Loading...</div>}>
-        <JobFormPage isSpokesAdmin={false} />
+        <JobFormPage isSpokesAdmin={false} returnURL="/dashboard" />
       </Suspense>,
     );
     expect(container).toBeInTheDocument();
@@ -78,7 +78,7 @@ describe("JobFormPage", () => {
 
     render(
       <Suspense fallback={<div>Loading...</div>}>
-        <JobFormPage isSpokesAdmin={false} />
+        <JobFormPage isSpokesAdmin={false} returnURL="/dashboard" />
       </Suspense>,
     );
 
@@ -152,7 +152,7 @@ describe("JobFormPage", () => {
 
     // Verify the JobConfirmationModal appears
     await waitFor(() => {
-      expect(screen.getByText("Job listing successfully submitted")).toBeInTheDocument();
+      expect(screen.getByText("What's Next?")).toBeInTheDocument();
     });
   });
 
@@ -173,7 +173,7 @@ describe("JobFormPage", () => {
 
     render(
       <Suspense fallback={<div>Loading...</div>}>
-        <JobFormPage isSpokesAdmin={false} />
+        <JobFormPage isSpokesAdmin={false} returnURL="/dashboard" />
       </Suspense>,
     );
 
