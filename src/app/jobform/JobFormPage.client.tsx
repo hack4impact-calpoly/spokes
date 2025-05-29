@@ -17,6 +17,7 @@ import {
   HStack,
   Link,
   Collapse,
+  useToast,
 } from "@chakra-ui/react";
 import RadioCard from "@/components/RadioCard";
 import TagSelect from "@/components/TagSelect";
@@ -129,6 +130,7 @@ async function getOrganizationName(clerkUserId: string): Promise<string> {
 }
 
 export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPageProps) {
+  const toast = useToast();
   const { register, handleSubmit: formHandleSubmit, reset } = useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -342,10 +344,27 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         await sendUpdateEmail(formattedFormData);
       }
 
+      toast({
+        title: "Job Updated",
+        description: `Successfully updated "${formData.title}"`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+
       setMessage("Successfully updated job.");
       router.push(returnURL);
     } catch (error) {
       console.error("Error updating job:", error);
+      toast({
+        title: "Update Failed",
+        description: "There was an error updating the job. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
       setMessage("Error updating job.");
     } finally {
       setLoading(false);
