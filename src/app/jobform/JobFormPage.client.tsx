@@ -456,12 +456,29 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
           throw new Error("Failed to delete job");
         }
 
+        toast({
+          title: "Job Deleted",
+          description: `"${formData.title}" has been successfully removed`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+          position: "top-right",
+        });
+
         setIsActionConfirmationModalOpen(false);
         setMessage("Successfully deleted job");
         setLoading(false);
         router.push(returnURL);
       } catch (error) {
         console.error(`Error deleting job: ${error}`);
+        toast({
+          title: "Deletion Failed",
+          description: "There was an error deleting the job. Please try again.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
         setMessage("Error occurred while attempting to delete job");
       }
     } else {
