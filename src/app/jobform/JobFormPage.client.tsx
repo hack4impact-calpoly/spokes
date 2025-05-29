@@ -281,6 +281,15 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         console.error("Failed to send notification email");
       }
 
+      toast({
+        title: "Success!",
+        description: `"${formData.title}" has been submitted`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+
       setFormData({
         organizationName: "",
         organizationIndustry: [],
@@ -303,9 +312,21 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       setSelectCompensation("");
 
       setMessage("Job posted successfully!");
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
+
       setIsSubmitModalOpen(true);
     } catch (error) {
       console.error("Error submitting job:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit job. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
       setIsFailModalOpen(true);
       setMessage("Error submitting job.");
     } finally {
