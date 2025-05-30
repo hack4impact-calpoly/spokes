@@ -15,6 +15,7 @@ import {
   ModalCloseButton,
   useDisclosure,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { FiEdit, FiMessageSquare, FiRefreshCw } from "react-icons/fi";
 import { useRouter } from "next/navigation";
@@ -25,6 +26,7 @@ export interface OrgCardProps extends ComponentProps<"div"> {
   className?: string;
   job: IJob;
   types: JobDateKind[];
+  onJobRenewed?: (job: IJob) => void;
 }
 
 function getJobDate(job: IJob, type: JobDateKind) {
@@ -53,10 +55,11 @@ function getJobDate(job: IJob, type: JobDateKind) {
 }
 
 export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
-  ({ children, className, job, types, ...props }, ref) => {
+  ({ children, className, job, types, onJobRenewed, ...props }, ref) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const isActuallyExpired = isMoreThanThirtyDaysAgo(job.approvedDate);
     const router = useRouter();
+    const toast = useToast();
 
     function handleEditApplicationButton(e: React.ChangeEvent<any>) {
       e.preventDefault();
@@ -82,10 +85,35 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
           throw new Error("Failed to renew job");
         }
 
-        // Refresh the page to show updated status
-        window.location.reload();
+        const data = await response.json();
+
+        // Show success toast
+        toast({
+          title: "Job Renewed",
+          description: `Successfully renewed "${job.title}"`,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+
+        // Call the callback if provided
+        if (onJobRenewed) {
+          onJobRenewed(data.job);
+        } else {
+          // Fallback to page refresh if no callback provided
+          window.location.reload();
+        }
       } catch (error) {
         console.error("Error renewing job:", error);
+        toast({
+          title: "Error",
+          description: "Failed to renew job. Please try again.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
       }
     }
 
