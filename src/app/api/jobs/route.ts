@@ -54,6 +54,13 @@ export const GET = withApiAuth(
         filter.jobStatus = {
           $in: statusFilter,
         };
+
+        // Filter out expired jobs that are already approved
+        if (statusFilter == "approved" && !isAdminRequest) {
+          filter.approvedDate = {
+            $gte: getThirtyDaysAgo(),
+          };
+        }
       }
 
       // Fetch jobs with filters, sorting, and pagination

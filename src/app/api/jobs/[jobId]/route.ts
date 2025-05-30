@@ -82,6 +82,7 @@ export const PUT = withApiAuth(
           jobId,
           {
             jobStatus: JobStatus.approved,
+            postDate: new Date(),
             approvedDate: new Date(),
             modifiedDate: new Date(),
           },

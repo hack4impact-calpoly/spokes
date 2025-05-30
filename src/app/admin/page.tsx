@@ -131,7 +131,6 @@ export default function AdminJobs() {
         throw new Error("Failed to update job status");
       }
 
-      // Show toast notification based on status
       if (status === "approved") {
         toast({
           title: "Job Approved",
@@ -179,7 +178,6 @@ export default function AdminJobs() {
       switch (status) {
         case "approved":
           setLiveJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
-          setExpiredJobData((prev) => (prev ? prev.filter((job) => job._id !== jobId) : []));
           break;
         case "rejected":
           setCompleteJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
