@@ -14,9 +14,12 @@ export const GET = withApiAuth(
       await connectDB();
 
       const { searchParams } = new URL(req.url);
-      const page = Math.max(parseInt(searchParams.get("page") || "1", 10), 1);
-      const limit = Math.max(parseInt(searchParams.get("limit") || "10", 10), 1);
-      const skip = (page - 1) * limit; // This will always be >= 0
+      const isAdminRequest = searchParams.get("admin") === "true";
+
+      // Only apply pagination for non-admin requests
+      const page = isAdminRequest ? 1 : Math.max(parseInt(searchParams.get("page") || "1", 10), 1);
+      const limit = isAdminRequest ? 0 : Math.max(parseInt(searchParams.get("limit") || "10", 10), 1);
+      const skip = isAdminRequest ? 0 : (page - 1) * limit; // This will always be >= 0
 
       // Filter parameters
       const employmentFilters = searchParams.getAll("employmentType");

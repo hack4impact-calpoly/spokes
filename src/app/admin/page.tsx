@@ -29,7 +29,7 @@ export default function AdminJobs() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("/api/jobs");
+      const response = await fetch("/api/jobs?admin=true");
       const result: IJob[] = await response.json();
       //const result: IJob[] = [];
 
@@ -38,7 +38,9 @@ export default function AdminJobs() {
 
       // Fetch all job statuses in parallel
       const jobStatuses = ["pending", "approved", "rejected", "expired"];
-      const responses = await Promise.all(jobStatuses.map((status) => fetch(`/api/jobs?jobStatus=${status}`)));
+      const responses = await Promise.all(
+        jobStatuses.map((status) => fetch(`/api/jobs?jobStatus=${status}&admin=true`)),
+      );
 
       const [incomingData, liveData, completeData, expiredData] = await Promise.all(responses.map((res) => res.json()));
 
