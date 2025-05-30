@@ -49,7 +49,7 @@ export const PUT = withApiAuth(
       const jobId = req.nextUrl.pathname.split("/").pop();
 
       const requestData = await req.json();
-      const { previousStatus, newStatus, ...jobData } = requestData;
+      const { previousStatus, newStatus, isRenewal, ...jobData } = requestData;
 
       // Handle both cases - with and without status transition data
       const hasStatusTransition = previousStatus !== undefined && newStatus !== undefined;
@@ -76,6 +76,20 @@ export const PUT = withApiAuth(
         return NextResponse.json({ error: "Insufficient permissions to update this job" }, { status: 403 });
       }
 
+      // Handle job renewal
+      if (isRenewal) {
+        const updatedJob = await Job.findByIdAndUpdate(
+          jobId,
+          {
+            jobStatus: JobStatus.approved,
+            approvedDate: new Date(),
+            modifiedDate: new Date(),
+          },
+          { new: true },
+        );
+        return NextResponse.json({ message: "Job renewed successfully", job: updatedJob });
+      }
+
       const updatedJob = {
         ...jobData,
         jobStatus: hasStatusTransition
@@ -92,7 +106,7 @@ export const PUT = withApiAuth(
 
       await Job.findByIdAndUpdate(jobId, updatedJob, { new: true });
       return NextResponse.json({ message: "Job updated successfully" });
-    } catch (error: any) {
+    } catch (error) {
       console.error("PUT Error:", error);
       return NextResponse.json({ message: "Error updating job: ", error }, { status: 500 });
     }

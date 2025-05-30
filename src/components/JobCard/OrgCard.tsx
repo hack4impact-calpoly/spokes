@@ -16,7 +16,7 @@ import {
   useDisclosure,
   Text,
 } from "@chakra-ui/react";
-import { FiEdit, FiMessageSquare } from "react-icons/fi";
+import { FiEdit, FiMessageSquare, FiRefreshCw } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import JobDateInfo, { JobDateKind } from "./JobDateInfo";
 import { isMoreThanThirtyDaysAgo } from "@/lib/utils";
@@ -61,6 +61,32 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
     function handleEditApplicationButton(e: React.ChangeEvent<any>) {
       e.preventDefault();
       router.push(`/jobform?jobId=${job._id}&returnURL=/dashboard`);
+    }
+
+    async function handleRenewJob(e: React.ChangeEvent<any>) {
+      e.preventDefault();
+      try {
+        const response = await fetch(`/api/jobs/${job._id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            isRenewal: true,
+            previousStatus: job.jobStatus,
+            newStatus: "approved",
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to renew job");
+        }
+
+        // Refresh the page to show updated status
+        window.location.reload();
+      } catch (error) {
+        console.error("Error renewing job:", error);
+      }
     }
 
     return (
@@ -132,6 +158,19 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
                     </Button>
                   )}
                 </div>
+                {isActuallyExpired && (
+                  <Button
+                    aria-label="Renew Job"
+                    size={{ base: "xs", md: "sm" }}
+                    colorScheme="green"
+                    variant="outline"
+                    onClick={handleRenewJob}
+                    className="flex flex-row items-center gap-1 sm:gap-2"
+                  >
+                    <FiRefreshCw className="text-sm sm:text-base" />
+                    Renew
+                  </Button>
+                )}
                 <Button
                   aria-label="Edit Application"
                   size={{ base: "xs", md: "sm" }}
