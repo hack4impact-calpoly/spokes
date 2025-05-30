@@ -28,7 +28,7 @@ export const DELETE = withApiAuth(
       }
 
       //Deleting based on _id
-      const result = await Job.findByIdAndDelete(jobId);
+      await Job.findByIdAndDelete(jobId);
 
       return NextResponse.json({ message: "Deleted successfully" }, { status: 200 });
     } catch (error) {

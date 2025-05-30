@@ -31,10 +31,6 @@ export default function AdminJobs() {
     try {
       const response = await fetch("/api/jobs?admin=true");
       const result: IJob[] = await response.json();
-      //const result: IJob[] = [];
-
-      // Check and update expired jobs
-      await setExpiredJobs(result);
 
       // Fetch all job statuses in parallel
       const jobStatuses = ["pending", "approved", "rejected", "expired"];
