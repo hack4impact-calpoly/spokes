@@ -125,22 +125,22 @@ describe("Admin Jobs Page", () => {
           ok: true,
           json: async () => fakeJobs,
         });
-      } else if (url === "/api/jobs?jobStatus=pending") {
+      } else if (url === "/api/jobs?jobStatus=pending&admin=true") {
         return Promise.resolve({
           ok: true,
           json: async () => pendingJobs,
         });
-      } else if (url === "/api/jobs?jobStatus=approved") {
+      } else if (url === "/api/jobs?jobStatus=approved&admin=true") {
         return Promise.resolve({
           ok: true,
           json: async () => approvedJobs,
         });
-      } else if (url === "/api/jobs?jobStatus=rejected") {
+      } else if (url === "/api/jobs?jobStatus=rejected&admin=true") {
         return Promise.resolve({
           ok: true,
           json: async () => rejectedJobs,
         });
-      } else if (url === "/api/jobs?jobStatus=expired") {
+      } else if (url === "/api/jobs?jobStatus=expired&admin=true") {
         return Promise.resolve({
           ok: true,
           json: async () => expiredJobs,
