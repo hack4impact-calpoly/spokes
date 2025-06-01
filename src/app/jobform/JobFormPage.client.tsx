@@ -412,7 +412,6 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         const orgName = await getOrganizationName(user.id);
 
         try {
-          console.log("!!Attempting to send email...");
           await sendRejectionEmail(
             {
               title: formData.title,
