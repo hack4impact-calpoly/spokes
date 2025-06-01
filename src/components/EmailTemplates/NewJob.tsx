@@ -8,7 +8,6 @@ interface NewJobProps {
   employmentType: string;
   compensationType: string;
   contactName: string;
-  contactPhone: string;
   contactEmail: string;
   detailURL: string;
   applyNowURL?: string;
@@ -28,7 +27,6 @@ export const NewJob: React.FC<NewJobProps> = ({
   employmentType,
   compensationType,
   contactName,
-  contactPhone,
   contactEmail,
   detailURL,
   applyNowURL,
@@ -231,16 +229,6 @@ export const NewJob: React.FC<NewJobProps> = ({
         >
           <strong>Email:</strong> {contactEmail}
         </p>
-        {contactPhone && (
-          <p
-            style={{
-              fontSize: "14px",
-              color: "#000000",
-            }}
-          >
-            <strong>Phone:</strong> {contactPhone}
-          </p>
-        )}
       </div>
     </div>
 

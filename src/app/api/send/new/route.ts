@@ -11,9 +11,6 @@ export const POST = withApiAuth(
     try {
       const jobData = await req.json();
 
-      // console logs can be removed in the future
-      console.log("📧 ATTEMPTING TO SEND: ", jobData.title);
-
       const { data, error } = await resend.emails.send({
         from: "Spokes Job Board <onboarding@resend.dev>",
         to: [adminEmail],
@@ -33,14 +30,10 @@ export const POST = withApiAuth(
         }),
       });
       if (error) {
-        console.error("❌ EMAIL FAILED:", error);
         return NextResponse.json({ error }, { status: 500 });
       }
-
-      console.log("✅ EMAIL SENT! ID:", data?.id);
       return NextResponse.json({ success: true, data });
     } catch (error) {
-      console.error("❌ EMAIL FAILED:", error);
       return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
     }
   },
