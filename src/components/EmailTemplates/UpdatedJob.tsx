@@ -11,6 +11,7 @@ interface UpdatedJobProps {
   contactEmail: string;
   detailURL: string;
   applyNowURL?: string;
+  adminURL: string;
 }
 
 const toTitleCase = (badgeName: string): string =>
@@ -30,6 +31,7 @@ export const UpdatedJob: React.FC<UpdatedJobProps> = ({
   contactEmail,
   detailURL,
   applyNowURL,
+  adminURL,
 }) => (
   <div
     style={{
@@ -239,7 +241,7 @@ export const UpdatedJob: React.FC<UpdatedJobProps> = ({
       }}
     >
       <a
-        href="https://spokes-job-board.vercel.app/admin"
+        href={adminURL}
         style={{
           backgroundColor: "#000000",
           color: "#ffffff",

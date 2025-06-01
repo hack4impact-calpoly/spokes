@@ -5,6 +5,7 @@ import { withApiAuth } from "@/lib/auth";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const adminEmail = process.env.ADMIN_EMAIL || "";
+const adminURL = process.env.NEXT_PUBLIC_ADMIN_URL || "/admin";
 
 export const POST = withApiAuth(
   async (req: NextRequest, { auth }) => {
@@ -26,6 +27,7 @@ export const POST = withApiAuth(
           contactEmail: jobData.contactEmail,
           detailURL: jobData.detailURL,
           applyNowURL: jobData.applyNowURL,
+          adminURL: adminURL,
         }),
       });
       if (error) {
