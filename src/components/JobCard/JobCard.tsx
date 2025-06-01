@@ -64,7 +64,7 @@ function JobCard({ job, onJobView, innerRef }: JobCardProps) {
             <JobBadge badgeType={job.employmentType} />
             {job.compensationType && <JobBadge badgeType={job.compensationType} />}
           </div>
-          <JobPostedDate date={job.postDate} />
+          {job.approvedDate && <JobPostedDate date={job.approvedDate} />}
         </div>
         <div className="flex lg:flex-row flex-col gap-4 my-5">
           <Button

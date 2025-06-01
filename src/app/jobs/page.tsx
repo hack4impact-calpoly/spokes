@@ -19,7 +19,6 @@ import {
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
-import { useUser } from "@clerk/nextjs";
 
 // Interfaces to make TS happy
 interface FilterCategories {
