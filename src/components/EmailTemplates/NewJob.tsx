@@ -8,10 +8,10 @@ interface NewJobProps {
   employmentType: string;
   compensationType: string;
   contactName: string;
-  contactPhone: string;
   contactEmail: string;
   detailURL: string;
   applyNowURL?: string;
+  adminURL: string;
 }
 
 const toTitleCase = (badgeName: string): string =>
@@ -28,10 +28,10 @@ export const NewJob: React.FC<NewJobProps> = ({
   employmentType,
   compensationType,
   contactName,
-  contactPhone,
   contactEmail,
   detailURL,
   applyNowURL,
+  adminURL,
 }) => (
   <div
     style={{
@@ -231,16 +231,6 @@ export const NewJob: React.FC<NewJobProps> = ({
         >
           <strong>Email:</strong> {contactEmail}
         </p>
-        {contactPhone && (
-          <p
-            style={{
-              fontSize: "14px",
-              color: "#000000",
-            }}
-          >
-            <strong>Phone:</strong> {contactPhone}
-          </p>
-        )}
       </div>
     </div>
 
@@ -251,7 +241,7 @@ export const NewJob: React.FC<NewJobProps> = ({
       }}
     >
       <a
-        href="https://spokes-job-board.vercel.app/admin"
+        href={adminURL}
         style={{
           backgroundColor: "#000000",
           color: "#ffffff",
