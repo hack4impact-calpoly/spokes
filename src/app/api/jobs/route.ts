@@ -30,6 +30,11 @@ export const GET = withApiAuth(
       // Build the filter object dynamically
       const filter: any = {};
 
+      // Build the sort object dynamically
+      const sort: any = {
+        memberJob: -1, // Always sort memberJob first (true → 1, false → 0)
+      };
+
       if (employmentFilters.length > 0) {
         filter.employmentType = {
           $in: employmentFilters,
@@ -63,14 +68,14 @@ export const GET = withApiAuth(
         }
       }
 
+      if (statusFilter === "approved") {
+        sort.approvedDate = -1;
+      } else {
+        sort.postDate = -1;
+      }
+
       // Fetch jobs with filters, sorting, and pagination
-      const jobs = await Job.find(filter)
-        .sort({
-          memberJob: -1, // true → 1, false → 0; so true's first
-          postDate: -1,
-        })
-        .skip(skip)
-        .limit(limit);
+      const jobs = await Job.find(filter).sort(sort).skip(skip).limit(limit);
 
       return new NextResponse(JSON.stringify(jobs), {
         status: 200,
