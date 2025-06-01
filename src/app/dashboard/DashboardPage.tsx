@@ -44,6 +44,14 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
     }
   }, [user, isLoaded]);
 
+  const handleJobRenewed = (renewedJob: IJob) => {
+    setUserJobs((prevJobs) => {
+      // Update the job in the array
+      const updatedJobs = prevJobs.map((job) => (job._id === renewedJob._id ? renewedJob : job));
+      return updatedJobs;
+    });
+  };
+
   if (loading) {
     return (
       <div className="w-full">
@@ -136,7 +144,9 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
                 <div className="text-2xl font-semibold mb-4">Expired Applications</div>
                 <div className="flex flex-col gap-4">
                   {expiredJobs.length > 0 ? (
-                    expiredJobs.map((job, index) => <OrgCard key={index} job={job} types={["expired"]} />)
+                    expiredJobs.map((job, index) => (
+                      <OrgCard key={index} job={job} types={["expired"]} onJobRenewed={handleJobRenewed} />
+                    ))
                   ) : (
                     <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">
                       No expired applications available

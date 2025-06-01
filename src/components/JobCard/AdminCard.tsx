@@ -10,6 +10,7 @@ import JobCardModal from "./JobCardModal";
 import { useRouter } from "next/navigation";
 import RejectButton from "@/components/RejectButton";
 import Link from "next/link";
+import { useToast } from "@chakra-ui/react";
 
 interface JobCardProps {
   job: IJob;
@@ -26,6 +27,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
   const router = useRouter();
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const toast = useToast();
 
   // Check localStorage for dismissed state on component mount
   useEffect(() => {
@@ -67,6 +69,42 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
       setIsLoading("approve");
       if (onUpdateJob) {
         await onUpdateJob(job._id, "approved", new Date());
+      }
+    } else if (selectedAction === "renew") {
+      setIsLoading("approve");
+      try {
+        const response = await fetch(`/api/jobs/${job._id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            isRenewal: true,
+            previousStatus: job.jobStatus,
+            newStatus: "approved",
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to renew job");
+        }
+
+        const data = await response.json();
+
+        // Update the job status in the UI
+        if (onUpdateJob) {
+          await onUpdateJob(job._id, "approved", new Date());
+        }
+      } catch (error) {
+        console.error("Error renewing job:", error);
+        toast({
+          title: "Error",
+          description: "Failed to renew job. Please try again.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
       }
     }
     setIsLoading(null);

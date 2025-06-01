@@ -18,6 +18,11 @@ export default function AdminJobs() {
   const [expiredJobData, setExpiredJobData] = useState<null | IJob[]>(null);
 
   const setExpiredJobs = async (jobs: IJob[]) => {
+    if (!Array.isArray(jobs)) {
+      console.error("Expected jobs to be an array but received:", typeof jobs);
+      return;
+    }
+    console.log("Setting Expired");
     const jobsToExpire = jobs.filter((job) => job.jobStatus !== "expired" && isMoreThanThirtyDaysAgo(job.approvedDate));
 
     for (const job of jobsToExpire) {
@@ -29,16 +34,28 @@ export default function AdminJobs() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("/api/jobs");
+      const response = await fetch("/api/jobs?jobStatus=approved&admin=true");
+      if (!response.ok) {
+        console.error("Failed to fetch jobs:", response.status, response.statusText);
+        return;
+      }
       const result: IJob[] = await response.json();
-      //const result: IJob[] = [];
 
       // Check and update expired jobs
       await setExpiredJobs(result);
 
       // Fetch all job statuses in parallel
       const jobStatuses = ["pending", "approved", "rejected", "expired"];
-      const responses = await Promise.all(jobStatuses.map((status) => fetch(`/api/jobs?jobStatus=${status}`)));
+      const responses = await Promise.all(
+        jobStatuses.map((status) => fetch(`/api/jobs?jobStatus=${status}&admin=true`)),
+      );
+
+      // Check if any of the parallel requests failed
+      const failedResponses = responses.filter((res) => !res.ok);
+      if (failedResponses.length > 0) {
+        console.error("Some job status requests failed:", failedResponses);
+        return;
+      }
 
       const [incomingData, liveData, completeData, expiredData] = await Promise.all(responses.map((res) => res.json()));
 
@@ -114,7 +131,6 @@ export default function AdminJobs() {
         throw new Error("Failed to update job status");
       }
 
-      // Show toast notification based on status
       if (status === "approved") {
         toast({
           title: "Job Approved",
@@ -162,7 +178,6 @@ export default function AdminJobs() {
       switch (status) {
         case "approved":
           setLiveJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
-          setExpiredJobData((prev) => (prev ? prev.filter((job) => job._id !== jobId) : []));
           break;
         case "rejected":
           setCompleteJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));

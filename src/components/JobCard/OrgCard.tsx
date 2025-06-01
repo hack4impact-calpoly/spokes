@@ -15,8 +15,9 @@ import {
   ModalCloseButton,
   useDisclosure,
   Text,
+  useToast,
 } from "@chakra-ui/react";
-import { FiEdit, FiMessageSquare } from "react-icons/fi";
+import { FiEdit, FiMessageSquare, FiRefreshCw } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import JobDateInfo, { JobDateKind } from "./JobDateInfo";
 import { isMoreThanThirtyDaysAgo } from "@/lib/utils";
@@ -25,6 +26,7 @@ export interface OrgCardProps extends ComponentProps<"div"> {
   className?: string;
   job: IJob;
   types: JobDateKind[];
+  onJobRenewed?: (job: IJob) => void;
 }
 
 function getJobDate(job: IJob, type: JobDateKind) {
@@ -53,14 +55,66 @@ function getJobDate(job: IJob, type: JobDateKind) {
 }
 
 export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
-  ({ children, className, job, types, ...props }, ref) => {
+  ({ children, className, job, types, onJobRenewed, ...props }, ref) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const isActuallyExpired = isMoreThanThirtyDaysAgo(job.approvedDate);
     const router = useRouter();
+    const toast = useToast();
 
     function handleEditApplicationButton(e: React.ChangeEvent<any>) {
       e.preventDefault();
       router.push(`/jobform?jobId=${job._id}&returnURL=/dashboard`);
+    }
+
+    async function handleRenewJob(e: React.ChangeEvent<any>) {
+      e.preventDefault();
+      try {
+        const response = await fetch(`/api/jobs/${job._id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            isRenewal: true,
+            previousStatus: job.jobStatus,
+            newStatus: "approved",
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to renew job");
+        }
+
+        const data = await response.json();
+
+        // Show success toast
+        toast({
+          title: "Job Renewed",
+          description: `Successfully renewed "${job.title}"`,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+
+        // Call the callback if provided
+        if (onJobRenewed) {
+          onJobRenewed(data.job);
+        } else {
+          // Fallback to page refresh if no callback provided
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error("Error renewing job:", error);
+        toast({
+          title: "Error",
+          description: "Failed to renew job. Please try again.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+      }
     }
 
     return (
@@ -132,6 +186,19 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
                     </Button>
                   )}
                 </div>
+                {isActuallyExpired && (
+                  <Button
+                    aria-label="Renew Job"
+                    size={{ base: "xs", md: "sm" }}
+                    colorScheme="green"
+                    variant="outline"
+                    onClick={handleRenewJob}
+                    className="flex flex-row items-center gap-1 sm:gap-2"
+                  >
+                    <FiRefreshCw className="text-sm sm:text-base" />
+                    Renew
+                  </Button>
+                )}
                 <Button
                   aria-label="Edit Application"
                   size={{ base: "xs", md: "sm" }}
