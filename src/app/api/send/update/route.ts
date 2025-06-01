@@ -16,8 +16,6 @@ export const POST = withApiAuth(
         return NextResponse.json({ error: "Missing required job data" }, { status: 400 });
       }
 
-      console.log("📧 ATTEMPTING TO SEND NOTIFICATION FOR JOB:", jobData.title);
-
       const { data, error } = await resend.emails.send({
         from: "Spokes Job Board <onboarding@resend.dev>",
         to: [adminEmail],
@@ -30,22 +28,18 @@ export const POST = withApiAuth(
           employmentType: jobData.employmentType || "Unknown",
           compensationType: jobData.compensationType || "None",
           contactName: jobData.contactName || "Not provided",
-          contactPhone: jobData.contactPhone || "Not provided",
           contactEmail: jobData.contactEmail || "Not provided",
-          detailURL: jobData.detailURL || "#",
-          applyNowURL: jobData.applyNowURL || "#",
+          detailURL: jobData.detailURL,
+          applyNowURL: jobData.applyNowUR,
         }),
       });
 
       if (error) {
-        console.error("❌ EMAIL FAILED:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
 
-      console.log("✅ EMAIL SENT! ID:", data?.id);
       return NextResponse.json({ success: true, data });
     } catch (error: any) {
-      console.error("❌ EMAIL FAILED:", error);
       return NextResponse.json({ error: "Failed to send email: " + error.message }, { status: 500 });
     }
   },

@@ -23,7 +23,6 @@ export const POST = withApiAuth(
           employmentType: jobData.employmentType,
           compensationType: jobData.compensationType ?? "None",
           contactName: jobData.contactName,
-          contactPhone: jobData.contactPhone,
           contactEmail: jobData.contactEmail,
           detailURL: jobData.detailURL,
           applyNowURL: jobData.applyNowURL,
