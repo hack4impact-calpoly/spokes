@@ -27,34 +27,31 @@ export default function TopSection({ user }: TopSectionProps) {
           />
         </Link>
         {user ? (
-          <div className="flex flex-col items-center gap-3">
-            <div className="flex items-center gap-4">
-              {!onboardingComplete && (
-                <Tooltip label="Complete your profile setup" placement="bottom">
-                  <Box
-                    w="2"
-                    h="2"
-                    borderRadius="full"
-                    bg="orange.400"
-                    position="relative"
-                    _after={{
-                      content: '""',
-                      position: "absolute",
-                      top: "-2px",
-                      left: "-2px",
-                      right: "-2px",
-                      bottom: "-2px",
-                      borderRadius: "full",
-                      border: "1px solid",
-                      borderColor: "orange.400",
-                      animation: "pulse 2s infinite",
-                    }}
-                  />
-                </Tooltip>
-              )}
-              <UserButton showName={true} />
-            </div>
-            <OrganizationSwitcher />
+          <div className="flex items-center gap-4">
+            {!onboardingComplete && (
+              <Tooltip label="Complete your profile setup" placement="bottom">
+                <Box
+                  w="2"
+                  h="2"
+                  borderRadius="full"
+                  bg="orange.400"
+                  position="relative"
+                  _after={{
+                    content: '""',
+                    position: "absolute",
+                    top: "-2px",
+                    left: "-2px",
+                    right: "-2px",
+                    bottom: "-2px",
+                    borderRadius: "full",
+                    border: "1px solid",
+                    borderColor: "orange.400",
+                    animation: "pulse 2s infinite",
+                  }}
+                />
+              </Tooltip>
+            )}
+            <UserButton showName={true} />
           </div>
         ) : (
           <Link href="/sign-in">
