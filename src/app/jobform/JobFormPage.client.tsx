@@ -14,7 +14,6 @@ import {
   Stack,
   FormErrorMessage,
   useRadioGroup,
-  HStack,
   Link,
   Collapse,
   useToast,
@@ -30,6 +29,7 @@ import RejectButton from "@/components/RejectButton";
 import JobCardModal from "@/components/JobCard/JobCardModal";
 import JobEditedModal from "@/components/JobModals/JobEditedModal";
 import { useUser } from "@clerk/nextjs";
+import { UserInterface as User } from "@/database/userSchema";
 
 function formatIndustries(industries: string[]): Option[] {
   return industries.map((industry) => ({
@@ -80,7 +80,6 @@ type FormDataType = {
   compensationType: string | null;
   jobStatus: string;
   contactName: string;
-  contactPhone: string;
   contactEmail: string;
   detailURL: string;
   applyNowURL: string;
@@ -129,6 +128,17 @@ async function getOrganizationName(clerkUserId: string): Promise<string> {
   return data.organizationName;
 }
 
+async function getUser(clerkUserId: string): Promise<User> {
+  const response = await fetch(`/api/users/${clerkUserId}`);
+  const data: User = await response.json();
+
+  if (!response.ok || !data) {
+    throw new Error("Failed to fetch organization name");
+  }
+
+  return data;
+}
+
 export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPageProps) {
   const toast = useToast();
   const { register, handleSubmit: formHandleSubmit, reset } = useForm();
@@ -151,7 +161,6 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
     compensationType: null as string | null, // Allow null for volunteer jobs
     jobStatus: "pending",
     contactName: "",
-    contactPhone: "",
     contactEmail: "",
     detailURL: "",
     applyNowURL: "",
@@ -171,6 +180,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
   const [rejectionReason, setRejectionReason] = useState("");
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(true);
 
   const employmentColorMapping = {
     "Full-Time": "#F8B1B8",
@@ -198,7 +208,6 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
 
         setFormData({
           ...data,
-          contactPhone: data.contactPhone || "",
           contactEmail: data.contactEmail || "",
           detailURL: data.detailURL || "",
           applyNowURL: data.applyNowURL || "",
@@ -225,19 +234,36 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
     }
   }, [resetForm, reset]);
 
-  const formatPhoneNumber = (value: string): string => {
-    const cleaned = value.replace(/\D/g, "");
-    const match = cleaned.match(/^(\d{3})(\d{0,3})(\d{0,4})$/);
-    if (!match) return value;
-    return [match[1], match[2], match[3]].filter(Boolean).join("-");
-  };
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!user) return;
+
+      try {
+        setLoadingUser(true);
+        const userData = await getUser(user.id);
+
+        setFormData((prev) => ({
+          ...prev,
+          organizationName: userData.organizationName?.toString() || "",
+          contactName: userData.name?.toString() || "",
+          contactEmail: userData.email?.toString() || "",
+        }));
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+      } finally {
+        setLoadingUser(false);
+      }
+    };
+
+    fetchUser();
+  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | { target: { name: string; value: string[] } }) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "contactPhone" ? formatPhoneNumber(String(value)) : value,
+      [name]: value,
     }));
   };
 
@@ -248,11 +274,9 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
 
     try {
       if (!user) throw new Error("User not authenticated");
-      const orgName = await getOrganizationName(user.id);
 
       const formattedFormData = {
         ...formData,
-        organizationName: orgName,
         expireDate: formData.expireDate || null,
         detailURL: ensureHttps(formData.detailURL),
         applyNowURL: ensureHttps(formData.applyNowURL),
@@ -302,7 +326,6 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         compensationType: "salary",
         jobStatus: "pending",
         contactName: "",
-        contactPhone: "",
         contactEmail: "",
         detailURL: "",
         applyNowURL: "",
@@ -409,13 +432,12 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
 
       try {
         if (!user) throw new Error("User not authenticated");
-        const orgName = await getOrganizationName(user.id);
 
         try {
           await sendRejectionEmail(
             {
               title: formData.title,
-              organizationName: orgName,
+              organizationName: formData.organizationName,
               contactName: formData.contactName,
               contactEmail: formData.contactEmail,
             },
@@ -717,7 +739,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
           <Heading as="h2" size="md" textAlign="left" w="100%" mt={5}>
             Person of Contact - Information
           </Heading>
-          <Stack w="full" direction={{ base: "column", md: "row" }} spacing={{ base: 6, md: 40 }}>
+          <Stack w="full" direction={{ base: "column", md: "row" }} spacing={{ base: 6, md: 42 }}>
             <FormControl isRequired>
               <FormLabel>Name</FormLabel>
               <Input
@@ -726,41 +748,26 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
                 bg="#F6F6F6"
                 border="0"
                 name="contactName"
-                value={loadingInfo ? "Loading..." : formData.contactName}
+                value={loadingInfo || loadingUser ? "Loading..." : formData.contactName}
                 onChange={handleChange}
-                disabled={loadingInfo}
+                disabled={loadingInfo || loadingUser}
               />
             </FormControl>
-            <FormControl>
-              <FormLabel>Phone Number</FormLabel>
+            <FormControl isRequired>
+              <FormLabel>Email</FormLabel>
               <Input
-                type="tel"
+                type="email"
+                placeholder="xxxxx@example.com"
                 bg="#F6F6F6"
-                placeholder="xxx-xxx-xxxx"
                 border="0"
-                name="contactPhone"
-                value={loadingInfo ? "Loading..." : formData.contactPhone}
+                name="contactEmail"
+                value={loadingInfo || loadingUser ? "Loading..." : formData.contactEmail}
                 onChange={handleChange}
-                maxLength={12}
-                disabled={loadingInfo}
+                disabled={loadingInfo || loadingUser}
               />
-              <FormErrorMessage>Please enter a valid phone number.</FormErrorMessage>
+              <FormErrorMessage>Please enter a valid email address.</FormErrorMessage>
             </FormControl>
           </Stack>
-          <FormControl isRequired>
-            <FormLabel>Email</FormLabel>
-            <Input
-              type="email"
-              placeholder="xxxxx@example.com"
-              bg="#F6F6F6"
-              border="0"
-              name="contactEmail"
-              value={loadingInfo ? "Loading..." : formData.contactEmail}
-              onChange={handleChange}
-              disabled={loadingInfo}
-            />
-            <FormErrorMessage>Please enter a valid email address.</FormErrorMessage>
-          </FormControl>
           {isEditing ? (
             <div className="mt-10 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
