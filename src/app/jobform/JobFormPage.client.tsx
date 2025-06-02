@@ -117,17 +117,6 @@ type JobFormPageProps = {
   returnURL: string;
 };
 
-async function getOrganizationName(clerkUserId: string): Promise<string> {
-  const response = await fetch(`/api/users/${clerkUserId}`);
-  const data = await response.json();
-
-  if (!response.ok || !data.organizationName) {
-    throw new Error(data.message || "Failed to fetch organization name");
-  }
-
-  return data.organizationName;
-}
-
 async function getUser(clerkUserId: string): Promise<User> {
   const response = await fetch(`/api/users/${clerkUserId}`);
   const data: User = await response.json();
