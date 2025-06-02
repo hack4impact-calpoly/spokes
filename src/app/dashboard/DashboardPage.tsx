@@ -10,14 +10,13 @@ import MembershipBadge from "@/components/MembershipBadge";
 
 type DashboardProps = {
   organizationName: string;
+  membershipStatus: boolean;
 };
 
-export default function DashboardPage({ organizationName }: DashboardProps) {
+export default function DashboardPage({ organizationName, membershipStatus }: DashboardProps) {
   const [loading, setLoading] = useState(true);
   const [userJobs, setUserJobs] = useState<IJob[]>([]);
   const { user, isLoaded } = useUser();
-  const [membershipStatus, setMembershipStatus] = useState(false);
-
   // Fetch jobs
   useEffect(() => {
     const fetchData = async () => {
@@ -32,14 +31,6 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
         const jobs = await res.json();
 
         if (!res.ok) throw new Error(jobs.error || "Unknown error");
-
-        // fetch user data
-        const userRes = await fetch(`/api/users/${clerkUserId}`);
-        const userData = await userRes.json();
-        if (!userRes.ok) throw new Error(userData.error || "Unknown error");
-
-        // Set membership status
-        setMembershipStatus(userData.paidMember);
 
         setUserJobs(jobs);
       } catch (err) {
