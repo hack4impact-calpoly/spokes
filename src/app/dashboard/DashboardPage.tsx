@@ -6,6 +6,7 @@ import Link from "next/link";
 import { OrgCard } from "@/components/JobCard/OrgCard";
 import OrgCardSkeleton from "@/components/JobCard/OrgCardSkeleton";
 import { isMoreThanThirtyDaysAgo } from "@/lib/utils";
+import MembershipBadge from "@/components/MembershipBadge";
 
 type DashboardProps = {
   organizationName: string;
@@ -15,6 +16,7 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
   const [loading, setLoading] = useState(true);
   const [userJobs, setUserJobs] = useState<IJob[]>([]);
   const { user, isLoaded } = useUser();
+  const [membershipStatus, setMembershipStatus] = useState(false);
 
   // Fetch jobs
   useEffect(() => {
@@ -30,6 +32,14 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
         const jobs = await res.json();
 
         if (!res.ok) throw new Error(jobs.error || "Unknown error");
+
+        // fetch user data
+        const userRes = await fetch(`/api/users/${clerkUserId}`);
+        const userData = await userRes.json();
+        if (!userRes.ok) throw new Error(userData.error || "Unknown error");
+
+        // Set membership status
+        setMembershipStatus(userData.paidMember);
 
         setUserJobs(jobs);
       } catch (err) {
@@ -54,7 +64,12 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
 
   if (loading) {
     return (
-      <div className="w-full">
+      <div className="w-full relative">
+        {/* Membership Badge */}
+        <div className="absolute top-4 right-8 md:right-16 lg:right-20">
+          <MembershipBadge isMember={membershipStatus} skeleton={true} />
+        </div>
+
         <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
           <div className="flex flex-col gap-24 mb-20">
             <div className="flex flex-col gap-8">
@@ -85,7 +100,7 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
 
   if (userJobs.length === 0) {
     return (
-      <div className="w-full h-full py-32 flex justify-center align-middle">
+      <div className="w-full h-full py-32 flex justify-center align-middle relative">
         <Link href="/jobform" className="text-3xl underline underline-offset-8 font-semibold select-none">
           Submit a new job listing
         </Link>
@@ -105,7 +120,12 @@ export default function DashboardPage({ organizationName }: DashboardProps) {
   const expiredJobs = userJobs.filter((job) => isMoreThanThirtyDaysAgo(job.approvedDate));
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
+      {/* Membership Badge */}
+      <div className="hidden sm:block absolute top-4 right-8 md:right-16 lg:right-20">
+        <MembershipBadge isMember={membershipStatus} />
+      </div>
+
       <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-16 text-black">
         <div className="flex flex-col gap-24 mb-20">
           <div className="flex flex-col gap-8">
