@@ -1,4 +1,4 @@
-import { Button, IconButton } from "@chakra-ui/react";
+import { IconButton } from "@chakra-ui/react";
 import { FiEdit, FiMail } from "react-icons/fi";
 import { IJob } from "@/database/jobSchema";
 import JobStatusBadge from "@/components/JobCard/JobStatusBadge";
@@ -8,9 +8,9 @@ import JobPostedDate from "@/components/JobCard/JobPostedDate";
 import { useState, useEffect } from "react";
 import JobCardModal from "./JobCardModal";
 import { useRouter } from "next/navigation";
-import RejectButton from "@/components/RejectButton";
 import Link from "next/link";
 import { useToast } from "@chakra-ui/react";
+import ActionButton from "./ActionButton";
 
 interface JobCardProps {
   job: IJob;
@@ -204,66 +204,16 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
           <div className="flex flex-wrap gap-2 justify min-[1000px]:mt-0 mt-5">
             {job.jobStatus === "pending" && !isExpired && (
               <>
-                <Button
-                  className="border"
-                  px="10"
-                  width="120px"
-                  fontSize="small"
-                  fontWeight="normal"
-                  borderColor="black"
-                  backgroundColor={"#f7f7f7"}
+                <ActionButton
+                  action="approve"
                   isLoading={isLoading === "approve"}
-                  loadingText="Approving"
-                  sx={{
-                    _hover: {
-                      backgroundColor: "green.300",
-                    },
-                  }}
                   onClick={() => openModal("approve")}
-                >
-                  Approve
-                </Button>
-                <Button
-                  className="border"
-                  px="10"
-                  width="120px"
-                  fontSize="small"
-                  fontWeight="normal"
-                  borderColor="black"
-                  backgroundColor={"#f7f7f7"}
-                  isLoading={isLoading === "reject"}
-                  loadingText="Rejecting"
-                  sx={{
-                    _hover: {
-                      backgroundColor: "red.300",
-                    },
-                  }}
-                  onClick={() => openModal("reject")}
-                >
-                  Reject
-                </Button>
+                />
+                <ActionButton action="reject" isLoading={isLoading === "reject"} onClick={() => openModal("reject")} />
               </>
             )}
 
-            {isExpired && (
-              <Button
-                className="border"
-                px="10"
-                width="120px"
-                fontSize="small"
-                fontWeight="normal"
-                borderColor="black"
-                backgroundColor={"#f7f7f7"}
-                onClick={() => openModal("renew")}
-                sx={{
-                  _hover: {
-                    backgroundColor: "#FFE297",
-                  },
-                }}
-              >
-                Renew
-              </Button>
-            )}
+            {isExpired && <ActionButton action="renew" onClick={() => openModal("renew")} />}
           </div>
         </div>
 

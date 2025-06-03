@@ -24,10 +24,9 @@ import { Option } from "@/components/TagsMultiselect/multiselect";
 import { cn } from "@/lib/utils";
 import JobConfirmationModal from "@/components/JobModals/JobConfirmationModal";
 import JobActionConfirmationModal from "@/components/JobModals/JobActionConfirmationModal";
-import JobFailModal from "@/components/JobModals/JobFailModal";
-import RejectButton from "@/components/RejectButton";
 import JobCardModal from "@/components/JobCard/JobCardModal";
 import JobEditedModal from "@/components/JobModals/JobEditedModal";
+import JobFailModal from "@/components/JobModals/JobFailModal";
 import { useUser } from "@clerk/nextjs";
 import { UserInterface as User } from "@/database/userSchema";
 
@@ -231,12 +230,14 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         setLoadingUser(true);
         const userData = await getUser(user.id);
 
-        setFormData((prev) => ({
-          ...prev,
-          organizationName: userData.organizationName?.toString() || "",
-          contactName: userData.name?.toString() || "",
-          contactEmail: userData.email?.toString() || "",
-        }));
+        if (!isEditing) {
+          setFormData((prev) => ({
+            ...prev,
+            organizationName: userData.organizationName?.toString() || "",
+            contactName: userData.name?.toString() || "",
+            contactEmail: userData.email?.toString() || "",
+          }));
+        }
       } catch (error) {
         console.error("Failed to fetch user:", error);
       } finally {
@@ -245,7 +246,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
     };
 
     fetchUser();
-  }, [user]);
+  }, [user, isEditing]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | { target: { name: string; value: string[] } }) => {
     const { name, value } = e.target;
@@ -365,7 +366,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         body: JSON.stringify({
           ...formattedFormData,
           previousStatus: formData.jobStatus,
-          newStatus: "pending",
+          newStatus: isSpokesAdmin ? formData.jobStatus : "pending",
         }),
       });
 
@@ -445,6 +446,15 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
           throw new Error("Failed to reject job.");
         }
 
+        toast({
+          title: "Job Rejected",
+          description: `Successfully rejected "${formData.title}"`,
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+
         setIsRejectModalOpen(false);
         setAction("");
         setMessage("Successfully reject job");
@@ -452,6 +462,14 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         router.push("/admin");
       } catch (error) {
         console.error(`Error rejecting job: ${error}`);
+        toast({
+          title: "Rejection Failed",
+          description: "There was an error rejecting the job. Please try again.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
         setMessage("Error occurred while attempting to reject job");
       }
     } else if (action === "Delete") {
@@ -470,7 +488,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
           title: "Job Deleted",
           description: `"${formData.title}" has been successfully removed`,
           status: "success",
-          duration: 3000,
+          duration: 5000,
           isClosable: true,
           position: "top-right",
         });
@@ -769,35 +787,44 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
                     colorScheme="blackAlpha"
                     bg="#045F87"
                     _hover={{ bg: "#2A80A8" }}
-                    className="w-full sm:w-auto min-w-[120px]"
+                    className="w-full sm:w-auto min-w-[120px] shadow-sm"
                     onClick={() => setAction("Update")}
                   >
                     Update
                   </Button>
                 )}
                 {isSpokesAdmin && (!loading || action === "Reject") && (
-                  <RejectButton
+                  <Button
                     isLoading={loading && action === "Reject"}
+                    loadingText="Rejecting..."
+                    size="lg"
+                    colorScheme="blackAlpha"
+                    bg="#FFF3E0"
+                    color="#C2410C"
+                    _hover={{ bg: "#FFE0B2" }}
+                    className="w-full sm:w-auto min-w-[120px] shadow-sm"
                     onClick={() => {
                       setIsRejectModalOpen(true);
                       setAction("Reject");
                     }}
-                    className="w-full sm:w-auto min-w-[120px] px-6 py-3 rounded-md bg-[#ff9d4f] hover:bg-[#ffbe8b] text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                  />
+                  >
+                    Reject
+                  </Button>
                 )}
                 {(!loading || action === "Delete") && (
                   <Button
                     isLoading={loading && action === "Delete"}
                     loadingText="Deleting..."
                     size="lg"
-                    colorScheme="red"
-                    bg="red"
-                    _hover={{ bg: "#ff8b8b" }}
+                    colorScheme="blackAlpha"
+                    bg="#FEE2E2"
+                    color="#991B1B"
+                    _hover={{ bg: "#FECACA" }}
+                    className="w-full sm:w-auto min-w-[120px] shadow-sm"
                     onClick={() => {
                       setIsActionConfirmationModalOpen(true);
                       setAction("Delete");
                     }}
-                    className="w-full sm:w-auto min-w-[120px]"
                   >
                     Delete
                   </Button>
@@ -856,6 +883,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         onClose={closeActionConfirmationModal}
         onConfirm={handleAction}
         action={action}
+        isLoading={loading && action === "Delete"}
       />
       <JobCardModal
         isOpen={isRejectModalOpen}
@@ -866,9 +894,15 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         action="reject"
         rejectionReason={rejectionReason}
         setRejectionReason={setRejectionReason}
+        isLoading={loading && action === "Reject"}
       />
       <JobFailModal isOpen={isFailModalOpen} onClose={closeFailModal} />
-      <JobEditedModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onConfirm={handleUpdate} />
+      <JobEditedModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onConfirm={handleUpdate}
+        isLoading={loading && action === "Update"}
+      />
     </Box>
   );
 }

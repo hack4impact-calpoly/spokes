@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-// import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import connectDB from "@/database/db";
-import User from "@/database/userSchema"; // Import your User model
+import User from "@/database/userSchema";
 import { updateUserMetadata } from "@/lib/clerk";
 import { withApiAuth } from "@/lib/auth";
 

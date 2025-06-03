@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Button, FormControl, FormLabel, Input, Radio, RadioGroup, Stack, Text, VStack } from "@chakra-ui/react";
-import Image from "next/image";
 
 interface OnboardingFormProps {
   onSubmit: (formData: { paidMember: string; organizationName: string }) => Promise<void>;

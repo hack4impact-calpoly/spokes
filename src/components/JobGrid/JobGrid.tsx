@@ -1,7 +1,6 @@
 import { IJob } from "@/database/jobSchema";
-import AdminCard from "../JobCard/AdminCard";
-import JobCard from "../JobCard/JobCard";
-import JobGridSkeleton from "./JobGridSkeleton";
+import AdminCard from "@/components/JobCard/AdminCard";
+import JobCard from "@/components/JobCard/JobCard";
 
 interface JobGridProps {
   jobs: IJob[];

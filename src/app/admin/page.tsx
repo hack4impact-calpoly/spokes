@@ -160,37 +160,18 @@ export default function AdminJobs() {
         });
       }
 
-      // Remove the job from its current category
-      if (incomingJobData) {
-        setIncomingJobData(incomingJobData.filter((job) => job._id !== jobId));
-      }
-      if (liveJobData) {
-        setLiveJobData(liveJobData.filter((job) => job._id !== jobId));
-      }
-      if (completeJobData) {
-        setCompleteJobData(completeJobData.filter((job) => job._id !== jobId));
-      }
-      if (expiredJobData) {
-        setExpiredJobData(expiredJobData.filter((job) => job._id !== jobId));
-      }
-
-      // Add the job to its new category
-      switch (status) {
-        case "approved":
-          setLiveJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
-          break;
-        case "rejected":
-          setCompleteJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
-          break;
-        case "pending":
-          setIncomingJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
-          break;
-        case "expired":
-          setExpiredJobData((prev) => (prev ? [...prev, updatedJob] : [updatedJob]));
-          break;
-      }
+      // Refetch all job data to update the UI
+      await fetchData();
     } catch (error) {
       console.error("Error updating job status:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update job status. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
     }
   };
 

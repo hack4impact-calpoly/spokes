@@ -14,9 +14,10 @@ type JobEditedModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (e: FormEvent) => void;
+  isLoading?: boolean;
 };
 
-function JobEditedModal({ isOpen, onClose, onConfirm }: JobEditedModalProps) {
+function JobEditedModal({ isOpen, onClose, onConfirm, isLoading }: JobEditedModalProps) {
   const actionText = "edit";
 
   const handleSubmit = (e: FormEvent) => {
@@ -43,6 +44,8 @@ function JobEditedModal({ isOpen, onClose, onConfirm }: JobEditedModalProps) {
               fontSize="small"
               fontWeight="normal"
               borderColor="black"
+              isLoading={isLoading}
+              loadingText="Updating..."
               sx={{ _hover: { backgroundColor: "green.300" } }}
             >
               Confirm
@@ -54,6 +57,7 @@ function JobEditedModal({ isOpen, onClose, onConfirm }: JobEditedModalProps) {
               fontWeight="normal"
               borderColor="black"
               onClick={onClose}
+              isDisabled={isLoading}
               sx={{ _hover: { backgroundColor: "red.300" } }}
             >
               Cancel
