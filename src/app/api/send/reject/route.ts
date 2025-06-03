@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { withApiAuth } from "@/lib/auth";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const senderEmail = process.env.SENDER_EMAIL || "<onboarding@resend.dev>";
 
 export const POST = withApiAuth(
   async (req: NextRequest, { auth }) => {
@@ -14,7 +15,7 @@ export const POST = withApiAuth(
         jobData.rejectionReason = "No reason provided.";
       }
       const { data, error } = await resend.emails.send({
-        from: "Spokes Job Board <onboarding@resend.dev>",
+        from: `Spokes Job Board ${senderEmail}`,
         to: [`${jobData.contactEmail}`],
         subject: `Your job post for ${jobData.title} was rejected`,
         react: RejectJob({
