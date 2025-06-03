@@ -27,7 +27,6 @@ import JobActionConfirmationModal from "@/components/JobModals/JobActionConfirma
 import JobCardModal from "@/components/JobCard/JobCardModal";
 import JobEditedModal from "@/components/JobModals/JobEditedModal";
 import JobFailModal from "@/components/JobModals/JobFailModal";
-import RejectButton from "@/components/RejectButton";
 import { useUser } from "@clerk/nextjs";
 import { UserInterface as User } from "@/database/userSchema";
 
@@ -769,35 +768,44 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
                     colorScheme="blackAlpha"
                     bg="#045F87"
                     _hover={{ bg: "#2A80A8" }}
-                    className="w-full sm:w-auto min-w-[120px]"
+                    className="w-full sm:w-auto min-w-[120px] shadow-sm"
                     onClick={() => setAction("Update")}
                   >
                     Update
                   </Button>
                 )}
                 {isSpokesAdmin && (!loading || action === "Reject") && (
-                  <RejectButton
+                  <Button
                     isLoading={loading && action === "Reject"}
+                    loadingText="Rejecting..."
+                    size="lg"
+                    colorScheme="blackAlpha"
+                    bg="#FFF3E0"
+                    color="#C2410C"
+                    _hover={{ bg: "#FFE0B2" }}
+                    className="w-full sm:w-auto min-w-[120px] shadow-sm"
                     onClick={() => {
                       setIsRejectModalOpen(true);
                       setAction("Reject");
                     }}
-                    className="w-full sm:w-auto min-w-[120px] px-6 py-3 rounded-md bg-[#ff9d4f] hover:bg-[#ffbe8b] text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                  />
+                  >
+                    Reject
+                  </Button>
                 )}
                 {(!loading || action === "Delete") && (
                   <Button
                     isLoading={loading && action === "Delete"}
                     loadingText="Deleting..."
                     size="lg"
-                    colorScheme="red"
-                    bg="red"
-                    _hover={{ bg: "#ff8b8b" }}
+                    colorScheme="blackAlpha"
+                    bg="#FEE2E2"
+                    color="#991B1B"
+                    _hover={{ bg: "#FECACA" }}
+                    className="w-full sm:w-auto min-w-[120px] shadow-sm"
                     onClick={() => {
                       setIsActionConfirmationModalOpen(true);
                       setAction("Delete");
                     }}
-                    className="w-full sm:w-auto min-w-[120px]"
                   >
                     Delete
                   </Button>
