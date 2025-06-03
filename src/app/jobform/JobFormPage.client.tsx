@@ -24,10 +24,10 @@ import { Option } from "@/components/TagsMultiselect/multiselect";
 import { cn } from "@/lib/utils";
 import JobConfirmationModal from "@/components/JobModals/JobConfirmationModal";
 import JobActionConfirmationModal from "@/components/JobModals/JobActionConfirmationModal";
-import JobFailModal from "@/components/JobModals/JobFailModal";
-import RejectButton from "@/components/RejectButton";
 import JobCardModal from "@/components/JobCard/JobCardModal";
 import JobEditedModal from "@/components/JobModals/JobEditedModal";
+import JobFailModal from "@/components/JobModals/JobFailModal";
+import RejectButton from "@/components/RejectButton";
 import { useUser } from "@clerk/nextjs";
 import { UserInterface as User } from "@/database/userSchema";
 
