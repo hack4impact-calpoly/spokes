@@ -366,7 +366,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         body: JSON.stringify({
           ...formattedFormData,
           previousStatus: formData.jobStatus,
-          newStatus: "pending",
+          newStatus: isSpokesAdmin ? formData.jobStatus : "pending",
         }),
       });
 
