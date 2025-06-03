@@ -14,9 +14,16 @@ type JobActionConfirmationModalProps = {
   onClose: () => void;
   onConfirm: () => Promise<void>;
   action: string;
+  isLoading?: boolean;
 };
 
-function JobActionConfirmationModal({ isOpen, onClose, onConfirm, action }: JobActionConfirmationModalProps) {
+function JobActionConfirmationModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  action,
+  isLoading,
+}: JobActionConfirmationModalProps) {
   // Map action to user friendly text
   const actionText = action;
   return (
@@ -34,6 +41,8 @@ function JobActionConfirmationModal({ isOpen, onClose, onConfirm, action }: JobA
             fontWeight="normal"
             borderColor="black"
             onClick={onConfirm}
+            isLoading={isLoading}
+            loadingText={`${actionText}ing...`}
             sx={{
               _hover: {
                 backgroundColor: "green.300",
@@ -49,6 +58,7 @@ function JobActionConfirmationModal({ isOpen, onClose, onConfirm, action }: JobA
             fontWeight="normal"
             borderColor="black"
             onClick={onClose}
+            isDisabled={isLoading}
             sx={{
               _hover: {
                 backgroundColor: "red.300",

@@ -883,6 +883,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         onClose={closeActionConfirmationModal}
         onConfirm={handleAction}
         action={action}
+        isLoading={loading && action === "Delete"}
       />
       <JobCardModal
         isOpen={isRejectModalOpen}
@@ -893,9 +894,15 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         action="reject"
         rejectionReason={rejectionReason}
         setRejectionReason={setRejectionReason}
+        isLoading={loading && action === "Reject"}
       />
       <JobFailModal isOpen={isFailModalOpen} onClose={closeFailModal} />
-      <JobEditedModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onConfirm={handleUpdate} />
+      <JobEditedModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onConfirm={handleUpdate}
+        isLoading={loading && action === "Update"}
+      />
     </Box>
   );
 }
