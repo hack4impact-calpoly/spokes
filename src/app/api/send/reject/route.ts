@@ -13,13 +13,10 @@ export const POST = withApiAuth(
       if (!jobData.rejectionReason || jobData.rejectionReason.trim() === "") {
         jobData.rejectionReason = "No reason provided.";
       }
-
-      console.log("ATTEMPTING TO SEND: ", jobData.title);
-
       const { data, error } = await resend.emails.send({
         from: "Spokes Job Board <onboarding@resend.dev>",
         to: [`${jobData.contactEmail}`],
-        subject: `Your Job Post for ${jobData.title} Was Rejected`,
+        subject: `Your job post for ${jobData.title} was rejected`,
         react: RejectJob({
           title: jobData.title,
           organizationName: jobData.organizationName,
@@ -29,14 +26,11 @@ export const POST = withApiAuth(
       });
 
       if (error) {
-        console.error("EMAIL FAILED:", error);
         return NextResponse.json({ error }, { status: 500 });
       }
 
-      console.log("EMAIL SENT!");
       return NextResponse.json({ success: true, data });
     } catch (error) {
-      console.log("EMAIL FAILED:", error);
       return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
     }
   },

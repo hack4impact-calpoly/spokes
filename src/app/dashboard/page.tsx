@@ -8,6 +8,7 @@ export default async function DashboardServerPage() {
   const { userId } = authData;
 
   let organizationName = "Your Organization";
+  let paidMember = false;
   if (userId) {
     try {
       const response = await getMongoUser(userId);
@@ -15,11 +16,12 @@ export default async function DashboardServerPage() {
       if (response.status === 200) {
         const user: UserInterface = data;
         organizationName = user.organizationName as string;
+        paidMember = user.paidMember as boolean;
       }
     } catch (error) {
       console.error("Error fetching MongoDB user:", error);
     }
   }
 
-  return <DashboardPage organizationName={organizationName} />;
+  return <DashboardPage organizationName={organizationName} membershipStatus={paidMember} />;
 }
