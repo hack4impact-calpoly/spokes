@@ -5,6 +5,7 @@ import Link from "next/link";
 import { UserResource } from "@clerk/types";
 import { Button, Tooltip, Box } from "@chakra-ui/react";
 import { UserButton, OrganizationSwitcher, useSession } from "@clerk/nextjs";
+import { useOrganizationList } from "@clerk/nextjs";
 
 interface TopSectionProps {
   user: UserResource | null | undefined;
@@ -13,6 +14,10 @@ interface TopSectionProps {
 export default function TopSection({ user }: TopSectionProps) {
   const { session } = useSession();
   const onboardingComplete = session?.user?.publicMetadata?.onboardingComplete === true;
+  const { isLoaded, userMemberships } = useOrganizationList({
+    userMemberships: true,
+  });
+  const hasOrgMembership = isLoaded && userMemberships.data?.length > 0;
 
   return (
     <>
@@ -54,7 +59,7 @@ export default function TopSection({ user }: TopSectionProps) {
               )}
               <UserButton showName={true} />
             </div>
-            <OrganizationSwitcher />
+            {hasOrgMembership && <OrganizationSwitcher />}
           </div>
         ) : (
           <Link href="/sign-in">
