@@ -45,20 +45,8 @@ export default function DashboardPage({ organizationName, membershipStatus }: Da
     }
   }, [user, isLoaded]);
 
-  const handleJobRenewed = (renewedJob: IJob) => {
-    setUserJobs((prevJobs) => {
-      // Update the job in the array
-      const updatedJobs = prevJobs.map((job) => (job._id === renewedJob._id ? renewedJob : job));
-      return updatedJobs;
-    });
-  };
-
-  const handleJobUnpublished = (unpublishedJob: IJob) => {
-    setUserJobs((prevJobs) => {
-      // Update the job in the array
-      const updatedJobs = prevJobs.map((job) => (job._id === unpublishedJob._id ? unpublishedJob : job));
-      return updatedJobs;
-    });
+  const handleJobUpdate = (updatedJob: IJob) => {
+    setUserJobs((prevJobs) => prevJobs.map((job) => (job._id === updatedJob._id ? updatedJob : job)));
   };
 
   if (loading) {
@@ -186,7 +174,7 @@ export default function DashboardPage({ organizationName, membershipStatus }: Da
                         key={index}
                         job={job}
                         types={["posted", "updated", "expires"]}
-                        onJobStatusUpdate={handleJobUnpublished}
+                        onJobStatusUpdate={handleJobUpdate}
                       />
                     ))
                   ) : (
@@ -211,7 +199,7 @@ export default function DashboardPage({ organizationName, membershipStatus }: Da
                 <div className="flex flex-col gap-4">
                   {expiredJobs.length > 0 ? (
                     expiredJobs.map((job, index) => (
-                      <OrgCard key={index} job={job} types={["expired"]} onJobStatusUpdate={handleJobRenewed} />
+                      <OrgCard key={index} job={job} types={["expired"]} onJobStatusUpdate={handleJobUpdate} />
                     ))
                   ) : (
                     <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">No expired jobs available</div>
