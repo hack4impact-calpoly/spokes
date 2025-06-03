@@ -1,7 +1,6 @@
-import { Label } from "@/components/TagsMultiselect/label";
 import MultipleSelector, { Option } from "@/components/TagsMultiselect/multiselect";
 import { Button, FormLabel, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay } from "@chakra-ui/react";
-import { ReactNode, useRef, useState } from "react";
+import { ReactNode } from "react";
 
 const industries: Option[] = [
   {

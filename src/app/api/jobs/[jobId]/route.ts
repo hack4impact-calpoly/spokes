@@ -1,7 +1,6 @@
 import connectDB from "@/database/db";
 import { NextRequest, NextResponse } from "next/server";
 import Job from "@/database/jobSchema";
-import { IJob } from "@/database/jobSchema";
 import { withApiAuth } from "@/lib/auth";
 import { JobStatus } from "@/database/jobSchema";
 

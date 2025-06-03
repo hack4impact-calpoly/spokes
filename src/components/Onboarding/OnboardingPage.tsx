@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useUser, useSession } from "@clerk/nextjs";
 import { Box, Heading, useToast } from "@chakra-ui/react";
 import Image from "next/image";

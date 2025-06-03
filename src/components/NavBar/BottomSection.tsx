@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { FaArrowUp } from "react-icons/fa";
-import { FiMenu, FiX } from "react-icons/fi";
 import { usePathname } from "next/navigation";
 import NavBarLink from "./NavBarLink";
 import { useFormReset } from "@/app/jobform/FormResetContext";
