@@ -444,6 +444,15 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
           throw new Error("Failed to reject job.");
         }
 
+        toast({
+          title: "Job Rejected",
+          description: `Successfully rejected "${formData.title}"`,
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+
         setIsRejectModalOpen(false);
         setAction("");
         setMessage("Successfully reject job");
@@ -451,6 +460,14 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         router.push("/admin");
       } catch (error) {
         console.error(`Error rejecting job: ${error}`);
+        toast({
+          title: "Rejection Failed",
+          description: "There was an error rejecting the job. Please try again.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
         setMessage("Error occurred while attempting to reject job");
       }
     } else if (action === "Delete") {
@@ -469,7 +486,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
           title: "Job Deleted",
           description: `"${formData.title}" has been successfully removed`,
           status: "success",
-          duration: 3000,
+          duration: 5000,
           isClosable: true,
           position: "top-right",
         });
