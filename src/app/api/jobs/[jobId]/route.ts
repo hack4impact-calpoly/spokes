@@ -48,7 +48,7 @@ export const PUT = withApiAuth(
       const jobId = req.nextUrl.pathname.split("/").pop();
 
       const requestData = await req.json();
-      const { previousStatus, newStatus, isRenewal, ...jobData } = requestData;
+      const { previousStatus, newStatus, isRenewal, isUnpublish, ...jobData } = requestData;
 
       // Handle both cases - with and without status transition data
       const hasStatusTransition = previousStatus !== undefined && newStatus !== undefined;
@@ -80,7 +80,7 @@ export const PUT = withApiAuth(
         const updatedJob = await Job.findByIdAndUpdate(
           jobId,
           {
-            jobStatus: JobStatus.approved,
+            jobStatus: auth.role === "nonprofit" ? JobStatus.pending : newStatus,
             postDate: new Date(),
             approvedDate: new Date(),
             modifiedDate: new Date(),
@@ -88,6 +88,19 @@ export const PUT = withApiAuth(
           { new: true },
         );
         return NextResponse.json({ message: "Job renewed successfully", job: updatedJob });
+      }
+
+      // Handle job unpublishing
+      if (isUnpublish) {
+        const updatedJob = await Job.findByIdAndUpdate(
+          jobId,
+          {
+            jobStatus: JobStatus.expired,
+            modifiedDate: new Date(),
+          },
+          { new: true },
+        );
+        return NextResponse.json({ message: "Job unpublished successfully", job: updatedJob });
       }
 
       const updatedJob = {
