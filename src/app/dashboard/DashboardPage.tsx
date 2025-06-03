@@ -53,6 +53,14 @@ export default function DashboardPage({ organizationName, membershipStatus }: Da
     });
   };
 
+  const handleJobUnpublished = (unpublishedJob: IJob) => {
+    setUserJobs((prevJobs) => {
+      // Update the job in the array
+      const updatedJobs = prevJobs.map((job) => (job._id === unpublishedJob._id ? unpublishedJob : job));
+      return updatedJobs;
+    });
+  };
+
   if (loading) {
     return (
       <div className="w-full relative">
@@ -174,7 +182,12 @@ export default function DashboardPage({ organizationName, membershipStatus }: Da
                 <div className="flex flex-col gap-4">
                   {liveJobs.length > 0 ? (
                     liveJobs.map((job, index) => (
-                      <OrgCard key={index} job={job} types={["posted", "updated", "expires"]} />
+                      <OrgCard
+                        key={index}
+                        job={job}
+                        types={["posted", "updated", "expires"]}
+                        onJobStatusUpdate={handleJobUnpublished}
+                      />
                     ))
                   ) : (
                     <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">No live jobs available</div>
@@ -198,7 +211,7 @@ export default function DashboardPage({ organizationName, membershipStatus }: Da
                 <div className="flex flex-col gap-4">
                   {expiredJobs.length > 0 ? (
                     expiredJobs.map((job, index) => (
-                      <OrgCard key={index} job={job} types={["expired"]} onJobRenewed={handleJobRenewed} />
+                      <OrgCard key={index} job={job} types={["expired"]} onJobStatusUpdate={handleJobRenewed} />
                     ))
                   ) : (
                     <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">No expired jobs available</div>
