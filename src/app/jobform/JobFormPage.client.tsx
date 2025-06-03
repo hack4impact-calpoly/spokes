@@ -230,12 +230,14 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         setLoadingUser(true);
         const userData = await getUser(user.id);
 
-        setFormData((prev) => ({
-          ...prev,
-          organizationName: userData.organizationName?.toString() || "",
-          contactName: userData.name?.toString() || "",
-          contactEmail: userData.email?.toString() || "",
-        }));
+        if (!isEditing) {
+          setFormData((prev) => ({
+            ...prev,
+            organizationName: userData.organizationName?.toString() || "",
+            contactName: userData.name?.toString() || "",
+            contactEmail: userData.email?.toString() || "",
+          }));
+        }
       } catch (error) {
         console.error("Failed to fetch user:", error);
       } finally {
@@ -244,7 +246,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
     };
 
     fetchUser();
-  }, [user]);
+  }, [user, isEditing]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | { target: { name: string; value: string[] } }) => {
     const { name, value } = e.target;
