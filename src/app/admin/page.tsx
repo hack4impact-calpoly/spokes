@@ -284,42 +284,44 @@ export default function AdminJobs() {
           </div>
 
           <div className="flex flex-col gap-8">
-            <div className="flex gap-8 w-full">
-              <div
-                className={twMerge(
-                  "text-black text-2xl sm:text-3xl font-semibold text-center cursor-pointer select-none",
-                  tab == 1 ? "opacity-100" : "opacity-50",
-                )}
-                onClick={() => {
-                  setTab(1);
-                }}
-              >
-                <span className="hidden sm:inline">Live Jobs</span>
-                <span className="sm:hidden">Live</span>
-              </div>
-              <div
-                className={twMerge(
-                  "text-black text-2xl sm:text-3xl font-semibold text-center cursor-pointer select-none",
-                  tab == 2 ? "opacity-100" : "opacity-50",
-                )}
-                onClick={() => {
-                  setTab(2);
-                }}
-              >
-                <span className="hidden sm:inline">Expired Jobs</span>
-                <span className="sm:hidden">Expired</span>
-              </div>
-              <div
-                className={twMerge(
-                  "text-black text-2xl sm:text-3xl font-semibold text-center cursor-pointer select-none",
-                  tab == 3 ? "opacity-100" : "opacity-50",
-                )}
-                onClick={() => {
-                  setTab(3);
-                }}
-              >
-                <span className="hidden sm:inline">Rejected Jobs</span>
-                <span className="sm:hidden">Rejected</span>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex flex-wrap gap-4 sm:gap-8">
+                <div
+                  className={twMerge(
+                    "text-black text-xl sm:text-2xl md:text-3xl font-semibold text-center cursor-pointer select-none",
+                    tab == 1 ? "opacity-100" : "opacity-50",
+                  )}
+                  onClick={() => {
+                    setTab(1);
+                  }}
+                >
+                  <span className="hidden sm:inline">Live Jobs</span>
+                  <span className="sm:hidden">Live</span>
+                </div>
+                <div
+                  className={twMerge(
+                    "text-black text-xl sm:text-2xl md:text-3xl font-semibold text-center cursor-pointer select-none",
+                    tab == 2 ? "opacity-100" : "opacity-50",
+                  )}
+                  onClick={() => {
+                    setTab(2);
+                  }}
+                >
+                  <span className="hidden sm:inline">Expired Jobs</span>
+                  <span className="sm:hidden">Expired</span>
+                </div>
+                <div
+                  className={twMerge(
+                    "text-black text-xl sm:text-2xl md:text-3xl font-semibold text-center cursor-pointer select-none",
+                    tab == 3 ? "opacity-100" : "opacity-50",
+                  )}
+                  onClick={() => {
+                    setTab(3);
+                  }}
+                >
+                  <span className="hidden sm:inline">Rejected Jobs</span>
+                  <span className="sm:hidden">Rejected</span>
+                </div>
               </div>
               <Tooltip
                 label={"Refresh job data"}
@@ -339,7 +341,7 @@ export default function AdminJobs() {
                   onClick={handleRefresh}
                   disabled={isRefreshing || isUpdatingJob}
                   className={twMerge(
-                    "p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto group",
+                    "p-2 hover:bg-gray-100 rounded-full transition-colors group",
                     (isRefreshing || isUpdatingJob) && "cursor-not-allowed opacity-70",
                   )}
                 >
