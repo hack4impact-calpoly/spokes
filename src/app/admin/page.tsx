@@ -14,7 +14,7 @@ export default function AdminJobs() {
   const toast = useToast();
   const [incomingJobData, setIncomingJobData] = useState<null | IJob[]>(null);
   const [liveJobData, setLiveJobData] = useState<null | IJob[]>(null);
-  const [completeJobData, setCompleteJobData] = useState<null | IJob[]>(null);
+  const [rejectedJobData, setRejectedJobData] = useState<null | IJob[]>(null);
   const [expiredJobData, setExpiredJobData] = useState<null | IJob[]>(null);
 
   const setExpiredJobs = async (jobs: IJob[]) => {
@@ -59,11 +59,11 @@ export default function AdminJobs() {
         return;
       }
 
-      const [incomingData, liveData, completeData, expiredData] = await Promise.all(responses.map((res) => res.json()));
+      const [incomingData, liveData, rejectedData, expiredData] = await Promise.all(responses.map((res) => res.json()));
 
       setIncomingJobData(incomingData);
       setLiveJobData(liveData);
-      setCompleteJobData(completeData);
+      setRejectedJobData(rejectedData);
       setExpiredJobData(expiredData);
     } catch (error) {
       console.error("Error fetching job data:", error);
@@ -161,9 +161,6 @@ export default function AdminJobs() {
           position: "top-right",
         });
       }
-
-      // Refetch all job data to update the UI
-      await fetchData();
     } catch (error) {
       console.error("Error updating job status:", error);
       toast({
@@ -254,7 +251,6 @@ export default function AdminJobs() {
                   tab == 1 ? "opacity-100" : "opacity-50",
                 )}
                 onClick={() => {
-                  // Later add functionally to display listings
                   setTab(1);
                 }}
               >
@@ -267,7 +263,6 @@ export default function AdminJobs() {
                   tab == 2 ? "opacity-100" : "opacity-50",
                 )}
                 onClick={() => {
-                  // Later add functionally to display listings
                   setTab(2);
                 }}
               >
@@ -280,7 +275,6 @@ export default function AdminJobs() {
                   tab == 3 ? "opacity-100" : "opacity-50",
                 )}
                 onClick={() => {
-                  // Later add functionally to display listings
                   setTab(3);
                 }}
               >
@@ -308,12 +302,16 @@ export default function AdminJobs() {
               ) : (
                 <JobGridSkeleton count={4} />
               )
-            ) : completeJobData ? (
-              <JobGrid
-                jobs={completeJobData}
-                isRejected={true}
-                onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
-              />
+            ) : tab == 3 ? (
+              rejectedJobData ? (
+                <JobGrid
+                  jobs={rejectedJobData}
+                  isRejected={true}
+                  onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
+                />
+              ) : (
+                <JobGridSkeleton count={4} />
+              )
             ) : (
               <JobGridSkeleton count={4} />
             )}
