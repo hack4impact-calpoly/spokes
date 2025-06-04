@@ -7,7 +7,7 @@ import { IJob } from "@/database/jobSchema";
 import { twMerge } from "tailwind-merge";
 import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
 import Link from "next/link";
-import { isMoreThanThirtyDaysAgo } from "@/lib/utils";
+import { isExpired } from "@/lib/utils";
 import { useToast } from "@chakra-ui/react";
 
 export default function AdminJobs() {
@@ -23,7 +23,9 @@ export default function AdminJobs() {
       return;
     }
     console.log("Setting Expired");
-    const jobsToExpire = jobs.filter((job) => job.jobStatus !== "expired" && isMoreThanThirtyDaysAgo(job.approvedDate));
+    const jobsToExpire = jobs.filter(
+      (job) => job.jobStatus !== "expired" && isExpired(job.jobStatus, job.approvedDate),
+    );
 
     for (const job of jobsToExpire) {
       await updateJobStatus(job._id, "expired");

@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useToast } from "@chakra-ui/react";
 import ActionButton from "./ActionButton";
+import { isExpired } from "@/lib/utils";
 
 interface JobCardProps {
   job: IJob;
@@ -134,7 +135,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
     }
   }
 
-  const isExpired = job.approvedDate && new Date(job.approvedDate) < thirtyDaysAgo;
+  const isActuallyExpired = isExpired(job.jobStatus, job.approvedDate);
 
   function handleEditApplicationButton(e: React.ChangeEvent<any>) {
     e.preventDefault();
@@ -202,7 +203,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
           </div>
 
           <div className="flex flex-wrap gap-2 justify min-[1000px]:mt-0 mt-5">
-            {job.jobStatus === "pending" && !isExpired && (
+            {job.jobStatus === "pending" && !isActuallyExpired && (
               <>
                 <ActionButton
                   action="approve"
@@ -213,7 +214,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
               </>
             )}
 
-            {isExpired && <ActionButton action="renew" onClick={() => openModal("renew")} />}
+            {isActuallyExpired && <ActionButton action="renew" onClick={() => openModal("renew")} />}
           </div>
         </div>
 

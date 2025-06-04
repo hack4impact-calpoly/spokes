@@ -38,7 +38,7 @@ export function getThirtyDaysAgo(): Date {
   return new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 }
 
-export function isMoreThanThirtyDaysAgo(approvedDate?: Date): boolean {
+export function isExpired(jobStatus: string, approvedDate?: Date): boolean {
   if (!approvedDate) return false;
-  return new Date(approvedDate) < getThirtyDaysAgo();
+  return new Date(approvedDate) < getThirtyDaysAgo() || jobStatus.toLowerCase() === "expired";
 }

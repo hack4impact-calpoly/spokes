@@ -5,7 +5,7 @@ import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { OrgCard } from "@/components/JobCard/OrgCard";
 import OrgCardSkeleton from "@/components/JobCard/OrgCardSkeleton";
-import { isMoreThanThirtyDaysAgo } from "@/lib/utils";
+import { isExpired } from "@/lib/utils";
 import MembershipBadge from "@/components/MembershipBadge";
 
 type DashboardProps = {
@@ -45,12 +45,8 @@ export default function DashboardPage({ organizationName, membershipStatus }: Da
     }
   }, [user, isLoaded]);
 
-  const handleJobRenewed = (renewedJob: IJob) => {
-    setUserJobs((prevJobs) => {
-      // Update the job in the array
-      const updatedJobs = prevJobs.map((job) => (job._id === renewedJob._id ? renewedJob : job));
-      return updatedJobs;
-    });
+  const handleJobUpdate = (updatedJob: IJob) => {
+    setUserJobs((prevJobs) => prevJobs.map((job) => (job._id === updatedJob._id ? updatedJob : job)));
   };
 
   if (loading) {
@@ -144,15 +140,15 @@ export default function DashboardPage({ organizationName, membershipStatus }: Da
   }
 
   const liveJobs = userJobs.filter(
-    (job) => job.jobStatus.toLowerCase() === "approved" && !isMoreThanThirtyDaysAgo(job.approvedDate),
+    (job) => job.jobStatus.toLowerCase() === "approved" && !isExpired(job.jobStatus, job.approvedDate),
   );
 
   const pendingJobs = userJobs.filter(
     (job) => job.jobStatus.toLowerCase() === "pending" || job.jobStatus.toLowerCase() === "rejected",
   );
 
-  // Filter expired jobs by if the approval date is greater than 30 days ago, this does not check for expired status
-  const expiredJobs = userJobs.filter((job) => isMoreThanThirtyDaysAgo(job.approvedDate));
+  // Filter expired jobs by if the approval date is greater than 30 days ago or if the job status is "expired"
+  const expiredJobs = userJobs.filter((job) => isExpired(job.jobStatus, job.approvedDate));
 
   return (
     <div className="w-full relative">
@@ -170,16 +166,19 @@ export default function DashboardPage({ organizationName, membershipStatus }: Da
             </div>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col mb-12">
-                <div className="text-2xl font-semibold mb-4">Live Applications</div>
+                <div className="text-2xl font-semibold mb-4">Live Jobs</div>
                 <div className="flex flex-col gap-4">
                   {liveJobs.length > 0 ? (
                     liveJobs.map((job, index) => (
-                      <OrgCard key={index} job={job} types={["posted", "updated", "expires"]} />
+                      <OrgCard
+                        key={index}
+                        job={job}
+                        types={["posted", "updated", "expires"]}
+                        onJobStatusUpdate={handleJobUpdate}
+                      />
                     ))
                   ) : (
-                    <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">
-                      No live applications available
-                    </div>
+                    <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">No live jobs available</div>
                   )}
                 </div>
               </div>
@@ -196,16 +195,14 @@ export default function DashboardPage({ organizationName, membershipStatus }: Da
                 </div>
               </div>
               <div className="flex flex-col mb-12">
-                <div className="text-2xl font-semibold mb-4">Expired Applications</div>
+                <div className="text-2xl font-semibold mb-4">Expired Jobs</div>
                 <div className="flex flex-col gap-4">
                   {expiredJobs.length > 0 ? (
                     expiredJobs.map((job, index) => (
-                      <OrgCard key={index} job={job} types={["expired"]} onJobRenewed={handleJobRenewed} />
+                      <OrgCard key={index} job={job} types={["expired"]} onJobStatusUpdate={handleJobUpdate} />
                     ))
                   ) : (
-                    <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">
-                      No expired applications available
-                    </div>
+                    <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">No expired jobs available</div>
                   )}
                 </div>
               </div>

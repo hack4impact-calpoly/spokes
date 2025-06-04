@@ -1,10 +1,9 @@
 import { twMerge } from "tailwind-merge";
-import { ComponentProps, forwardRef } from "react";
+import { ComponentProps, forwardRef, useState } from "react";
 import { IJob } from "@/database/jobSchema";
 import JobStatusBadge from "./JobStatusBadge";
 import JobBadge from "./JobBadge";
 import {
-  IconButton,
   Button,
   Modal,
   ModalOverlay,
@@ -17,16 +16,16 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { FiEdit, FiMessageSquare, FiRefreshCw } from "react-icons/fi";
+import { FiEdit, FiEyeOff, FiMessageSquare, FiRefreshCw } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import JobDateInfo, { JobDateKind } from "./JobDateInfo";
-import { isMoreThanThirtyDaysAgo } from "@/lib/utils";
+import { isExpired } from "@/lib/utils";
 
 export interface OrgCardProps extends ComponentProps<"div"> {
   className?: string;
   job: IJob;
   types: JobDateKind[];
-  onJobRenewed?: (job: IJob) => void;
+  onJobStatusUpdate?: (job: IJob) => void;
 }
 
 function getJobDate(job: IJob, type: JobDateKind) {
@@ -55,9 +54,11 @@ function getJobDate(job: IJob, type: JobDateKind) {
 }
 
 export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
-  ({ children, className, job, types, onJobRenewed, ...props }, ref) => {
+  ({ children, className, job, types, onJobStatusUpdate, ...props }, ref) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const isActuallyExpired = isMoreThanThirtyDaysAgo(job.approvedDate);
+    const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+    const [actionText, setActionText] = useState("");
+    const isActuallyExpired = isExpired(job.jobStatus, job.approvedDate);
     const router = useRouter();
     const toast = useToast();
 
@@ -66,8 +67,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
       router.push(`/jobform?jobId=${job._id}&returnURL=/dashboard`);
     }
 
-    async function handleRenewJob(e: React.ChangeEvent<any>) {
-      e.preventDefault();
+    async function handleRenewJob() {
       try {
         const response = await fetch(`/api/jobs/${job._id}`, {
           method: "PUT",
@@ -98,8 +98,8 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
         });
 
         // Call the callback if provided
-        if (onJobRenewed) {
-          onJobRenewed(data.job);
+        if (onJobStatusUpdate) {
+          onJobStatusUpdate(data.job);
         } else {
           // Fallback to page refresh if no callback provided
           window.location.reload();
@@ -109,6 +109,61 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
         toast({
           title: "Error",
           description: "Failed to renew job. Please try again.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+      }
+    }
+
+    function handleConfirmationModal(action: "unpublish" | "renew") {
+      setActionText(action === "unpublish" ? "Unpublish" : "Renew");
+      setIsConfirmationModalOpen(true);
+    }
+
+    async function handleUnpublishJob() {
+      try {
+        const response = await fetch(`/api/jobs/${job._id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            isUnpublish: true,
+            previousStatus: job.jobStatus,
+            newStatus: "expired",
+          }),
+        });
+        if (!response.ok) {
+          throw new Error("Failed to unpublish job");
+        }
+        console.log("response", response);
+
+        const data = await response.json();
+        console.log("Unpublished job:", data);
+        // Show success toast
+        toast({
+          title: "Job Unpublished",
+          description: `Successfully unpublished "${job.title}"`,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+
+        // Call the callback if provided
+        if (onJobStatusUpdate) {
+          onJobStatusUpdate(data.job);
+        } else {
+          // Fallback to page refresh if no callback provided
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error("Error unpublishing job:", error);
+        toast({
+          title: "Error",
+          description: "Failed to unpublish job. Please try again.",
           status: "error",
           duration: 5000,
           isClosable: true,
@@ -165,6 +220,19 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
                   <span className="sm:hidden">Feedback</span>
                 </Button>
               )}
+              {job.jobStatus === "approved" && !isActuallyExpired && (
+                <Button
+                  variant="outline"
+                  colorScheme="blue"
+                  size={{ base: "xs", md: "sm" }}
+                  onClick={() => handleConfirmationModal("unpublish")}
+                  className="flex flex-row items-center gap-1 sm:gap-2"
+                >
+                  <FiEyeOff className="text-sm sm:text-base" />
+                  <span className="hidden sm:inline">Unpublish Job</span>
+                  <span className="sm:hidden">Unpublish</span>
+                </Button>
+              )}
             </div>
             <div className="flex flex-row items-center justify-between w-full">
               <div className="flex flex-row items-center gap-1 sm:gap-2 flex-wrap">
@@ -185,6 +253,18 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
                       <span>View Feedback</span>
                     </Button>
                   )}
+                  {job.jobStatus === "approved" && !isActuallyExpired && (
+                    <Button
+                      variant="outline"
+                      colorScheme="blue"
+                      size={{ base: "xs", md: "sm" }}
+                      onClick={() => handleConfirmationModal("unpublish")}
+                      className="hidden md:flex flex-row items-center gap-1 sm:gap-2"
+                    >
+                      <FiEyeOff className="text-sm sm:text-base" />
+                      <span>Unpublish Job</span>
+                    </Button>
+                  )}
                 </div>
                 {isActuallyExpired && (
                   <Button
@@ -192,7 +272,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
                     size={{ base: "xs", md: "sm" }}
                     colorScheme="green"
                     variant="outline"
-                    onClick={handleRenewJob}
+                    onClick={() => handleConfirmationModal("renew")}
                     className="flex flex-row items-center gap-1 sm:gap-2"
                   >
                     <FiRefreshCw className="text-sm sm:text-base" />
@@ -232,6 +312,56 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
               </Button>
               <Button variant="ghost" onClick={onClose} size="sm">
                 Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <Modal isOpen={isConfirmationModalOpen} onClose={() => setIsConfirmationModalOpen(false)} isCentered>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Confirm {actionText} Job </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              Are you sure you would like to {actionText.toLowerCase()} this job posting?
+              {actionText == "Unpublish" && " Unpublishing a job will mark it as expired, you can renew it later"}
+            </ModalBody>
+            <ModalFooter className="flex flex-wrap gap-2 mt-4 justify-end">
+              <Button
+                px="10"
+                width="120px"
+                fontSize="small"
+                fontWeight="normal"
+                borderColor="black"
+                onClick={() => {
+                  if (actionText === "Unpublish") {
+                    handleUnpublishJob();
+                  } else if (actionText === "Renew") {
+                    handleRenewJob();
+                  }
+                  setIsConfirmationModalOpen(false);
+                }}
+                sx={{
+                  _hover: {
+                    backgroundColor: "green.300",
+                  },
+                }}
+              >
+                Confirm
+              </Button>
+              <Button
+                px="10"
+                width="120px"
+                fontSize="small"
+                fontWeight="normal"
+                borderColor="black"
+                onClick={() => setIsConfirmationModalOpen(false)}
+                sx={{
+                  _hover: {
+                    backgroundColor: "red.300",
+                  },
+                }}
+              >
+                Cancel
               </Button>
             </ModalFooter>
           </ModalContent>
