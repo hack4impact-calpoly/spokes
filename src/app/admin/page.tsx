@@ -17,6 +17,8 @@ export default function AdminJobs() {
   const [rejectedJobData, setRejectedJobData] = useState<null | IJob[]>(null);
   const [expiredJobData, setExpiredJobData] = useState<null | IJob[]>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isUpdatingJob, setIsUpdatingJob] = useState(false);
+  const [lastUpdateTime, setLastUpdateTime] = useState<number>(0);
 
   const setExpiredJobs = async (jobs: IJob[]) => {
     if (!Array.isArray(jobs)) {
@@ -88,6 +90,7 @@ export default function AdminJobs() {
     rejectionMessage?: string,
   ) => {
     try {
+      setIsUpdatingJob(true);
       // First fetch the current job data
       const response = await fetch(`/api/jobs/${jobId}`);
       if (!response.ok) {
@@ -135,18 +138,10 @@ export default function AdminJobs() {
       }
 
       // Remove the job from its current category
-      if (incomingJobData) {
-        setIncomingJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
-      }
-      if (liveJobData) {
-        setLiveJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
-      }
-      if (rejectedJobData) {
-        setRejectedJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
-      }
-      if (expiredJobData) {
-        setExpiredJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
-      }
+      setIncomingJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
+      setLiveJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
+      setRejectedJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
+      setExpiredJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
 
       if (status === "approved") {
         toast({
@@ -157,6 +152,7 @@ export default function AdminJobs() {
           isClosable: true,
           position: "top-right",
         });
+
         setLiveJobData((prev) => [...(prev ?? []), updatedJob]);
       } else if (status === "rejected") {
         toast({
@@ -167,6 +163,7 @@ export default function AdminJobs() {
           isClosable: true,
           position: "top-right",
         });
+
         setRejectedJobData((prev) => [...(prev ?? []), updatedJob]);
       } else if (status === "expired") {
         toast({
@@ -177,6 +174,7 @@ export default function AdminJobs() {
           isClosable: true,
           position: "top-right",
         });
+
         setExpiredJobData((prev) => [...(prev ?? []), updatedJob]);
       }
     } catch (error) {
@@ -189,6 +187,12 @@ export default function AdminJobs() {
         isClosable: true,
         position: "top-right",
       });
+    } finally {
+      setIsUpdatingJob(false);
+      // Set the last update time to now
+      setLastUpdateTime(Date.now());
+      // Wait for 2 seconds to ensure database consistency
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   };
 
@@ -196,6 +200,15 @@ export default function AdminJobs() {
 
   const handleRefresh = async () => {
     if (isRefreshing) return;
+
+    // check if we're within 2 seconds of the last update
+    const timeSinceLastUpdate = Date.now() - lastUpdateTime; // down the road change this hard coded 2 seconds to a more scalable solution
+    if (timeSinceLastUpdate < 2000) {
+      console.log("Waiting for database to sync...");
+      // wait for the remaining time
+      await new Promise((resolve) => setTimeout(resolve, 2000 - timeSinceLastUpdate));
+    }
+
     setIsRefreshing(true);
     await fetchData();
     setTimeout(() => {
@@ -324,10 +337,10 @@ export default function AdminJobs() {
               >
                 <button
                   onClick={handleRefresh}
-                  disabled={isRefreshing}
+                  disabled={isRefreshing || isUpdatingJob}
                   className={twMerge(
                     "p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto group",
-                    isRefreshing && "cursor-not-allowed opacity-70",
+                    (isRefreshing || isUpdatingJob) && "cursor-not-allowed opacity-70",
                   )}
                 >
                   <svg
