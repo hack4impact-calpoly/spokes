@@ -8,7 +8,7 @@ import { twMerge } from "tailwind-merge";
 import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
 import Link from "next/link";
 import { isExpired } from "@/lib/utils";
-import { useToast } from "@chakra-ui/react";
+import { Tooltip, useToast } from "@chakra-ui/react";
 
 export default function AdminJobs() {
   const toast = useToast();
@@ -134,41 +134,19 @@ export default function AdminJobs() {
         throw new Error("Failed to update job status");
       }
 
-      // Only update state after confirming the API call was successful
-      const updateState = () => {
-        // Remove the job from its current category
-        if (incomingJobData) {
-          setIncomingJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
-        }
-        if (liveJobData) {
-          setLiveJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
-        }
-        if (rejectedJobData) {
-          setRejectedJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
-        }
-        if (expiredJobData) {
-          setExpiredJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
-        }
-
-        // Add the job to its new category
-        switch (status) {
-          case "approved":
-            setLiveJobData((prev) => [...(prev ?? []), updatedJob]);
-            break;
-          case "rejected":
-            setRejectedJobData((prev) => [...(prev ?? []), updatedJob]);
-            break;
-          case "pending":
-            setIncomingJobData((prev) => [...(prev ?? []), updatedJob]);
-            break;
-          case "expired":
-            setExpiredJobData((prev) => [...(prev ?? []), updatedJob]);
-            break;
-        }
-      };
-
-      // Call updateState after successful API call
-      updateState();
+      // Remove the job from its current category
+      if (incomingJobData) {
+        setIncomingJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
+      }
+      if (liveJobData) {
+        setLiveJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
+      }
+      if (rejectedJobData) {
+        setRejectedJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
+      }
+      if (expiredJobData) {
+        setExpiredJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
+      }
 
       if (status === "approved") {
         toast({
@@ -179,6 +157,7 @@ export default function AdminJobs() {
           isClosable: true,
           position: "top-right",
         });
+        setLiveJobData((prev) => [...(prev ?? []), updatedJob]);
       } else if (status === "rejected") {
         toast({
           title: "Job Rejected",
@@ -188,6 +167,7 @@ export default function AdminJobs() {
           isClosable: true,
           position: "top-right",
         });
+        setRejectedJobData((prev) => [...(prev ?? []), updatedJob]);
       } else if (status === "expired") {
         toast({
           title: "Job Expired",
@@ -197,6 +177,7 @@ export default function AdminJobs() {
           isClosable: true,
           position: "top-right",
         });
+        setExpiredJobData((prev) => [...(prev ?? []), updatedJob]);
       }
     } catch (error) {
       console.error("Error updating job status:", error);
@@ -327,49 +308,63 @@ export default function AdminJobs() {
                 <span className="hidden sm:inline">Rejected Jobs</span>
                 <span className="sm:hidden">Rejected</span>
               </div>
-              <button
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className={twMerge(
-                  "p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto group",
-                  isRefreshing && "cursor-not-allowed opacity-70",
-                )}
-                title="Refresh job data"
+              <Tooltip
+                label={"Refresh job data"}
+                hasArrow
+                placement="top"
+                bg="#2B2B2B"
+                color="white"
+                fontSize="sm"
+                borderRadius="md"
+                padding="2"
+                boxShadow="md"
+                offset={[0, 5]}
+                maxW="220px"
+                openDelay={600}
               >
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+                <button
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
                   className={twMerge(
-                    "text-gray-600 transition-transform duration-300 ease-in-out",
-                    isRefreshing && "animate-spin-once",
+                    "p-2 hover:bg-gray-100 rounded-full transition-colors ml-auto group",
+                    isRefreshing && "cursor-not-allowed opacity-70",
                   )}
                 >
-                  <path
-                    d="M23 4V10H17"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M1 20V14H7"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M3.51 9.00001C3.84797 7.58631 4.53047 6.28871 5.49997 5.20001C6.46947 4.11131 7.70047 3.26141 9.07097 2.71901C10.4415 2.17661 11.9075 1.95681 13.3745 2.07801C14.8415 2.19921 16.2645 2.65821 17.515 3.42001L23 8.00001M1 16L6.485 20.58C7.73547 21.3418 9.15847 21.8008 10.6255 21.922C12.0925 22.0432 13.5585 21.8234 14.929 21.281C16.2995 20.7386 17.5305 19.8887 18.5 18.8C19.4695 17.7113 20.152 16.4137 20.49 15"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={twMerge(
+                      "text-gray-600 transition-transform duration-300 ease-in-out",
+                      isRefreshing && "animate-spin-once",
+                    )}
+                  >
+                    <path
+                      d="M23 4V10H17"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M1 20V14H7"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M3.51 9.00001C3.84797 7.58631 4.53047 6.28871 5.49997 5.20001C6.46947 4.11131 7.70047 3.26141 9.07097 2.71901C10.4415 2.17661 11.9075 1.95681 13.3745 2.07801C14.8415 2.19921 16.2645 2.65821 17.515 3.42001L23 8.00001M1 16L6.485 20.58C7.73547 21.3418 9.15847 21.8008 10.6255 21.922C12.0925 22.0432 13.5585 21.8234 14.929 21.281C16.2995 20.7386 17.5305 19.8887 18.5 18.8C19.4695 17.7113 20.152 16.4137 20.49 15"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              </Tooltip>
             </div>
             {tab == 1 ? (
               liveJobData ? (
