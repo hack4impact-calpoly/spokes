@@ -17,6 +17,8 @@ import {
   Link,
   Collapse,
   useToast,
+  Spinner,
+  Text,
 } from "@chakra-ui/react";
 import RadioCard from "@/components/RadioCard";
 import TagSelect from "@/components/TagSelect";
@@ -778,56 +780,69 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
           {isEditing ? (
             <div className="mt-10 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-                {(!loading || action === "Update") && (
-                  <Button
-                    isLoading={loading && action === "Update"}
-                    loadingText="Updating..."
-                    type="submit"
-                    size="lg"
-                    colorScheme="blackAlpha"
-                    bg="#045F87"
-                    _hover={{ bg: "#2A80A8" }}
-                    className="w-full sm:w-auto min-w-[120px] shadow-sm"
-                    onClick={() => setAction("Update")}
-                  >
-                    Update
-                  </Button>
-                )}
-                {isSpokesAdmin && (!loading || action === "Reject") && (
-                  <Button
-                    isLoading={loading && action === "Reject"}
-                    loadingText="Rejecting..."
-                    size="lg"
-                    colorScheme="blackAlpha"
-                    bg="#FFF3E0"
-                    color="#C2410C"
-                    _hover={{ bg: "#FFE0B2" }}
-                    className="w-full sm:w-auto min-w-[120px] shadow-sm"
-                    onClick={() => {
-                      setIsRejectModalOpen(true);
-                      setAction("Reject");
-                    }}
-                  >
-                    Reject
-                  </Button>
-                )}
-                {(!loading || action === "Delete") && (
-                  <Button
-                    isLoading={loading && action === "Delete"}
-                    loadingText="Deleting..."
-                    size="lg"
-                    colorScheme="blackAlpha"
-                    bg="#FEE2E2"
-                    color="#991B1B"
-                    _hover={{ bg: "#FECACA" }}
-                    className="w-full sm:w-auto min-w-[120px] shadow-sm"
-                    onClick={() => {
-                      setIsActionConfirmationModalOpen(true);
-                      setAction("Delete");
-                    }}
-                  >
-                    Delete
-                  </Button>
+                {loadingInfo ? (
+                  <Box w="full" py={4}>
+                    <Stack direction="row" spacing={4} align="center" justify="center">
+                      <Spinner thickness="3px" speed="0.65s" emptyColor="gray.200" color="#045F87" size="md" />
+                      <Text color="gray.600" fontSize="md">
+                        Loading job information...
+                      </Text>
+                    </Stack>
+                  </Box>
+                ) : (
+                  <>
+                    {(!loading || action === "Update") && (
+                      <Button
+                        isLoading={loading && action === "Update"}
+                        loadingText="Updating..."
+                        type="submit"
+                        size="lg"
+                        colorScheme="blackAlpha"
+                        bg="#045F87"
+                        _hover={{ bg: "#2A80A8" }}
+                        className="w-full sm:w-auto min-w-[120px] shadow-sm"
+                        onClick={() => setAction("Update")}
+                      >
+                        Update
+                      </Button>
+                    )}
+                    {isSpokesAdmin && (!loading || action === "Reject") && (
+                      <Button
+                        isLoading={loading && action === "Reject"}
+                        loadingText="Rejecting..."
+                        size="lg"
+                        colorScheme="blackAlpha"
+                        bg="#FFF3E0"
+                        color="#C2410C"
+                        _hover={{ bg: "#FFE0B2" }}
+                        className="w-full sm:w-auto min-w-[120px] shadow-sm"
+                        onClick={() => {
+                          setIsRejectModalOpen(true);
+                          setAction("Reject");
+                        }}
+                      >
+                        Reject
+                      </Button>
+                    )}
+                    {(!loading || action === "Delete") && (
+                      <Button
+                        isLoading={loading && action === "Delete"}
+                        loadingText="Deleting..."
+                        size="lg"
+                        colorScheme="blackAlpha"
+                        bg="#FEE2E2"
+                        color="#991B1B"
+                        _hover={{ bg: "#FECACA" }}
+                        className="w-full sm:w-auto min-w-[120px] shadow-sm"
+                        onClick={() => {
+                          setIsActionConfirmationModalOpen(true);
+                          setAction("Delete");
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    )}
+                  </>
                 )}
               </div>
             </div>

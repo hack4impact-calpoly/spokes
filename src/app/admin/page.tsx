@@ -8,14 +8,17 @@ import { twMerge } from "tailwind-merge";
 import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
 import Link from "next/link";
 import { isExpired } from "@/lib/utils";
-import { useToast } from "@chakra-ui/react";
+import { Tooltip, useToast } from "@chakra-ui/react";
 
 export default function AdminJobs() {
   const toast = useToast();
   const [incomingJobData, setIncomingJobData] = useState<null | IJob[]>(null);
   const [liveJobData, setLiveJobData] = useState<null | IJob[]>(null);
-  const [completeJobData, setCompleteJobData] = useState<null | IJob[]>(null);
+  const [rejectedJobData, setRejectedJobData] = useState<null | IJob[]>(null);
   const [expiredJobData, setExpiredJobData] = useState<null | IJob[]>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isUpdatingJob, setIsUpdatingJob] = useState(false);
+  const [lastUpdateTime, setLastUpdateTime] = useState<number>(0);
 
   const setExpiredJobs = async (jobs: IJob[]) => {
     if (!Array.isArray(jobs)) {
@@ -59,11 +62,11 @@ export default function AdminJobs() {
         return;
       }
 
-      const [incomingData, liveData, completeData, expiredData] = await Promise.all(responses.map((res) => res.json()));
+      const [incomingData, liveData, rejectedData, expiredData] = await Promise.all(responses.map((res) => res.json()));
 
       setIncomingJobData(incomingData);
       setLiveJobData(liveData);
-      setCompleteJobData(completeData);
+      setRejectedJobData(rejectedData);
       setExpiredJobData(expiredData);
     } catch (error) {
       console.error("Error fetching job data:", error);
@@ -87,6 +90,7 @@ export default function AdminJobs() {
     rejectionMessage?: string,
   ) => {
     try {
+      setIsUpdatingJob(true);
       // First fetch the current job data
       const response = await fetch(`/api/jobs/${jobId}`);
       if (!response.ok) {
@@ -133,6 +137,12 @@ export default function AdminJobs() {
         throw new Error("Failed to update job status");
       }
 
+      // Remove the job from its current category
+      setIncomingJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
+      setLiveJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
+      setRejectedJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
+      setExpiredJobData((prev) => prev?.filter((job) => job._id !== jobId) ?? []);
+
       if (status === "approved") {
         toast({
           title: "Job Approved",
@@ -142,6 +152,8 @@ export default function AdminJobs() {
           isClosable: true,
           position: "top-right",
         });
+
+        setLiveJobData((prev) => [...(prev ?? []), updatedJob]);
       } else if (status === "rejected") {
         toast({
           title: "Job Rejected",
@@ -151,6 +163,8 @@ export default function AdminJobs() {
           isClosable: true,
           position: "top-right",
         });
+
+        setRejectedJobData((prev) => [...(prev ?? []), updatedJob]);
       } else if (status === "expired") {
         toast({
           title: "Job Expired",
@@ -160,10 +174,9 @@ export default function AdminJobs() {
           isClosable: true,
           position: "top-right",
         });
-      }
 
-      // Refetch all job data to update the UI
-      await fetchData();
+        setExpiredJobData((prev) => [...(prev ?? []), updatedJob]);
+      }
     } catch (error) {
       console.error("Error updating job status:", error);
       toast({
@@ -174,10 +187,34 @@ export default function AdminJobs() {
         isClosable: true,
         position: "top-right",
       });
+    } finally {
+      setIsUpdatingJob(false);
+      // Set the last update time to now
+      setLastUpdateTime(Date.now());
+      // Wait for 2 seconds to ensure database consistency
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   };
 
   const [tab, setTab] = useState(1);
+
+  const handleRefresh = async () => {
+    if (isRefreshing) return;
+
+    // check if we're within 2 seconds of the last update
+    const timeSinceLastUpdate = Date.now() - lastUpdateTime; // down the road change this hard coded 2 seconds to a more scalable solution
+    if (timeSinceLastUpdate < 2000) {
+      console.log("Waiting for database to sync...");
+      // wait for the remaining time
+      await new Promise((resolve) => setTimeout(resolve, 2000 - timeSinceLastUpdate));
+    }
+
+    setIsRefreshing(true);
+    await fetchData();
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 1000); // 1 second cooldown
+  };
 
   return (
     <div className="w-full">
@@ -247,46 +284,102 @@ export default function AdminJobs() {
           </div>
 
           <div className="flex flex-col gap-8">
-            <div className="flex gap-8 w-full">
-              <div
-                className={twMerge(
-                  "text-black text-2xl sm:text-3xl font-semibold text-center cursor-pointer select-none",
-                  tab == 1 ? "opacity-100" : "opacity-50",
-                )}
-                onClick={() => {
-                  // Later add functionally to display listings
-                  setTab(1);
-                }}
-              >
-                <span className="hidden sm:inline">Live Jobs</span>
-                <span className="sm:hidden">Live</span>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex flex-wrap gap-4 sm:gap-8">
+                <div
+                  className={twMerge(
+                    "text-black text-xl sm:text-2xl md:text-3xl font-semibold text-center cursor-pointer select-none",
+                    tab == 1 ? "opacity-100" : "opacity-50",
+                  )}
+                  onClick={() => {
+                    setTab(1);
+                  }}
+                >
+                  <span className="hidden sm:inline">Live Jobs</span>
+                  <span className="sm:hidden">Live</span>
+                </div>
+                <div
+                  className={twMerge(
+                    "text-black text-xl sm:text-2xl md:text-3xl font-semibold text-center cursor-pointer select-none",
+                    tab == 2 ? "opacity-100" : "opacity-50",
+                  )}
+                  onClick={() => {
+                    setTab(2);
+                  }}
+                >
+                  <span className="hidden sm:inline">Expired Jobs</span>
+                  <span className="sm:hidden">Expired</span>
+                </div>
+                <div
+                  className={twMerge(
+                    "text-black text-xl sm:text-2xl md:text-3xl font-semibold text-center cursor-pointer select-none",
+                    tab == 3 ? "opacity-100" : "opacity-50",
+                  )}
+                  onClick={() => {
+                    setTab(3);
+                  }}
+                >
+                  <span className="hidden sm:inline">Rejected Jobs</span>
+                  <span className="sm:hidden">Rejected</span>
+                </div>
               </div>
-              <div
-                className={twMerge(
-                  "text-black text-2xl sm:text-3xl font-semibold text-center cursor-pointer select-none",
-                  tab == 2 ? "opacity-100" : "opacity-50",
-                )}
-                onClick={() => {
-                  // Later add functionally to display listings
-                  setTab(2);
-                }}
+              <Tooltip
+                label={"Refresh job data"}
+                hasArrow
+                placement="top"
+                bg="#2B2B2B"
+                color="white"
+                fontSize="sm"
+                borderRadius="md"
+                padding="2"
+                boxShadow="md"
+                offset={[0, 5]}
+                maxW="220px"
+                openDelay={600}
               >
-                <span className="hidden sm:inline">Expired Jobs</span>
-                <span className="sm:hidden">Expired</span>
-              </div>
-              <div
-                className={twMerge(
-                  "text-black text-2xl sm:text-3xl font-semibold text-center cursor-pointer select-none",
-                  tab == 3 ? "opacity-100" : "opacity-50",
-                )}
-                onClick={() => {
-                  // Later add functionally to display listings
-                  setTab(3);
-                }}
-              >
-                <span className="hidden sm:inline">Rejected Jobs</span>
-                <span className="sm:hidden">Rejected</span>
-              </div>
+                <button
+                  onClick={handleRefresh}
+                  disabled={isRefreshing || isUpdatingJob}
+                  className={twMerge(
+                    "p-2 hover:bg-gray-100 rounded-full transition-colors group",
+                    (isRefreshing || isUpdatingJob) && "cursor-not-allowed opacity-70",
+                  )}
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={twMerge(
+                      "text-gray-600 transition-transform duration-300 ease-in-out",
+                      isRefreshing && "animate-spin-once",
+                    )}
+                  >
+                    <path
+                      d="M23 4V10H17"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M1 20V14H7"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M3.51 9.00001C3.84797 7.58631 4.53047 6.28871 5.49997 5.20001C6.46947 4.11131 7.70047 3.26141 9.07097 2.71901C10.4415 2.17661 11.9075 1.95681 13.3745 2.07801C14.8415 2.19921 16.2645 2.65821 17.515 3.42001L23 8.00001M1 16L6.485 20.58C7.73547 21.3418 9.15847 21.8008 10.6255 21.922C12.0925 22.0432 13.5585 21.8234 14.929 21.281C16.2995 20.7386 17.5305 19.8887 18.5 18.8C19.4695 17.7113 20.152 16.4137 20.49 15"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              </Tooltip>
             </div>
             {tab == 1 ? (
               liveJobData ? (
@@ -308,12 +401,16 @@ export default function AdminJobs() {
               ) : (
                 <JobGridSkeleton count={4} />
               )
-            ) : completeJobData ? (
-              <JobGrid
-                jobs={completeJobData}
-                isRejected={true}
-                onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
-              />
+            ) : tab == 3 ? (
+              rejectedJobData ? (
+                <JobGrid
+                  jobs={rejectedJobData}
+                  isRejected={true}
+                  onUpdateJob={(jobId, status, approvedDate) => updateJobStatus(jobId, status, approvedDate)}
+                />
+              ) : (
+                <JobGridSkeleton count={4} />
+              )
             ) : (
               <JobGridSkeleton count={4} />
             )}
