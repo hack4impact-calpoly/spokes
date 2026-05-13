@@ -9,6 +9,10 @@ let connection: typeof mongoose;
  * @returns {Promise<typeof mongoose>}
  */
 const connectDB = async () => {
+  if (!url) {
+    throw new Error("Missing MONGO_URI environment variable.");
+  }
+
   if (!connection) {
     connection = await mongoose.connect(url);
     return connection;

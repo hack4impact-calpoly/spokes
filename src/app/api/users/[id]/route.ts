@@ -29,8 +29,13 @@ export const GET = withApiAuth(
       }
 
       return NextResponse.json(user, { status: 200 });
-    } catch (error) {
-      return NextResponse.json({ message: "Error fetching user", error }, { status: 500 });
+    } catch (error: any) {
+      console.error("Error fetching user:", error);
+
+      return NextResponse.json(
+        { message: "Error fetching user", error: error?.message ?? "Unknown user fetch error" },
+        { status: 500 },
+      );
     }
   },
   {

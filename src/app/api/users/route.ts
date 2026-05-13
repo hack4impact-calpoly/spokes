@@ -16,12 +16,17 @@ export const POST = withApiAuth(
         return NextResponse.json({ message: "Missing user data" }, { status: 400 });
       }
 
-      const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
+      const name = `${firstName ?? ""} ${lastName ?? ""}`.trim() || email;
+      const parsedPaidMember = paidMember === true || paidMember === "true";
 
       // Check if user already exists
       const existingUser = await User.findById(userId);
       if (existingUser) {
-        return NextResponse.json({ message: "User already exists" }, { status: 400 });
+        await updateUserMetadata(userId, {
+          onboardingComplete: true,
+        });
+
+        return NextResponse.json(existingUser, { status: 200 });
       }
 
       // Create new user
@@ -30,7 +35,7 @@ export const POST = withApiAuth(
         name,
         email: email,
         postedJobs: [],
-        paidMember: paidMember,
+        paidMember: parsedPaidMember,
         organizationName: organizationName,
       });
       await newUser.save();
@@ -41,8 +46,16 @@ export const POST = withApiAuth(
       });
 
       return NextResponse.json(newUser, { status: 201 });
-    } catch (error) {
-      return NextResponse.json({ message: "Failed to connect user to database.", error }, { status: 500 });
+    } catch (error: any) {
+      console.error("Failed to complete onboarding:", error);
+
+      return NextResponse.json(
+        {
+          message: "Failed to connect user to database.",
+          error: error?.message ?? "Unknown onboarding error",
+        },
+        { status: 500 },
+      );
     }
   },
   {

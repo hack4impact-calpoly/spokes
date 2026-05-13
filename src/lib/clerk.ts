@@ -7,15 +7,9 @@ import { clerkClient } from "@clerk/nextjs/server";
  * @returns A promise that resolves when the update is complete
  */
 export async function updateUserMetadata(userId: string, metadata: Record<string, any>) {
-  try {
-    const client = await clerkClient();
+  const client = await clerkClient();
 
-    await client.users.updateUserMetadata(userId, {
-      publicMetadata: metadata,
-    });
-    return { success: true };
-  } catch (error) {
-    console.error("Error updating user metadata:", error);
-    return { success: false, error };
-  }
+  await client.users.updateUserMetadata(userId, {
+    publicMetadata: metadata,
+  });
 }

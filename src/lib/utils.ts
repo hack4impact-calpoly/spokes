@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { EventApiRecord, EventRecord } from "@/types/event";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -41,4 +42,32 @@ export function getThirtyDaysAgo(): Date {
 export function isExpired(jobStatus: string, approvedDate?: Date): boolean {
   if (!approvedDate) return false;
   return new Date(approvedDate) < getThirtyDaysAgo() || jobStatus.toLowerCase() === "expired";
+}
+
+function toDate(input: string | Date | undefined): Date | undefined {
+  if (!input) return undefined;
+  return input instanceof Date ? input : new Date(input);
+}
+
+export function normalizeEvent(event: EventApiRecord): EventRecord {
+  return {
+    ...event,
+    id: event.id ?? event._id,
+    date: toDate(event.date) ?? new Date(),
+    createdAt: toDate(event.createdAt),
+    updatedAt: toDate(event.updatedAt),
+  };
+}
+
+export function formatDate(input: string | Date): string {
+  const date = input instanceof Date ? input : new Date(input);
+  const fmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: "UTC",
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  return fmt.format(date);
 }

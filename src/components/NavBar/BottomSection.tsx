@@ -58,7 +58,9 @@ export default function BottomSection() {
           <NavBarLink title="Admin" href="/admin" /> */}
           {/* prod */}
           <NavBarLink title="Job Board" href="/jobs" />
+          <NavBarLink title="Events" href="/events" />
           {isSignedIn && <NavBarLink title="List Job" href="/jobform" onClick={handleListJobClick} />}
+          {isSignedIn && <NavBarLink title="List Event" href="/eventform" onClick={() => setIsMobileMenuOpen(false)} />}
           {isSignedIn && <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />}
           {isSignedIn && isSpokesAdmin && <NavBarLink title="Admin" href="/admin" />}
         </div>
@@ -114,7 +116,9 @@ export default function BottomSection() {
           <NavBarLink title="Admin" href="/admin" onClick={() => setIsMobileMenuOpen(false)} /> */}
           {/* prod */}
           <NavBarLink title="Job Board" href="/jobs" />
+          <NavBarLink title="Events" href="/events" onClick={() => setIsMobileMenuOpen(false)} />
           {isSignedIn && <NavBarLink title="List Job" href="/jobform" onClick={() => setIsMobileMenuOpen(false)} />}
+          {isSignedIn && <NavBarLink title="List Event" href="/eventform" onClick={() => setIsMobileMenuOpen(false)} />}
           {isSignedIn && <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />}
           {isSignedIn && isSpokesAdmin && (
             <NavBarLink title="Admin" href="/admin" onClick={() => setIsMobileMenuOpen(false)} />
