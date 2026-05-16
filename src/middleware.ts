@@ -5,7 +5,14 @@ import { getAuthWithRole } from "@/lib/auth";
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
 const isAuthRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
-const isPublicRoute = createRouteMatcher(["/api/webhooks(.*)", "/api/users(.*)", "/jobs", "/api/jobs(.*)"]);
+const isPublicRoute = createRouteMatcher([
+  "/api/webhooks(.*)",
+  "/api/users(.*)",
+  "/jobs",
+  "/api/jobs(.*)",
+  "/events(.*)",
+  "/api/events(.*)",
+]);
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId, orgSlug } = await auth();

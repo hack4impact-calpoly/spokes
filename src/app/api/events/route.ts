@@ -2,39 +2,8 @@ import connectDB from "@/database/db";
 import Event from "@/database/eventSchema";
 import User from "@/database/userSchema";
 import { withApiAuth } from "@/lib/auth";
+import { sanitizeEventPayload, validateEventPayload } from "@/lib/events";
 import { NextRequest, NextResponse } from "next/server";
-
-const requiredFields = [
-  "eventName",
-  "date",
-  "time",
-  "location",
-  "locationType",
-  "category",
-  "description",
-  "organization",
-];
-
-function validateEventPayload(payload: Record<string, unknown>) {
-  const missingFields = requiredFields.filter((field) => {
-    const value = payload[field];
-    return typeof value !== "string" || value.trim().length === 0;
-  });
-
-  if (missingFields.length > 0) {
-    return `Missing required fields: ${missingFields.join(", ")}`;
-  }
-
-  if (Number.isNaN(new Date(payload.date as string).getTime())) {
-    return "date must be a valid date string.";
-  }
-
-  if (payload.locationType !== "remote" && payload.locationType !== "in-person") {
-    return "locationType must be either remote or in-person.";
-  }
-
-  return null;
-}
 
 export const GET = withApiAuth(
   async () => {
@@ -75,8 +44,15 @@ export const POST = withApiAuth(
         return NextResponse.json({ message: "User not found in DB" }, { status: 404 });
       }
 
+      if (!mongoUser.organizationName) {
+        return NextResponse.json({ message: "User organization is required to create an event" }, { status: 400 });
+      }
+
+      const sanitizedEventData = sanitizeEventPayload(eventData);
+
       const newEvent = await Event.create({
-        ...eventData,
+        ...sanitizedEventData,
+        organization: mongoUser.organizationName,
         createdByUserId: auth.userId,
       });
 

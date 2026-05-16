@@ -1,0 +1,119 @@
+import Event from "@/database/eventSchema";
+import User from "@/database/userSchema";
+import { POST } from "@/app/api/events/route";
+import { PUT } from "@/app/api/events/[eventId]/route";
+
+const mockAuth = {
+  userId: "user-1",
+  role: "nonprofit",
+};
+
+jest.mock("@/database/db", () => ({
+  __esModule: true,
+  default: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock("@/database/eventSchema", () => ({
+  __esModule: true,
+  default: {
+    findById: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
+    create: jest.fn(),
+  },
+}));
+
+jest.mock("@/database/userSchema", () => ({
+  __esModule: true,
+  default: {
+    findById: jest.fn(),
+  },
+}));
+
+jest.mock("@/lib/auth", () => ({
+  withApiAuth: (handler: Function) => {
+    return async (req: Request, context: any = {}) => handler(req, { ...context, auth: mockAuth });
+  },
+}));
+
+jest.mock("next/server", () => ({
+  NextResponse: {
+    json: (body: unknown, init?: { status?: number }) => ({
+      status: init?.status ?? 200,
+      json: async () => body,
+    }),
+  },
+}));
+
+const validEventPayload = {
+  eventName: "Community Workshop",
+  date: "2026-02-27",
+  time: "6:00 PM",
+  location: "Innovation Hub",
+  locationType: "in-person",
+  category: "workshop",
+  description: "A useful workshop.",
+};
+
+function jsonRequest(path: string, body: Record<string, unknown>) {
+  return {
+    nextUrl: { pathname: path },
+    json: async () => body,
+  } as any;
+}
+
+describe("Events API", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockAuth.userId = "user-1";
+    mockAuth.role = "nonprofit";
+  });
+
+  test("POST derives organization and ownership from the authenticated Mongo user", async () => {
+    (User.findById as jest.Mock).mockResolvedValue({ organizationName: "Spokes Nonprofit" });
+    (Event.create as jest.Mock).mockResolvedValue({ _id: "event-1", ...validEventPayload });
+
+    const response = await POST(
+      jsonRequest("/api/events", {
+        ...validEventPayload,
+        organization: "Spoofed Org",
+        createdByUserId: "attacker",
+      }),
+      {},
+    );
+
+    expect(response.status).toBe(201);
+    expect(Event.create).toHaveBeenCalledWith({
+      ...validEventPayload,
+      organization: "Spokes Nonprofit",
+      createdByUserId: "user-1",
+    });
+  });
+
+  test("PUT blocks nonprofits from updating events they do not own", async () => {
+    (Event.findById as jest.Mock).mockResolvedValue({ _id: "event-1", createdByUserId: "user-2" });
+
+    const response = await PUT(jsonRequest("/api/events/event-1", { eventName: "Updated" }), {});
+    const result = await response.json();
+
+    expect(response.status).toBe(403);
+    expect(result.message).toBe("Insufficient permissions");
+    expect(Event.findByIdAndUpdate).not.toHaveBeenCalled();
+  });
+
+  test("PUT only writes whitelisted mutable event fields", async () => {
+    (Event.findById as jest.Mock).mockResolvedValue({ _id: "event-1", createdByUserId: "user-1" });
+    (Event.findByIdAndUpdate as jest.Mock).mockResolvedValue({ _id: "event-1", eventName: "Updated Event" });
+
+    const response = await PUT(
+      jsonRequest("/api/events/event-1", {
+        eventName: "Updated Event",
+        organization: "Spoofed Org",
+        createdByUserId: "attacker",
+      }),
+      {},
+    );
+
+    expect(response.status).toBe(200);
+    expect(Event.findByIdAndUpdate).toHaveBeenCalledWith("event-1", { eventName: "Updated Event" }, { new: true });
+  });
+});

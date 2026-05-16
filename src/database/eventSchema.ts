@@ -34,5 +34,5 @@ const EventSchema = new Schema<IEvent>(
   { timestamps: true },
 );
 
-const Event = models.Event || model("Event", EventSchema, "calendars");
+const Event = models.Event || model("Event", EventSchema, "events");
 export default Event;
