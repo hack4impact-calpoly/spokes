@@ -16,7 +16,6 @@ export default function EventFormPage() {
 
     const formData = new FormData(e.currentTarget);
     const data = {
-      organization: formData.get("organization") as string,
       eventName: formData.get("eventName") as string,
       date: formData.get("date") as string,
       time: formData.get("time") as string,
@@ -61,20 +60,6 @@ export default function EventFormPage() {
 
         <form onSubmit={handleSubmit}>
           <p className="mb-4 text-sm font-bold text-black">Event Information</p>
-
-          <div className={fieldClass}>
-            <label htmlFor="organization" className={labelClass}>
-              Organization Name
-            </label>
-            <input
-              id="organization"
-              name="organization"
-              type="text"
-              placeholder="Enter your organization"
-              required
-              className={inputClass}
-            />
-          </div>
 
           <div className={fieldClass}>
             <label htmlFor="eventName" className={labelClass}>

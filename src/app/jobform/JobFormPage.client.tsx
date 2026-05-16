@@ -274,6 +274,17 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         applyNowURL: ensureHttps(formData.applyNowURL),
       };
 
+      const emailResponse = await fetch("/api/send/new", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formattedFormData),
+      });
+
+      if (!emailResponse.ok) {
+        const errorData = await emailResponse.json().catch(() => null);
+        throw new Error(errorData?.error || "Failed to send notification email. Job was not submitted.");
+      }
+
       const response = await fetch("/api/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -283,18 +294,6 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to submit job.");
-      }
-
-      const emailResponse = await fetch("/api/send/new", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formattedFormData),
-      });
-
-      if (!emailResponse.ok) {
-        console.error("Failed to send notification email");
       }
 
       toast({
@@ -333,10 +332,11 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
 
       setIsSubmitModalOpen(true);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to submit job. Please try again.";
       console.error("Error submitting job:", error);
       toast({
         title: "Error",
-        description: "Failed to submit job. Please try again.",
+        description: errorMessage,
         status: "error",
         duration: 5000,
         isClosable: true,

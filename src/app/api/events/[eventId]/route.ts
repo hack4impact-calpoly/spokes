@@ -1,6 +1,7 @@
 import connectDB from "@/database/db";
 import Event from "@/database/eventSchema";
 import { withApiAuth } from "@/lib/auth";
+import { sanitizeEventPayload, validateEventPayload } from "@/lib/events";
 import { NextRequest, NextResponse } from "next/server";
 
 function getEventId(req: NextRequest) {
@@ -34,6 +35,9 @@ export const PUT = withApiAuth(
 
       const eventId = getEventId(req);
       const eventData = await req.json();
+      if (!eventData || typeof eventData !== "object") {
+        return NextResponse.json({ message: "Invalid event input" }, { status: 400 });
+      }
 
       const existingEvent = await Event.findById(eventId);
       if (!existingEvent) {
@@ -44,7 +48,17 @@ export const PUT = withApiAuth(
         return NextResponse.json({ message: "Insufficient permissions" }, { status: 403 });
       }
 
-      const updatedEvent = await Event.findByIdAndUpdate(eventId, eventData, { new: true });
+      const validationError = validateEventPayload(eventData, { partial: true });
+      if (validationError) {
+        return NextResponse.json({ message: validationError }, { status: 400 });
+      }
+
+      const sanitizedEventData = sanitizeEventPayload(eventData);
+      if (Object.keys(sanitizedEventData).length === 0) {
+        return NextResponse.json({ message: "No valid event fields provided" }, { status: 400 });
+      }
+
+      const updatedEvent = await Event.findByIdAndUpdate(eventId, sanitizedEventData, { new: true });
       return NextResponse.json({ message: "Event updated successfully", event: updatedEvent });
     } catch (error) {
       return NextResponse.json({ message: "Error updating event", error }, { status: 500 });
