@@ -1,30 +1,88 @@
 "use client";
 
-import { useState } from "react";
-import { Button, FormControl, FormLabel, Input, Radio, RadioGroup, Stack, Text, VStack } from "@chakra-ui/react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Radio,
+  RadioGroup,
+  Select,
+  Stack,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 
 interface OnboardingFormProps {
   onSubmit: (formData: { paidMember: string; organizationName: string }) => Promise<void>;
   isSubmitting: boolean;
 }
 
+const CREATE_NEW_ORGANIZATION_VALUE = "__create_new__";
+
 export default function OnboardingForm({ onSubmit, isSubmitting }: OnboardingFormProps) {
   const [formData, setFormData] = useState({
     paidMember: "",
-    organizationName: "",
   });
+  const [organizations, setOrganizations] = useState<string[]>([]);
+  const [selectedOrganization, setSelectedOrganization] = useState("");
+  const [newOrganizationName, setNewOrganizationName] = useState("");
+  const [isLoadingOrganizations, setIsLoadingOrganizations] = useState(true);
 
   const handleChange = (value: string) => {
     setFormData((prev) => ({ ...prev, paidMember: value }));
   };
 
-  const handleOrganizationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, organizationName: e.target.value }));
-  };
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadOrganizations() {
+      try {
+        const response = await fetch("/api/organizations", { headers: { Accept: "application/json" } });
+        if (!response.ok) {
+          throw new Error("Failed to fetch organizations");
+        }
+
+        const result = await response.json();
+        if (!isCancelled && Array.isArray(result.organizations)) {
+          setOrganizations(result.organizations.filter((name: unknown): name is string => typeof name === "string"));
+        }
+      } catch (error) {
+        console.error("Failed to load organizations:", error);
+        if (!isCancelled) {
+          setOrganizations([]);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingOrganizations(false);
+        }
+      }
+    }
+
+    void loadOrganizations();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  const organizationName = useMemo(() => {
+    if (selectedOrganization !== CREATE_NEW_ORGANIZATION_VALUE) {
+      return selectedOrganization;
+    }
+
+    const trimmedName = newOrganizationName.trim();
+    const existingOrganization = organizations.find(
+      (organization) => organization.toLowerCase() === trimmedName.toLowerCase(),
+    );
+
+    return existingOrganization ?? trimmedName;
+  }, [newOrganizationName, organizations, selectedOrganization]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit(formData);
+    await onSubmit({ ...formData, organizationName });
   };
 
   return (
@@ -34,16 +92,37 @@ export default function OnboardingForm({ onSubmit, isSubmitting }: OnboardingFor
       <form onSubmit={handleSubmit}>
         <FormControl isRequired mb={6}>
           <FormLabel fontWeight="medium">Organization Name</FormLabel>
-          <Input
-            value={formData.organizationName}
-            onChange={handleOrganizationChange}
-            placeholder="Enter your organization name"
+          <Select
+            value={selectedOrganization}
+            onChange={(e) => setSelectedOrganization(e.target.value)}
+            placeholder={isLoadingOrganizations ? "Loading organizations..." : "Select your organization"}
             bg="#F6F6F6"
+            disabled={isLoadingOrganizations}
             _focus={{
               borderColor: "#BDEABD",
               boxShadow: "0 0 0 1px #BDEABD",
             }}
-          />
+          >
+            {organizations.map((organization) => (
+              <option key={organization} value={organization}>
+                {organization}
+              </option>
+            ))}
+            <option value={CREATE_NEW_ORGANIZATION_VALUE}>Create a new organization</option>
+          </Select>
+          {selectedOrganization === CREATE_NEW_ORGANIZATION_VALUE && (
+            <Input
+              mt={3}
+              value={newOrganizationName}
+              onChange={(e) => setNewOrganizationName(e.target.value)}
+              placeholder="Enter new organization name"
+              bg="#F6F6F6"
+              _focus={{
+                borderColor: "#BDEABD",
+                boxShadow: "0 0 0 1px #BDEABD",
+              }}
+            />
+          )}
         </FormControl>
 
         <FormControl isRequired mb={6}>
@@ -76,7 +155,7 @@ export default function OnboardingForm({ onSubmit, isSubmitting }: OnboardingFor
 
         <Button
           type="submit"
-          disabled={isSubmitting || !formData.paidMember || !formData.organizationName}
+          disabled={isSubmitting || !formData.paidMember || !organizationName}
           isLoading={isSubmitting}
           loadingText="Submitting..."
           w="full"

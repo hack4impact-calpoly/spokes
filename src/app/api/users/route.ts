@@ -18,10 +18,28 @@ export const POST = withApiAuth(
 
       const name = `${firstName ?? ""} ${lastName ?? ""}`.trim() || email;
       const parsedPaidMember = paidMember === true || paidMember === "true";
+      const trimmedOrganizationName = typeof organizationName === "string" ? organizationName.trim() : "";
+
+      if (!trimmedOrganizationName) {
+        return NextResponse.json({ message: "Organization name is required" }, { status: 400 });
+      }
+
+      const existingOrganizationNames = await User.distinct("organizationName", {
+        organizationName: { $exists: true, $type: "string", $ne: "" },
+      });
+      const canonicalOrganizationName =
+        existingOrganizationNames.find(
+          (existingOrganizationName) =>
+            existingOrganizationName.trim().toLowerCase() === trimmedOrganizationName.toLowerCase(),
+        ) ?? trimmedOrganizationName;
 
       // Check if user already exists
       const existingUser = await User.findById(userId);
       if (existingUser) {
+        existingUser.paidMember = parsedPaidMember;
+        existingUser.organizationName = canonicalOrganizationName;
+        await existingUser.save();
+
         await updateUserMetadata(userId, {
           onboardingComplete: true,
         });
@@ -36,7 +54,7 @@ export const POST = withApiAuth(
         email: email,
         postedJobs: [],
         paidMember: parsedPaidMember,
-        organizationName: organizationName,
+        organizationName: canonicalOrganizationName,
       });
       await newUser.save();
 

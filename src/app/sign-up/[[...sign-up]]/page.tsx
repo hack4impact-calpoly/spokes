@@ -1,9 +1,13 @@
 "use client";
 import { SignUp } from "@clerk/nextjs";
 import { Center } from "@chakra-ui/react";
+import { usePathname } from "next/navigation";
 import WelcomeInfo from "@/components/WelcomeInfo";
 
 export default function Page() {
+  const pathname = usePathname();
+  const isAuthCallback = pathname.includes("sso-callback");
+
   return (
     <Center
       className="my-10"
@@ -12,8 +16,8 @@ export default function Page() {
       flexDirection={{ base: "column", md: "row" }}
       gap={10}
     >
-      <WelcomeInfo />
-      <SignUp />
+      {!isAuthCallback && <WelcomeInfo />}
+      <SignUp forceRedirectUrl="/onboarding" />
     </Center>
   );
 }

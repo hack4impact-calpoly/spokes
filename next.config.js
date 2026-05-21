@@ -7,8 +7,8 @@ const nextConfig = {
     return [
       {
         source: "/",
-        destination: "https://www.spokesfornonprofits.org/what-do-we-do/",
-        permanent: false,
+        destination: "/jobs",
+        permanent: true,
       },
     ];
   },

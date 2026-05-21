@@ -16,11 +16,6 @@ interface TopSectionProps {
 export default function TopSection({ user }: TopSectionProps) {
   const { session } = useSession();
   const onboardingComplete = session?.user?.publicMetadata?.onboardingComplete === true;
-  const { isLoaded, userMemberships } = useOrganizationList({
-    userMemberships: true,
-  });
-  const hasOrgMembership = isLoaded && userMemberships.data?.length > 0;
-
   return (
     <>
       <main className="flex items-center justify-between px-10 bg-white sm:px-14 py-7">
@@ -34,35 +29,7 @@ export default function TopSection({ user }: TopSectionProps) {
           />
         </Link>
         {user ? (
-          <div className="flex flex-col items-center gap-3">
-            <div className="flex items-center gap-4">
-              {!onboardingComplete && (
-                <Tooltip label="Complete your profile setup" placement="bottom">
-                  <Box
-                    w="2"
-                    h="2"
-                    borderRadius="full"
-                    bg="orange.400"
-                    position="relative"
-                    _after={{
-                      content: '""',
-                      position: "absolute",
-                      top: "-2px",
-                      left: "-2px",
-                      right: "-2px",
-                      bottom: "-2px",
-                      borderRadius: "full",
-                      border: "1px solid",
-                      borderColor: "orange.400",
-                      animation: "pulse 2s infinite",
-                    }}
-                  />
-                </Tooltip>
-              )}
-              <UserButton showName={true} />
-            </div>
-            {hasOrgMembership && <OrganizationSwitcher />}
-          </div>
+          <SignedInControls onboardingComplete={onboardingComplete} />
         ) : (
           <Link href="/sign-in">
             <Button
@@ -85,5 +52,44 @@ export default function TopSection({ user }: TopSectionProps) {
         )}
       </main>
     </>
+  );
+}
+
+function SignedInControls({ onboardingComplete }: { onboardingComplete: boolean }) {
+  const { isLoaded, userMemberships } = useOrganizationList({
+    userMemberships: true,
+  });
+  const hasOrgMembership = isLoaded && userMemberships.data?.length > 0;
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <div className="flex items-center gap-4">
+        {!onboardingComplete && (
+          <Tooltip label="Complete your profile setup" placement="bottom">
+            <Box
+              w="2"
+              h="2"
+              borderRadius="full"
+              bg="orange.400"
+              position="relative"
+              _after={{
+                content: '""',
+                position: "absolute",
+                top: "-2px",
+                left: "-2px",
+                right: "-2px",
+                bottom: "-2px",
+                borderRadius: "full",
+                border: "1px solid",
+                borderColor: "orange.400",
+                animation: "pulse 2s infinite",
+              }}
+            />
+          </Tooltip>
+        )}
+        <UserButton showName={true} />
+      </div>
+      {hasOrgMembership && <OrganizationSwitcher />}
+    </div>
   );
 }

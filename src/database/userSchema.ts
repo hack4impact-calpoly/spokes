@@ -17,7 +17,7 @@ const UserSchema = new Schema<UserInterface>({
   email: { type: String, required: true, unique: true },
   postedJobs: { type: [String], required: true, default: [] },
   paidMember: { type: Boolean, required: true },
-  organizationName: { type: String, required: false },
+  organizationName: { type: String, required: false, index: true },
 });
 
 //Export Schema
