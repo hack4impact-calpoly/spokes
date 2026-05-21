@@ -2,6 +2,7 @@ import { formatDate } from "@/lib/utils";
 import type { EventRecord } from "@/types/event";
 import { EventModal } from "./EventModal";
 import { Button } from "@chakra-ui/react";
+import JobBadge from "@/components/JobCard/JobBadge";
 
 type EventCardProps = {
   event: EventRecord;
@@ -94,13 +95,7 @@ export default function EventCard({ event, onEventView }: EventCardProps) {
         <div className="flex-grow"></div>
 
         <div className="flex flex-row md:flex-col lg:flex-row gap-4 items-end lg:items-end md:items-start mt-5 max-[400px]:flex-col max-[400px]:items-start">
-          <div className="flex gap-2">
-            {event.locationType && (
-              <span className="inline-flex items-center rounded-full bg-white border border-gray-300 px-3 py-1 text-sm text-gray-700 capitalize">
-                {event.locationType.replace("-", " ")}
-              </span>
-            )}
-          </div>
+          <div className="flex gap-2">{event.locationType && <JobBadge badgeType={event.locationType} />}</div>
         </div>
 
         <div className="my-5">

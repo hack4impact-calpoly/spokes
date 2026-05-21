@@ -31,6 +31,12 @@ export default function JobBadge({ badgeType, className }: JobBadgeProps) {
     case "full-time":
       badgeColor = "#F8B1B8"; // red
       break;
+    case "remote":
+      badgeColor = "#F8B1B8"; // red
+      break;
+    case "in-person":
+      badgeColor = "#C6D3FF"; // blue
+      break;
     case "salary":
       badgeColor = "#BDEABD"; // green
       break;

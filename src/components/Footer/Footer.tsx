@@ -2,7 +2,6 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { GrInstagram } from "react-icons/gr";
 import { ImFacebook2 } from "react-icons/im";
 import { SiLinkedin } from "react-icons/si";
@@ -10,11 +9,6 @@ import { useUser } from "@clerk/nextjs";
 
 const Footer: React.FC = () => {
   const { user } = useUser();
-  const pathname = usePathname();
-
-  if (pathname === "/jobs") {
-    return null;
-  }
 
   return (
     <footer className="py-[40px] md:py-[80px] px-6 md:px-20 bg-white border-t-2 border-gray-200 flex items-center">

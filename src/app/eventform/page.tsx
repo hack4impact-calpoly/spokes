@@ -4,11 +4,26 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createEvent } from "@/services/events";
 import { useAuth } from "@clerk/nextjs";
+import { Box, Button, FormControl, FormLabel, Heading, Input, Stack, useRadioGroup, VStack } from "@chakra-ui/react";
+import RadioCard from "@/components/RadioCard";
 
 export default function EventFormPage() {
   const router = useRouter();
   const { isSignedIn } = useAuth();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [locationType, setLocationType] = useState("");
+
+  const locationTypeColorMapping = {
+    Remote: "#F8B1B8",
+    "In-Person": "#C6D3FF",
+  };
+
+  const locationTypeOptions = ["Remote", "In-Person"];
+
+  const { getRootProps: getLocationTypeRootProps, getRadioProps: getLocationTypeRadioProps } = useRadioGroup({
+    name: "locationType",
+    onChange: (value) => setLocationType(value),
+  });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,126 +49,108 @@ export default function EventFormPage() {
 
   if (!isSignedIn) {
     return (
-      <div className="min-h-screen bg-white px-6 py-8">
-        <div className="mx-auto max-w-[660px]">
-          <h1 className="mb-4 text-2xl font-bold text-black">Create New Event</h1>
-          <p className="text-gray-700">Please sign in to create an event.</p>
-        </div>
-      </div>
+      <Box mx="auto" p={10} minWidth={{ base: "320px", md: "768px", lg: "1024px" }} maxWidth="1200px">
+        <div className="mt-2 mb-2 text-black text-3xl font-semibold">Create New Event</div>
+        <p className="text-gray-700">Please sign in to create an event.</p>
+      </Box>
     );
   }
 
-  const inputClass =
-    "w-full rounded-sm bg-gray-100 px-3 py-2.5 text-sm text-gray-800 placeholder-gray-400 outline-none focus:bg-gray-200";
-  const labelClass = "block text-sm font-bold text-black mb-1";
-  const fieldClass = "mb-4";
-
   return (
-    <div className="min-h-screen bg-white px-6 py-8">
-      <div className="mx-auto max-w-[660px]">
-        <h1 className="mb-6 text-2xl font-bold text-black">Create New Event</h1>
+    <Box mx="auto" p={10} minWidth={{ base: "320px", md: "768px", lg: "1024px" }} maxWidth="1200px">
+      <div className="mt-2 mb-2 text-black text-3xl font-semibold">Create New Event</div>
 
-        {serverError && (
-          <div className="mb-4 bg-red-50 p-3 text-sm text-red-700 border border-red-200">{serverError}</div>
-        )}
+      <Heading as="h2" size="md" mb={5}>
+        Event Information
+      </Heading>
 
-        <form onSubmit={handleSubmit}>
-          <p className="mb-4 text-sm font-bold text-black">Event Information</p>
+      {serverError && (
+        <div className="mb-4 bg-red-50 p-3 text-sm text-red-700 border border-red-200">{serverError}</div>
+      )}
 
-          <div className={fieldClass}>
-            <label htmlFor="eventName" className={labelClass}>
-              Event Title
-            </label>
-            <input
+      <form onSubmit={handleSubmit}>
+        <VStack spacing={4}>
+          <FormControl isRequired>
+            <FormLabel>Event Title</FormLabel>
+            <Input
               id="eventName"
               name="eventName"
               type="text"
               placeholder="Enter your response"
               required
-              className={inputClass}
+              bg="#F6F6F6"
+              border="0"
             />
-          </div>
+          </FormControl>
 
-          <div className={fieldClass}>
-            <label htmlFor="date" className={labelClass}>
-              Event Date
-            </label>
-            <div className="flex items-center gap-3">
-              <input
-                id="date"
-                name="date"
-                type="date"
-                required
-                className="rounded-sm bg-gray-100 px-3 py-2.5 text-sm text-gray-800 outline-none focus:bg-gray-200"
-              />
-              <input
-                id="time"
-                name="time"
-                type="text"
-                placeholder="5:30 - 8:30"
-                required
-                className="rounded-sm bg-gray-100 px-3 py-2.5 text-sm text-gray-800 placeholder-gray-400 outline-none focus:bg-gray-200 w-32"
-              />
-            </div>
-          </div>
+          <FormControl isRequired>
+            <FormLabel>Event Date</FormLabel>
+            <Stack w="full" direction={{ base: "column", md: "row" }} spacing={4}>
+              <Input id="date" name="date" type="date" required bg="#F6F6F6" border="0" />
+              <Input id="time" name="time" type="text" placeholder="5:30 - 8:30" required bg="#F6F6F6" border="0" />
+            </Stack>
+          </FormControl>
 
-          <div className={fieldClass}>
-            <label htmlFor="description" className={labelClass}>
-              Event Description
-            </label>
-            <input
+          <FormControl isRequired>
+            <FormLabel>Event Description</FormLabel>
+            <Input
               id="description"
               name="description"
               type="text"
               placeholder="Enter your response"
               required
-              className={inputClass}
+              bg="#F6F6F6"
+              border="0"
             />
-          </div>
+          </FormControl>
 
-          <div className={fieldClass}>
-            <label htmlFor="location" className={labelClass}>
-              Event Location
-            </label>
-            <input
+          <FormControl isRequired>
+            <FormLabel>Event Location</FormLabel>
+            <Input
               id="location"
               name="location"
               type="text"
               placeholder="Enter your response"
               required
-              className={inputClass}
+              bg="#F6F6F6"
+              border="0"
             />
-          </div>
+          </FormControl>
 
-          <div className={fieldClass}>
-            <label htmlFor="locationType" className={labelClass}>
-              Location Type
-            </label>
-            <select
-              id="locationType"
-              name="locationType"
-              required
-              defaultValue=""
-              className={`${inputClass} appearance-none`}
-            >
-              <option value="" disabled>
-                Enter your response
-              </option>
-              <option value="in-person">In-person</option>
-              <option value="remote">Remote</option>
-            </select>
-          </div>
+          <FormControl isRequired>
+            <FormLabel>Location Type</FormLabel>
+            <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getLocationTypeRootProps()}>
+              {locationTypeOptions.map((value) => {
+                const radio = getLocationTypeRadioProps({ value: value.toLowerCase() });
+                return (
+                  <RadioCard
+                    key={value}
+                    value={value.toLowerCase()}
+                    {...radio}
+                    isChecked={locationType === value.toLowerCase()}
+                    checkedColor={locationTypeColorMapping[value as keyof typeof locationTypeColorMapping]}
+                  >
+                    {value}
+                  </RadioCard>
+                );
+              })}
+            </Stack>
+          </FormControl>
 
           <div className="mt-8 flex justify-center">
-            <button
+            <Button
               type="submit"
-              className="rounded-sm bg-teal-600 px-10 py-2.5 text-sm font-semibold text-white hover:bg-teal-700"
+              size="lg"
+              colorScheme="blackAlpha"
+              bg="#045F87"
+              _hover={{ bg: "#2A80A8" }}
+              className="w-full sm:w-auto min-w-[200px]"
             >
               Submit
-            </button>
+            </Button>
           </div>
-        </form>
-      </div>
-    </div>
+        </VStack>
+      </form>
+    </Box>
   );
 }
