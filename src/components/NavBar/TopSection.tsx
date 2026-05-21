@@ -7,6 +7,8 @@ import { Button, Tooltip, Box } from "@chakra-ui/react";
 import { UserButton, OrganizationSwitcher, useSession } from "@clerk/nextjs";
 import { useOrganizationList } from "@clerk/nextjs";
 
+const SPOKES_SITE_URL = "https://www.spokesfornonprofits.org/what-do-we-do/";
+
 interface TopSectionProps {
   user: UserResource | null | undefined;
 }
@@ -22,7 +24,7 @@ export default function TopSection({ user }: TopSectionProps) {
   return (
     <>
       <main className="flex items-center justify-between px-10 bg-white sm:px-14 py-7">
-        <Link href="/jobs" className="flex-shrink-0 max-[458px]:w-[115px] w-[200px] cursor-pointer">
+        <Link href={SPOKES_SITE_URL} className="flex-shrink-0 max-[458px]:w-[115px] w-[200px] cursor-pointer">
           <Image
             className="h-auto"
             alt="spokes logo"
