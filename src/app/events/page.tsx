@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { twMerge } from "tailwind-merge";
+import { Checkbox } from "@/components/Checkbox";
 import EventCard from "@/components/events/EventCard";
 import { getAllEvents } from "@/services/events";
 import type { EventRecord } from "@/types/event";
@@ -169,150 +171,173 @@ export default function EventsPage() {
     setLocationFilter("");
   };
 
+  const eventKey = (event: EventRecord) => event.id ?? event._id ?? `${event.eventName}-${event.date.toISOString()}`;
+
   return (
-    <main className="page-main">
-      <div className="page-content page-content--no-padding">
-        <section className="page-hero page-hero--compact">
-          <h1>Events</h1>
-          <p>Browse nonprofit events. Use filters and favorite events to view them later.</p>
-        </section>
+    <div className="w-full flex flex-col pb-10">
+      <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col lg:flex-row gap-16 lg:gap-8 grow">
+        <aside className="flex flex-col gap-4 lg:gap-6" aria-label="Filter events">
+          <div className="text-black font-semibold text-xl sm:text-2xl md:text-3xl select-none lg:sticky lg:top-[110px]">
+            Filters
+          </div>
 
-        <div className="events-layout">
-          <aside className="filter-sidebar" aria-label="Filter events">
-            <h2 className="filter-sidebar-title">Filters</h2>
-
-            <div className="filter-sidebar-group">
-              <label>Date</label>
-              <div className="flex flex-col gap-0.5">
-                {[
-                  { value: "", label: "All dates" },
-                  { value: "today", label: "Today" },
-                  { value: "week", label: "This week" },
-                  { value: "month", label: "This month" },
-                ].map(({ value, label }) => (
+          <div className="sticky top-[155px]">
+            <div className="bg-[#F7F7F7] px-6 py-5 rounded flex flex-col gap-4 min-w-[270px] md:flex-row md:gap-8 lg:flex-col lg:gap-4">
+              <div>
+                <div className="flex justify-between">
+                  <div className="mb-1 text-lg font-semibold text-black select-none">Date</div>
                   <button
-                    key={value}
                     type="button"
-                    className={`filter-location-option ${dateFilter === value ? "active" : ""}`}
-                    onClick={() => setDateFilter(value)}
+                    onClick={clearFilters}
+                    disabled={!hasActiveFilters}
+                    className="text-md font-medium px-2 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-200 transition-all duration-200 mb-1 disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    {label}
+                    Clear
                   </button>
-                ))}
+                </div>
+                <div className="flex flex-col gap-[2px]">
+                  {[
+                    { value: "today", label: "Today" },
+                    { value: "week", label: "This week" },
+                    { value: "month", label: "This month" },
+                  ].map(({ value, label }) => (
+                    <Checkbox
+                      key={value}
+                      label={label}
+                      checked={dateFilter === value}
+                      changeHandler={() => setDateFilter(dateFilter === value ? "" : value)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-1 text-lg font-semibold text-black select-none">Category</div>
+                <div className="flex flex-col gap-[2px]">
+                  {[
+                    { value: "volunteer", label: "Volunteer" },
+                    { value: "fundraiser", label: "Fundraiser" },
+                    { value: "workshop", label: "Workshop" },
+                    { value: "community", label: "Community" },
+                  ].map(({ value, label }) => (
+                    <Checkbox
+                      key={value}
+                      label={label}
+                      checked={categoryFilter === value}
+                      changeHandler={() => setCategoryFilter(categoryFilter === value ? "" : value)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-1 text-lg font-semibold text-black select-none">Location</div>
+                <div className="flex flex-col gap-[2px]">
+                  {(showAllLocations ? topLocations : topLocations.slice(0, 5)).map((loc) => (
+                    <Checkbox
+                      key={loc}
+                      label={loc}
+                      checked={locationFilter === loc}
+                      changeHandler={() => setLocationFilter(locationFilter === loc ? "" : loc)}
+                    />
+                  ))}
+
+                  {topLocations.length > 5 && (
+                    <button
+                      type="button"
+                      className="mt-1 w-fit text-sm font-medium text-gray-600 hover:text-gray-800 hover:underline"
+                      onClick={() => setShowAllLocations((prev) => !prev)}
+                    >
+                      {showAllLocations ? "View less" : `View more (${topLocations.length - 5} more)`}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
+          </div>
+        </aside>
 
-            <div className="filter-sidebar-group">
-              <label>Category</label>
-              <div className="flex flex-col gap-0.5">
-                {[
-                  { value: "", label: "All categories" },
-                  { value: "volunteer", label: "Volunteer" },
-                  { value: "fundraiser", label: "Fundraiser" },
-                  { value: "workshop", label: "Workshop" },
-                  { value: "community", label: "Community" },
-                ].map(({ value, label }) => (
-                  <button
-                    key={value}
-                    type="button"
-                    className={`filter-location-option ${categoryFilter === value ? "active" : ""}`}
-                    onClick={() => setCategoryFilter(value)}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="filter-sidebar-group">
-              <label>Location</label>
-              <div className="flex flex-col gap-0.5">
-                <button
-                  type="button"
-                  className={`filter-location-option ${locationFilter === "" ? "active" : ""}`}
-                  onClick={() => setLocationFilter("")}
-                >
-                  All locations
-                </button>
-
-                {(showAllLocations ? topLocations : topLocations.slice(0, 5)).map((loc) => (
-                  <button
-                    key={loc}
-                    type="button"
-                    className={`filter-location-option ${locationFilter === loc ? "active" : ""}`}
-                    onClick={() => setLocationFilter(locationFilter === loc ? "" : loc)}
-                  >
-                    {loc}
-                  </button>
-                ))}
-
-                {topLocations.length > 5 && (
-                  <button
-                    type="button"
-                    className="filter-location-view-more"
-                    onClick={() => setShowAllLocations((prev) => !prev)}
-                  >
-                    {showAllLocations ? "View less" : `View more (${topLocations.length - 5} more)`}
-                  </button>
+        <div className="flex flex-col w-full gap-4 lg:gap-6">
+          <div className="flex items-center justify-between max-[500px]:flex-col max-[500px]:items-stretch">
+            <div className="flex gap-8 max-[500px]:justify-center max-[500px]:gap-4">
+              <div
+                className={twMerge(
+                  "text-black text-xl sm:text-2xl md:text-3xl font-semibold cursor-pointer select-none",
+                  activeTab === "all" ? "opacity-100" : "opacity-50",
                 )}
-              </div>
-            </div>
-
-            <button
-              type="button"
-              className="filter-sidebar-clear"
-              onClick={clearFilters}
-              disabled={!hasActiveFilters}
-              aria-label="Clear all filters"
-            >
-              Clear filters
-            </button>
-          </aside>
-
-          <div className="events-main">
-            <div className="mb-4 flex items-center gap-2">
-              <button
-                type="button"
-                className={`filter-location-option !w-auto ${activeTab === "all" ? "active" : ""}`}
                 onClick={() => setActiveTab("all")}
               >
                 All Events
-              </button>
-              <button
-                type="button"
-                className={`filter-location-option !w-auto ${activeTab === "favorites" ? "active" : ""}`}
+              </div>
+              <div
+                className={twMerge(
+                  "text-black text-xl sm:text-2xl md:text-3xl font-semibold cursor-pointer select-none",
+                  activeTab === "favorites" ? "opacity-100" : "opacity-50",
+                )}
                 onClick={() => setActiveTab("favorites")}
               >
                 Favorites
-              </button>
+              </div>
             </div>
+          </div>
 
+          <div className="flex flex-col gap-4">
             {isLoading ? (
-              <p className="events-empty">Loading events...</p>
+              <EventBoardMessage title="Loading events" message="Events will appear here shortly." />
             ) : loadError ? (
-              <p className="events-empty">{loadError}</p>
+              <EventBoardMessage title="Unable to load events" message={loadError} />
             ) : displayedEvents.length > 0 ? (
-              <ul className="events-list" aria-label="Events list">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-7" aria-label="Events list">
                 {displayedEvents.map((event) => (
-                  <li key={event.id ?? `${event.eventName}-${event.date.toISOString()}`} className="events-list-item">
-                    <EventCard
-                      event={event}
-                      isFavorite={event.id ? favoriteEventIdSet.has(event.id) : false}
-                      onToggleFavorite={handleToggleFavorite}
-                    />
-                  </li>
+                  <EventCard
+                    key={eventKey(event)}
+                    event={event}
+                    isFavorite={event.id ? favoriteEventIdSet.has(event.id) : false}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
                 ))}
-              </ul>
+              </div>
             ) : events.length === 0 ? (
-              <p className="events-empty">No events available.</p>
+              <EventBoardMessage title="No Events Found" message="There are no events available at the moment." />
             ) : activeTab === "favorites" ? (
-              <p className="events-empty">No favorite events match your filters.</p>
+              <EventBoardMessage
+                title="No Favorite Events"
+                message="No favorite events match your filters. Try adjusting your selections."
+              />
             ) : (
-              <p className="events-empty">No events match your filters.</p>
+              <EventBoardMessage
+                title="No Events Found"
+                message="We couldn't find any events matching your criteria. Try adjusting your filters or check back later for new events."
+              />
             )}
           </div>
         </div>
       </div>
-    </main>
+    </div>
+  );
+}
+
+function EventBoardMessage({ title, message }: { title: string; message: string }) {
+  return (
+    <div className="grow flex flex-col gap-4 justify-center justify-self-center items-center min-h-[400px] p-8 rounded-lg">
+      <svg
+        width="48"
+        height="48"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="text-gray-400"
+      >
+        <path
+          d="M8 2V6M16 2V6M3 10H21M5 4H19C20.1046 4 21 4.89543 21 6V20C21 21.1046 20.1046 22 19 22H5C3.89543 22 3 21.1046 3 20V6C3 4.89543 3.89543 4 5 4Z"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
+      <p className="text-base text-center text-gray-600 max-w-md">{message}</p>
+    </div>
   );
 }

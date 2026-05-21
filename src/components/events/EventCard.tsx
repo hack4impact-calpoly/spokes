@@ -1,6 +1,7 @@
 import { formatDate } from "@/lib/utils";
 import type { EventRecord } from "@/types/event";
 import { EventModal } from "./EventModal";
+import { Button } from "@chakra-ui/react";
 import { FaStar } from "react-icons/fa";
 import { FiStar } from "react-icons/fi";
 
@@ -17,20 +18,20 @@ export default function EventCard({ event, isFavorite = false, onToggleFavorite 
   const year = event.date.getUTCFullYear();
 
   return (
-    <div className="event-card">
-      <EventModal event={event}>
-        <div className="flex gap-4 items-start cursor-pointer">
-          <div className="flex flex-col items-center justify-center bg-blue-100 rounded-lg px-3 py-2 min-w-[60px] text-center flex-shrink-0">
-            <span className="text-xs font-semibold text-blue-500 uppercase tracking-wide">{month}</span>
-            <span className="text-2xl font-bold text-blue-700 leading-tight">{day}</span>
-            <span className="text-xs text-blue-500">{year}</span>
+    <div className="max-w-[100%]">
+      <div className="bg-[#f7f7f7] rounded-md px-8 pt-5 pb-2 shadow-sm h-full flex flex-col">
+        <div className="flex gap-4 items-start">
+          <div className="flex flex-col items-center justify-center bg-white rounded-md px-3 py-2 min-w-[60px] text-center flex-shrink-0 border border-gray-200">
+            <span className="text-xs font-semibold text-gray-500 uppercase">{month}</span>
+            <span className="text-2xl font-bold text-black leading-tight">{day}</span>
+            <span className="text-xs text-gray-500">{year}</span>
           </div>
 
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 flex flex-col">
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="event-card-title">{event.eventName}</h3>
-                <span className="event-card-category">{event.category}</span>
+              <div className="flex flex-col gap-1 min-w-0">
+                <h3 className="text-xl text-black font-bold leading-snug">{event.eventName}</h3>
+                <p className="text-base text-gray-500 font-medium leading-snug">{event.organization}</p>
               </div>
               {onToggleFavorite && (
                 <button
@@ -50,8 +51,8 @@ export default function EventCard({ event, isFavorite = false, onToggleFavorite 
               )}
             </div>
 
-            <div className="mt-2 space-y-1">
-              <p className="flex items-center gap-1.5 text-sm text-gray-500">
+            <div className="mt-4 flex flex-col gap-1.5">
+              <p className="flex items-center gap-1.5 text-base text-gray-500">
                 <svg
                   width="14"
                   height="14"
@@ -69,7 +70,7 @@ export default function EventCard({ event, isFavorite = false, onToggleFavorite 
                 {formatDate(event.date)}
               </p>
               {event.time && (
-                <p className="flex items-center gap-1.5 text-sm text-gray-500">
+                <p className="flex items-center gap-1.5 text-base text-gray-500">
                   <svg
                     width="14"
                     height="14"
@@ -86,7 +87,7 @@ export default function EventCard({ event, isFavorite = false, onToggleFavorite 
                 </p>
               )}
               {event.location && (
-                <p className="flex items-center gap-1.5 text-sm text-gray-500">
+                <p className="flex items-center gap-1.5 text-base text-gray-500">
                   <svg
                     width="14"
                     height="14"
@@ -102,11 +103,51 @@ export default function EventCard({ event, isFavorite = false, onToggleFavorite 
                   {event.location}
                 </p>
               )}
-              {event.description && <p className="event-card-description mt-1">{event.description}</p>}
             </div>
           </div>
         </div>
-      </EventModal>
+
+        {event.description && (
+          <p className="mt-5 text-base text-gray-700 leading-relaxed line-clamp-2">{event.description}</p>
+        )}
+
+        <div className="flex-grow"></div>
+
+        <div className="flex flex-row md:flex-col lg:flex-row gap-4 items-end lg:items-end md:items-start mt-5 max-[400px]:flex-col max-[400px]:items-start">
+          <div className="flex gap-2">
+            <span className="inline-flex items-center rounded-full bg-white border border-gray-300 px-3 py-1 text-sm text-gray-700 capitalize">
+              {event.category}
+            </span>
+            {event.locationType && (
+              <span className="inline-flex items-center rounded-full bg-white border border-gray-300 px-3 py-1 text-sm text-gray-700 capitalize">
+                {event.locationType.replace("-", " ")}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex lg:flex-row flex-col gap-4 my-5">
+          <EventModal event={event}>
+            <Button className="w-full" fontWeight="normal" variant="outline" borderColor="black">
+              See More
+            </Button>
+          </EventModal>
+          <Button
+            onClick={() => onToggleFavorite?.(event.id)}
+            className="w-full"
+            fontWeight="normal"
+            variant="outline"
+            bg={isFavorite ? "white" : "black"}
+            textColor={isFavorite ? "black" : "white"}
+            borderColor="black"
+            _hover={{
+              bg: isFavorite ? "gray.100" : "gray.800",
+            }}
+          >
+            {isFavorite ? "Saved" : "Save Event"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
