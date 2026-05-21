@@ -6,7 +6,6 @@ export interface EventRecord {
   time: string;
   location: string;
   locationType: "remote" | "in-person";
-  category: string;
   organization: string;
   description: string;
   eventImage?: string;

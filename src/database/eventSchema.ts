@@ -7,7 +7,6 @@ export interface IEvent {
   time: string;
   location: string;
   locationType: "remote" | "in-person";
-  category: string;
   description: string;
   organization: string;
   eventImage?: string;
@@ -24,7 +23,6 @@ const EventSchema = new Schema<IEvent>(
     time: { type: String, required: true, trim: true },
     location: { type: String, required: true, trim: true },
     locationType: { type: String, required: true, enum: ["remote", "in-person"], trim: true },
-    category: { type: String, required: true, trim: true },
     description: { type: String, required: true, trim: true },
     organization: { type: String, required: true, trim: true },
     eventImage: { type: String, required: false, trim: true },

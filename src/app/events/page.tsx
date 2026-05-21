@@ -7,24 +7,19 @@ import EventCard from "@/components/events/EventCard";
 import { getAllEvents } from "@/services/events";
 import type { EventRecord } from "@/types/event";
 
-const FAVORITES_STORAGE_KEY = "favoriteEventIds";
+const RECENT_EVENTS_STORAGE_KEY = "myEvents";
 
-type EventsTab = "all" | "favorites";
+type EventsTab = "all" | "recent";
 
-function filterEvents(
-  events: EventRecord[],
-  dateFilter: string,
-  categoryFilter: string,
-  locationFilter: string,
-): EventRecord[] {
+function getEventId(event: EventRecord): string | undefined {
+  return event.id ?? event._id;
+}
+
+function filterEvents(events: EventRecord[], dateFilter: string, locationFilter: string): EventRecord[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   return events.filter((event) => {
-    if (categoryFilter && event.category?.toLowerCase() !== categoryFilter.toLowerCase()) {
-      return false;
-    }
-
     if (locationFilter && event.location !== locationFilter) {
       return false;
     }
@@ -80,9 +75,8 @@ export default function EventsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [dateFilter, setDateFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
-  const [favoriteEventIds, setFavoriteEventIds] = useState<string[]>([]);
+  const [recentEventIds, setRecentEventIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<EventsTab>("all");
   const [showAllLocations, setShowAllLocations] = useState(false);
 
@@ -120,54 +114,61 @@ export default function EventsPage() {
   }, []);
 
   useEffect(() => {
-    const storedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
-    if (!storedFavorites) {
+    const storedRecentEvents = localStorage.getItem(RECENT_EVENTS_STORAGE_KEY);
+    if (!storedRecentEvents) {
       return;
     }
 
     try {
-      const parsed = JSON.parse(storedFavorites);
+      const parsed = JSON.parse(storedRecentEvents);
       if (Array.isArray(parsed)) {
-        setFavoriteEventIds(parsed.filter((id): id is string => typeof id === "string"));
+        setRecentEventIds(parsed.filter((id): id is string => typeof id === "string"));
       }
     } catch {
-      setFavoriteEventIds([]);
+      setRecentEventIds([]);
     }
   }, []);
 
   const filteredEvents = useMemo(
-    () => filterEvents(events, dateFilter, categoryFilter, locationFilter),
-    [events, dateFilter, categoryFilter, locationFilter],
+    () => filterEvents(events, dateFilter, locationFilter),
+    [events, dateFilter, locationFilter],
   );
 
-  const favoriteEventIdSet = useMemo(() => new Set(favoriteEventIds), [favoriteEventIds]);
+  const recentEventIdSet = useMemo(() => new Set(recentEventIds), [recentEventIds]);
   const topLocations = useMemo(() => getTopLocations(events), [events]);
 
   const displayedEvents = useMemo(() => {
-    if (activeTab === "favorites") {
-      return filteredEvents.filter((event) => event.id && favoriteEventIdSet.has(event.id));
+    if (activeTab === "recent") {
+      return filteredEvents.filter((event) => {
+        const eventId = getEventId(event);
+        return eventId ? recentEventIdSet.has(eventId) : false;
+      });
     }
 
     return filteredEvents;
-  }, [activeTab, favoriteEventIdSet, filteredEvents]);
+  }, [activeTab, filteredEvents, recentEventIdSet]);
 
-  const hasActiveFilters = Boolean(dateFilter || categoryFilter || locationFilter);
+  const hasActiveFilters = Boolean(dateFilter || locationFilter);
 
-  const handleToggleFavorite = (eventId?: string) => {
+  const addToRecentEvents = (event: EventRecord) => {
+    const eventId = getEventId(event);
     if (!eventId) {
       return;
     }
 
-    setFavoriteEventIds((prev) => {
-      const next = prev.includes(eventId) ? prev.filter((id) => id !== eventId) : [...prev, eventId];
-      localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(next));
+    setRecentEventIds((prev) => {
+      if (prev.includes(eventId)) {
+        return prev;
+      }
+
+      const next = [...prev, eventId];
+      localStorage.setItem(RECENT_EVENTS_STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   };
 
   const clearFilters = () => {
     setDateFilter("");
-    setCategoryFilter("");
     setLocationFilter("");
   };
 
@@ -206,25 +207,6 @@ export default function EventsPage() {
                       label={label}
                       checked={dateFilter === value}
                       changeHandler={() => setDateFilter(dateFilter === value ? "" : value)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="mb-1 text-lg font-semibold text-black select-none">Category</div>
-                <div className="flex flex-col gap-[2px]">
-                  {[
-                    { value: "volunteer", label: "Volunteer" },
-                    { value: "fundraiser", label: "Fundraiser" },
-                    { value: "workshop", label: "Workshop" },
-                    { value: "community", label: "Community" },
-                  ].map(({ value, label }) => (
-                    <Checkbox
-                      key={value}
-                      label={label}
-                      checked={categoryFilter === value}
-                      changeHandler={() => setCategoryFilter(categoryFilter === value ? "" : value)}
                     />
                   ))}
                 </div>
@@ -272,11 +254,11 @@ export default function EventsPage() {
               <div
                 className={twMerge(
                   "text-black text-xl sm:text-2xl md:text-3xl font-semibold cursor-pointer select-none",
-                  activeTab === "favorites" ? "opacity-100" : "opacity-50",
+                  activeTab === "recent" ? "opacity-100" : "opacity-50",
                 )}
-                onClick={() => setActiveTab("favorites")}
+                onClick={() => setActiveTab("recent")}
               >
-                Favorites
+                Recently Viewed
               </div>
             </div>
           </div>
@@ -289,20 +271,15 @@ export default function EventsPage() {
             ) : displayedEvents.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-7" aria-label="Events list">
                 {displayedEvents.map((event) => (
-                  <EventCard
-                    key={eventKey(event)}
-                    event={event}
-                    isFavorite={event.id ? favoriteEventIdSet.has(event.id) : false}
-                    onToggleFavorite={handleToggleFavorite}
-                  />
+                  <EventCard key={eventKey(event)} event={event} onEventView={addToRecentEvents} />
                 ))}
               </div>
             ) : events.length === 0 ? (
               <EventBoardMessage title="No Events Found" message="There are no events available at the moment." />
-            ) : activeTab === "favorites" ? (
+            ) : activeTab === "recent" ? (
               <EventBoardMessage
-                title="No Favorite Events"
-                message="No favorite events match your filters. Try adjusting your selections."
+                title="No Recently Viewed Events"
+                message="Events you view will appear here. Try opening an event from All Events."
               />
             ) : (
               <EventBoardMessage

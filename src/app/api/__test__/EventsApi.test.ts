@@ -50,7 +50,6 @@ const validEventPayload = {
   time: "6:00 PM",
   location: "Innovation Hub",
   locationType: "in-person",
-  category: "workshop",
   description: "A useful workshop.",
 };
 

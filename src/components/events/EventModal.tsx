@@ -9,9 +9,10 @@ import type { EventRecord } from "@/types/event";
 export interface EventModalProps {
   event: EventRecord;
   children: React.ReactNode;
+  onOpen?: (event: EventRecord) => void;
 }
 
-export function EventModal({ event, children }: EventModalProps) {
+export function EventModal({ event, children, onOpen }: EventModalProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -20,6 +21,7 @@ export function EventModal({ event, children }: EventModalProps) {
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
+          onOpen?.(event);
           setOpen(true);
         }}
       >
@@ -57,12 +59,6 @@ export function EventModal({ event, children }: EventModalProps) {
             </div>
 
             <div className="p-6">
-              {event.category && (
-                <span className="inline-block text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-full px-3 py-0.5 mb-3">
-                  {event.category}
-                </span>
-              )}
-
               <h2 className="text-2xl font-bold text-gray-900 leading-tight mb-1">{event.eventName}</h2>
               <p className="text-sm text-gray-500 mb-4">By {event.organization}</p>
 

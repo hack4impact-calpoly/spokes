@@ -2,17 +2,13 @@ import { formatDate } from "@/lib/utils";
 import type { EventRecord } from "@/types/event";
 import { EventModal } from "./EventModal";
 import { Button } from "@chakra-ui/react";
-import { FaStar } from "react-icons/fa";
-import { FiStar } from "react-icons/fi";
 
 type EventCardProps = {
   event: EventRecord;
-  isFavorite?: boolean;
-  onToggleFavorite?: (eventId?: string) => void;
+  onEventView?: (event: EventRecord) => void;
 };
 
-export default function EventCard({ event, isFavorite = false, onToggleFavorite }: EventCardProps) {
-  const favoriteLabel = isFavorite ? "Remove from favorites" : "Add to favorites";
+export default function EventCard({ event, onEventView }: EventCardProps) {
   const month = event.date.toLocaleString("en-US", { month: "short", timeZone: "UTC" }).toUpperCase();
   const day = event.date.getUTCDate();
   const year = event.date.getUTCFullYear();
@@ -33,22 +29,6 @@ export default function EventCard({ event, isFavorite = false, onToggleFavorite 
                 <h3 className="text-xl text-black font-bold leading-snug">{event.eventName}</h3>
                 <p className="text-base text-gray-500 font-medium leading-snug">{event.organization}</p>
               </div>
-              {onToggleFavorite && (
-                <button
-                  type="button"
-                  aria-label={favoriteLabel}
-                  className={`flex-shrink-0 text-xl leading-none transition-colors ${
-                    isFavorite ? "text-yellow-400" : "text-gray-300 hover:text-yellow-400"
-                  }`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onToggleFavorite(event.id);
-                  }}
-                >
-                  {isFavorite ? <FaStar aria-hidden="true" /> : <FiStar aria-hidden="true" />}
-                </button>
-              )}
             </div>
 
             <div className="mt-4 flex flex-col gap-1.5">
@@ -115,9 +95,6 @@ export default function EventCard({ event, isFavorite = false, onToggleFavorite 
 
         <div className="flex flex-row md:flex-col lg:flex-row gap-4 items-end lg:items-end md:items-start mt-5 max-[400px]:flex-col max-[400px]:items-start">
           <div className="flex gap-2">
-            <span className="inline-flex items-center rounded-full bg-white border border-gray-300 px-3 py-1 text-sm text-gray-700 capitalize">
-              {event.category}
-            </span>
             {event.locationType && (
               <span className="inline-flex items-center rounded-full bg-white border border-gray-300 px-3 py-1 text-sm text-gray-700 capitalize">
                 {event.locationType.replace("-", " ")}
@@ -126,26 +103,12 @@ export default function EventCard({ event, isFavorite = false, onToggleFavorite 
           </div>
         </div>
 
-        <div className="flex lg:flex-row flex-col gap-4 my-5">
-          <EventModal event={event}>
+        <div className="my-5">
+          <EventModal event={event} onOpen={onEventView}>
             <Button className="w-full" fontWeight="normal" variant="outline" borderColor="black">
               See More
             </Button>
           </EventModal>
-          <Button
-            onClick={() => onToggleFavorite?.(event.id)}
-            className="w-full"
-            fontWeight="normal"
-            variant="outline"
-            bg={isFavorite ? "white" : "black"}
-            textColor={isFavorite ? "black" : "white"}
-            borderColor="black"
-            _hover={{
-              bg: isFavorite ? "gray.100" : "gray.800",
-            }}
-          >
-            {isFavorite ? "Saved" : "Save Event"}
-          </Button>
         </div>
       </div>
     </div>

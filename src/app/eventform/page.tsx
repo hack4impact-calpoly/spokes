@@ -22,7 +22,6 @@ export default function EventFormPage() {
       description: formData.get("description") as string,
       location: formData.get("location") as string,
       locationType: formData.get("locationType") as string,
-      category: formData.get("category") as string,
     };
 
     try {
@@ -142,21 +141,6 @@ export default function EventFormPage() {
               </option>
               <option value="in-person">In-person</option>
               <option value="remote">Remote</option>
-            </select>
-          </div>
-
-          <div className={fieldClass}>
-            <label htmlFor="category" className={labelClass}>
-              Category
-            </label>
-            <select id="category" name="category" required defaultValue="" className={`${inputClass} appearance-none`}>
-              <option value="" disabled>
-                Enter your response
-              </option>
-              <option value="volunteer">Volunteer</option>
-              <option value="fundraiser">Fundraiser</option>
-              <option value="workshop">Workshop</option>
-              <option value="community">Community</option>
             </select>
           </div>
 
