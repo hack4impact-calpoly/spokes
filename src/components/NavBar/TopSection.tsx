@@ -2,6 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { UserResource } from "@clerk/types";
 import { Button, Tooltip, Box } from "@chakra-ui/react";
 import { UserButton, OrganizationSwitcher, useSession } from "@clerk/nextjs";
@@ -15,7 +16,11 @@ interface TopSectionProps {
 
 export default function TopSection({ user }: TopSectionProps) {
   const { session } = useSession();
+  const pathname = usePathname();
   const onboardingComplete = session?.user?.publicMetadata?.onboardingComplete === true;
+  const loginUrl =
+    pathname?.startsWith("/eventsDashboard") || pathname?.startsWith("/events") ? "/eventsLogin" : "/jobsLogin";
+
   return (
     <>
       <main className="flex items-center justify-between px-10 bg-white sm:px-14 py-7">
@@ -31,7 +36,7 @@ export default function TopSection({ user }: TopSectionProps) {
         {user ? (
           <SignedInControls onboardingComplete={onboardingComplete} />
         ) : (
-          <Link href="/sign-in">
+          <Link href={loginUrl}>
             <Button
               className="flex flex-shrink-0 gap-2"
               fontWeight="medium"
