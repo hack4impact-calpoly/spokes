@@ -103,12 +103,12 @@ export default function OnboardingForm({ onSubmit, isSubmitting }: OnboardingFor
               boxShadow: "0 0 0 1px #BDEABD",
             }}
           >
+            <option value={CREATE_NEW_ORGANIZATION_VALUE}>Create a new organization</option>
             {organizations.map((organization) => (
               <option key={organization} value={organization}>
                 {organization}
               </option>
             ))}
-            <option value={CREATE_NEW_ORGANIZATION_VALUE}>Create a new organization</option>
           </Select>
           {selectedOrganization === CREATE_NEW_ORGANIZATION_VALUE && (
             <Input
