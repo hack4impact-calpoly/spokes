@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFormReset } from "@/app/jobform/FormResetContext";
@@ -158,6 +158,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
   });
 
   const [loading, setLoading] = useState(false);
+  const submitLockRef = useRef(false);
   const [loadingInfo, setLoadingInfo] = useState(isEditing);
   const [message, setMessage] = useState("");
   const [selectEmployment, setSelectEmployment] = useState("");
@@ -261,6 +262,11 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitLockRef.current) {
+      return;
+    }
+
+    submitLockRef.current = true;
     setLoading(true);
     setMessage("");
 
@@ -345,6 +351,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       setIsFailModalOpen(true);
       setMessage("Error submitting job.");
     } finally {
+      submitLockRef.current = false;
       setLoading(false);
     }
   };
@@ -568,6 +575,9 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) {
+      return;
+    }
 
     if (!formData.organizationIndustry.length) {
       setMessage("Please select at least one industry");
@@ -851,6 +861,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
               <Button
                 isLoading={loading}
                 loadingText="Submitting..."
+                disabled={loading}
                 type="submit"
                 size="lg"
                 colorScheme="blackAlpha"

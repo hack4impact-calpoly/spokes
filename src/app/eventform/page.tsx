@@ -12,6 +12,7 @@ export default function EventFormPage() {
   const { isSignedIn } = useAuth();
   const [serverError, setServerError] = useState<string | null>(null);
   const [locationType, setLocationType] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const locationTypeColorMapping = {
     Remote: "#F8B1B8",
@@ -27,7 +28,12 @@ export default function EventFormPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isSubmitting) {
+      return;
+    }
+
     setServerError(null);
+    setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
     const data = {
@@ -44,6 +50,8 @@ export default function EventFormPage() {
       router.push("/events");
     } catch (error) {
       setServerError(error instanceof Error ? error.message : "An unexpected error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -140,6 +148,9 @@ export default function EventFormPage() {
           <div className="mt-8 flex justify-center">
             <Button
               type="submit"
+              isLoading={isSubmitting}
+              loadingText="Submitting..."
+              disabled={isSubmitting}
               size="lg"
               colorScheme="blackAlpha"
               bg="#045F87"

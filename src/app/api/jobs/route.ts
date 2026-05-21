@@ -120,14 +120,28 @@ export const POST = withApiAuth(
         return NextResponse.json({ message: "User not found in DB" }, { status: 404 });
       }
 
-      const newJob = await Job.create({
-        userId: auth.userId, // Set the userId from the auth context
-        memberJob: mongoUser.paidMember, // Set memberJob based on user's paid member status
-        ...jobData,
-        applyNowURL: jobData.applyNowURL || "",
-      });
+      const jobSignature = {
+        userId: auth.userId,
+        organizationName: jobData.organizationName,
+        title: jobData.title,
+        postDate: new Date(jobData.postDate),
+        detailURL: jobData.detailURL,
+      };
 
-      mongoUser.postedJobs.push(newJob._id);
+      const newJob = await Job.findOneAndUpdate(
+        jobSignature,
+        {
+          $setOnInsert: {
+            userId: auth.userId, // Set the userId from the auth context
+            memberJob: mongoUser.paidMember, // Set memberJob based on user's paid member status
+            ...jobData,
+            applyNowURL: jobData.applyNowURL || "",
+          },
+        },
+        { new: true, upsert: true, setDefaultsOnInsert: true },
+      );
+
+      mongoUser.postedJobs.addToSet(newJob._id);
       await mongoUser.save();
 
       return NextResponse.json({ message: "Job posted succesfully!", job: newJob }, { status: 201 });

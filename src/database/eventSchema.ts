@@ -32,5 +32,10 @@ const EventSchema = new Schema<IEvent>(
   { timestamps: true },
 );
 
+EventSchema.index(
+  { createdByUserId: 1, organization: 1, date: 1, eventName: 1, time: 1, location: 1 },
+  { unique: true },
+);
+
 const Event = models.Event || model("Event", EventSchema, "events");
 export default Event;

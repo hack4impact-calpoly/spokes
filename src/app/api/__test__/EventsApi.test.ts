@@ -18,7 +18,7 @@ jest.mock("@/database/eventSchema", () => ({
   default: {
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
-    create: jest.fn(),
+    findOneAndUpdate: jest.fn(),
   },
 }));
 
@@ -69,7 +69,7 @@ describe("Events API", () => {
 
   test("POST derives organization and ownership from the authenticated Mongo user", async () => {
     (User.findById as jest.Mock).mockResolvedValue({ organizationName: "Spokes Nonprofit" });
-    (Event.create as jest.Mock).mockResolvedValue({ _id: "event-1", ...validEventPayload });
+    (Event.findOneAndUpdate as jest.Mock).mockResolvedValue({ _id: "event-1", ...validEventPayload });
 
     const response = await POST(
       jsonRequest("/api/events", {
@@ -81,11 +81,24 @@ describe("Events API", () => {
     );
 
     expect(response.status).toBe(201);
-    expect(Event.create).toHaveBeenCalledWith({
-      ...validEventPayload,
-      organization: "Spokes Nonprofit",
-      createdByUserId: "user-1",
-    });
+    expect(Event.findOneAndUpdate).toHaveBeenCalledWith(
+      {
+        createdByUserId: "user-1",
+        organization: "Spokes Nonprofit",
+        date: new Date(validEventPayload.date),
+        eventName: validEventPayload.eventName,
+        time: validEventPayload.time,
+        location: validEventPayload.location,
+      },
+      {
+        $setOnInsert: {
+          ...validEventPayload,
+          organization: "Spokes Nonprofit",
+          createdByUserId: "user-1",
+        },
+      },
+      { new: true, upsert: true, setDefaultsOnInsert: true },
+    );
   });
 
   test("PUT blocks nonprofits from updating events they do not own", async () => {

@@ -49,12 +49,26 @@ export const POST = withApiAuth(
       }
 
       const sanitizedEventData = sanitizeEventPayload(eventData);
-
-      const newEvent = await Event.create({
-        ...sanitizedEventData,
-        organization: mongoUser.organizationName,
+      const eventSignature = {
         createdByUserId: auth.userId,
-      });
+        organization: mongoUser.organizationName,
+        date: new Date(sanitizedEventData.date),
+        eventName: sanitizedEventData.eventName,
+        time: sanitizedEventData.time,
+        location: sanitizedEventData.location,
+      };
+
+      const newEvent = await Event.findOneAndUpdate(
+        eventSignature,
+        {
+          $setOnInsert: {
+            ...sanitizedEventData,
+            organization: mongoUser.organizationName,
+            createdByUserId: auth.userId,
+          },
+        },
+        { new: true, upsert: true, setDefaultsOnInsert: true },
+      );
 
       return NextResponse.json({ message: "Event created successfully", event: newEvent }, { status: 201 });
     } catch (error: any) {
