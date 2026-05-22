@@ -1,0 +1,53 @@
+import Link from "next/link";
+import connectDB from "@/database/db";
+import Event, { type IEvent } from "@/database/eventSchema";
+import { formatDate } from "@/lib/utils";
+
+type EventPageProps = {
+  params: {
+    eventId: string;
+  };
+};
+
+export default async function EventPage({ params }: EventPageProps) {
+  await connectDB();
+
+  const event = (await Event.findById(params.eventId).lean()) as IEvent | null;
+
+  if (!event) {
+    return (
+      <main className="page-main">
+        <div className="page-content">
+          <h1>Event not found</h1>
+          <Link href="/eventsDashboard/events">Back to Events</Link>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="page-main">
+      <div className="page-content page-content--narrow">
+        <Link href="/eventsDashboard/events" className="event-detail-back">
+          Back to Events
+        </Link>
+        <article className="event-detail">
+          <h1 className="event-detail-title">{event.eventName}</h1>
+          <p className="event-detail-org">{event.organization}</p>
+          <div className="event-detail-meta">
+            <p>
+              <strong>Date:</strong> {formatDate(event.date)}
+            </p>
+            <p>
+              <strong>Time:</strong> {event.time}
+            </p>
+            <p>
+              <strong>Location:</strong> {event.location}
+            </p>
+          </div>
+          <p className="event-detail-description">{event.description}</p>
+        </article>
+      </div>
+    </main>
+  );
+}

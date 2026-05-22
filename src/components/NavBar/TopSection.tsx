@@ -21,6 +21,11 @@ export default function TopSection({ user }: TopSectionProps) {
   const loginUrl =
     pathname?.startsWith("/eventsDashboard") || pathname?.startsWith("/events") ? "/eventsLogin" : "/jobsLogin";
 
+  const afterSignOutUrl =
+    pathname?.startsWith("/eventsDashboard") || pathname?.startsWith("/events")
+      ? "/eventsDashboard/events"
+      : "/jobsDashboard/jobs";
+
   return (
     <>
       <main className="flex items-center justify-between px-10 bg-white sm:px-14 py-7">
@@ -34,7 +39,7 @@ export default function TopSection({ user }: TopSectionProps) {
           />
         </Link>
         {user ? (
-          <SignedInControls onboardingComplete={onboardingComplete} />
+          <SignedInControls onboardingComplete={onboardingComplete} afterSignOutUrl={afterSignOutUrl} />
         ) : (
           <Link href={loginUrl}>
             <Button
@@ -60,7 +65,13 @@ export default function TopSection({ user }: TopSectionProps) {
   );
 }
 
-function SignedInControls({ onboardingComplete }: { onboardingComplete: boolean }) {
+function SignedInControls({
+  onboardingComplete,
+  afterSignOutUrl,
+}: {
+  onboardingComplete: boolean;
+  afterSignOutUrl: string;
+}) {
   const { isLoaded, userMemberships } = useOrganizationList({
     userMemberships: true,
   });
@@ -92,7 +103,7 @@ function SignedInControls({ onboardingComplete }: { onboardingComplete: boolean 
             />
           </Tooltip>
         )}
-        <UserButton showName={true} />
+        <UserButton showName={true} afterSignOutUrl={afterSignOutUrl} />
       </div>
       {hasOrgMembership && <OrganizationSwitcher />}
     </div>

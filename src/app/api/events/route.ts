@@ -6,11 +6,33 @@ import { sanitizeEventPayload, validateEventPayload } from "@/lib/events";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = withApiAuth(
-  async () => {
+  async (req: NextRequest) => {
     try {
       await connectDB();
 
-      const events = await Event.find({}).sort({ date: 1 });
+      const { searchParams } = new URL(req.url);
+      const isAdminRequest = searchParams.get("admin") === "true";
+      const statusFilter = searchParams.get("eventStatus");
+
+      // Build the filter object
+      const filter: any = {};
+
+      if (statusFilter) {
+        filter.eventStatus = statusFilter;
+      } else if (!isAdminRequest) {
+        // Non-admin requests only see approved events
+        filter.eventStatus = "approved";
+      }
+
+      const sort: any = { date: 1 };
+
+      if (statusFilter === "approved") {
+        sort.approvedDate = -1;
+      } else {
+        sort.createdAt = -1;
+      }
+
+      const events = await Event.find(filter).sort(sort);
       return NextResponse.json(events, { status: 200 });
     } catch (error: any) {
       console.error("Failed to fetch events:", error);
@@ -65,6 +87,9 @@ export const POST = withApiAuth(
             ...sanitizedEventData,
             organization: mongoUser.organizationName,
             createdByUserId: auth.userId,
+            eventStatus: "pending",
+            contactName: mongoUser.firstName || "",
+            contactEmail: mongoUser.email || "",
           },
         },
         { new: true, upsert: true, setDefaultsOnInsert: true },
