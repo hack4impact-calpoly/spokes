@@ -2,9 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { GrInstagram } from "react-icons/gr";
-import { ImFacebook2 } from "react-icons/im";
-import { SiLinkedin } from "react-icons/si";
+import { FaFacebookSquare, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { useUser } from "@clerk/nextjs";
 
 const Footer: React.FC = () => {
@@ -42,15 +40,15 @@ const Footer: React.FC = () => {
 
         <div className="flex flex-col md:flex-row items-center md:items-start justify-center md:justify-start w-full md:w-auto mt-6 md:mt-0">
           <div className="flex flex-col items-center md:items-start gap-[8px] md:gap-[10px] md:w-[135px]">
-            <Link href="/jobs" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
+            <Link href="/jobsDashboard/jobs" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
               Job Board
             </Link>
             {user && (
               <>
-                <Link href="/jobform" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
+                <Link href="/jobsDashboard/list" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
                   List Job
                 </Link>
-                <Link href="/jobform" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
+                <Link href="/jobsDashboard/manage" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
                   Dashboard
                 </Link>
               </>
@@ -59,14 +57,14 @@ const Footer: React.FC = () => {
 
           <div className="flex space-x-[10px] md:space-x-[14px] mt-4 md:mt-0 md:ml-[40px]">
             <Link href="https://www.instagram.com/spokes.for.nonprofits/" target="_blank" rel="noopener noreferrer">
-              <GrInstagram width={30} height={30} className="w-[30px] h-[30px] md:w-[35px] md:h-[35px]" />
+              <FaInstagram width={30} height={30} className="w-[30px] h-[30px] md:w-[35px] md:h-[35px]" />
             </Link>
             <Link
               href="https://www.linkedin.com/company/spokes---resources-for-nonprofits/"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <SiLinkedin
+              <FaLinkedin
                 style={{ fill: "#0077B5" }}
                 width={30}
                 height={30}
@@ -74,7 +72,7 @@ const Footer: React.FC = () => {
               />
             </Link>
             <Link href="https://www.facebook.com/Spokesfornonprofits/" target="_blank" rel="noopener noreferrer">
-              <ImFacebook2
+              <FaFacebookSquare
                 style={{ fill: "#1877F2" }}
                 width={30}
                 height={30}
