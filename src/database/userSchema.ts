@@ -6,6 +6,7 @@ export interface UserInterface {
   name: String;
   email: String;
   postedJobs: [String];
+  postedEvents: [String];
   paidMember: Boolean;
   organizationName: String;
 }
@@ -16,8 +17,9 @@ const UserSchema = new Schema<UserInterface>({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   postedJobs: { type: [String], required: true, default: [] },
+  postedEvents: { type: [String], required: false, default: [] },
   paidMember: { type: Boolean, required: true },
-  organizationName: { type: String, required: false },
+  organizationName: { type: String, required: false, index: true },
 });
 
 //Export Schema

@@ -1,12 +1,4 @@
-const requiredEventFields = [
-  "eventName",
-  "date",
-  "time",
-  "location",
-  "locationType",
-  "category",
-  "description",
-] as const;
+const requiredEventFields = ["eventName", "date", "time", "location", "locationType", "description"] as const;
 
 const mutableEventFields = [...requiredEventFields, "eventImage", "organizationIcon"] as const;
 

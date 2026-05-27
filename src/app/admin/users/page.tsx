@@ -24,7 +24,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import TableSkeleton from "@/components/UserTableSkeleton";
+import TableSkeleton from "@/components/ui/UserTableSkeleton";
 
 interface User {
   _id: string;

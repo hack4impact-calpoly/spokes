@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
-import AdminJobs from "../../admin/page";
+import AdminJobs from "@/components/jobs/pages/JobsAdminPage";
 import { ChakraProvider } from "@chakra-ui/react";
 import "@testing-library/jest-dom";
 import { IJob } from "@/database/jobSchema";

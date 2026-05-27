@@ -1,37 +1,67 @@
-import { clerkMiddleware, createRouteMatcher, clerkClient } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { getAuthWithRole } from "@/lib/auth";
 
-const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
+const isJobAdminRoute = createRouteMatcher(["/admin(.*)", "/jobsDashboard/admin(.*)"]);
+const isEventAdminRoute = createRouteMatcher(["/eventsDashboard/admin(.*)"]);
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
-const isAuthRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
-const isPublicRoute = createRouteMatcher([
+const isAuthRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)", "/jobsLogin(.*)", "/eventsLogin(.*)"]);
+const isPublicApiRoute = createRouteMatcher([
   "/api/webhooks(.*)",
   "/api/users(.*)",
-  "/jobs",
+  "/api/organizations(.*)",
   "/api/jobs(.*)",
-  "/events(.*)",
   "/api/events(.*)",
 ]);
+const isPublicPageRoute = createRouteMatcher([
+  "/jobsDashboard",
+  "/jobsDashboard/jobs",
+  "/eventsDashboard",
+  "/eventsDashboard/events",
+]);
+const isEventDashboardRoute = createRouteMatcher(["/eventsDashboard(.*)"]);
+
+async function hasCompletedMongoProfile(req: Request, userId: string) {
+  try {
+    const userProfileUrl = new URL(`/api/users/${userId}`, req.url);
+    const response = await fetch(userProfileUrl, {
+      headers: {
+        cookie: req.headers.get("cookie") ?? "",
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const userProfile = await response.json();
+    return typeof userProfile.organizationName === "string" && userProfile.organizationName.trim().length > 0;
+  } catch (error) {
+    console.error("Failed to verify user profile:", error);
+    return false;
+  }
+}
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId, orgSlug } = await auth();
   const { role } = getAuthWithRole({ userId, orgSlug });
 
-  // if not signed in or on a public route, proceed normally
-  if (isPublicRoute(req) || isAuthRoute(req)) {
+  // Auth routes and public APIs handle their own access rules.
+  if (isPublicApiRoute(req) || isAuthRoute(req)) {
     return NextResponse.next();
   }
 
   if (!userId) {
-    const signInUrl = new URL("/sign-in", req.url);
+    if (isPublicPageRoute(req) || isOnboardingRoute(req)) {
+      return NextResponse.next();
+    }
+
+    const signInUrl = new URL(isEventDashboardRoute(req) ? "/eventsLogin" : "/jobsLogin", req.url);
     return NextResponse.redirect(signInUrl);
   }
 
-  const client = await clerkClient();
-  const user = await client.users.getUser(userId);
-
-  const onboardingComplete = user.publicMetadata?.onboardingComplete === true;
+  const onboardingComplete = await hasCompletedMongoProfile(req, userId);
 
   // if user hasn't completed onboarding and isn't on the onboarding page, redirect them
   if (!onboardingComplete && !isOnboardingRoute(req)) {
@@ -43,14 +73,20 @@ export default clerkMiddleware(async (auth, req) => {
 
   // if user has completed onboarding but is trying to access the onboarding page, redirect to dashboard
   if (onboardingComplete && isOnboardingRoute(req)) {
-    const dashboardUrl = new URL("/", req.url);
+    const returnUrl = new URL(req.url).searchParams.get("returnUrl");
+    const dashboardUrl = new URL(returnUrl || "/jobsDashboard/jobs", req.url);
     return NextResponse.redirect(dashboardUrl);
   }
 
   // if user trying to access admin, and is not spokes_admin
-  if (isAdminRoute(req) && !(role === "spokes_admin")) {
-    const jobUrl = new URL("/jobs", req.url);
+  if (isJobAdminRoute(req) && !(role === "spokes_admin")) {
+    const jobUrl = new URL("/jobsDashboard/jobs", req.url);
     return NextResponse.redirect(jobUrl);
+  }
+
+  if (isEventAdminRoute(req) && !(role === "spokes_admin")) {
+    const eventsUrl = new URL("/eventsDashboard/events", req.url);
+    return NextResponse.redirect(eventsUrl);
   }
 
   return NextResponse.next();

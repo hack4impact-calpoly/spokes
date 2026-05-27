@@ -377,21 +377,6 @@ html {
   border-color: #d1d5db;
 }
 
-.event-card-category {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #ea580c;
-  background-color: #fff7ed;
-  border: 1px solid #fed7aa;
-  border-radius: 999px;
-  padding: 0.125rem 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-}
-
 .event-card-title {
   font-size: 1.125rem;
   font-weight: 600;
@@ -427,16 +412,6 @@ html {
   border-radius: 8px;
   padding: 2rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.event-detail-category {
-  display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #ea580c;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
 }
 
 .event-detail-title {

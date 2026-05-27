@@ -1,57 +1,39 @@
 import { formatDate } from "@/lib/utils";
 import type { EventRecord } from "@/types/event";
 import { EventModal } from "./EventModal";
-import { FaStar } from "react-icons/fa";
-import { FiStar } from "react-icons/fi";
+import { Button } from "@chakra-ui/react";
+import JobBadge from "@/components/jobs/JobCard/JobBadge";
 
 type EventCardProps = {
   event: EventRecord;
-  isFavorite?: boolean;
-  onToggleFavorite?: (eventId?: string) => void;
+  onEventView?: (event: EventRecord) => void;
 };
 
-export default function EventCard({ event, isFavorite = false, onToggleFavorite }: EventCardProps) {
-  const favoriteLabel = isFavorite ? "Remove from favorites" : "Add to favorites";
+export default function EventCard({ event, onEventView }: EventCardProps) {
   const month = event.date.toLocaleString("en-US", { month: "short", timeZone: "UTC" }).toUpperCase();
   const day = event.date.getUTCDate();
   const year = event.date.getUTCFullYear();
 
   return (
-    <div className="event-card">
-      <EventModal event={event}>
-        <div className="flex gap-4 items-start cursor-pointer">
-          <div className="flex flex-col items-center justify-center bg-blue-100 rounded-lg px-3 py-2 min-w-[60px] text-center flex-shrink-0">
-            <span className="text-xs font-semibold text-blue-500 uppercase tracking-wide">{month}</span>
-            <span className="text-2xl font-bold text-blue-700 leading-tight">{day}</span>
-            <span className="text-xs text-blue-500">{year}</span>
+    <div className="max-w-[100%]">
+      <div className="bg-[#f7f7f7] rounded-md px-8 pt-5 pb-2 shadow-sm h-full flex flex-col">
+        <div className="flex gap-4 items-start">
+          <div className="flex flex-col items-center justify-center bg-white rounded-md px-3 py-2 min-w-[60px] text-center flex-shrink-0 border border-gray-200">
+            <span className="text-xs font-semibold text-gray-500 uppercase">{month}</span>
+            <span className="text-2xl font-bold text-black leading-tight">{day}</span>
+            <span className="text-xs text-gray-500">{year}</span>
           </div>
 
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 flex flex-col">
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="event-card-title">{event.eventName}</h3>
-                <span className="event-card-category">{event.category}</span>
+              <div className="flex flex-col gap-1 min-w-0">
+                <h3 className="text-xl text-black font-bold leading-snug">{event.eventName}</h3>
+                <p className="text-base text-gray-500 font-medium leading-snug">{event.organization}</p>
               </div>
-              {onToggleFavorite && (
-                <button
-                  type="button"
-                  aria-label={favoriteLabel}
-                  className={`flex-shrink-0 text-xl leading-none transition-colors ${
-                    isFavorite ? "text-yellow-400" : "text-gray-300 hover:text-yellow-400"
-                  }`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onToggleFavorite(event.id);
-                  }}
-                >
-                  {isFavorite ? <FaStar aria-hidden="true" /> : <FiStar aria-hidden="true" />}
-                </button>
-              )}
             </div>
 
-            <div className="mt-2 space-y-1">
-              <p className="flex items-center gap-1.5 text-sm text-gray-500">
+            <div className="mt-4 flex flex-col gap-1.5">
+              <p className="flex items-center gap-1.5 text-base text-gray-500">
                 <svg
                   width="14"
                   height="14"
@@ -69,7 +51,7 @@ export default function EventCard({ event, isFavorite = false, onToggleFavorite 
                 {formatDate(event.date)}
               </p>
               {event.time && (
-                <p className="flex items-center gap-1.5 text-sm text-gray-500">
+                <p className="flex items-center gap-1.5 text-base text-gray-500">
                   <svg
                     width="14"
                     height="14"
@@ -86,7 +68,7 @@ export default function EventCard({ event, isFavorite = false, onToggleFavorite 
                 </p>
               )}
               {event.location && (
-                <p className="flex items-center gap-1.5 text-sm text-gray-500">
+                <p className="flex items-center gap-1.5 text-base text-gray-500">
                   <svg
                     width="14"
                     height="14"
@@ -102,11 +84,28 @@ export default function EventCard({ event, isFavorite = false, onToggleFavorite 
                   {event.location}
                 </p>
               )}
-              {event.description && <p className="event-card-description mt-1">{event.description}</p>}
             </div>
           </div>
         </div>
-      </EventModal>
+
+        {event.description && (
+          <p className="mt-5 text-base text-gray-700 leading-relaxed line-clamp-2">{event.description}</p>
+        )}
+
+        <div className="flex-grow"></div>
+
+        <div className="flex flex-row md:flex-col lg:flex-row gap-4 items-end lg:items-end md:items-start mt-5 max-[400px]:flex-col max-[400px]:items-start">
+          <div className="flex gap-2">{event.locationType && <JobBadge badgeType={event.locationType} />}</div>
+        </div>
+
+        <div className="my-5">
+          <EventModal event={event} onOpen={onEventView}>
+            <Button className="w-full" fontWeight="normal" variant="outline" borderColor="black">
+              See More
+            </Button>
+          </EventModal>
+        </div>
+      </div>
     </div>
   );
 }

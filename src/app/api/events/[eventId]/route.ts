@@ -48,6 +48,34 @@ export const PUT = withApiAuth(
         return NextResponse.json({ message: "Insufficient permissions" }, { status: 403 });
       }
 
+      // Handle status updates (admin only)
+      if (eventData.eventStatus && auth.role === "spokes_admin") {
+        const validStatuses = ["pending", "approved", "rejected", "expired"];
+        if (!validStatuses.includes(eventData.eventStatus)) {
+          return NextResponse.json({ message: "Invalid event status" }, { status: 400 });
+        }
+
+        const updateData: any = {
+          eventStatus: eventData.eventStatus,
+        };
+
+        if (eventData.eventStatus === "approved") {
+          updateData.approvedDate = new Date();
+        }
+
+        if (eventData.eventStatus === "rejected") {
+          updateData.rejectionMessage = eventData.rejectionMessage || "";
+        }
+
+        const updatedEvent = await Event.findByIdAndUpdate(eventId, updateData, { new: true });
+        return NextResponse.json({ message: "Event status updated successfully", event: updatedEvent });
+      }
+
+      // Handle regular updates (nonprofit can update their own pending events)
+      if (auth.role === "nonprofit" && existingEvent.eventStatus !== "pending") {
+        return NextResponse.json({ message: "Can only edit pending events" }, { status: 403 });
+      }
+
       const validationError = validateEventPayload(eventData, { partial: true });
       if (validationError) {
         return NextResponse.json({ message: validationError }, { status: 400 });

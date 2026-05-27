@@ -14,10 +14,24 @@ export default function BottomSection() {
   const { triggerReset } = useFormReset();
   const { orgSlug, isSignedIn } = useAuth();
   const isSpokesAdmin = orgSlug === "spokes-admin";
+  const isEventsDashboard = pathname?.startsWith("/eventsDashboard");
+  const dashboardLinks = isEventsDashboard
+    ? {
+        board: { title: "Event Board", href: "/eventsDashboard/events" },
+        list: { title: "List Event", href: "/eventsDashboard/list" },
+        manage: { title: "Dashboard", href: "/eventsDashboard/manage" },
+        admin: { title: "Admin", href: "/eventsDashboard/admin" },
+      }
+    : {
+        board: { title: "Job Board", href: "/jobsDashboard/jobs" },
+        list: { title: "List Job", href: "/jobsDashboard/list" },
+        manage: { title: "Dashboard", href: "/jobsDashboard/manage" },
+        admin: { title: "Admin", href: "/jobsDashboard/admin" },
+      };
 
   useEffect(() => {
     const handleScroll: EventListener = () => {
-      setShowScrollToTop(window.scrollY > 300 && pathname === "/jobs");
+      setShowScrollToTop(window.scrollY > 300 && pathname === "/jobsDashboard/jobs");
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -37,7 +51,7 @@ export default function BottomSection() {
   const handleListJobClick = () => {
     triggerReset();
     setIsMobileMenuOpen(false);
-    if (pathname === "/jobform") {
+    if (pathname === "/jobsDashboard/list") {
       window.location.replace(pathname);
     }
   };
@@ -57,12 +71,24 @@ export default function BottomSection() {
           <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />
           <NavBarLink title="Admin" href="/admin" /> */}
           {/* prod */}
-          <NavBarLink title="Job Board" href="/jobs" />
-          <NavBarLink title="Events" href="/events" />
-          {isSignedIn && <NavBarLink title="List Job" href="/jobform" onClick={handleListJobClick} />}
-          {isSignedIn && <NavBarLink title="List Event" href="/eventform" onClick={() => setIsMobileMenuOpen(false)} />}
-          {isSignedIn && <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />}
-          {isSignedIn && isSpokesAdmin && <NavBarLink title="Admin" href="/admin" />}
+          <NavBarLink title={dashboardLinks.board.title} href={dashboardLinks.board.href} />
+          {isSignedIn && (
+            <NavBarLink
+              title={dashboardLinks.list.title}
+              href={dashboardLinks.list.href}
+              onClick={isEventsDashboard ? () => setIsMobileMenuOpen(false) : handleListJobClick}
+            />
+          )}
+          {isSignedIn && (
+            <NavBarLink
+              title={dashboardLinks.manage.title}
+              href={dashboardLinks.manage.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+          )}
+          {isSignedIn && isSpokesAdmin && (
+            <NavBarLink title={dashboardLinks.admin.title} href={dashboardLinks.admin.href} />
+          )}
         </div>
         {showScrollToTop && (
           <div
@@ -115,13 +141,27 @@ export default function BottomSection() {
           <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />
           <NavBarLink title="Admin" href="/admin" onClick={() => setIsMobileMenuOpen(false)} /> */}
           {/* prod */}
-          <NavBarLink title="Job Board" href="/jobs" />
-          <NavBarLink title="Events" href="/events" onClick={() => setIsMobileMenuOpen(false)} />
-          {isSignedIn && <NavBarLink title="List Job" href="/jobform" onClick={() => setIsMobileMenuOpen(false)} />}
-          {isSignedIn && <NavBarLink title="List Event" href="/eventform" onClick={() => setIsMobileMenuOpen(false)} />}
-          {isSignedIn && <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />}
+          <NavBarLink title={dashboardLinks.board.title} href={dashboardLinks.board.href} />
+          {isSignedIn && (
+            <NavBarLink
+              title={dashboardLinks.list.title}
+              href={dashboardLinks.list.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+          )}
+          {isSignedIn && (
+            <NavBarLink
+              title={dashboardLinks.manage.title}
+              href={dashboardLinks.manage.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+          )}
           {isSignedIn && isSpokesAdmin && (
-            <NavBarLink title="Admin" href="/admin" onClick={() => setIsMobileMenuOpen(false)} />
+            <NavBarLink
+              title={dashboardLinks.admin.title}
+              href={dashboardLinks.admin.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
           )}
           {showScrollToTop && (
             <div

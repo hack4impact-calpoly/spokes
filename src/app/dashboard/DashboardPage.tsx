@@ -3,10 +3,10 @@ import { IJob } from "@/database/jobSchema";
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import { OrgCard } from "@/components/JobCard/OrgCard";
-import OrgCardSkeleton from "@/components/JobCard/OrgCardSkeleton";
+import { OrgCard } from "@/components/jobs/JobCard/OrgCard";
+import OrgCardSkeleton from "@/components/jobs/JobCard/OrgCardSkeleton";
 import { isExpired } from "@/lib/utils";
-import MembershipBadge from "@/components/MembershipBadge";
+import MembershipBadge from "@/components/ui/MembershipBadge";
 
 type DashboardProps = {
   organizationName: string;

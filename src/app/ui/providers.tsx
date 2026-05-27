@@ -3,7 +3,7 @@
 
 import { ClerkProvider } from "@clerk/nextjs";
 import { ChakraProvider } from "@chakra-ui/react";
-import ReactQueryProvider from "@/components/ReactQueryProvider";
+import ReactQueryProvider from "@/components/ui/ReactQueryProvider";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (

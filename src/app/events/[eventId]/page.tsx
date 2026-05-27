@@ -32,7 +32,6 @@ export default async function EventPage({ params }: EventPageProps) {
           Back to Events
         </Link>
         <article className="event-detail">
-          <span className="event-detail-category">{event.category}</span>
           <h1 className="event-detail-title">{event.eventName}</h1>
           <p className="event-detail-org">{event.organization}</p>
           <div className="event-detail-meta">

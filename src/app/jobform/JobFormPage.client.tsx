@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFormReset } from "@/app/jobform/FormResetContext";
@@ -20,15 +20,15 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import RadioCard from "@/components/RadioCard";
-import TagSelect from "@/components/TagSelect";
+import RadioCard from "@/components/ui/RadioCard";
+import TagSelect from "@/components/ui/TagSelect";
 import { Option } from "@/components/TagsMultiselect/multiselect";
 import { cn } from "@/lib/utils";
-import JobConfirmationModal from "@/components/JobModals/JobConfirmationModal";
-import JobActionConfirmationModal from "@/components/JobModals/JobActionConfirmationModal";
-import JobCardModal from "@/components/JobCard/JobCardModal";
-import JobEditedModal from "@/components/JobModals/JobEditedModal";
-import JobFailModal from "@/components/JobModals/JobFailModal";
+import JobConfirmationModal from "@/components/jobs/JobModals/JobConfirmationModal";
+import JobActionConfirmationModal from "@/components/jobs/JobModals/JobActionConfirmationModal";
+import JobCardModal from "@/components/jobs/JobCard/JobCardModal";
+import JobEditedModal from "@/components/jobs/JobModals/JobEditedModal";
+import JobFailModal from "@/components/jobs/JobModals/JobFailModal";
 import { useUser } from "@clerk/nextjs";
 import { UserInterface as User } from "@/database/userSchema";
 
@@ -158,6 +158,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
   });
 
   const [loading, setLoading] = useState(false);
+  const submitLockRef = useRef(false);
   const [loadingInfo, setLoadingInfo] = useState(isEditing);
   const [message, setMessage] = useState("");
   const [selectEmployment, setSelectEmployment] = useState("");
@@ -261,6 +262,11 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitLockRef.current) {
+      return;
+    }
+
+    submitLockRef.current = true;
     setLoading(true);
     setMessage("");
 
@@ -345,6 +351,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       setIsFailModalOpen(true);
       setMessage("Error submitting job.");
     } finally {
+      submitLockRef.current = false;
       setLoading(false);
     }
   };
@@ -568,6 +575,9 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) {
+      return;
+    }
 
     if (!formData.organizationIndustry.length) {
       setMessage("Please select at least one industry");
@@ -851,6 +861,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
               <Button
                 isLoading={loading}
                 loadingText="Submitting..."
+                disabled={loading}
                 type="submit"
                 size="lg"
                 colorScheme="blackAlpha"
