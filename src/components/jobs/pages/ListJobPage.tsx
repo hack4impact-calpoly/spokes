@@ -1,16 +1,14 @@
 import React, { Suspense } from "react";
 import { Center, Spinner } from "@chakra-ui/react";
-import JobFormPage from "./JobFormPage.client";
+import JobFormPage from "@/app/jobform/JobFormPage.client";
 import { getAuthWithRole } from "@/lib/auth";
 import { auth } from "@clerk/nextjs/server";
-import { type NextPage } from "next"; // Import NextPage type
+import { type NextPage } from "next";
 
-// Define the props type using NextPage
 interface JobFormParentPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-// Use NextPage type for the component
 const JobFormParentPage: NextPage<JobFormParentPageProps> = async ({ searchParams }) => {
   const { userId, orgSlug } = await auth();
   const authWithRole = getAuthWithRole({ userId, orgSlug });

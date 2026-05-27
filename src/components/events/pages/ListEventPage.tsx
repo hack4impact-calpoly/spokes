@@ -16,10 +16,10 @@ import {
   Spinner,
   Center,
 } from "@chakra-ui/react";
-import RadioCard from "@/components/RadioCard";
+import RadioCard from "@/components/ui/RadioCard";
 import { IEvent } from "@/database/eventSchema";
-import EventConfirmationModal from "@/components/EventModals/EventConfirmationModal";
-import EventFailModal from "@/components/EventModals/EventFailModal";
+import EventConfirmationModal from "@/components/events/EventModals/EventConfirmationModal";
+import EventFailModal from "@/components/events/EventModals/EventFailModal";
 
 function EventFormContent() {
   const router = useRouter();

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { Checkbox } from "@/components/Checkbox";
+import { Checkbox } from "@/components/ui/Checkbox";
 import EventCard from "@/components/events/EventCard";
 import { getAllEvents } from "@/services/events";
 import type { EventRecord } from "@/types/event";

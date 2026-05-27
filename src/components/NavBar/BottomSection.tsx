@@ -31,7 +31,7 @@ export default function BottomSection() {
 
   useEffect(() => {
     const handleScroll: EventListener = () => {
-      setShowScrollToTop(window.scrollY > 300 && (pathname === "/jobs" || pathname === "/jobsDashboard/jobs"));
+      setShowScrollToTop(window.scrollY > 300 && pathname === "/jobsDashboard/jobs");
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -51,7 +51,7 @@ export default function BottomSection() {
   const handleListJobClick = () => {
     triggerReset();
     setIsMobileMenuOpen(false);
-    if (pathname === "/jobform" || pathname === "/jobsDashboard/list") {
+    if (pathname === "/jobsDashboard/list") {
       window.location.replace(pathname);
     }
   };

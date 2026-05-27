@@ -1,1 +1,1 @@
-export { default } from "@/app/events/page";
+export { default } from "@/components/events/pages/EventsBoardPage";

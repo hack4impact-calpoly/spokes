@@ -1,10 +1,10 @@
 "use client";
-import { FilterCard } from "@/components/FilterCard";
+import { FilterCard } from "@/components/ui/FilterCard";
 import { useState, useEffect } from "react";
 import { twMerge } from "tailwind-merge";
 import JobGrid from "@/components//JobGrid/JobGrid";
 import { IJob } from "@/database/jobSchema";
-import { Loader } from "@/components/Loader";
+import { Loader } from "@/components/ui/Loader";
 import {
   Button,
   useDisclosure,
@@ -18,7 +18,7 @@ import {
 
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
-import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
+import JobGridSkeleton from "@/components/jobs/JobGrid/JobGridSkeleton";
 
 // Interfaces to make TS happy
 interface FilterCategories {

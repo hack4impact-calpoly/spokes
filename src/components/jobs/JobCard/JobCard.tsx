@@ -1,8 +1,8 @@
 import { Button } from "@chakra-ui/react";
 import { IJob } from "@/database/jobSchema";
-import JobBadge from "@/components/JobCard/JobBadge";
-import JobCardInformation from "@/components/JobCard/JobCardInformation";
-import JobPostedDate from "@/components/JobCard/JobPostedDate";
+import JobBadge from "@/components/jobs/JobCard/JobBadge";
+import JobCardInformation from "@/components/jobs/JobCard/JobCardInformation";
+import JobPostedDate from "@/components/jobs/JobCard/JobPostedDate";
 import { useState, useEffect, useCallback, memo } from "react";
 
 interface JobCardProps {

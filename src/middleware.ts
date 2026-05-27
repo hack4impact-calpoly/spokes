@@ -14,8 +14,6 @@ const isPublicApiRoute = createRouteMatcher([
   "/api/events(.*)",
 ]);
 const isPublicPageRoute = createRouteMatcher([
-  "/jobs",
-  "/events(.*)",
   "/jobsDashboard",
   "/jobsDashboard/jobs",
   "/eventsDashboard",

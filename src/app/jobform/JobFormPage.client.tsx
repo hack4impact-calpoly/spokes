@@ -20,15 +20,15 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import RadioCard from "@/components/RadioCard";
-import TagSelect from "@/components/TagSelect";
+import RadioCard from "@/components/ui/RadioCard";
+import TagSelect from "@/components/ui/TagSelect";
 import { Option } from "@/components/TagsMultiselect/multiselect";
 import { cn } from "@/lib/utils";
-import JobConfirmationModal from "@/components/JobModals/JobConfirmationModal";
-import JobActionConfirmationModal from "@/components/JobModals/JobActionConfirmationModal";
-import JobCardModal from "@/components/JobCard/JobCardModal";
-import JobEditedModal from "@/components/JobModals/JobEditedModal";
-import JobFailModal from "@/components/JobModals/JobFailModal";
+import JobConfirmationModal from "@/components/jobs/JobModals/JobConfirmationModal";
+import JobActionConfirmationModal from "@/components/jobs/JobModals/JobActionConfirmationModal";
+import JobCardModal from "@/components/jobs/JobCard/JobCardModal";
+import JobEditedModal from "@/components/jobs/JobModals/JobEditedModal";
+import JobFailModal from "@/components/jobs/JobModals/JobFailModal";
 import { useUser } from "@clerk/nextjs";
 import { UserInterface as User } from "@/database/userSchema";
 

@@ -1,5 +1,5 @@
 import { Badge, Tooltip as ChakraTooltip } from "@chakra-ui/react";
-import { formatBadgeName } from "@/components/JobCard/JobBadge";
+import { formatBadgeName } from "@/components/jobs/JobCard/JobBadge";
 import { twMerge } from "tailwind-merge";
 
 type JobStatusBadgeProps = {

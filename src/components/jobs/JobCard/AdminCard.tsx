@@ -1,10 +1,10 @@
 import { IconButton } from "@chakra-ui/react";
 import { FiEdit, FiMail } from "react-icons/fi";
 import { IJob } from "@/database/jobSchema";
-import JobStatusBadge from "@/components/JobCard/JobStatusBadge";
-import JobBadge from "@/components/JobCard/JobBadge";
-import JobCardInformation from "@/components/JobCard/JobCardInformation";
-import JobPostedDate from "@/components/JobCard/JobPostedDate";
+import JobStatusBadge from "@/components/jobs/JobCard/JobStatusBadge";
+import JobBadge from "@/components/jobs/JobCard/JobBadge";
+import JobCardInformation from "@/components/jobs/JobCard/JobCardInformation";
+import JobPostedDate from "@/components/jobs/JobCard/JobPostedDate";
 import { useState, useEffect } from "react";
 import JobCardModal from "./JobCardModal";
 import { useRouter } from "next/navigation";

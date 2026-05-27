@@ -1,10 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
 import { IEvent } from "@/database/eventSchema";
-import EventStatusBadge from "@/components/EventCard/EventStatusBadge";
-import JobCardModal from "@/components/JobCard/JobCardModal";
-import ActionButton from "@/components/JobCard/ActionButton";
-import JobPostedDate from "@/components/JobCard/JobPostedDate";
+import EventStatusBadge from "@/components/events/EventCard/EventStatusBadge";
+import JobCardModal from "@/components/jobs/JobCard/JobCardModal";
+import ActionButton from "@/components/jobs/JobCard/ActionButton";
+import JobPostedDate from "@/components/jobs/JobCard/JobPostedDate";
 import { useToast } from "@chakra-ui/react";
 
 interface AdminEventCardProps {

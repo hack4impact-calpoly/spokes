@@ -1,11 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import ChakraCarousel from "@/components/ChakraCarousel/carousel";
-import AdminJobCard from "@/components/JobCard/AdminCard";
-import JobGrid from "@/components/JobGrid/JobGrid";
+import AdminJobCard from "@/components/jobs/JobCard/AdminCard";
+import JobGrid from "@/components/jobs/JobGrid/JobGrid";
 import { IJob } from "@/database/jobSchema";
 import { twMerge } from "tailwind-merge";
-import JobGridSkeleton from "@/components/JobGrid/JobGridSkeleton";
+import JobGridSkeleton from "@/components/jobs/JobGrid/JobGridSkeleton";
 import Link from "next/link";
 import { isExpired } from "@/lib/utils";
 import { Tooltip, useToast } from "@chakra-ui/react";

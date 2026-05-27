@@ -1,7 +1,7 @@
 import { getMongoUser } from "@/lib/getMongoUser";
 import { UserInterface } from "@/database/userSchema";
 import { auth } from "@clerk/nextjs/server";
-import DashboardPage from "./DashboardPage";
+import DashboardPage from "@/app/dashboard/DashboardPage";
 
 export default async function DashboardServerPage() {
   const authData = await auth();

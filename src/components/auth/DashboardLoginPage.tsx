@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { SignIn } from "@clerk/nextjs";
 import { Center } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
-import WelcomeInfo from "@/components/WelcomeInfo";
+import WelcomeInfo from "@/components/ui/WelcomeInfo";
 
 export default function DashboardLoginPage({ redirectUrl }: { redirectUrl: string }) {
   const [isClient, setIsClient] = useState(false);

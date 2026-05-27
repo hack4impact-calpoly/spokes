@@ -2,7 +2,7 @@
 import { twMerge } from "tailwind-merge";
 import { ComponentProps, forwardRef, useState } from "react";
 import { IEvent } from "@/database/eventSchema";
-import EventStatusBadge from "@/components/EventCard/EventStatusBadge";
+import EventStatusBadge from "@/components/events/EventCard/EventStatusBadge";
 import {
   Button,
   Modal,

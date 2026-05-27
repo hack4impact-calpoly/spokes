@@ -2,7 +2,7 @@ import { formatDate } from "@/lib/utils";
 import type { EventRecord } from "@/types/event";
 import { EventModal } from "./EventModal";
 import { Button } from "@chakra-ui/react";
-import JobBadge from "@/components/JobCard/JobBadge";
+import JobBadge from "@/components/jobs/JobCard/JobBadge";
 
 type EventCardProps = {
   event: EventRecord;
