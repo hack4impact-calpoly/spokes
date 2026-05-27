@@ -2,7 +2,7 @@
 import { FilterCard } from "@/components/ui/FilterCard";
 import { useState, useEffect } from "react";
 import { twMerge } from "tailwind-merge";
-import JobGrid from "@/components//JobGrid/JobGrid";
+import JobGrid from "@/components/jobs/JobGrid/JobGrid";
 import { IJob } from "@/database/jobSchema";
 import { Loader } from "@/components/ui/Loader";
 import {

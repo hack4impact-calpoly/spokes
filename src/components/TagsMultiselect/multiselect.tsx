@@ -8,7 +8,7 @@ import { ForwardedRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/components/TagsMultiselect/command";
 import { Input } from "@chakra-ui/react";
-import { TagSelectOther } from "../TagSelect";
+import { TagSelectOther } from "@/components/ui/TagSelect";
 
 export interface Option {
   value: string;
