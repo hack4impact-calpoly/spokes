@@ -103,7 +103,6 @@ export const POST = withApiAuth(
       console.log("Job data", jobData);
       if (
         !jobData ||
-        !jobData.organizationName ||
         !jobData.organizationIndustry ||
         !jobData.title ||
         !jobData.postDate ||
@@ -120,9 +119,20 @@ export const POST = withApiAuth(
         return NextResponse.json({ message: "User not found in DB" }, { status: 404 });
       }
 
+      const requestedOrganizationName =
+        typeof jobData.organizationName === "string" ? jobData.organizationName.trim() : "";
+      const userOrganizationName =
+        typeof mongoUser.organizationName === "string" ? mongoUser.organizationName.trim() : "";
+      const organizationName =
+        auth.role === "spokes_admin" && requestedOrganizationName ? requestedOrganizationName : userOrganizationName;
+
+      if (!organizationName) {
+        return NextResponse.json({ message: "User organization is required to create a job" }, { status: 400 });
+      }
+
       const jobSignature = {
         userId: auth.userId,
-        organizationName: jobData.organizationName,
+        organizationName,
         title: jobData.title,
         postDate: new Date(jobData.postDate),
         detailURL: jobData.detailURL,
@@ -132,9 +142,11 @@ export const POST = withApiAuth(
         jobSignature,
         {
           $setOnInsert: {
+            ...jobData,
+            organizationName,
             userId: auth.userId, // Set the userId from the auth context
             memberJob: mongoUser.paidMember, // Set memberJob based on user's paid member status
-            ...jobData,
+            jobStatus: "pending",
             applyNowURL: jobData.applyNowURL || "",
           },
         },

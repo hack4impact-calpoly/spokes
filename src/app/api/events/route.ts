@@ -66,14 +66,20 @@ export const POST = withApiAuth(
         return NextResponse.json({ message: "User not found in DB" }, { status: 404 });
       }
 
-      if (!mongoUser.organizationName) {
+      const requestedOrganizationName = typeof eventData.organization === "string" ? eventData.organization.trim() : "";
+      const userOrganizationName =
+        typeof mongoUser.organizationName === "string" ? mongoUser.organizationName.trim() : "";
+      const organization =
+        auth.role === "spokes_admin" && requestedOrganizationName ? requestedOrganizationName : userOrganizationName;
+
+      if (!organization) {
         return NextResponse.json({ message: "User organization is required to create an event" }, { status: 400 });
       }
 
       const sanitizedEventData = sanitizeEventPayload(eventData);
       const eventSignature = {
         createdByUserId: auth.userId,
-        organization: mongoUser.organizationName,
+        organization,
         date: new Date(sanitizedEventData.date),
         eventName: sanitizedEventData.eventName,
         time: sanitizedEventData.time,
@@ -85,7 +91,7 @@ export const POST = withApiAuth(
         {
           $setOnInsert: {
             ...sanitizedEventData,
-            organization: mongoUser.organizationName,
+            organization,
             createdByUserId: auth.userId,
             eventStatus: "pending",
             contactName: mongoUser.firstName || "",
