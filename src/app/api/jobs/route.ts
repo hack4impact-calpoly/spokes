@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Job from "@/database/jobSchema";
 import User from "@/database/userSchema";
 import { withApiAuth } from "@/lib/auth";
+import { resolveOrganizationName } from "@/lib/organizations";
 import { getThirtyDaysAgo } from "@/lib/utils";
 
 // no filters: GET /api/jobs?page=1&limit=10
@@ -100,7 +101,6 @@ export const POST = withApiAuth(
     try {
       await connectDB();
       const jobData = await req.json();
-      console.log("Job data", jobData);
       if (
         !jobData ||
         !jobData.organizationIndustry ||
@@ -124,7 +124,9 @@ export const POST = withApiAuth(
       const userOrganizationName =
         typeof mongoUser.organizationName === "string" ? mongoUser.organizationName.trim() : "";
       const organizationName =
-        auth.role === "spokes_admin" && requestedOrganizationName ? requestedOrganizationName : userOrganizationName;
+        auth.role === "spokes_admin" && requestedOrganizationName
+          ? await resolveOrganizationName(requestedOrganizationName)
+          : userOrganizationName;
 
       if (!organizationName) {
         return NextResponse.json({ message: "User organization is required to create a job" }, { status: 400 });

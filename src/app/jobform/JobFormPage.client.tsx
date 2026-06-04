@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFormReset } from "@/app/jobform/FormResetContext";
@@ -17,13 +17,13 @@ import {
   Link,
   Collapse,
   Checkbox,
-  Select,
   useToast,
   Spinner,
   Text,
 } from "@chakra-ui/react";
 import RadioCard from "@/components/ui/RadioCard";
 import TagSelect from "@/components/ui/TagSelect";
+import OrganizationSelect from "@/components/ui/OrganizationSelect";
 import { Option } from "@/components/TagsMultiselect/multiselect";
 import { cn } from "@/lib/utils";
 import JobConfirmationModal from "@/components/jobs/JobModals/JobConfirmationModal";
@@ -115,8 +115,6 @@ const ensureHttps = (url: string | undefined): string | undefined => {
   return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
 };
 
-const CREATE_NEW_ORGANIZATION_VALUE = "__create_new__";
-
 type JobFormPageProps = {
   isSpokesAdmin: Boolean;
   returnURL: string;
@@ -177,10 +175,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
   const [createForAnotherOrganization, setCreateForAnotherOrganization] = useState(false);
-  const [organizations, setOrganizations] = useState<string[]>([]);
-  const [selectedOrganization, setSelectedOrganization] = useState("");
-  const [newOrganizationName, setNewOrganizationName] = useState("");
-  const [loadingOrganizations, setLoadingOrganizations] = useState(false);
+  const [selectedAdminOrganizationName, setSelectedAdminOrganizationName] = useState("");
 
   const employmentColorMapping = {
     "Full-Time": "#F8B1B8",
@@ -259,59 +254,6 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
 
     fetchUser();
   }, [user, isEditing]);
-
-  useEffect(() => {
-    if (!isSpokesAdmin || isEditing) return;
-
-    let isCancelled = false;
-
-    const fetchOrganizations = async () => {
-      try {
-        setLoadingOrganizations(true);
-        const response = await fetch("/api/organizations", { headers: { Accept: "application/json" } });
-        if (!response.ok) {
-          throw new Error("Failed to fetch organizations");
-        }
-
-        const result = await response.json();
-        if (!isCancelled && Array.isArray(result.organizations)) {
-          setOrganizations(result.organizations.filter((name: unknown): name is string => typeof name === "string"));
-        }
-      } catch (error) {
-        console.error("Failed to load organizations:", error);
-        if (!isCancelled) {
-          setOrganizations([]);
-        }
-      } finally {
-        if (!isCancelled) {
-          setLoadingOrganizations(false);
-        }
-      }
-    };
-
-    void fetchOrganizations();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [isSpokesAdmin, isEditing]);
-
-  const selectedAdminOrganizationName = useMemo(() => {
-    if (!createForAnotherOrganization) {
-      return "";
-    }
-
-    if (selectedOrganization !== CREATE_NEW_ORGANIZATION_VALUE) {
-      return selectedOrganization;
-    }
-
-    const trimmedName = newOrganizationName.trim();
-    const existingOrganization = organizations.find(
-      (organization) => organization.toLowerCase() === trimmedName.toLowerCase(),
-    );
-
-    return existingOrganization ?? trimmedName;
-  }, [createForAnotherOrganization, newOrganizationName, organizations, selectedOrganization]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | { target: { name: string; value: string[] } }) => {
     const { name, value } = e.target;
@@ -403,8 +345,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       setSelectEmployment("");
       setSelectCompensation("");
       setCreateForAnotherOrganization(false);
-      setSelectedOrganization("");
-      setNewOrganizationName("");
+      setSelectedAdminOrganizationName("");
 
       setMessage("Job posted successfully!");
       setTimeout(() => {
@@ -691,8 +632,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
                   const checked = e.target.checked;
                   setCreateForAnotherOrganization(checked);
                   if (!checked) {
-                    setSelectedOrganization("");
-                    setNewOrganizationName("");
+                    setSelectedAdminOrganizationName("");
                   }
                 }}
               >
@@ -703,31 +643,12 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
           {isSpokesAdmin && !isEditing && createForAnotherOrganization && (
             <FormControl isRequired>
               <FormLabel>Organization Name</FormLabel>
-              <Select
-                value={selectedOrganization}
-                onChange={(e) => setSelectedOrganization(e.target.value)}
-                placeholder={loadingOrganizations ? "Loading organizations..." : "Select an organization"}
+              <OrganizationSelect
+                value={selectedAdminOrganizationName}
+                onChange={setSelectedAdminOrganizationName}
                 bg="#F6F6F6"
                 border="0"
-                disabled={loadingOrganizations}
-              >
-                <option value={CREATE_NEW_ORGANIZATION_VALUE}>Create a new organization</option>
-                {organizations.map((organization) => (
-                  <option key={organization} value={organization}>
-                    {organization}
-                  </option>
-                ))}
-              </Select>
-              {selectedOrganization === CREATE_NEW_ORGANIZATION_VALUE && (
-                <Input
-                  mt={3}
-                  value={newOrganizationName}
-                  onChange={(e) => setNewOrganizationName(e.target.value)}
-                  placeholder="Enter new organization name"
-                  bg="#F6F6F6"
-                  border="0"
-                />
-              )}
+              />
             </FormControl>
           )}
           <FormControl isRequired>

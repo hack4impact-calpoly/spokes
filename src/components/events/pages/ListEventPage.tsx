@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense, useMemo } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import {
@@ -11,7 +11,6 @@ import {
   FormLabel,
   Heading,
   Input,
-  Select,
   Stack,
   useRadioGroup,
   VStack,
@@ -22,8 +21,7 @@ import RadioCard from "@/components/ui/RadioCard";
 import { IEvent } from "@/database/eventSchema";
 import EventConfirmationModal from "@/components/events/EventModals/EventConfirmationModal";
 import EventFailModal from "@/components/events/EventModals/EventFailModal";
-
-const CREATE_NEW_ORGANIZATION_VALUE = "__create_new__";
+import OrganizationSelect from "@/components/ui/OrganizationSelect";
 
 function EventFormContent() {
   const router = useRouter();
@@ -38,10 +36,7 @@ function EventFormContent() {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isFailModalOpen, setIsFailModalOpen] = useState(false);
   const [createForAnotherOrganization, setCreateForAnotherOrganization] = useState(false);
-  const [organizations, setOrganizations] = useState<string[]>([]);
-  const [selectedOrganization, setSelectedOrganization] = useState("");
-  const [newOrganizationName, setNewOrganizationName] = useState("");
-  const [isLoadingOrganizations, setIsLoadingOrganizations] = useState(false);
+  const [selectedAdminOrganizationName, setSelectedAdminOrganizationName] = useState("");
   const eventId = searchParams.get("eventId");
 
   const locationTypeColorMapping = {
@@ -77,59 +72,6 @@ function EventFormContent() {
 
     fetchEvent();
   }, [eventId]);
-
-  useEffect(() => {
-    if (!isSpokesAdmin || eventId) return;
-
-    let isCancelled = false;
-
-    const fetchOrganizations = async () => {
-      try {
-        setIsLoadingOrganizations(true);
-        const response = await fetch("/api/organizations", { headers: { Accept: "application/json" } });
-        if (!response.ok) {
-          throw new Error("Failed to fetch organizations");
-        }
-
-        const result = await response.json();
-        if (!isCancelled && Array.isArray(result.organizations)) {
-          setOrganizations(result.organizations.filter((name: unknown): name is string => typeof name === "string"));
-        }
-      } catch (error) {
-        console.error("Failed to load organizations:", error);
-        if (!isCancelled) {
-          setOrganizations([]);
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsLoadingOrganizations(false);
-        }
-      }
-    };
-
-    void fetchOrganizations();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [isSpokesAdmin, eventId]);
-
-  const selectedAdminOrganizationName = useMemo(() => {
-    if (!createForAnotherOrganization) {
-      return "";
-    }
-
-    if (selectedOrganization !== CREATE_NEW_ORGANIZATION_VALUE) {
-      return selectedOrganization;
-    }
-
-    const trimmedName = newOrganizationName.trim();
-    const existingOrganization = organizations.find(
-      (organization) => organization.toLowerCase() === trimmedName.toLowerCase(),
-    );
-
-    return existingOrganization ?? trimmedName;
-  }, [createForAnotherOrganization, newOrganizationName, organizations, selectedOrganization]);
 
   const sendNewEventEmail = async (event: IEvent) => {
     try {
@@ -248,8 +190,7 @@ function EventFormContent() {
                     const checked = e.target.checked;
                     setCreateForAnotherOrganization(checked);
                     if (!checked) {
-                      setSelectedOrganization("");
-                      setNewOrganizationName("");
+                      setSelectedAdminOrganizationName("");
                     }
                   }}
                 >
@@ -261,31 +202,12 @@ function EventFormContent() {
             {isSpokesAdmin && !eventId && createForAnotherOrganization && (
               <FormControl isRequired>
                 <FormLabel>Organization Name</FormLabel>
-                <Select
-                  value={selectedOrganization}
-                  onChange={(e) => setSelectedOrganization(e.target.value)}
-                  placeholder={isLoadingOrganizations ? "Loading organizations..." : "Select an organization"}
+                <OrganizationSelect
+                  value={selectedAdminOrganizationName}
+                  onChange={setSelectedAdminOrganizationName}
                   bg="#F6F6F6"
                   border="0"
-                  disabled={isLoadingOrganizations}
-                >
-                  <option value={CREATE_NEW_ORGANIZATION_VALUE}>Create a new organization</option>
-                  {organizations.map((organization) => (
-                    <option key={organization} value={organization}>
-                      {organization}
-                    </option>
-                  ))}
-                </Select>
-                {selectedOrganization === CREATE_NEW_ORGANIZATION_VALUE && (
-                  <Input
-                    mt={3}
-                    value={newOrganizationName}
-                    onChange={(e) => setNewOrganizationName(e.target.value)}
-                    placeholder="Enter new organization name"
-                    bg="#F6F6F6"
-                    border="0"
-                  />
-                )}
+                />
               </FormControl>
             )}
 

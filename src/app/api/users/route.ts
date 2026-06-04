@@ -3,6 +3,7 @@ import connectDB from "@/database/db";
 import User from "@/database/userSchema";
 import { updateUserMetadata } from "@/lib/clerk";
 import { withApiAuth } from "@/lib/auth";
+import { resolveOrganizationName } from "@/lib/organizations";
 
 // Connect to the database before handling requests
 
@@ -24,14 +25,7 @@ export const POST = withApiAuth(
         return NextResponse.json({ message: "Organization name is required" }, { status: 400 });
       }
 
-      const existingOrganizationNames = await User.distinct("organizationName", {
-        organizationName: { $exists: true, $type: "string", $ne: "" },
-      });
-      const canonicalOrganizationName =
-        existingOrganizationNames.find(
-          (existingOrganizationName) =>
-            existingOrganizationName.trim().toLowerCase() === trimmedOrganizationName.toLowerCase(),
-        ) ?? trimmedOrganizationName;
+      const canonicalOrganizationName = await resolveOrganizationName(trimmedOrganizationName);
 
       // Check if user already exists
       const existingUser = await User.findById(userId);

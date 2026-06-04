@@ -3,6 +3,7 @@ import Event from "@/database/eventSchema";
 import User from "@/database/userSchema";
 import { withApiAuth } from "@/lib/auth";
 import { sanitizeEventPayload, validateEventPayload } from "@/lib/events";
+import { resolveOrganizationName } from "@/lib/organizations";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = withApiAuth(
@@ -70,7 +71,9 @@ export const POST = withApiAuth(
       const userOrganizationName =
         typeof mongoUser.organizationName === "string" ? mongoUser.organizationName.trim() : "";
       const organization =
-        auth.role === "spokes_admin" && requestedOrganizationName ? requestedOrganizationName : userOrganizationName;
+        auth.role === "spokes_admin" && requestedOrganizationName
+          ? await resolveOrganizationName(requestedOrganizationName)
+          : userOrganizationName;
 
       if (!organization) {
         return NextResponse.json({ message: "User organization is required to create an event" }, { status: 400 });
