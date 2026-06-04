@@ -95,6 +95,9 @@ describe("Events API", () => {
           ...validEventPayload,
           organization: "Spokes Nonprofit",
           createdByUserId: "user-1",
+          eventStatus: "pending",
+          contactName: "",
+          contactEmail: "",
         },
       },
       { new: true, upsert: true, setDefaultsOnInsert: true },
@@ -113,7 +116,11 @@ describe("Events API", () => {
   });
 
   test("PUT only writes whitelisted mutable event fields", async () => {
-    (Event.findById as jest.Mock).mockResolvedValue({ _id: "event-1", createdByUserId: "user-1" });
+    (Event.findById as jest.Mock).mockResolvedValue({
+      _id: "event-1",
+      createdByUserId: "user-1",
+      eventStatus: "pending",
+    });
     (Event.findByIdAndUpdate as jest.Mock).mockResolvedValue({ _id: "event-1", eventName: "Updated Event" });
 
     const response = await PUT(

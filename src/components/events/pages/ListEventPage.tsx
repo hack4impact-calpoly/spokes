@@ -1,15 +1,17 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import {
   Box,
   Button,
+  Checkbox,
   FormControl,
   FormLabel,
   Heading,
   Input,
+  Select,
   Stack,
   useRadioGroup,
   VStack,
@@ -21,10 +23,13 @@ import { IEvent } from "@/database/eventSchema";
 import EventConfirmationModal from "@/components/events/EventModals/EventConfirmationModal";
 import EventFailModal from "@/components/events/EventModals/EventFailModal";
 
+const CREATE_NEW_ORGANIZATION_VALUE = "__create_new__";
+
 function EventFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, orgSlug } = useAuth();
+  const isSpokesAdmin = orgSlug === "spokes-admin";
   const [serverError, setServerError] = useState<string | null>(null);
   const [locationType, setLocationType] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,6 +37,11 @@ function EventFormContent() {
   const [eventData, setEventData] = useState<IEvent | null>(null);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isFailModalOpen, setIsFailModalOpen] = useState(false);
+  const [createForAnotherOrganization, setCreateForAnotherOrganization] = useState(false);
+  const [organizations, setOrganizations] = useState<string[]>([]);
+  const [selectedOrganization, setSelectedOrganization] = useState("");
+  const [newOrganizationName, setNewOrganizationName] = useState("");
+  const [isLoadingOrganizations, setIsLoadingOrganizations] = useState(false);
   const eventId = searchParams.get("eventId");
 
   const locationTypeColorMapping = {
@@ -68,6 +78,59 @@ function EventFormContent() {
     fetchEvent();
   }, [eventId]);
 
+  useEffect(() => {
+    if (!isSpokesAdmin || eventId) return;
+
+    let isCancelled = false;
+
+    const fetchOrganizations = async () => {
+      try {
+        setIsLoadingOrganizations(true);
+        const response = await fetch("/api/organizations", { headers: { Accept: "application/json" } });
+        if (!response.ok) {
+          throw new Error("Failed to fetch organizations");
+        }
+
+        const result = await response.json();
+        if (!isCancelled && Array.isArray(result.organizations)) {
+          setOrganizations(result.organizations.filter((name: unknown): name is string => typeof name === "string"));
+        }
+      } catch (error) {
+        console.error("Failed to load organizations:", error);
+        if (!isCancelled) {
+          setOrganizations([]);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingOrganizations(false);
+        }
+      }
+    };
+
+    void fetchOrganizations();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isSpokesAdmin, eventId]);
+
+  const selectedAdminOrganizationName = useMemo(() => {
+    if (!createForAnotherOrganization) {
+      return "";
+    }
+
+    if (selectedOrganization !== CREATE_NEW_ORGANIZATION_VALUE) {
+      return selectedOrganization;
+    }
+
+    const trimmedName = newOrganizationName.trim();
+    const existingOrganization = organizations.find(
+      (organization) => organization.toLowerCase() === trimmedName.toLowerCase(),
+    );
+
+    return existingOrganization ?? trimmedName;
+  }, [createForAnotherOrganization, newOrganizationName, organizations, selectedOrganization]);
+
   const sendNewEventEmail = async (event: IEvent) => {
     try {
       await fetch("/api/send/event-new", {
@@ -98,19 +161,28 @@ function EventFormContent() {
     };
 
     try {
+      if (isSpokesAdmin && !eventId && createForAnotherOrganization && !selectedAdminOrganizationName) {
+        throw new Error("Please select or enter an organization.");
+      }
+
+      const eventPayload =
+        isSpokesAdmin && !eventId && createForAnotherOrganization
+          ? { ...data, organization: selectedAdminOrganizationName }
+          : data;
+
       let response: Response;
 
       if (eventId) {
         response = await fetch(`/api/events/${eventId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: JSON.stringify(eventPayload),
         });
       } else {
         response = await fetch("/api/events", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: JSON.stringify(eventPayload),
         });
       }
 
@@ -168,6 +240,55 @@ function EventFormContent() {
 
         <form onSubmit={handleSubmit}>
           <VStack spacing={4}>
+            {isSpokesAdmin && !eventId && (
+              <FormControl>
+                <Checkbox
+                  isChecked={createForAnotherOrganization}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setCreateForAnotherOrganization(checked);
+                    if (!checked) {
+                      setSelectedOrganization("");
+                      setNewOrganizationName("");
+                    }
+                  }}
+                >
+                  Create for another organization
+                </Checkbox>
+              </FormControl>
+            )}
+
+            {isSpokesAdmin && !eventId && createForAnotherOrganization && (
+              <FormControl isRequired>
+                <FormLabel>Organization Name</FormLabel>
+                <Select
+                  value={selectedOrganization}
+                  onChange={(e) => setSelectedOrganization(e.target.value)}
+                  placeholder={isLoadingOrganizations ? "Loading organizations..." : "Select an organization"}
+                  bg="#F6F6F6"
+                  border="0"
+                  disabled={isLoadingOrganizations}
+                >
+                  <option value={CREATE_NEW_ORGANIZATION_VALUE}>Create a new organization</option>
+                  {organizations.map((organization) => (
+                    <option key={organization} value={organization}>
+                      {organization}
+                    </option>
+                  ))}
+                </Select>
+                {selectedOrganization === CREATE_NEW_ORGANIZATION_VALUE && (
+                  <Input
+                    mt={3}
+                    value={newOrganizationName}
+                    onChange={(e) => setNewOrganizationName(e.target.value)}
+                    placeholder="Enter new organization name"
+                    bg="#F6F6F6"
+                    border="0"
+                  />
+                )}
+              </FormControl>
+            )}
+
             <FormControl isRequired>
               <FormLabel>Event Title</FormLabel>
               <Input
