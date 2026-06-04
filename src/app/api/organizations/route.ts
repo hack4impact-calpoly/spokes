@@ -1,30 +1,14 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/database/db";
-import User from "@/database/userSchema";
-import Event from "@/database/eventSchema";
 import { withApiAuth } from "@/lib/auth";
+import { getExistingOrganizationNames } from "@/lib/organizations";
 
 export const GET = withApiAuth(
   async () => {
     try {
       await connectDB();
 
-      const userOrgs = await User.distinct("organizationName", {
-        organizationName: { $exists: true, $type: "string", $ne: "" },
-      });
-
-      const eventOrgs = await Event.distinct("organization", {
-        organization: { $exists: true, $type: "string", $ne: "" },
-      });
-
-      const organizations = Array.from(
-        new Map(
-          [...userOrgs, ...eventOrgs]
-            .map((organizationName) => organizationName.trim())
-            .filter(Boolean)
-            .map((organizationName) => [organizationName.toLowerCase(), organizationName]),
-        ).values(),
-      ).sort((a, b) => a.localeCompare(b));
+      const organizations = await getExistingOrganizationNames();
 
       return NextResponse.json({ organizations }, { status: 200 });
     } catch (error) {

@@ -1,5 +1,6 @@
 import Event from "@/database/eventSchema";
 import User from "@/database/userSchema";
+import { resolveOrganizationName } from "@/lib/organizations";
 import { POST } from "@/app/api/events/route";
 import { PUT } from "@/app/api/events/[eventId]/route";
 
@@ -33,6 +34,10 @@ jest.mock("@/lib/auth", () => ({
   withApiAuth: (handler: Function) => {
     return async (req: Request, context: any = {}) => handler(req, { ...context, auth: mockAuth });
   },
+}));
+
+jest.mock("@/lib/organizations", () => ({
+  resolveOrganizationName: jest.fn((organizationName: string) => Promise.resolve(organizationName.trim())),
 }));
 
 jest.mock("next/server", () => ({
@@ -100,6 +105,40 @@ describe("Events API", () => {
           contactEmail: "",
         },
       },
+      { new: true, upsert: true, setDefaultsOnInsert: true },
+    );
+  });
+
+  test("POST lets spokes admins create events for a typed organization", async () => {
+    mockAuth.role = "spokes_admin";
+    (User.findById as jest.Mock).mockResolvedValue({
+      organizationName: "Spokes",
+      email: "admin@example.com",
+    });
+    (resolveOrganizationName as jest.Mock).mockResolvedValue("New Member Org");
+    (Event.findOneAndUpdate as jest.Mock).mockResolvedValue({ _id: "event-1", ...validEventPayload });
+
+    const response = await POST(
+      jsonRequest("/api/events", {
+        ...validEventPayload,
+        organization: " New Member Org ",
+      }),
+      {},
+    );
+
+    expect(response.status).toBe(201);
+    expect(resolveOrganizationName).toHaveBeenCalledWith("New Member Org");
+    expect(Event.findOneAndUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        createdByUserId: "user-1",
+        organization: "New Member Org",
+      }),
+      expect.objectContaining({
+        $setOnInsert: expect.objectContaining({
+          organization: "New Member Org",
+          createdByUserId: "user-1",
+        }),
+      }),
       { new: true, upsert: true, setDefaultsOnInsert: true },
     );
   });
