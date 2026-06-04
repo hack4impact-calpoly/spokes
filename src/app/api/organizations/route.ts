@@ -3,7 +3,6 @@ import connectDB from "@/database/db";
 import User from "@/database/userSchema";
 import Event from "@/database/eventSchema";
 import { withApiAuth } from "@/lib/auth";
-import { use } from "react";
 
 export const GET = withApiAuth(
   async () => {
@@ -14,8 +13,8 @@ export const GET = withApiAuth(
         organizationName: { $exists: true, $type: "string", $ne: "" },
       });
 
-      const eventOrgs = await Event.distinct("organizationName", {
-        organizationName: { $exists: true, $type: "string", $ne: "" },
+      const eventOrgs = await Event.distinct("organization", {
+        organization: { $exists: true, $type: "string", $ne: "" },
       });
 
       const organizations = Array.from(
