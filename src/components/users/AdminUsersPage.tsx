@@ -429,8 +429,8 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-lg border border-red-100 shadow-sm w-full">
-            <FormControl className="flex-1">
+          <div className="flex flex-col sm:flex-row sm:items-end gap-4 bg-white p-4 rounded-lg border border-red-100 shadow-sm w-full">
+            <FormControl className="w-full sm:max-w-md">
               <FormLabel className="text-sm font-medium text-gray-700">Delete Organization</FormLabel>
               <OrganizationSelect
                 value={organizationToDelete}
@@ -442,7 +442,7 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
                 border="1px solid #E2E8F0"
               />
             </FormControl>
-            <div className="flex items-end">
+            <div className="flex">
               <Button
                 onClick={openDeleteOrganizationConfirmation}
                 disabled={!organizationToDelete || isOwnOrganizationSelected || isDeletingOrganization}
@@ -455,7 +455,7 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
           </div>
         </div>
 
-        <Modal isOpen={isDownloadOpen} onClose={onDownloadClose}>
+        <Modal isOpen={isDownloadOpen} onClose={onDownloadClose} isCentered>
           <ModalOverlay />
           <ModalContent className="rounded-lg">
             <ModalHeader className="text-2xl font-semibold border-b pb-4">Download User List</ModalHeader>
@@ -487,7 +487,7 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
           </ModalContent>
         </Modal>
 
-        <Modal isOpen={isOrganizationOpen} onClose={onOrganizationClose}>
+        <Modal isOpen={isOrganizationOpen} onClose={onOrganizationClose} isCentered>
           <ModalOverlay />
           <ModalContent className="rounded-lg">
             <ModalHeader className="text-2xl font-semibold border-b pb-4">Edit Organization</ModalHeader>
@@ -532,7 +532,7 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
           </ModalContent>
         </Modal>
 
-        <Modal isOpen={isDeleteOrganizationOpen} onClose={onDeleteOrganizationClose}>
+        <Modal isOpen={isDeleteOrganizationOpen} onClose={onDeleteOrganizationClose} isCentered>
           <ModalOverlay />
           <ModalContent className="rounded-lg">
             <ModalHeader className="text-2xl font-semibold border-b pb-4">Delete Organization</ModalHeader>

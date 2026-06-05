@@ -1,6 +1,16 @@
 const requiredEventFields = ["eventName", "date", "time", "location", "locationType", "description"] as const;
 
-const mutableEventFields = [...requiredEventFields, "eventImage", "organizationIcon"] as const;
+const mutableEventFields = [
+  ...requiredEventFields,
+  "eventLink",
+  "locationLink",
+  "eventImage",
+  "organizationIcon",
+] as const;
+
+function ensureHttps(url: string) {
+  return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
+}
 
 export function sanitizeEventPayload(payload: Record<string, unknown>) {
   const sanitized: Record<string, string> = {};
@@ -11,7 +21,7 @@ export function sanitizeEventPayload(payload: Record<string, unknown>) {
     if (typeof value === "string") {
       const trimmedValue = value.trim();
       if (trimmedValue) {
-        sanitized[field] = trimmedValue;
+        sanitized[field] = field === "eventLink" || field === "locationLink" ? ensureHttps(trimmedValue) : trimmedValue;
       }
     }
   }

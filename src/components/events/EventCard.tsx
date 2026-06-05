@@ -1,7 +1,6 @@
 import { formatDate } from "@/lib/utils";
+import { getEventInfoLink, getEventLocationLink } from "@/lib/eventLinks";
 import type { EventRecord } from "@/types/event";
-import { EventModal } from "./EventModal";
-import { Button } from "@chakra-ui/react";
 import JobBadge from "@/components/jobs/JobCard/JobBadge";
 
 type EventCardProps = {
@@ -13,6 +12,14 @@ export default function EventCard({ event, onEventView }: EventCardProps) {
   const month = event.date.toLocaleString("en-US", { month: "short", timeZone: "UTC" }).toUpperCase();
   const day = event.date.getUTCDate();
   const year = event.date.getUTCFullYear();
+  const eventInfoLink = getEventInfoLink(event);
+  const eventLocationLink = getEventLocationLink(event);
+  const hasActionLinks = Boolean(eventLocationLink || eventInfoLink);
+  const actionLinkClassName = eventLocationLink && eventInfoLink ? "lg:w-[50%] w-full" : "w-full";
+
+  const handleEventLinkClick = () => {
+    onEventView?.(event);
+  };
 
   return (
     <div className="max-w-[100%]">
@@ -98,13 +105,32 @@ export default function EventCard({ event, onEventView }: EventCardProps) {
           <div className="flex gap-2">{event.locationType && <JobBadge badgeType={event.locationType} />}</div>
         </div>
 
-        <div className="my-5">
-          <EventModal event={event} onOpen={onEventView}>
-            <Button className="w-full" fontWeight="normal" variant="outline" borderColor="black">
-              See More
-            </Button>
-          </EventModal>
-        </div>
+        {hasActionLinks && (
+          <div className="flex lg:flex-row flex-col gap-4 my-5">
+            {eventInfoLink && (
+              <a
+                href={eventInfoLink}
+                target="_blank"
+                rel="noreferrer"
+                onClick={handleEventLinkClick}
+                className={`${actionLinkClassName} inline-flex min-h-10 items-center justify-center rounded-md border border-black px-4 text-center font-normal text-black transition-colors hover:bg-gray-50`}
+              >
+                See More
+              </a>
+            )}
+            {eventLocationLink && (
+              <a
+                href={eventLocationLink}
+                target="_blank"
+                rel="noreferrer"
+                onClick={handleEventLinkClick}
+                className={`${actionLinkClassName} inline-flex min-h-10 items-center justify-center rounded-md border border-black bg-black px-4 text-center font-normal text-white transition-colors hover:bg-gray-800`}
+              >
+                {event.locationType === "remote" ? "Join Meeting" : "View Location"}
+              </a>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

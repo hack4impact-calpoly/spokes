@@ -5,9 +5,11 @@ export interface EventRecord {
   eventName: string;
   time: string;
   location: string;
+  locationLink?: string;
   locationType: "remote" | "in-person";
   organization: string;
   description: string;
+  eventLink?: string;
   eventImage?: string;
   organizationIcon?: string;
   createdByUserId?: string;

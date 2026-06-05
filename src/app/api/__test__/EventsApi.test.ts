@@ -54,7 +54,9 @@ const validEventPayload = {
   date: "2026-02-27",
   time: "6:00 PM",
   location: "Innovation Hub",
+  locationLink: "https://maps.example.com/innovation-hub",
   locationType: "in-person",
+  eventLink: "https://example.com/community-workshop",
   description: "A useful workshop.",
 };
 
@@ -75,6 +77,7 @@ describe("Events API", () => {
   test("POST derives organization and ownership from the authenticated Mongo user", async () => {
     (User.findById as jest.Mock).mockResolvedValue({ organizationName: "Spokes Nonprofit" });
     (Event.findOneAndUpdate as jest.Mock).mockResolvedValue({ _id: "event-1", ...validEventPayload });
+    const { eventLink, locationLink, ...expectedInsertPayload } = validEventPayload;
 
     const response = await POST(
       jsonRequest("/api/events", {
@@ -96,8 +99,12 @@ describe("Events API", () => {
         location: validEventPayload.location,
       },
       {
+        $set: {
+          eventLink,
+          locationLink,
+        },
         $setOnInsert: {
-          ...validEventPayload,
+          ...expectedInsertPayload,
           organization: "Spokes Nonprofit",
           createdByUserId: "user-1",
           eventStatus: "pending",
@@ -105,7 +112,7 @@ describe("Events API", () => {
           contactEmail: "",
         },
       },
-      { new: true, upsert: true, setDefaultsOnInsert: true },
+      { new: true, upsert: true, setDefaultsOnInsert: true, strict: false },
     );
   });
 
@@ -134,12 +141,16 @@ describe("Events API", () => {
         organization: "New Member Org",
       }),
       expect.objectContaining({
+        $set: {
+          eventLink: validEventPayload.eventLink,
+          locationLink: validEventPayload.locationLink,
+        },
         $setOnInsert: expect.objectContaining({
           organization: "New Member Org",
           createdByUserId: "user-1",
         }),
       }),
-      { new: true, upsert: true, setDefaultsOnInsert: true },
+      { new: true, upsert: true, setDefaultsOnInsert: true, strict: false },
     );
   });
 
@@ -165,6 +176,8 @@ describe("Events API", () => {
     const response = await PUT(
       jsonRequest("/api/events/event-1", {
         eventName: "Updated Event",
+        eventLink: "https://example.com/updated-event",
+        locationLink: "https://maps.example.com/updated-event",
         organization: "Spoofed Org",
         createdByUserId: "attacker",
       }),
@@ -172,6 +185,14 @@ describe("Events API", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(Event.findByIdAndUpdate).toHaveBeenCalledWith("event-1", { eventName: "Updated Event" }, { new: true });
+    expect(Event.findByIdAndUpdate).toHaveBeenCalledWith(
+      "event-1",
+      {
+        eventName: "Updated Event",
+        eventLink: "https://example.com/updated-event",
+        locationLink: "https://maps.example.com/updated-event",
+      },
+      { new: true, strict: false },
+    );
   });
 });

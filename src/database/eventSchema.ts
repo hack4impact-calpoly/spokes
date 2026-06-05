@@ -1,4 +1,4 @@
-import { models, model, Schema } from "mongoose";
+import { deleteModel, models, model, Schema } from "mongoose";
 
 // The status of the event
 export enum EventStatus {
@@ -14,8 +14,10 @@ export interface IEvent {
   eventName: string;
   time: string;
   location: string;
+  locationLink?: string;
   locationType: "remote" | "in-person";
   description: string;
+  eventLink?: string;
   organization: string;
   eventImage?: string;
   organizationIcon?: string;
@@ -35,8 +37,10 @@ const EventSchema = new Schema<IEvent>(
     eventName: { type: String, required: true, trim: true },
     time: { type: String, required: true, trim: true },
     location: { type: String, required: true, trim: true },
+    locationLink: { type: String, required: false, trim: true },
     locationType: { type: String, required: true, enum: ["remote", "in-person"], trim: true },
     description: { type: String, required: true, trim: true },
+    eventLink: { type: String, required: false, trim: true },
     organization: { type: String, required: true, trim: true },
     eventImage: { type: String, required: false, trim: true },
     organizationIcon: { type: String, required: false, trim: true },
@@ -54,6 +58,10 @@ EventSchema.index(
   { createdByUserId: 1, organization: 1, date: 1, eventName: 1, time: 1, location: 1 },
   { unique: true },
 );
+
+if (models.Event && (!models.Event.schema.path("eventLink") || !models.Event.schema.path("locationLink"))) {
+  deleteModel("Event");
+}
 
 const Event = models.Event || model("Event", EventSchema, "events");
 export default Event;

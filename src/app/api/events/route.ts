@@ -88,12 +88,22 @@ export const POST = withApiAuth(
         time: sanitizedEventData.time,
         location: sanitizedEventData.location,
       };
+      const duplicateUpdateFields: Record<string, string> = {};
+      const insertEventData = { ...sanitizedEventData };
+
+      for (const field of ["eventLink", "locationLink"] as const) {
+        if (sanitizedEventData[field]) {
+          duplicateUpdateFields[field] = sanitizedEventData[field];
+          delete insertEventData[field];
+        }
+      }
 
       const newEvent = await Event.findOneAndUpdate(
         eventSignature,
         {
+          ...(Object.keys(duplicateUpdateFields).length > 0 ? { $set: duplicateUpdateFields } : {}),
           $setOnInsert: {
-            ...sanitizedEventData,
+            ...insertEventData,
             organization,
             createdByUserId: auth.userId,
             eventStatus: "pending",
@@ -101,7 +111,7 @@ export const POST = withApiAuth(
             contactEmail: mongoUser.email || "",
           },
         },
-        { new: true, upsert: true, setDefaultsOnInsert: true },
+        { new: true, upsert: true, setDefaultsOnInsert: true, strict: false },
       );
 
       return NextResponse.json({ message: "Event created successfully", event: newEvent }, { status: 201 });

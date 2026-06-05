@@ -5,6 +5,7 @@ import EventStatusBadge from "@/components/events/EventCard/EventStatusBadge";
 import JobCardModal from "@/components/jobs/JobCard/JobCardModal";
 import ActionButton from "@/components/jobs/JobCard/ActionButton";
 import JobPostedDate from "@/components/jobs/JobCard/JobPostedDate";
+import { getEventInfoLink, getEventLocationLink } from "@/lib/eventLinks";
 import { useToast } from "@chakra-ui/react";
 
 interface AdminEventCardProps {
@@ -90,6 +91,9 @@ export default function AdminEventCard({ event, onUpdateEvent, innerRef }: Admin
     day: "numeric",
     year: "numeric",
   });
+  const eventInfoLink = getEventInfoLink(event);
+  const eventLocationLink = getEventLocationLink(event);
+  const hasEventLinks = Boolean(eventInfoLink || eventLocationLink);
 
   return (
     <div className="w-full h-full" ref={innerRef}>
@@ -130,6 +134,31 @@ export default function AdminEventCard({ event, onUpdateEvent, innerRef }: Admin
 
         {/* Description */}
         <p className="text-sm text-gray-700 mb-4 line-clamp-3">{event.description}</p>
+
+        {hasEventLinks && (
+          <div className="mb-4 flex flex-col gap-2 text-sm">
+            {eventInfoLink && (
+              <a
+                href={eventInfoLink}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex min-h-9 items-center justify-center rounded-md border border-black px-3 text-center font-medium text-black transition-colors hover:bg-gray-50"
+              >
+                See More
+              </a>
+            )}
+            {eventLocationLink && (
+              <a
+                href={eventLocationLink}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex min-h-9 items-center justify-center rounded-md border border-black bg-black px-3 text-center font-medium text-white transition-colors hover:bg-gray-800"
+              >
+                {event.locationType === "remote" ? "Join Meeting" : "View Location"}
+              </a>
+            )}
+          </div>
+        )}
 
         <div className="flex-grow" />
 

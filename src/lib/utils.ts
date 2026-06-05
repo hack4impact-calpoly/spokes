@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { getEventInfoLink, getEventLocationLink } from "@/lib/eventLinks";
 import type { EventApiRecord, EventRecord } from "@/types/event";
 
 export function cn(...inputs: ClassValue[]) {
@@ -54,6 +55,8 @@ export function normalizeEvent(event: EventApiRecord): EventRecord {
     ...event,
     id: event.id ?? event._id,
     date: toDate(event.date) ?? new Date(),
+    eventLink: getEventInfoLink(event),
+    locationLink: getEventLocationLink(event),
     createdAt: toDate(event.createdAt),
     updatedAt: toDate(event.updatedAt),
   };

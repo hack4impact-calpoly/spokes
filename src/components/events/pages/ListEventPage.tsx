@@ -22,6 +22,12 @@ import { IEvent } from "@/database/eventSchema";
 import EventConfirmationModal from "@/components/events/EventModals/EventConfirmationModal";
 import EventFailModal from "@/components/events/EventModals/EventFailModal";
 import OrganizationSelect from "@/components/ui/OrganizationSelect";
+import { getEventInfoLink, getEventLocationLink } from "@/lib/eventLinks";
+
+const ensureHttps = (url: string | undefined): string | undefined => {
+  if (!url) return url;
+  return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
+};
 
 function EventFormContent() {
   const router = useRouter();
@@ -38,6 +44,8 @@ function EventFormContent() {
   const [createForAnotherOrganization, setCreateForAnotherOrganization] = useState(false);
   const [selectedAdminOrganizationName, setSelectedAdminOrganizationName] = useState("");
   const eventId = searchParams.get("eventId");
+  const eventInfoLink = getEventInfoLink(eventData);
+  const eventLocationLink = getEventLocationLink(eventData);
 
   const locationTypeColorMapping = {
     Remote: "#F8B1B8",
@@ -99,7 +107,9 @@ function EventFormContent() {
       time: formData.get("time") as string,
       description: formData.get("description") as string,
       location: formData.get("location") as string,
+      locationLink: ensureHttps((formData.get("locationLink") as string)?.trim()) || "",
       locationType: formData.get("locationType") as string,
+      eventLink: ensureHttps((formData.get("eventLink") as string)?.trim()) || "",
     };
 
     try {
@@ -273,6 +283,32 @@ function EventFormContent() {
                 placeholder="Enter location"
                 defaultValue={eventData?.location ?? ""}
                 required
+                bg="#F6F6F6"
+                border="0"
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Location or Meeting Link</FormLabel>
+              <Input
+                id="locationLink"
+                name="locationLink"
+                type="text"
+                placeholder="Google Maps or remote meeting link"
+                defaultValue={eventLocationLink ?? ""}
+                bg="#F6F6F6"
+                border="0"
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Event Info Link</FormLabel>
+              <Input
+                id="eventLink"
+                name="eventLink"
+                type="text"
+                placeholder="Registration page or general event info"
+                defaultValue={eventInfoLink ?? ""}
                 bg="#F6F6F6"
                 border="0"
               />
