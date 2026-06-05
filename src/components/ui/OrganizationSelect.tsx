@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Input, Select } from "@chakra-ui/react";
 
 const CREATE_NEW_ORGANIZATION_VALUE = "__create_new__";
@@ -13,6 +13,7 @@ type OrganizationSelectProps = {
   newOrganizationPlaceholder?: string;
   allowCreateNew?: boolean;
   reloadKey?: number;
+  onLoadingChange?: (isLoading: boolean) => void;
   bg?: string;
   border?: string;
   selectFocusStyle?: {
@@ -29,6 +30,7 @@ export default function OrganizationSelect({
   newOrganizationPlaceholder = "Enter new organization name",
   allowCreateNew = true,
   reloadKey = 0,
+  onLoadingChange,
   bg = "#F6F6F6",
   border,
   selectFocusStyle,
@@ -36,13 +38,29 @@ export default function OrganizationSelect({
   const [organizations, setOrganizations] = useState<string[]>([]);
   const [selectedOrganization, setSelectedOrganization] = useState("");
   const [newOrganizationName, setNewOrganizationName] = useState("");
-  const [isLoadingOrganizations, setIsLoadingOrganizations] = useState(true);
+  const [isLoadingOrganizations, setIsLoadingOrganizations] = useState(false);
+  const onChangeRef = useRef(onChange);
+
+  const getExistingOrganization = useCallback(
+    (organizationName: string) =>
+      organizations.find((organization) => organization.toLowerCase() === organizationName.trim().toLowerCase()),
+    [organizations],
+  );
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  useEffect(() => {
+    onLoadingChange?.(isLoadingOrganizations);
+  }, [isLoadingOrganizations, onLoadingChange]);
 
   useEffect(() => {
     let isCancelled = false;
 
     async function loadOrganizations() {
       try {
+        setIsLoadingOrganizations(true);
         const response = await fetch("/api/organizations", { headers: { Accept: "application/json" } });
         if (!response.ok) {
           throw new Error("Failed to fetch organizations");
@@ -72,62 +90,61 @@ export default function OrganizationSelect({
   }, [reloadKey]);
 
   useEffect(() => {
-    if (!value) {
-      setSelectedOrganization("");
-      setNewOrganizationName("");
-      return;
+    const trimmedValue = value.trim();
+    let nextSelectedOrganization = "";
+    let nextNewOrganizationName = "";
+
+    if (trimmedValue) {
+      const existingOrganization = getExistingOrganization(trimmedValue);
+
+      if (existingOrganization) {
+        nextSelectedOrganization = existingOrganization;
+        if (existingOrganization !== value) {
+          onChangeRef.current(existingOrganization);
+        }
+      } else if (allowCreateNew) {
+        nextSelectedOrganization = CREATE_NEW_ORGANIZATION_VALUE;
+        nextNewOrganizationName = value;
+      }
     }
 
-    const existingOrganization = organizations.find(
-      (organization) => organization.toLowerCase() === value.trim().toLowerCase(),
+    setSelectedOrganization((currentValue) =>
+      currentValue === nextSelectedOrganization ? currentValue : nextSelectedOrganization,
     );
+    setNewOrganizationName((currentValue) =>
+      currentValue === nextNewOrganizationName ? currentValue : nextNewOrganizationName,
+    );
+  }, [allowCreateNew, getExistingOrganization, value]);
 
-    if (existingOrganization) {
-      setSelectedOrganization(existingOrganization);
-      setNewOrganizationName("");
+  const handleSelectedOrganizationChange = (organizationName: string) => {
+    setSelectedOrganization(organizationName);
+
+    if (organizationName === CREATE_NEW_ORGANIZATION_VALUE) {
+      const trimmedName = newOrganizationName.trim();
+      onChange(getExistingOrganization(trimmedName) ?? trimmedName);
       return;
     }
 
-    if (allowCreateNew) {
-      setSelectedOrganization(CREATE_NEW_ORGANIZATION_VALUE);
-      setNewOrganizationName(value);
-      return;
-    }
-
-    setSelectedOrganization("");
     setNewOrganizationName("");
-  }, [allowCreateNew, organizations, value]);
-
-  const organizationName = useMemo(() => {
-    if (selectedOrganization !== CREATE_NEW_ORGANIZATION_VALUE) {
-      return selectedOrganization;
-    }
-
-    if (!allowCreateNew) {
-      return "";
-    }
-
-    const trimmedName = newOrganizationName.trim();
-    const existingOrganization = organizations.find(
-      (organization) => organization.toLowerCase() === trimmedName.toLowerCase(),
-    );
-
-    return existingOrganization ?? trimmedName;
-  }, [allowCreateNew, newOrganizationName, organizations, selectedOrganization]);
-
-  useEffect(() => {
     onChange(organizationName);
-  }, [onChange, organizationName]);
+  };
+
+  const handleNewOrganizationNameChange = (organizationName: string) => {
+    setNewOrganizationName(organizationName);
+
+    const trimmedName = organizationName.trim();
+    onChange(getExistingOrganization(trimmedName) ?? trimmedName);
+  };
 
   return (
     <>
       <Select
         value={selectedOrganization}
-        onChange={(e) => setSelectedOrganization(e.target.value)}
+        onChange={(e) => handleSelectedOrganizationChange(e.target.value)}
         placeholder={isLoadingOrganizations ? "Loading organizations..." : placeholder}
         bg={bg}
         border={border}
-        disabled={isLoadingOrganizations}
+        isDisabled={isLoadingOrganizations}
         _focus={selectFocusStyle}
       >
         {allowCreateNew && <option value={CREATE_NEW_ORGANIZATION_VALUE}>{createNewLabel}</option>}
@@ -141,7 +158,7 @@ export default function OrganizationSelect({
         <Input
           mt={3}
           value={newOrganizationName}
-          onChange={(e) => setNewOrganizationName(e.target.value)}
+          onChange={(e) => handleNewOrganizationNameChange(e.target.value)}
           placeholder={newOrganizationPlaceholder}
           bg={bg}
           border={border}

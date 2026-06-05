@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/database/db";
+import User from "@/database/userSchema";
 import { withApiAuth } from "@/lib/auth";
 import { deleteOrganizationData, getExistingOrganizationNames } from "@/lib/organizations";
 
@@ -22,7 +23,7 @@ export const GET = withApiAuth(
 );
 
 export const DELETE = withApiAuth(
-  async (req: NextRequest) => {
+  async (req: NextRequest, { auth }) => {
     try {
       await connectDB();
 
@@ -31,6 +32,14 @@ export const DELETE = withApiAuth(
 
       if (!organizationName) {
         return NextResponse.json({ message: "Organization name is required" }, { status: 400 });
+      }
+
+      const currentUser = await User.findById(auth.userId);
+      if (
+        typeof currentUser?.organizationName === "string" &&
+        currentUser.organizationName.trim().toLowerCase() === organizationName.toLowerCase()
+      ) {
+        return NextResponse.json({ message: "You cannot delete your own organization" }, { status: 403 });
       }
 
       const result = await deleteOrganizationData(organizationName);

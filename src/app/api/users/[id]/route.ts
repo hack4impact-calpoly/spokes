@@ -117,7 +117,7 @@ export const PATCH = withApiAuth(
 );
 
 export const DELETE = withApiAuth(
-  async (req: NextRequest) => {
+  async (req: NextRequest, { auth }) => {
     try {
       await connectDB();
 
@@ -125,6 +125,10 @@ export const DELETE = withApiAuth(
 
       if (!id) {
         return NextResponse.json({ message: "User ID is required" }, { status: 400 });
+      }
+
+      if (id === auth.userId) {
+        return NextResponse.json({ message: "You cannot delete your own user" }, { status: 403 });
       }
 
       const user = await User.findById(id);

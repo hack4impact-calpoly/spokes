@@ -16,7 +16,6 @@ import {
   RadioGroup,
   Select,
   Stack,
-  Switch,
   Table,
   Tbody,
   Td,
@@ -26,6 +25,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { useAuth } from "@clerk/nextjs";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import TableSkeleton from "@/components/ui/UserTableSkeleton";
@@ -48,19 +48,27 @@ type AdminUsersPageProps = {
 
 export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPageProps) {
   const toast = useToast();
+  const { userId } = useAuth();
   const [users, setUsers] = useState<User[] | null>(null);
   const [fileFormat, setFileFormat] = useState("csv");
   const [filterType, setFilterType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [organizationToDelete, setOrganizationToDelete] = useState("");
+  const [organizationDeleteConfirmation, setOrganizationDeleteConfirmation] = useState("");
   const [organizationReloadKey, setOrganizationReloadKey] = useState(0);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [organizationDraft, setOrganizationDraft] = useState("");
+  const [isLoadingOrganizationOptions, setIsLoadingOrganizationOptions] = useState(false);
   const [isSavingOrganization, setIsSavingOrganization] = useState(false);
   const [isDeletingOrganization, setIsDeletingOrganization] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const { isOpen: isDownloadOpen, onOpen: onDownloadOpen, onClose: onDownloadClose } = useDisclosure();
   const { isOpen: isOrganizationOpen, onOpen: onOrganizationOpen, onClose: onOrganizationClose } = useDisclosure();
+  const {
+    isOpen: isDeleteOrganizationOpen,
+    onOpen: onDeleteOrganizationOpen,
+    onClose: onDeleteOrganizationClose,
+  } = useDisclosure();
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -73,15 +81,8 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
       setUsers(data);
     } catch (error) {
       console.error("Failed to fetch users:", error);
-      toast({
-        title: "Failed to load users",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "top-right",
-      });
     }
-  }, [toast]);
+  }, []);
 
   useEffect(() => {
     void fetchUsers();
@@ -101,6 +102,12 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
 
     return matchesSearch && matchesFilter;
   });
+
+  const currentAdmin = users?.find((user) => user._id === userId);
+  const isOwnOrganizationSelected =
+    !!organizationToDelete &&
+    !!currentAdmin?.organizationName &&
+    currentAdmin.organizationName.trim().toLowerCase() === organizationToDelete.trim().toLowerCase();
 
   async function handleSwitchChange(_id: string): Promise<void> {
     if (!users) return;
@@ -149,6 +156,7 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
   const handleOpenOrganizationModal = (user: User) => {
     setSelectedUser(user);
     setOrganizationDraft(user.organizationName ?? "");
+    setIsLoadingOrganizationOptions(true);
     onOrganizationOpen();
   };
 
@@ -199,6 +207,17 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
   };
 
   const handleDeleteUser = async (user: User) => {
+    if (user._id === userId) {
+      toast({
+        title: "You cannot delete your own user",
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return;
+    }
+
     if (!window.confirm(`Delete ${user.name || user.email}? This also deletes their jobs and events.`)) {
       return;
     }
@@ -241,9 +260,14 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
   const handleDeleteOrganization = async () => {
     if (!organizationToDelete) return;
 
-    if (
-      !window.confirm(`Delete ${organizationToDelete}? This deletes all users, jobs, and events in that organization.`)
-    ) {
+    if (isOwnOrganizationSelected) {
+      toast({
+        title: "You cannot delete your own organization",
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+        position: "top-right",
+      });
       return;
     }
 
@@ -265,6 +289,8 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
       const result = await res.json();
       await fetchUsers();
       setOrganizationToDelete("");
+      setOrganizationDeleteConfirmation("");
+      onDeleteOrganizationClose();
       setOrganizationReloadKey((key) => key + 1);
       toast({
         title: "Organization deleted",
@@ -287,6 +313,24 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
     } finally {
       setIsDeletingOrganization(false);
     }
+  };
+
+  const openDeleteOrganizationConfirmation = () => {
+    if (!organizationToDelete) return;
+
+    if (isOwnOrganizationSelected) {
+      toast({
+        title: "You cannot delete your own organization",
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return;
+    }
+
+    setOrganizationDeleteConfirmation("");
+    onDeleteOrganizationOpen();
   };
 
   const handleDownload = () => {
@@ -400,9 +444,8 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
             </FormControl>
             <div className="flex items-end">
               <Button
-                onClick={handleDeleteOrganization}
-                isLoading={isDeletingOrganization}
-                disabled={!organizationToDelete || isDeletingOrganization}
+                onClick={openDeleteOrganizationConfirmation}
+                disabled={!organizationToDelete || isOwnOrganizationSelected || isDeletingOrganization}
                 colorScheme="red"
                 height="40px"
               >
@@ -455,12 +498,20 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
                   <p className="font-medium text-gray-900">{selectedUser?.name}</p>
                   <p className="text-sm text-gray-600">{selectedUser?.email}</p>
                 </div>
-                <OrganizationSelect
-                  value={organizationDraft}
-                  onChange={setOrganizationDraft}
-                  reloadKey={organizationReloadKey}
-                  bg="#F6F6F6"
-                />
+                <div className="relative h-[40px] overflow-hidden">
+                  <OrganizationSelect
+                    value={organizationDraft}
+                    onChange={setOrganizationDraft}
+                    reloadKey={organizationReloadKey}
+                    onLoadingChange={setIsLoadingOrganizationOptions}
+                    bg="#F6F6F6"
+                  />
+                  {isLoadingOrganizationOptions && (
+                    <div className="absolute inset-0 flex items-center rounded-md border border-[#E2E8F0] bg-[#F6F6F6] px-4 text-gray-500">
+                      Loading organizations...
+                    </div>
+                  )}
+                </div>
                 <div className="flex justify-end gap-3">
                   <Button onClick={onOrganizationClose} variant="ghost">
                     Cancel
@@ -474,6 +525,44 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
                     _hover={{ bg: "#034A6B" }}
                   >
                     Save
+                  </Button>
+                </div>
+              </div>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+
+        <Modal isOpen={isDeleteOrganizationOpen} onClose={onDeleteOrganizationClose}>
+          <ModalOverlay />
+          <ModalContent className="rounded-lg">
+            <ModalHeader className="text-2xl font-semibold border-b pb-4">Delete Organization</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6} className="pt-6">
+              <div className="flex flex-col gap-5">
+                <p className="text-gray-700">
+                  This will delete all users, jobs, and events in{" "}
+                  <span className="font-semibold text-gray-900">{organizationToDelete}</span>.
+                </p>
+                <FormControl>
+                  <FormLabel>Type the organization name to confirm</FormLabel>
+                  <input
+                    type="text"
+                    value={organizationDeleteConfirmation}
+                    onChange={(e) => setOrganizationDeleteConfirmation(e.target.value)}
+                    className="border border-[#E2E8F0] rounded-md w-full h-[40px] px-3 focus:outline-none focus:ring-1 focus:ring-[#045F87] focus:border-[#045F87] transition-all"
+                  />
+                </FormControl>
+                <div className="flex justify-end gap-3">
+                  <Button onClick={onDeleteOrganizationClose} variant="ghost">
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleDeleteOrganization}
+                    isLoading={isDeletingOrganization}
+                    disabled={organizationDeleteConfirmation !== organizationToDelete || isDeletingOrganization}
+                    colorScheme="red"
+                  >
+                    Delete Organization
                   </Button>
                 </div>
               </div>
@@ -522,12 +611,21 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
                         <span className={`text-md font-medium ${item.paidMember ? "text-green-600" : "text-gray-600"}`}>
                           {item.paidMember ? "Member" : "Non-member"}
                         </span>
-                        <Switch
-                          size="md"
-                          colorScheme="blue"
-                          isChecked={item.paidMember}
-                          onChange={() => handleSwitchChange(item._id)}
-                        />
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={item.paidMember}
+                          onClick={() => handleSwitchChange(item._id)}
+                          className={`relative inline-flex h-5 w-9 flex-shrink-0 rounded-full transition-colors ${
+                            item.paidMember ? "bg-[#045F87]" : "bg-gray-300"
+                          }`}
+                        >
+                          <span
+                            className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
+                              item.paidMember ? "translate-x-4" : "translate-x-0.5"
+                            }`}
+                          />
+                        </button>
                       </div>
                     </Td>
                     <Td className="w-1/5" borderColor="gray.200" pr={0} py={4}>
@@ -539,6 +637,7 @@ export default function AdminUsersPage({ backHref, backLabel }: AdminUsersPagePr
                           size="sm"
                           colorScheme="red"
                           variant="outline"
+                          disabled={item._id === userId}
                           isLoading={deletingUserId === item._id}
                           onClick={() => handleDeleteUser(item)}
                         >

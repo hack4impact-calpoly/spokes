@@ -113,4 +113,15 @@ describe("Users API", () => {
       eventsDeleted: 3,
     });
   });
+
+  test("DELETE blocks admins from deleting their own user", async () => {
+    const response = await DELETE(jsonRequest("/api/users/admin-1"), {});
+    const result = await response.json();
+
+    expect(response.status).toBe(403);
+    expect(result.message).toBe("You cannot delete your own user");
+    expect(User.findById).not.toHaveBeenCalled();
+    expect(Job.deleteMany).not.toHaveBeenCalled();
+    expect(Event.deleteMany).not.toHaveBeenCalled();
+  });
 });
