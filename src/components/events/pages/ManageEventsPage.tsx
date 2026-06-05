@@ -92,7 +92,7 @@ export default function EventsDashboardPage() {
                     invite people to join.
                   </p>
                   <Link
-                    href="/eventsDashboard/list"
+                    href="/events/list"
                     className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-[#045F87] hover:bg-[#034a6b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#045F87] transition-colors duration-200"
                   >
                     Post Your First Event

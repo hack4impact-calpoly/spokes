@@ -10,12 +10,12 @@ interface NavBarLinkProps {
 export default function NavBarLink({ title, href, onClick }: NavBarLinkProps) {
   const pathname = usePathname();
 
-  const isDashboardRoot = href === "/jobsDashboard" || href === "/eventsDashboard";
+  const isDashboardRoot = href === "/jobs" || href === "/events";
   const isAdminLink = href.endsWith("/admin");
   const isUsersInSameDashboard =
     isAdminLink &&
-    ((href.startsWith("/jobsDashboard") && pathname?.startsWith("/jobsDashboard/users")) ||
-      (href.startsWith("/eventsDashboard") && pathname?.startsWith("/eventsDashboard/users")));
+    ((href.startsWith("/jobs") && pathname?.startsWith("/jobs/users")) ||
+      (href.startsWith("/events") && pathname?.startsWith("/events/users")));
   const isActive = isDashboardRoot ? pathname === href : pathname?.startsWith(href) || isUsersInSameDashboard;
 
   return (

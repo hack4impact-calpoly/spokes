@@ -14,24 +14,24 @@ export default function BottomSection() {
   const { triggerReset } = useFormReset();
   const { orgSlug, isSignedIn } = useAuth();
   const isSpokesAdmin = orgSlug === "spokes-admin";
-  const isEventsDashboard = pathname?.startsWith("/eventsDashboard");
+  const isEventsDashboard = pathname?.startsWith("/events");
   const dashboardLinks = isEventsDashboard
     ? {
-        board: { title: "Event Board", href: "/eventsDashboard/events" },
-        list: { title: "List Event", href: "/eventsDashboard/list" },
-        manage: { title: "Dashboard", href: "/eventsDashboard/manage" },
-        admin: { title: "Admin", href: "/eventsDashboard/admin" },
+        board: { title: "Event Board", href: "/events" },
+        list: { title: "List Event", href: "/events/list" },
+        manage: { title: "Dashboard", href: "/events/manage" },
+        admin: { title: "Admin", href: "/events/admin" },
       }
     : {
-        board: { title: "Job Board", href: "/jobsDashboard/jobs" },
-        list: { title: "List Job", href: "/jobsDashboard/list" },
-        manage: { title: "Dashboard", href: "/jobsDashboard/manage" },
-        admin: { title: "Admin", href: "/jobsDashboard/admin" },
+        board: { title: "Job Board", href: "/jobs" },
+        list: { title: "List Job", href: "/jobs/list" },
+        manage: { title: "Dashboard", href: "/jobs/manage" },
+        admin: { title: "Admin", href: "/jobs/admin" },
       };
 
   useEffect(() => {
     const handleScroll: EventListener = () => {
-      setShowScrollToTop(window.scrollY > 300 && pathname === "/jobsDashboard/jobs");
+      setShowScrollToTop(window.scrollY > 300 && pathname === "/jobs");
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -51,7 +51,7 @@ export default function BottomSection() {
   const handleListJobClick = () => {
     triggerReset();
     setIsMobileMenuOpen(false);
-    if (pathname === "/jobsDashboard/list") {
+    if (pathname === "/jobs/list") {
       window.location.replace(pathname);
     }
   };

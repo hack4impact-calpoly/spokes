@@ -42,7 +42,7 @@ export const OrgEventCard = forwardRef<HTMLDivElement, OrgEventCardProps>(
 
     function handleEditButton(e: React.ChangeEvent<any>) {
       e.preventDefault();
-      router.push(`/eventsDashboard/list?eventId=${event._id}`);
+      router.push(`/events/list?eventId=${event._id}`);
     }
 
     return (
