@@ -11,6 +11,8 @@ type OrganizationSelectProps = {
   placeholder?: string;
   createNewLabel?: string;
   newOrganizationPlaceholder?: string;
+  allowCreateNew?: boolean;
+  reloadKey?: number;
   bg?: string;
   border?: string;
   selectFocusStyle?: {
@@ -25,6 +27,8 @@ export default function OrganizationSelect({
   placeholder = "Select an organization",
   createNewLabel = "Create a new organization",
   newOrganizationPlaceholder = "Enter new organization name",
+  allowCreateNew = true,
+  reloadKey = 0,
   bg = "#F6F6F6",
   border,
   selectFocusStyle,
@@ -65,18 +69,42 @@ export default function OrganizationSelect({
     return () => {
       isCancelled = true;
     };
-  }, []);
+  }, [reloadKey]);
 
   useEffect(() => {
     if (!value) {
       setSelectedOrganization("");
       setNewOrganizationName("");
+      return;
     }
-  }, [value]);
+
+    const existingOrganization = organizations.find(
+      (organization) => organization.toLowerCase() === value.trim().toLowerCase(),
+    );
+
+    if (existingOrganization) {
+      setSelectedOrganization(existingOrganization);
+      setNewOrganizationName("");
+      return;
+    }
+
+    if (allowCreateNew) {
+      setSelectedOrganization(CREATE_NEW_ORGANIZATION_VALUE);
+      setNewOrganizationName(value);
+      return;
+    }
+
+    setSelectedOrganization("");
+    setNewOrganizationName("");
+  }, [allowCreateNew, organizations, value]);
 
   const organizationName = useMemo(() => {
     if (selectedOrganization !== CREATE_NEW_ORGANIZATION_VALUE) {
       return selectedOrganization;
+    }
+
+    if (!allowCreateNew) {
+      return "";
     }
 
     const trimmedName = newOrganizationName.trim();
@@ -85,7 +113,7 @@ export default function OrganizationSelect({
     );
 
     return existingOrganization ?? trimmedName;
-  }, [newOrganizationName, organizations, selectedOrganization]);
+  }, [allowCreateNew, newOrganizationName, organizations, selectedOrganization]);
 
   useEffect(() => {
     onChange(organizationName);
@@ -102,14 +130,14 @@ export default function OrganizationSelect({
         disabled={isLoadingOrganizations}
         _focus={selectFocusStyle}
       >
-        <option value={CREATE_NEW_ORGANIZATION_VALUE}>{createNewLabel}</option>
+        {allowCreateNew && <option value={CREATE_NEW_ORGANIZATION_VALUE}>{createNewLabel}</option>}
         {organizations.map((organization) => (
           <option key={organization} value={organization}>
             {organization}
           </option>
         ))}
       </Select>
-      {selectedOrganization === CREATE_NEW_ORGANIZATION_VALUE && (
+      {allowCreateNew && selectedOrganization === CREATE_NEW_ORGANIZATION_VALUE && (
         <Input
           mt={3}
           value={newOrganizationName}

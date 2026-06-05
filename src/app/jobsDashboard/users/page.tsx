@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import AdminUsersPage from "@/components/users/AdminUsersPage";
 import { getAuthWithRole } from "@/lib/auth";
 
-export default async function UsersPage() {
+export default async function JobsDashboardUsersPage() {
   const { userId, orgSlug } = await auth();
   const authWithRole = getAuthWithRole({ userId, orgSlug });
 

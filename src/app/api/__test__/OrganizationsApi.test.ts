@@ -1,11 +1,16 @@
 import Event from "@/database/eventSchema";
 import Job from "@/database/jobSchema";
 import User from "@/database/userSchema";
-import { getCanonicalOrganizationName, getExistingOrganizationNames } from "@/lib/organizations";
+import {
+  deleteOrganizationData,
+  getCanonicalOrganizationName,
+  getExistingOrganizationNames,
+} from "@/lib/organizations";
 
 jest.mock("@/database/eventSchema", () => ({
   __esModule: true,
   default: {
+    deleteMany: jest.fn(),
     distinct: jest.fn(),
   },
 }));
@@ -13,6 +18,7 @@ jest.mock("@/database/eventSchema", () => ({
 jest.mock("@/database/jobSchema", () => ({
   __esModule: true,
   default: {
+    deleteMany: jest.fn(),
     distinct: jest.fn(),
   },
 }));
@@ -20,6 +26,7 @@ jest.mock("@/database/jobSchema", () => ({
 jest.mock("@/database/userSchema", () => ({
   __esModule: true,
   default: {
+    deleteMany: jest.fn(),
     distinct: jest.fn(),
   },
 }));
@@ -55,5 +62,21 @@ describe("organization helpers", () => {
   test("getCanonicalOrganizationName preserves existing casing or returns the trimmed typed name", () => {
     expect(getCanonicalOrganizationName(" alpha org ", ["Alpha Org"])).toBe("Alpha Org");
     expect(getCanonicalOrganizationName(" New Org ", ["Alpha Org"])).toBe("New Org");
+  });
+
+  test("deleteOrganizationData deletes users, events, and jobs for the organization", async () => {
+    (User.deleteMany as jest.Mock).mockResolvedValue({ deletedCount: 2 });
+    (Event.deleteMany as jest.Mock).mockResolvedValue({ deletedCount: 3 });
+    (Job.deleteMany as jest.Mock).mockResolvedValue({ deletedCount: 4 });
+
+    await expect(deleteOrganizationData(" Alpha Org ")).resolves.toEqual({
+      usersDeleted: 2,
+      eventsDeleted: 3,
+      jobsDeleted: 4,
+    });
+
+    expect(User.deleteMany).toHaveBeenCalledWith({ organizationName: /^Alpha Org$/i });
+    expect(Event.deleteMany).toHaveBeenCalledWith({ organization: /^Alpha Org$/i });
+    expect(Job.deleteMany).toHaveBeenCalledWith({ organizationName: /^Alpha Org$/i });
   });
 });

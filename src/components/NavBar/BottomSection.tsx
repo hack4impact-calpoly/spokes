@@ -21,12 +21,14 @@ export default function BottomSection() {
         list: { title: "List Event", href: "/eventsDashboard/list" },
         manage: { title: "Dashboard", href: "/eventsDashboard/manage" },
         admin: { title: "Admin", href: "/eventsDashboard/admin" },
+        users: { title: "Users", href: "/eventsDashboard/users" },
       }
     : {
         board: { title: "Job Board", href: "/jobsDashboard/jobs" },
         list: { title: "List Job", href: "/jobsDashboard/list" },
         manage: { title: "Dashboard", href: "/jobsDashboard/manage" },
         admin: { title: "Admin", href: "/jobsDashboard/admin" },
+        users: { title: "Users", href: "/jobsDashboard/users" },
       };
 
   useEffect(() => {
@@ -88,6 +90,9 @@ export default function BottomSection() {
           )}
           {isSignedIn && isSpokesAdmin && (
             <NavBarLink title={dashboardLinks.admin.title} href={dashboardLinks.admin.href} />
+          )}
+          {isSignedIn && isSpokesAdmin && (
+            <NavBarLink title={dashboardLinks.users.title} href={dashboardLinks.users.href} />
           )}
         </div>
         {showScrollToTop && (
@@ -160,6 +165,13 @@ export default function BottomSection() {
             <NavBarLink
               title={dashboardLinks.admin.title}
               href={dashboardLinks.admin.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+          )}
+          {isSignedIn && isSpokesAdmin && (
+            <NavBarLink
+              title={dashboardLinks.users.title}
+              href={dashboardLinks.users.href}
               onClick={() => setIsMobileMenuOpen(false)}
             />
           )}

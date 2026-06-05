@@ -2,6 +2,14 @@ import Event from "@/database/eventSchema";
 import Job from "@/database/jobSchema";
 import User from "@/database/userSchema";
 
+function escapeRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export function getExactOrganizationRegex(organizationName: string) {
+  return new RegExp(`^${escapeRegex(organizationName.trim())}$`, "i");
+}
+
 export function normalizeOrganizationNames(organizationNames: unknown[]) {
   const organizationsByNormalizedName = new Map<string, string>();
 
@@ -56,4 +64,19 @@ export function getCanonicalOrganizationName(organizationName: string, existingO
 
 export async function resolveOrganizationName(organizationName: string) {
   return getCanonicalOrganizationName(organizationName, await getExistingOrganizationNames());
+}
+
+export async function deleteOrganizationData(organizationName: string) {
+  const organizationRegex = getExactOrganizationRegex(organizationName);
+  const [users, events, jobs] = await Promise.all([
+    User.deleteMany({ organizationName: organizationRegex }),
+    Event.deleteMany({ organization: organizationRegex }),
+    Job.deleteMany({ organizationName: organizationRegex }),
+  ]);
+
+  return {
+    usersDeleted: users.deletedCount ?? 0,
+    eventsDeleted: events.deletedCount ?? 0,
+    jobsDeleted: jobs.deletedCount ?? 0,
+  };
 }
