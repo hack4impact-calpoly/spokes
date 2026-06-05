@@ -1,4 +1,5 @@
 import { deleteModel, models, model, Schema } from "mongoose";
+import { EVENT_LOCATION_CITY_OPTIONS, EVENT_LOCATION_GENERAL_OPTIONS } from "@/lib/eventOptions";
 
 // The status of the event
 export enum EventStatus {
@@ -15,10 +16,21 @@ export interface IEvent {
   time: string;
   location: string;
   locationLink?: string;
+  eventLocationGeneral?: string;
+  eventLocationGeneralOther?: string;
+  eventLocationCity?: string;
+  eventLocationCityOther?: string;
   locationType: "remote" | "in-person";
   description: string;
+  majorFundraisingEvent?: boolean;
   eventLink?: string;
   organization: string;
+  publicContactEmail?: string;
+  publicContactPhoneNumber?: string;
+  submitterFirstName?: string;
+  submitterLastName?: string;
+  submitterEmail?: string;
+  submitterPhoneNumber?: string;
   eventImage?: string;
   organizationIcon?: string;
   createdByUserId: string;
@@ -38,10 +50,31 @@ const EventSchema = new Schema<IEvent>(
     time: { type: String, required: true, trim: true },
     location: { type: String, required: true, trim: true },
     locationLink: { type: String, required: false, trim: true },
+    eventLocationGeneral: {
+      type: String,
+      required: false,
+      enum: EVENT_LOCATION_GENERAL_OPTIONS,
+      trim: true,
+    },
+    eventLocationGeneralOther: { type: String, required: false, trim: true },
+    eventLocationCity: {
+      type: String,
+      required: false,
+      enum: EVENT_LOCATION_CITY_OPTIONS,
+      trim: true,
+    },
+    eventLocationCityOther: { type: String, required: false, trim: true },
     locationType: { type: String, required: true, enum: ["remote", "in-person"], trim: true },
     description: { type: String, required: true, trim: true },
+    majorFundraisingEvent: { type: Boolean, required: false },
     eventLink: { type: String, required: false, trim: true },
     organization: { type: String, required: true, trim: true },
+    publicContactEmail: { type: String, required: false, trim: true },
+    publicContactPhoneNumber: { type: String, required: false, trim: true },
+    submitterFirstName: { type: String, required: false, trim: true },
+    submitterLastName: { type: String, required: false, trim: true },
+    submitterEmail: { type: String, required: false, trim: true },
+    submitterPhoneNumber: { type: String, required: false, trim: true },
     eventImage: { type: String, required: false, trim: true },
     organizationIcon: { type: String, required: false, trim: true },
     createdByUserId: { type: String, required: true },
@@ -59,7 +92,13 @@ EventSchema.index(
   { unique: true },
 );
 
-if (models.Event && (!models.Event.schema.path("eventLink") || !models.Event.schema.path("locationLink"))) {
+if (
+  models.Event &&
+  (!models.Event.schema.path("eventLink") ||
+    !models.Event.schema.path("locationLink") ||
+    !models.Event.schema.path("eventLocationGeneral") ||
+    !models.Event.schema.path("eventLocationCity"))
+) {
   deleteModel("Event");
 }
 

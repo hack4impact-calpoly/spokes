@@ -1,19 +1,40 @@
-const requiredEventFields = ["eventName", "date", "time", "location", "locationType", "description"] as const;
+import { isEventLocationCity, isEventLocationGeneral } from "@/lib/eventOptions";
+
+const requiredEventFields = [
+  "eventName",
+  "date",
+  "time",
+  "eventLocationGeneral",
+  "eventLocationCity",
+  "location",
+  "locationType",
+  "description",
+  "publicContactEmail",
+  "publicContactPhoneNumber",
+  "submitterFirstName",
+  "submitterLastName",
+  "submitterEmail",
+  "submitterPhoneNumber",
+] as const;
 
 const mutableEventFields = [
   ...requiredEventFields,
   "eventLink",
   "locationLink",
+  "eventLocationGeneralOther",
+  "eventLocationCityOther",
   "eventImage",
   "organizationIcon",
 ] as const;
+
+const booleanEventFields = ["majorFundraisingEvent"] as const;
 
 function ensureHttps(url: string) {
   return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
 }
 
 export function sanitizeEventPayload(payload: Record<string, unknown>) {
-  const sanitized: Record<string, string> = {};
+  const sanitized: Record<string, string | boolean> = {};
 
   for (const field of mutableEventFields) {
     const value = payload[field];
@@ -23,6 +44,13 @@ export function sanitizeEventPayload(payload: Record<string, unknown>) {
       if (trimmedValue) {
         sanitized[field] = field === "eventLink" || field === "locationLink" ? ensureHttps(trimmedValue) : trimmedValue;
       }
+    }
+  }
+
+  for (const field of booleanEventFields) {
+    const value = payload[field];
+    if (typeof value === "boolean") {
+      sanitized[field] = value;
     }
   }
 
@@ -47,6 +75,32 @@ export function validateEventPayload(payload: Record<string, unknown>, options: 
 
   if (payload.locationType !== undefined && payload.locationType !== "remote" && payload.locationType !== "in-person") {
     return "locationType must be either remote or in-person.";
+  }
+
+  if (payload.eventLocationGeneral !== undefined && !isEventLocationGeneral(payload.eventLocationGeneral)) {
+    return "eventLocationGeneral must be a valid event location region.";
+  }
+
+  if (payload.eventLocationCity !== undefined && !isEventLocationCity(payload.eventLocationCity)) {
+    return "eventLocationCity must be a valid event location city.";
+  }
+
+  if (payload.eventLocationGeneral === "Other") {
+    const otherValue = payload.eventLocationGeneralOther;
+    if (typeof otherValue !== "string" || otherValue.trim().length === 0) {
+      return "eventLocationGeneralOther is required when eventLocationGeneral is Other.";
+    }
+  }
+
+  if (payload.eventLocationCity === "Other") {
+    const otherValue = payload.eventLocationCityOther;
+    if (typeof otherValue !== "string" || otherValue.trim().length === 0) {
+      return "eventLocationCityOther is required when eventLocationCity is Other.";
+    }
+  }
+
+  if (!options.partial && payload.majorFundraisingEvent !== true) {
+    return "Please confirm this is one of your organization's major fundraising events of the year.";
   }
 
   return null;

@@ -93,6 +93,9 @@ export default function AdminEventCard({ event, onUpdateEvent, innerRef }: Admin
   });
   const eventInfoLink = getEventInfoLink(event);
   const eventLocationLink = getEventLocationLink(event);
+  const eventRegion =
+    event.eventLocationGeneral === "Other" ? event.eventLocationGeneralOther : event.eventLocationGeneral;
+  const eventCity = event.eventLocationCity === "Other" ? event.eventLocationCityOther : event.eventLocationCity;
   const hasEventLinks = Boolean(eventInfoLink || eventLocationLink);
 
   return (
@@ -128,9 +131,20 @@ export default function AdminEventCard({ event, onUpdateEvent, innerRef }: Admin
         <div className="text-sm text-gray-600 mb-1">
           <span className="font-medium">Location:</span> {event.location}
         </div>
+        {(eventCity || eventRegion) && (
+          <div className="text-sm text-gray-600 mb-1">
+            <span className="font-medium">Area:</span> {[eventCity, eventRegion].filter(Boolean).join(", ")}
+          </div>
+        )}
         <div className="text-sm text-gray-600 mb-3">
           <span className="font-medium">Type:</span> {event.locationType === "in-person" ? "In-Person" : "Remote"}
         </div>
+        {(event.publicContactEmail || event.publicContactPhoneNumber) && (
+          <div className="text-sm text-gray-600 mb-3">
+            <span className="font-medium">Public Contact:</span>{" "}
+            {[event.publicContactEmail, event.publicContactPhoneNumber].filter(Boolean).join(" | ")}
+          </div>
+        )}
 
         {/* Description */}
         <p className="text-sm text-gray-700 mb-4 line-clamp-3">{event.description}</p>

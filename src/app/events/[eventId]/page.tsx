@@ -28,6 +28,9 @@ export default async function EventPage({ params }: EventPageProps) {
 
   const eventInfoLink = getEventInfoLink(event);
   const eventLocationLink = getEventLocationLink(event);
+  const eventRegion =
+    event.eventLocationGeneral === "Other" ? event.eventLocationGeneralOther : event.eventLocationGeneral;
+  const eventCity = event.eventLocationCity === "Other" ? event.eventLocationCityOther : event.eventLocationCity;
 
   return (
     <main className="page-main">
@@ -48,6 +51,17 @@ export default async function EventPage({ params }: EventPageProps) {
             <p>
               <strong>Location:</strong> {event.location}
             </p>
+            {(eventCity || eventRegion) && (
+              <p>
+                <strong>Area:</strong> {[eventCity, eventRegion].filter(Boolean).join(", ")}
+              </p>
+            )}
+            {(event.publicContactEmail || event.publicContactPhoneNumber) && (
+              <p>
+                <strong>Public Contact:</strong>{" "}
+                {[event.publicContactEmail, event.publicContactPhoneNumber].filter(Boolean).join(" | ")}
+              </p>
+            )}
           </div>
           <p className="event-detail-description">{event.description}</p>
           {(eventInfoLink || eventLocationLink) && (

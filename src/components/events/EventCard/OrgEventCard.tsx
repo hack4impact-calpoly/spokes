@@ -36,6 +36,9 @@ export const OrgEventCard = forwardRef<HTMLDivElement, OrgEventCardProps>(
       day: "numeric",
       year: "numeric",
     });
+    const eventRegion =
+      event.eventLocationGeneral === "Other" ? event.eventLocationGeneralOther : event.eventLocationGeneral;
+    const eventCity = event.eventLocationCity === "Other" ? event.eventLocationCityOther : event.eventLocationCity;
 
     function handleEditButton(e: React.ChangeEvent<any>) {
       e.preventDefault();
@@ -60,6 +63,9 @@ export const OrgEventCard = forwardRef<HTMLDivElement, OrgEventCardProps>(
           <div className="text-sm text-gray-500">
             {eventDate} · {event.time} · {event.location}
           </div>
+          {(eventCity || eventRegion) && (
+            <div className="text-sm text-gray-500">{[eventCity, eventRegion].filter(Boolean).join(", ")}</div>
+          )}
 
           <div className="w-full h-fit flex flex-col items-start gap-2 md:flex-row md:items-center">
             <div className="flex flex-row items-center justify-between w-full">

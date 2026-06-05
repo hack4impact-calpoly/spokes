@@ -83,15 +83,29 @@ export const POST = withApiAuth(
       const eventSignature = {
         createdByUserId: auth.userId,
         organization,
-        date: new Date(sanitizedEventData.date),
-        eventName: sanitizedEventData.eventName,
-        time: sanitizedEventData.time,
-        location: sanitizedEventData.location,
+        date: new Date(sanitizedEventData.date as string),
+        eventName: sanitizedEventData.eventName as string,
+        time: sanitizedEventData.time as string,
+        location: sanitizedEventData.location as string,
       };
-      const duplicateUpdateFields: Record<string, string> = {};
+      const duplicateUpdateFields: Record<string, string | boolean> = {};
       const insertEventData = { ...sanitizedEventData };
 
-      for (const field of ["eventLink", "locationLink"] as const) {
+      for (const field of [
+        "eventLink",
+        "locationLink",
+        "eventLocationGeneral",
+        "eventLocationGeneralOther",
+        "eventLocationCity",
+        "eventLocationCityOther",
+        "majorFundraisingEvent",
+        "publicContactEmail",
+        "publicContactPhoneNumber",
+        "submitterFirstName",
+        "submitterLastName",
+        "submitterEmail",
+        "submitterPhoneNumber",
+      ] as const) {
         if (sanitizedEventData[field]) {
           duplicateUpdateFields[field] = sanitizedEventData[field];
           delete insertEventData[field];
