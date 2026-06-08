@@ -641,7 +641,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
             </FormControl>
           )}
           {isSpokesAdmin && !isEditing && createForAnotherOrganization && (
-            <FormControl isRequired>
+            <FormControl isRequired className="w-full sm:max-w-md" alignSelf="flex-start">
               <FormLabel>Organization Name</FormLabel>
               <OrganizationSelect
                 value={selectedAdminOrganizationName}

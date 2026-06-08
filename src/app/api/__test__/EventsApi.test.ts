@@ -54,8 +54,19 @@ const validEventPayload = {
   date: "2026-02-27",
   time: "6:00 PM",
   location: "Innovation Hub",
+  locationLink: "https://maps.example.com/innovation-hub",
+  eventLocationGeneral: "San Luis Obispo Area",
+  eventLocationCity: "San Luis Obispo",
   locationType: "in-person",
+  majorFundraisingEvent: true,
+  eventLink: "https://example.com/community-workshop",
   description: "A useful workshop.",
+  publicContactEmail: "attendee@example.com",
+  publicContactPhoneNumber: "805-555-0101",
+  submitterFirstName: "Alex",
+  submitterLastName: "Morgan",
+  submitterEmail: "alex@example.com",
+  submitterPhoneNumber: "805-555-0102",
 };
 
 function jsonRequest(path: string, body: Record<string, unknown>) {
@@ -75,6 +86,20 @@ describe("Events API", () => {
   test("POST derives organization and ownership from the authenticated Mongo user", async () => {
     (User.findById as jest.Mock).mockResolvedValue({ organizationName: "Spokes Nonprofit" });
     (Event.findOneAndUpdate as jest.Mock).mockResolvedValue({ _id: "event-1", ...validEventPayload });
+    const {
+      eventLink,
+      locationLink,
+      eventLocationGeneral,
+      eventLocationCity,
+      majorFundraisingEvent,
+      publicContactEmail,
+      publicContactPhoneNumber,
+      submitterFirstName,
+      submitterLastName,
+      submitterEmail,
+      submitterPhoneNumber,
+      ...expectedInsertPayload
+    } = validEventPayload;
 
     const response = await POST(
       jsonRequest("/api/events", {
@@ -96,8 +121,21 @@ describe("Events API", () => {
         location: validEventPayload.location,
       },
       {
+        $set: {
+          eventLink,
+          locationLink,
+          eventLocationGeneral,
+          eventLocationCity,
+          majorFundraisingEvent,
+          publicContactEmail,
+          publicContactPhoneNumber,
+          submitterFirstName,
+          submitterLastName,
+          submitterEmail,
+          submitterPhoneNumber,
+        },
         $setOnInsert: {
-          ...validEventPayload,
+          ...expectedInsertPayload,
           organization: "Spokes Nonprofit",
           createdByUserId: "user-1",
           eventStatus: "pending",
@@ -105,7 +143,7 @@ describe("Events API", () => {
           contactEmail: "",
         },
       },
-      { new: true, upsert: true, setDefaultsOnInsert: true },
+      { new: true, upsert: true, setDefaultsOnInsert: true, strict: false },
     );
   });
 
@@ -134,12 +172,25 @@ describe("Events API", () => {
         organization: "New Member Org",
       }),
       expect.objectContaining({
+        $set: {
+          eventLink: validEventPayload.eventLink,
+          locationLink: validEventPayload.locationLink,
+          eventLocationGeneral: validEventPayload.eventLocationGeneral,
+          eventLocationCity: validEventPayload.eventLocationCity,
+          majorFundraisingEvent: validEventPayload.majorFundraisingEvent,
+          publicContactEmail: validEventPayload.publicContactEmail,
+          publicContactPhoneNumber: validEventPayload.publicContactPhoneNumber,
+          submitterFirstName: validEventPayload.submitterFirstName,
+          submitterLastName: validEventPayload.submitterLastName,
+          submitterEmail: validEventPayload.submitterEmail,
+          submitterPhoneNumber: validEventPayload.submitterPhoneNumber,
+        },
         $setOnInsert: expect.objectContaining({
           organization: "New Member Org",
           createdByUserId: "user-1",
         }),
       }),
-      { new: true, upsert: true, setDefaultsOnInsert: true },
+      { new: true, upsert: true, setDefaultsOnInsert: true, strict: false },
     );
   });
 
@@ -165,6 +216,10 @@ describe("Events API", () => {
     const response = await PUT(
       jsonRequest("/api/events/event-1", {
         eventName: "Updated Event",
+        eventLink: "https://example.com/updated-event",
+        locationLink: "https://maps.example.com/updated-event",
+        eventLocationGeneral: "North Coast",
+        eventLocationCity: "Morro Bay",
         organization: "Spoofed Org",
         createdByUserId: "attacker",
       }),
@@ -172,6 +227,16 @@ describe("Events API", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(Event.findByIdAndUpdate).toHaveBeenCalledWith("event-1", { eventName: "Updated Event" }, { new: true });
+    expect(Event.findByIdAndUpdate).toHaveBeenCalledWith(
+      "event-1",
+      {
+        eventName: "Updated Event",
+        eventLink: "https://example.com/updated-event",
+        locationLink: "https://maps.example.com/updated-event",
+        eventLocationGeneral: "North Coast",
+        eventLocationCity: "Morro Bay",
+      },
+      { new: true, strict: false },
+    );
   });
 });

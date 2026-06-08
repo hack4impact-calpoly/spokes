@@ -40,15 +40,15 @@ const Footer: React.FC = () => {
 
         <div className="flex flex-col md:flex-row items-center md:items-start justify-center md:justify-start w-full md:w-auto mt-6 md:mt-0">
           <div className="flex flex-col items-center md:items-start gap-[8px] md:gap-[10px] md:w-[135px]">
-            <Link href="/jobsDashboard/jobs" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
+            <Link href="/jobs" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
               Job Board
             </Link>
             {user && (
               <>
-                <Link href="/jobsDashboard/list" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
+                <Link href="/jobs/list" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
                   List Job
                 </Link>
-                <Link href="/jobsDashboard/manage" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
+                <Link href="/jobs/manage" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
                   Dashboard
                 </Link>
               </>

@@ -83,17 +83,41 @@ export const POST = withApiAuth(
       const eventSignature = {
         createdByUserId: auth.userId,
         organization,
-        date: new Date(sanitizedEventData.date),
-        eventName: sanitizedEventData.eventName,
-        time: sanitizedEventData.time,
-        location: sanitizedEventData.location,
+        date: new Date(sanitizedEventData.date as string),
+        eventName: sanitizedEventData.eventName as string,
+        time: sanitizedEventData.time as string,
+        location: sanitizedEventData.location as string,
       };
+      const duplicateUpdateFields: Record<string, string | boolean> = {};
+      const insertEventData = { ...sanitizedEventData };
+
+      for (const field of [
+        "eventLink",
+        "locationLink",
+        "eventLocationGeneral",
+        "eventLocationGeneralOther",
+        "eventLocationCity",
+        "eventLocationCityOther",
+        "majorFundraisingEvent",
+        "publicContactEmail",
+        "publicContactPhoneNumber",
+        "submitterFirstName",
+        "submitterLastName",
+        "submitterEmail",
+        "submitterPhoneNumber",
+      ] as const) {
+        if (sanitizedEventData[field]) {
+          duplicateUpdateFields[field] = sanitizedEventData[field];
+          delete insertEventData[field];
+        }
+      }
 
       const newEvent = await Event.findOneAndUpdate(
         eventSignature,
         {
+          ...(Object.keys(duplicateUpdateFields).length > 0 ? { $set: duplicateUpdateFields } : {}),
           $setOnInsert: {
-            ...sanitizedEventData,
+            ...insertEventData,
             organization,
             createdByUserId: auth.userId,
             eventStatus: "pending",
@@ -101,7 +125,7 @@ export const POST = withApiAuth(
             contactEmail: mongoUser.email || "",
           },
         },
-        { new: true, upsert: true, setDefaultsOnInsert: true },
+        { new: true, upsert: true, setDefaultsOnInsert: true, strict: false },
       );
 
       return NextResponse.json({ message: "Event created successfully", event: newEvent }, { status: 201 });

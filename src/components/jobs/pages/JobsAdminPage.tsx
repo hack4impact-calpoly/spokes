@@ -228,7 +228,7 @@ export default function AdminJobs() {
             <div className="flex justify-between">
               <h1 className="font-semibold text-xl sm:text-2xl md:text-3xl">Pending Jobs</h1>
               <Link
-                href="/admin/users"
+                href="/jobs/users"
                 className="px-4 py-2 bg-[#045F87] text-white rounded-md hover:bg-[#034A6B] transition-colors flex items-center gap-2"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

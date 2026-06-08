@@ -86,7 +86,7 @@ export const PUT = withApiAuth(
         return NextResponse.json({ message: "No valid event fields provided" }, { status: 400 });
       }
 
-      const updatedEvent = await Event.findByIdAndUpdate(eventId, sanitizedEventData, { new: true });
+      const updatedEvent = await Event.findByIdAndUpdate(eventId, sanitizedEventData, { new: true, strict: false });
       return NextResponse.json({ message: "Event updated successfully", event: updatedEvent });
     } catch (error) {
       return NextResponse.json({ message: "Error updating event", error }, { status: 500 });

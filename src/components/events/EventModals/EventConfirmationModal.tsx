@@ -46,7 +46,7 @@ export default function EventConfirmationModal({ isOpen, onClose }: EventConfirm
                 Create New Event
               </Button>
               <Button
-                onClick={() => router.push("/eventsDashboard/manage")}
+                onClick={() => router.push("/events/manage")}
                 className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800"
               >
                 View Dashboard

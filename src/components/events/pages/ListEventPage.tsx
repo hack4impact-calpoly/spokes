@@ -11,7 +11,9 @@ import {
   FormLabel,
   Heading,
   Input,
+  Select,
   Stack,
+  Textarea,
   useRadioGroup,
   VStack,
   Spinner,
@@ -22,6 +24,17 @@ import { IEvent } from "@/database/eventSchema";
 import EventConfirmationModal from "@/components/events/EventModals/EventConfirmationModal";
 import EventFailModal from "@/components/events/EventModals/EventFailModal";
 import OrganizationSelect from "@/components/ui/OrganizationSelect";
+import { getEventInfoLink, getEventLocationLink } from "@/lib/eventLinks";
+import {
+  EVENT_LOCATION_CITY_OPTIONS,
+  EVENT_LOCATION_GENERAL_DESCRIPTIONS,
+  EVENT_LOCATION_GENERAL_OPTIONS,
+} from "@/lib/eventOptions";
+
+const ensureHttps = (url: string | undefined): string | undefined => {
+  if (!url) return url;
+  return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
+};
 
 function EventFormContent() {
   const router = useRouter();
@@ -33,11 +46,16 @@ function EventFormContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingEvent, setIsLoadingEvent] = useState(false);
   const [eventData, setEventData] = useState<IEvent | null>(null);
+  const [majorFundraisingEvent, setMajorFundraisingEvent] = useState(false);
+  const [eventLocationGeneral, setEventLocationGeneral] = useState("");
+  const [eventLocationCity, setEventLocationCity] = useState("");
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isFailModalOpen, setIsFailModalOpen] = useState(false);
   const [createForAnotherOrganization, setCreateForAnotherOrganization] = useState(false);
   const [selectedAdminOrganizationName, setSelectedAdminOrganizationName] = useState("");
   const eventId = searchParams.get("eventId");
+  const eventInfoLink = getEventInfoLink(eventData);
+  const eventLocationLink = getEventLocationLink(eventData);
 
   const locationTypeColorMapping = {
     Remote: "#F8B1B8",
@@ -63,6 +81,9 @@ function EventFormContent() {
         const data = await response.json();
         setEventData(data);
         setLocationType(data.locationType);
+        setMajorFundraisingEvent(data.majorFundraisingEvent === true);
+        setEventLocationGeneral(data.eventLocationGeneral ?? "");
+        setEventLocationCity(data.eventLocationCity ?? "");
       } catch (error) {
         console.error("Error fetching event:", error);
       } finally {
@@ -98,11 +119,28 @@ function EventFormContent() {
       date: formData.get("date") as string,
       time: formData.get("time") as string,
       description: formData.get("description") as string,
+      majorFundraisingEvent,
+      eventLocationGeneral: formData.get("eventLocationGeneral") as string,
+      eventLocationGeneralOther: formData.get("eventLocationGeneralOther") as string,
+      eventLocationCity: formData.get("eventLocationCity") as string,
+      eventLocationCityOther: formData.get("eventLocationCityOther") as string,
       location: formData.get("location") as string,
+      locationLink: ensureHttps((formData.get("locationLink") as string)?.trim()) || "",
       locationType: formData.get("locationType") as string,
+      eventLink: ensureHttps((formData.get("eventLink") as string)?.trim()) || "",
+      publicContactEmail: formData.get("publicContactEmail") as string,
+      publicContactPhoneNumber: formData.get("publicContactPhoneNumber") as string,
+      submitterFirstName: formData.get("submitterFirstName") as string,
+      submitterLastName: formData.get("submitterLastName") as string,
+      submitterEmail: formData.get("submitterEmail") as string,
+      submitterPhoneNumber: formData.get("submitterPhoneNumber") as string,
     };
 
     try {
+      if (!majorFundraisingEvent) {
+        throw new Error("Please confirm this is one of your organization's major fundraising events of the year.");
+      }
+
       if (isSpokesAdmin && !eventId && createForAnotherOrganization && !selectedAdminOrganizationName) {
         throw new Error("Please select or enter an organization.");
       }
@@ -173,8 +211,21 @@ function EventFormContent() {
         <div className="mt-2 mb-2 text-black text-3xl font-semibold">{eventId ? "Edit Event" : "Create New Event"}</div>
 
         <Heading as="h2" size="md" mb={5}>
-          Event Information
+          Major Event Listing & Promotion
         </Heading>
+
+        <div className="mb-6 flex flex-col gap-3 rounded-md border border-[#E2E8F0] bg-[#F7F7F7] p-4 text-sm leading-relaxed text-gray-700">
+          <p>
+            With support from West Coast Community Bank, Spokes publishes a listing of nonprofit major fundraising
+            events and makes it available on the Spokes website. The primary goal is to serve as a point of reference to
+            help organizations avoid scheduling events that conflict with one another.
+          </p>
+          <p>
+            Unlike a general community calendar, this listing is reserved specifically for your organization&apos;s{" "}
+            <strong>major fundraising events</strong> such as an annual gala, walk-a-thon, festival, or signature
+            luncheon and does not include seminars, mixers, classes, or smaller gatherings.
+          </p>
+        </div>
 
         {serverError && (
           <div className="mb-4 bg-red-50 p-3 text-sm text-red-700 border border-red-200">{serverError}</div>
@@ -200,7 +251,7 @@ function EventFormContent() {
             )}
 
             {isSpokesAdmin && !eventId && createForAnotherOrganization && (
-              <FormControl isRequired>
+              <FormControl isRequired className="w-full sm:max-w-md" alignSelf="flex-start">
                 <FormLabel>Organization Name</FormLabel>
                 <OrganizationSelect
                   value={selectedAdminOrganizationName}
@@ -226,7 +277,17 @@ function EventFormContent() {
             </FormControl>
 
             <FormControl isRequired>
+              <Checkbox isChecked={majorFundraisingEvent} onChange={(e) => setMajorFundraisingEvent(e.target.checked)}>
+                I confirm that this event is one of our organization&apos;s <strong>major fundraising events</strong> of
+                the year.
+              </Checkbox>
+            </FormControl>
+
+            <FormControl isRequired>
               <FormLabel>Event Date</FormLabel>
+              <p className="mb-2 text-sm text-gray-600">
+                Events should be scheduled a minimum of three months out. The more advance notice, the better.
+              </p>
               <Stack w="full" direction={{ base: "column", md: "row" }} spacing={4}>
                 <Input
                   id="date"
@@ -252,27 +313,136 @@ function EventFormContent() {
 
             <FormControl isRequired>
               <FormLabel>Event Description</FormLabel>
-              <Input
+              <p className="mb-2 text-sm text-gray-600">
+                Please provide a brief description of your event, including its purpose, target audience, and what
+                attendees can expect. <strong>Do not include venue, date, or time information here</strong>, as those
+                details are collected in separate fields.
+              </p>
+              <Textarea
                 id="description"
                 name="description"
-                type="text"
                 placeholder="Enter event description"
                 defaultValue={eventData?.description ?? ""}
+                required
+                bg="#F6F6F6"
+                border="0"
+                minH="140px"
+              />
+            </FormControl>
+
+            <FormControl isRequired className="w-full sm:max-w-md" alignSelf="flex-start">
+              <FormLabel>Event Location (General)</FormLabel>
+              <p className="mb-2 text-sm text-gray-600">The region in which the event will take place.</p>
+              <Select
+                id="eventLocationGeneral"
+                name="eventLocationGeneral"
+                value={eventLocationGeneral}
+                onChange={(e) => setEventLocationGeneral(e.target.value)}
+                placeholder="Select region"
+                required
+                bg="#F6F6F6"
+                border="0"
+              >
+                {EVENT_LOCATION_GENERAL_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option === "Other" ? option : `${option}: ${EVENT_LOCATION_GENERAL_DESCRIPTIONS[option]}`}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+
+            {eventLocationGeneral === "Other" && (
+              <FormControl isRequired className="w-full sm:max-w-md" alignSelf="flex-start">
+                <FormLabel>Other Region</FormLabel>
+                <Input
+                  id="eventLocationGeneralOther"
+                  name="eventLocationGeneralOther"
+                  type="text"
+                  placeholder="Enter event region"
+                  defaultValue={eventData?.eventLocationGeneralOther ?? ""}
+                  required
+                  bg="#F6F6F6"
+                  border="0"
+                />
+              </FormControl>
+            )}
+
+            <FormControl isRequired className="w-full sm:max-w-md" alignSelf="flex-start">
+              <FormLabel>Event Location (City)</FormLabel>
+              <p className="mb-2 text-sm text-gray-600">The city in which the event will take place.</p>
+              <Select
+                id="eventLocationCity"
+                name="eventLocationCity"
+                value={eventLocationCity}
+                onChange={(e) => setEventLocationCity(e.target.value)}
+                placeholder="Select city"
+                required
+                bg="#F6F6F6"
+                border="0"
+              >
+                {EVENT_LOCATION_CITY_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+
+            {eventLocationCity === "Other" && (
+              <FormControl isRequired className="w-full sm:max-w-md" alignSelf="flex-start">
+                <FormLabel>Other City</FormLabel>
+                <Input
+                  id="eventLocationCityOther"
+                  name="eventLocationCityOther"
+                  type="text"
+                  placeholder="Enter event city"
+                  defaultValue={eventData?.eventLocationCityOther ?? ""}
+                  required
+                  bg="#F6F6F6"
+                  border="0"
+                />
+              </FormControl>
+            )}
+
+            <FormControl isRequired>
+              <FormLabel>Event Venue</FormLabel>
+              <p className="mb-2 text-sm text-gray-600">
+                Ex. Octagon Barn, La Lomita Ranch, Morro Bay Community Center.
+              </p>
+              <Input
+                id="location"
+                name="location"
+                type="text"
+                placeholder="Enter venue"
+                defaultValue={eventData?.location ?? ""}
                 required
                 bg="#F6F6F6"
                 border="0"
               />
             </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel>Event Location</FormLabel>
+            <FormControl>
+              <FormLabel>Location or Meeting Link</FormLabel>
               <Input
-                id="location"
-                name="location"
+                id="locationLink"
+                name="locationLink"
                 type="text"
-                placeholder="Enter location"
-                defaultValue={eventData?.location ?? ""}
-                required
+                placeholder="Google Maps or remote meeting link"
+                defaultValue={eventLocationLink ?? ""}
+                bg="#F6F6F6"
+                border="0"
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Event Info Link</FormLabel>
+              <p className="mb-2 text-sm text-gray-600">To be published if available.</p>
+              <Input
+                id="eventLink"
+                name="eventLink"
+                type="text"
+                placeholder="Registration page or general event info"
+                defaultValue={eventInfoLink ?? ""}
                 bg="#F6F6F6"
                 border="0"
               />
@@ -298,12 +468,114 @@ function EventFormContent() {
               </Stack>
             </FormControl>
 
+            <FormControl isRequired>
+              <FormLabel>Public Contact Email</FormLabel>
+              <p className="mb-2 text-sm text-gray-600">
+                Email address for attendee inquiries. This may appear on your event listing.
+              </p>
+              <Input
+                id="publicContactEmail"
+                name="publicContactEmail"
+                type="email"
+                placeholder="Enter public contact email"
+                defaultValue={eventData?.publicContactEmail ?? ""}
+                required
+                bg="#F6F6F6"
+                border="0"
+              />
+            </FormControl>
+
+            <FormControl isRequired>
+              <FormLabel>Public Phone Number</FormLabel>
+              <p className="mb-2 text-sm text-gray-600">
+                Phone number for attendee inquiries. This may appear on your event listing.
+              </p>
+              <Input
+                id="publicContactPhoneNumber"
+                name="publicContactPhoneNumber"
+                type="tel"
+                placeholder="Enter public phone number"
+                defaultValue={eventData?.publicContactPhoneNumber ?? ""}
+                required
+                bg="#F6F6F6"
+                border="0"
+              />
+            </FormControl>
+
+            <Stack w="full" direction={{ base: "column", md: "row" }} spacing={4}>
+              <FormControl isRequired>
+                <FormLabel>Your First Name</FormLabel>
+                <Input
+                  id="submitterFirstName"
+                  name="submitterFirstName"
+                  type="text"
+                  placeholder="Enter your first name"
+                  defaultValue={eventData?.submitterFirstName ?? ""}
+                  required
+                  bg="#F6F6F6"
+                  border="0"
+                />
+              </FormControl>
+
+              <FormControl isRequired>
+                <FormLabel>Your Last Name</FormLabel>
+                <Input
+                  id="submitterLastName"
+                  name="submitterLastName"
+                  type="text"
+                  placeholder="Enter your last name"
+                  defaultValue={eventData?.submitterLastName ?? ""}
+                  required
+                  bg="#F6F6F6"
+                  border="0"
+                />
+              </FormControl>
+            </Stack>
+
+            <FormControl isRequired>
+              <FormLabel>Your Email</FormLabel>
+              <p className="mb-2 text-sm text-gray-600">
+                For questions about this submission only. This will not be displayed publicly.
+              </p>
+              <Input
+                id="submitterEmail"
+                name="submitterEmail"
+                type="email"
+                placeholder="Enter your email"
+                defaultValue={eventData?.submitterEmail ?? eventData?.contactEmail ?? ""}
+                required
+                bg="#F6F6F6"
+                border="0"
+              />
+            </FormControl>
+
+            <FormControl isRequired>
+              <FormLabel>Your Phone Number</FormLabel>
+              <p className="mb-2 text-sm text-gray-600">
+                For questions about this submission only. This will not be displayed publicly.
+              </p>
+              <Input
+                id="submitterPhoneNumber"
+                name="submitterPhoneNumber"
+                type="tel"
+                placeholder="Enter your phone number"
+                defaultValue={eventData?.submitterPhoneNumber ?? ""}
+                required
+                bg="#F6F6F6"
+                border="0"
+              />
+            </FormControl>
+
+            <div className="w-full rounded-md border border-[#E2E8F0] bg-[#F7F7F7] p-4 text-sm text-gray-700">
+              Thank you to West Coast Community Bank for support of this project.
+            </div>
+
             <div className="mt-8 flex justify-center">
               <Button
                 type="submit"
                 isLoading={isSubmitting}
                 loadingText={eventId ? "Updating..." : "Submitting..."}
-                disabled={isSubmitting}
+                disabled={isSubmitting || !majorFundraisingEvent}
                 size="lg"
                 colorScheme="blackAlpha"
                 bg="#045F87"
