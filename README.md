@@ -17,7 +17,7 @@ Spoke's has a mission to guide nonprofits to achieve their goals through support
 
 ### Team
 
-The Spokes team consists of 16 Cal Poly students. Over the course of about 9 months, we worked as a team to deploy this web application. The team members are listed below:
+The V1 Spokes team consists of 16 Cal Poly students. Over the course of about 9 months, they worked as a team to deploy the first version of this web application. The team members are listed below:
 
 - [James Tran](https://www.linkedin.com/in/jameskhaihoantran/) - Project Manager
 - [Jessica Yu](https://www.linkedin.com/in/jessicayuhope/) - Designer
@@ -35,6 +35,11 @@ The Spokes team consists of 16 Cal Poly students. Over the course of about 9 mon
 - [Khoa Nguyen](https://www.linkedin.com/in/khoanguyen07/) - Software Developer
 - [Vishnu Alachi](https://www.linkedin.com/in/vishnu-alachi/) - Software Developer
 - [Khushdip Singh](https://www.linkedin.com/in/deep-singh14/) - Software Developer
+
+The V2 Spokes team consists of 16 Cal Poly students. Over the course of about 9 months, they worked as a team to deploy the second version of this web application. The team members are listed below:
+
+- [Khushdip Singh](https://www.linkedin.com/in/deep-singh14/) - Technical Lead
+- [Khoa Nguyen](https://www.linkedin.com/in/khoanguyen07/) - Software Developer
 
 ## Getting Started And Contributing
 

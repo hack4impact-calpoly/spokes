@@ -8,13 +8,14 @@ import { Button, Tooltip, Box } from "@chakra-ui/react";
 import { UserButton, OrganizationSwitcher, useSession } from "@clerk/nextjs";
 import { useOrganizationList } from "@clerk/nextjs";
 
-const SPOKES_SITE_URL = "https://www.spokesfornonprofits.org/what-do-we-do/";
+const SPOKES_SITE_URL = "https://www.spokesfornonprofits.org/";
 
 interface TopSectionProps {
   user: UserResource | null | undefined;
+  hideControls?: boolean;
 }
 
-export default function TopSection({ user }: TopSectionProps) {
+export default function TopSection({ user, hideControls = false }: TopSectionProps) {
   const { session } = useSession();
   const pathname = usePathname();
   const onboardingComplete = session?.user?.publicMetadata?.onboardingComplete === true;
@@ -34,7 +35,7 @@ export default function TopSection({ user }: TopSectionProps) {
             height={500}
           />
         </Link>
-        {user ? (
+        {hideControls ? null : user ? (
           <SignedInControls onboardingComplete={onboardingComplete} afterSignOutUrl={afterSignOutUrl} />
         ) : (
           <Link href={loginUrl}>
