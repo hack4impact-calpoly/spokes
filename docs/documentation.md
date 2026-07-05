@@ -1,309 +1,498 @@
-# Automated Job Board Documentation (Developer Notes)
-
-This guide outlines the core features and components of the Automated Job Board. It covers the API endpoints, UI components, authentication, database structure, and additional utilities used throughout the application. Use this document as a reference when working on or extending the project.
-
----
-
-## Table of Contents
-
-- [Job Board](#job-board)
-  - [API Endpoints](#api-endpoints)
-  - [Recently Viewed Jobs](#recently-viewed-jobs)
-  - [UI Components](#ui-components)
-    - [Job Cards](#job-cards)
-    - [Recently Viewed](#recently-viewed)
-    - [Filters](#filters)
-    - [JobGrid & Loader](#jobgrid--loader)
-    - [Job Confirmation Modal](#job-confirmation-modal)
-    - [Main Jobs Component (Job Board View)](#main-jobs-component-job-board-view)
-    - [Radio Card](#radio-card)
-- [List a Job Form](#list-a-job-form)
-- [Nav Bar](#nav-bar)
-  - [Top Section](#top-section)
-  - [Bottom Section](#bottom-section)
-  - [Navigation Buttons](#navigation-buttons)
-- [Nonprofit Admin Dashboard](#nonprofit-admin-dashboard)
-- [Spokes Staff View](#spokes-staff-view)
-  - [Incoming Applications](#incoming-applications)
-  - [Live & Complete Applications](#live--complete-applications)
-  - [Admin Account Management](#admin-account-management)
-- [Users View](#users-page-admin-dashboard)
-- [User Authentication](#user-authentication)
-- [Database](#database)
-- [Additional Developer Notes](#additional-developer-notes)
-
----
-
-## Job Board
-
-The Job Board is the main hub for job seekers. It consists of API endpoints to manage job data and a set of UI components to display, filter, and interact with jobs.
-
-### API Endpoints
-
-- **DELETE Job**
-
-  - **What it does:**  
-    Validates a job ID and deletes the corresponding job using `Job.findByIdAndDelete()`.
-  - **Dev Note:**  
-    Ensure robust error handling, enhanced logging, and proper handling for missing or invalid IDs.
-
-- **POST Recent Jobs**
-
-  - **What it does:**  
-    Accepts an array of job IDs (from local storage), converts them to `ObjectId`, and retrieves the matching job documents.
-  - **Dev Note:**  
-    Validate that the IDs are correctly stored in local storage and handle any conversion errors.
-
-- **CRUD Endpoints (GET / POST / PUT)**
-  - **GET:**  
-    Fetches all jobs sorted by `postDate` (newest first)
-  - **POST (Create Job):**  
-    Creates a new job entry in the database.
-  - **PUT (Update Job):**  
-    Updates an existing job using `findByIdAndUpdate()` with `.orFail()` for error checking.
-  - **Dev Note:**
-    - Validate payloads rigorously and consider pagination for GET requests when the dataset grows.
-    - Caching currently exists in GET. current setting: keep response fresh for 60s, then serve stale data for up to 30s while revalidating in the background
-    - GET route is paginated to allow for infinite scrolling on Job Board page
-
-### Recently Viewed Jobs
-
-- **What it does:**
-  - Fetches jobs from `/jobs/recent` using local storage data when tab is switched to 'Recently Viewed'.
-  - When any button on the job card is clicked, jobs are inserted locally into the recently viewed jobs array and that Job ID is stored in local storage.
-- **Dev Note:**  
-  This section of the job board is believed to be finished and optimized. Recently viewed jobs are only fetched onced and then updated locally.
-
-### UI Components
-
-#### Job Cards
-
-- **JobCardInformation:**
-  - **What it does:** Displays the job title, organization, industry, and a truncated description.
-- **JobBadge & JobStatusBadge:**
-  - **What they do:** Map job types and statuses to specific colors using helper functions.
-- **JobPostedDate:**
-  - **What it does:** Calculates and displays how long ago a job was posted (e.g., "5 minutes ago"), with basic error handling for invalid dates.
-- **JobCard:**
-  - **What it does:** Combines job information, badges, and action buttons ("See More", "Apply Now").
-  - **Dev Note:**  
-    Both action buttons (See More & Apply Now) currently add the job to the “recently viewed” list stored in local storage.
-
-#### Recently Viewed
-
-- **What it does:**  
-  Maintains a list of job IDs in local storage to quickly fetch and display jobs the user has interacted with (By clicking See More or Apply Now buttons).
-- **Dev Note:**  
-  Ensure consistency in how job IDs are stored and managed.
-
-#### Filters
-
-- **FilterCard:**
-  - **What it does:**  
-    Provides checkboxes to filter jobs by employment type (e.g., Full-time, Part-time), compensation (e.g., Paid, Volunteer), and industry (e.g., Arts, Education).  
-    Uses internal state to manage selections and passes changes via an `onFilterChange` callback.
-  - **Dev Note:**  
-    Consolidate duplicate implementations to avoid confusion.
-
-#### JobGrid & Loader
-
-- **JobGrid:**
-  - **What it does:**  
-    Displays a grid of job cards (or admin cards if in admin mode).  
-    Handles empty states by displaying a fallback message ("No Jobs Found").
-  - **Dev Note:**  
-    Ensure that the component gracefully handles changes in data and role-based rendering.
-- **Loader:**
-  - **What it does:**  
-    Displays a spinner with an optional label while data is loading.
-  - **Dev Note:**  
-    Use consistent spinner sizes and styles across components.
+# Spokes Job and Event Boards Documentation
 
-#### Job Confirmation Modal
-
-- **What it does:**  
-  Uses Chakra UI to display a modal confirming that a job listing has been successfully submitted.
-  Displays an visable error nessage if a posting was unsuccessful.
-- **Dev Note:**  
-  Ensure the modal content remains aligned with backend approval workflows.
-
-#### Main Jobs Component (Job Board View)
-
-- **What it does:**
-  - Fetches job data from `/api/jobs` when mounted.
-  - Supports two tabs: "All Jobs" and "Recently Viewed" (which triggers a refresh of recent jobs).
-  - Applies filters (employment and compensation) to the job lists.
-- **Dev Note:**  
-  Optimize data fetching (e.g., debounce filter updates) for better performance.
+This document is the current developer and maintainer reference for the Spokes web application. For a non-technical owner handoff guide, see [owner-user-guide.md](owner-user-guide.md).
 
-#### Radio Card
+The application is a Next.js app with two public boards:
 
-- **What it does:**
-  Uses Chakra UI to display custom radio buttons for the member status and job type in the job form.
+- Jobs at `/jobs`
+- Events at `/events`
 
-#### Job Card Modal (Admin Dashboard View)
+Authenticated nonprofit users can submit and manage their own listings. Spokes admins can approve or reject submissions, manage users, and delete users or organizations.
 
-- **What it does:**  
-  Displays a modal to confirm proposed action (rejection, approval, or renewal) on a job application as an Admin. If the job was rejected displays a text box to enter a reason for rejection and sends an email to the person of contact notifying them of the rejection.
-- **Dev Note:**  
-  Uses Chakra UI modals for confirmation dialogs. The component accepts `isOpen`, `onClose`, `onConfirm`, and `action` props, where action can be "approve", "reject", or "renew". The modal automatically adjusts text based on the action type. Uses consistent button styling with hover effects (green for confirm, red for cancel).
+## Tech Stack
 
----
+- Framework: Next.js App Router
+- UI: React, Tailwind CSS, Chakra UI
+- Authentication: Clerk
+- Database: MongoDB through Mongoose
+- Email: Resend
+- Tests: Jest
+- Package scripts: `npm run lint`, `npm test`, `npm run build`
 
-## List a Job Form
+## Important Directories
 
-- **What it does:**  
-  Provides a form for users to create new job listings. It includes fields for:
-  - Organization name and industry
-  - Job title
-  - Member status with Spokes
-  - Employment/compensation type (with button selections for Paid, Not Paid, Volunteer, Part-time, Full-time)
-  - Posting and expiration dates (not implemented yet)
-  - Job description and URL
-  - Personal information (name, phone number, email)
-- **Dev Note:**
-  - Enhance form validation and error messaging to ensure data integrity. This form interacts with the POST `/api/jobs` endpoint.
-  - Due to caching (60 second periods) newly edited jobs or recently deleted jobs may not be updated in view immediately.
+- `src/app`: Next.js routes and API route handlers
+- `src/components/jobs`: Job board, job form, job cards, and job admin UI
+- `src/components/events`: Event board, event form, event cards, and event admin UI
+- `src/components/users`: Admin user-management UI
+- `src/components/Onboarding`: First-time profile setup
+- `src/database`: Mongoose schemas and database connection
+- `src/lib`: Shared auth, validation, links, organization, URL, and formatting helpers
+- `src/types`: Shared TypeScript types
+- `docs/owner-user-guide.md`: Non-technical owner guide
 
----
+## Current Routes
 
-## Nav Bar
+### Public and User-Facing Pages
 
-The Nav Bar is split into two sections (Top and Bottom) and provides navigation links across the application.
+- `/jobs`: public job board
+- `/events`: public event board
+- `/jobs/list`: create or edit a job
+- `/events/list`: create or edit an event
+- `/jobs/manage`: nonprofit job dashboard
+- `/events/manage`: nonprofit event dashboard
+- `/events/[eventId]`: public event detail page
+- `/onboarding`: first-time user profile setup
+- `/sign-in`, `/sign-up`, `/jobsLogin`, `/eventsLogin`: Clerk sign-in/sign-up flows
 
-### Top Section
+### Admin Pages
 
-- **What it does:**  
-  Displays the company logo, clerk user button, and clerk org switcher.
-  If a user is logged in (using Clerk), it shows the user button and org switcher, otherwise sign in button.
-- **Dev Note:**  
-  Use Chakra UI modals for sign-out confirmation and keep authentication flows up to date with Clerk changes.
+- `/jobs/admin`: admin job review dashboard
+- `/events/admin`: admin event review dashboard
+- `/jobs/users`: admin user-management page, with a back link to jobs admin
+- `/events/users`: admin user-management page, with a back link to events admin
+- `/admin/users`: standalone admin user page
 
-### Bottom Section
+### Not Found Page
 
-- **What it does:**  
-  Displays navigation links for "Job Board", "List Job", and (if the user is an admin) "Spokes Dashboard".  
-  Implements a "Scroll to Top" button that appears when the user scrolls down on the job board. Uses a hamburger selector for
-  mobile view so that more tabs can be accommodated,
-- **Dev Note:**  
-  Uses a custom hook (`useScrollDirection`) to determine scroll behavior. Adjust responsiveness and scrolling thresholds as needed.
-  The spokes dashboard is always displayed for now, will need to add logic later for only spokes admin
+`src/app/not-found.tsx` renders the 404 page. It is intentionally board-neutral and offers links to both `/jobs` and `/events`. While the 404 page is mounted, the global navbar hides board-specific navigation and login/user controls.
 
-### Navigation Buttons
+## Authentication and Roles
 
-- **What it does:**  
-  Links in both the Top and Bottom sections conditionally render based on user roles and active paths.
-- **Dev Note:**  
-  Update conditional logic if user roles or access policies change.
+Auth helpers live in `src/lib/auth.ts`.
 
----
+Roles are derived from Clerk auth state:
 
-## Nonprofit Admin Dashboard
-
-- **What it does:**  
-  Provides a dedicated interface for nonprofits to manage job postings, including editing and monitoring job listings.
-- **Dev Note:**  
-  Ensure role-based access is enforced and that metrics/monitoring tools are kept secure and accurate. (Implementation details may be expanded as features are developed.)
-
----
+- `job_seeker`: unauthenticated visitor
+- `nonprofit`: authenticated user not in the Spokes admin organization
+- `spokes_admin`: authenticated user whose Clerk organization slug is `spokes-admin`
 
-## Users Page Admin Dashboard
-
-- **What it does:**  
-  Displays a list of all users in a table format for admin review and management.  
-  Allows admins to:
-
-  - View user details (name, email, organization, member status)
-  - Toggle a user's admin/member status using a switch (UI only; database update not yet implemented)
-  - Filter and search users (UI elements present; functionality to be implemented)
-  - Download user data (button present; functionality to be implemented)
-
-- **Dev Notes:**
-  - The page fetches user data from `/api/users` on mount.
-  - Toggling the member status switch updates the UI state but does **not** persist changes to the database yet.
-  - Search and filter features are placeholders for future development.
-  - Ensure only authorized admins can access this page.
-  - Update this section as backend integration and features are completed.
-
----
-
-## Spokes Staff View
-
-This view is designed for your client’s internal team and handles the review and management of job applications.
-
-### Incoming Applications
-
-- **What it does:**  
-  Uses a carousel (`ChakraCarousel`) to display incoming job applications (jobs with a "pending" status) via `AdminJobCard` components.
-- **Dev Note:**  
-  The helper function `filterJobs` is used to filter jobs by status. Ensure that the carousel is responsive and handles dynamic data updates.
-
-### Job Details
-
-- **What it does**
-  Displays information on job details and analytics for Spokes admin.
-- **Dev Note:**
-  Clicking edit is the same as clicking the edit icon in the admin dashboard. The page is currently using mock data.
-
-### Live & Complete Applications
-
-- **What it does:**  
-  Displays live (approved) and complete (rejected) applications in a grid format using the `JobGrid` component.  
-  Users can toggle between "Live Applications" and "Complete Applications" using tab controls.
-- **Dev Note:**  
-  The tab state controls which set of jobs is displayed. Optimize the toggling and data fetching for better user experience.
-
-### Admin Account Management
-
-- **What it does:**  
-  (Not fully implemented in the current code.)  
-  Intended to provide tools for managing admin accounts.
-- **Dev Note:**  
-  Plan to integrate robust security measures and proper role assignment when this functionality is developed.
-
----
-
-## User Authentication
-
-- **What it does:**  
-  Provides sign-in and sign-up pages using Clerk.  
-  Components such as `<SignIn />` and `<SignUp />` from `@clerk/nextjs` are wrapped in Chakra UI’s `Center` for styling.
-  After Sign up `middleware.ts` will automatically make a POST request that adds Clerk's user id and user data to our MongoDB user database if it is their first log in.
-- **Dev Note:**  
-  Ensure that authentication flows and user session management are maintained with Clerk’s updates.
-
----
-
-## Database
-
-- **What it does:**  
-  Uses MongoDB (via Mongoose) to store job and admin data.
-- **Job Schema:**  
-  Defines job properties such as organization, title, posting and expiration dates, description, employment type, compensation type, job status, and URL. Enumerated types ensure data consistency.
-- **Admin Schema:**  
-  Defines basic admin details (name, email, password).
-- **Connection:**  
-  The `connectDB` function ensures a singleton connection to the MongoDB instance.
-- **Dev Note:**  
-  Validate schema definitions when extending functionality. Ensure that the database connection logic handles reconnections gracefully.
-
----
-
-## Additional Developer Notes
-
-- **Error Handling & Logging:**  
-  Implement robust error handling across all API endpoints. Consider integrating an error-tracking solution.
-- **Consistency & Refactoring:**  
-  Remove duplicate components (e.g., multiple FilterCard implementations) and enforce consistent naming conventions.
-- **Testing & Validation:**  
-  Add unit and integration tests for API endpoints and UI components.
-- **Performance:**  
-  Consider caching strategies, debouncing of filter updates, and pagination when working with large datasets.
-- **Styling:**  
-  The project uses a combination of Tailwind CSS, Chakra UI, and custom styling. Maintain consistency when updating themes or component styles.
-- **Documentation:**  
-  Keep this document updated with any significant code changes to maintain clarity for new developers and future maintainers.
-
----
-
-_This document is a living guide for developers working on the Automated Job Board. Please update it as new features are added or modifications are made._
+Most API routes use `withApiAuth`, which accepts:
+
+- `requireAuth: true | false`
+- `allowedRoles: [...]`
+
+Admin-only UI pages also check the role server-side before rendering.
+
+### Middleware Note
+
+`src/middleware.ts` handles onboarding redirects and some route protection. It still contains legacy route matcher names such as `jobsDashboard` and `eventsDashboard`. The current application routes live under `/jobs` and `/events`, so review middleware carefully before changing route protection or adding new protected sections.
+
+## Onboarding
+
+Files:
+
+- `src/app/onboarding/page.tsx`
+- `src/components/Onboarding/OnboardingForm.tsx`
+- `src/app/api/users/route.ts`
+
+First-time authenticated users must complete onboarding before normal app use. Onboarding collects:
+
+- Organization name
+- Paid member status
+
+The "I am unsure if I am a paid member" option submits `paidMember: false`. Admins can later update the member status from the user-management page.
+
+When onboarding succeeds:
+
+- A MongoDB user record is created or updated.
+- Clerk public metadata is updated with `onboardingComplete: true`.
+
+## Data Models
+
+### User
+
+File: `src/database/userSchema.ts`
+
+Fields include:
+
+- `_id`: Clerk user ID
+- `name`
+- `email`
+- `postedJobs`
+- `postedEvents`
+- `paidMember`
+- `organizationName`
+
+User records are the bridge between Clerk identity and MongoDB-owned app data.
+
+### Job
+
+File: `src/database/jobSchema.ts`
+
+Core fields:
+
+- `organizationName`
+- `userId`
+- `organizationIndustry`
+- `title`
+- `postDate`
+- `modifiedDate`
+- `approvedDate`
+- `jobDescription`
+- `employmentType`: `part-time`, `full-time`, or `volunteer`
+- `compensationType`: `salary`, `hourly`, or `contract`
+- `jobStatus`: `pending`, `approved`, `rejected`, or `expired`
+- `detailURL`
+- `applyNowURL`
+- `rejectionMessage`
+- `memberJob`
+
+The `memberJob` field is copied from the user's `paidMember` status when a job is created. Updating a user's member status also updates that user's existing jobs.
+
+### Event
+
+File: `src/database/eventSchema.ts`
+
+Core fields:
+
+- `date`
+- `eventName`
+- `time`
+- `location`
+- `locationLink`
+- `eventLocationGeneral`
+- `eventLocationGeneralOther`
+- `eventLocationCity`
+- `eventLocationCityOther`
+- `description`
+- `majorFundraisingEvent`
+- `eventLink`
+- `organization`
+- `publicContactEmail`
+- `publicContactPhoneNumber`
+- `submitterFirstName`
+- `submitterLastName`
+- `submitterEmail`
+- `submitterPhoneNumber`
+- `createdByUserId`
+- `eventStatus`: `pending`, `approved`, `rejected`, or `expired`
+- `approvedDate`
+- `rejectionMessage`
+
+Events do not have a location type. There is no remote/in-person field in the current schema, form, API validation, or display cards.
+
+Event region and city options live in `src/lib/eventOptions.ts`.
+
+## API Routes
+
+### Jobs
+
+`GET /api/jobs`
+
+- Public.
+- Supports filters for `employmentType`, `compensationType`, `organizationIndustry`, and `jobStatus`.
+- Non-admin requests are paginated with `page` and `limit`.
+- Admin requests use `admin=true` and return all matching records.
+- Approved non-admin results exclude old expired approved jobs by approved date.
+- Sorting prioritizes `memberJob` first, then approved date or post date.
+
+`POST /api/jobs`
+
+- Requires `nonprofit` or `spokes_admin`.
+- Creates a pending job.
+- Uses the authenticated user's organization unless the requester is a Spokes admin creating for another organization.
+- Uses a unique job signature with user, organization, title, post date, and detail URL to avoid duplicate inserts.
+- Adds the job ID to the user's `postedJobs`.
+
+`GET /api/jobs/[jobId]`
+
+- Public.
+- Fetches one job by ID.
+
+`PUT /api/jobs/[jobId]`
+
+- Requires `nonprofit` or `spokes_admin`.
+- Nonprofits can update only their own jobs.
+- Nonprofit edits send the job back to `pending`.
+- Supports renewal and unpublish actions.
+- Admin status changes can approve, reject, or expire jobs.
+
+`DELETE /api/jobs/[jobId]`
+
+- Requires `nonprofit` or `spokes_admin`.
+- Nonprofits can delete only their own jobs.
+- Deletes the job document.
+
+`POST /api/jobs/recent`
+
+- Public.
+- Accepts a list of job IDs from browser storage and returns matching jobs.
+
+`GET /api/userjobs?userId=...`
+
+- Requires `nonprofit` or `spokes_admin`.
+- Nonprofits can fetch only their own jobs.
+- Reads job IDs from the user's `postedJobs` list.
+
+### Events
+
+`GET /api/events`
+
+- Public.
+- Supports `eventStatus`.
+- Non-admin requests default to approved events only.
+- Admin requests use `admin=true`.
+- Sorts approved events by approved date and other statuses by creation date.
+
+`POST /api/events`
+
+- Requires `nonprofit` or `spokes_admin`.
+- Validates required event fields in `src/lib/events.ts`.
+- Creates or updates a pending event using a unique event signature.
+- Uses the authenticated user's organization unless the requester is a Spokes admin creating for another organization.
+- Sends admin notification email from the client after successful creation.
+
+`GET /api/events/[eventId]`
+
+- Public.
+- Fetches one event by ID.
+
+`PUT /api/events/[eventId]`
+
+- Requires `nonprofit` or `spokes_admin`.
+- Nonprofits can update only their own pending events.
+- Spokes admins can update event status to approved, rejected, pending, or expired.
+- Rejected events store a rejection message.
+
+`DELETE /api/events/[eventId]`
+
+- Requires `nonprofit` or `spokes_admin`.
+- Nonprofits can delete only their own events.
+- Deletes the event document.
+- There is currently no visible owner-facing delete button for a single event.
+
+`GET /api/userevents?userId=...`
+
+- Requires `nonprofit` or `spokes_admin`.
+- Nonprofits can fetch only their own events.
+- Queries by `createdByUserId`, which supports both legacy and current event records.
+
+### Users
+
+`GET /api/users`
+
+- Requires `spokes_admin`.
+- Returns all users for the admin user-management page.
+
+`POST /api/users`
+
+- Requires authentication.
+- Creates or updates the authenticated user's MongoDB profile during onboarding.
+- Resolves organization names case-insensitively against existing organizations.
+
+`GET /api/users/[id]`
+
+- Requires `nonprofit` or `spokes_admin`.
+- Nonprofits can fetch only their own user record.
+
+`PATCH /api/users/[id]`
+
+- Requires `spokes_admin`.
+- Supports `paidMember` and `organizationName` updates.
+- Updating `paidMember` updates the user's jobs' `memberJob`.
+- Updating `organizationName` updates the user's jobs and events to the canonical organization name.
+
+`DELETE /api/users/[id]`
+
+- Requires `spokes_admin`.
+- Admins cannot delete their own user.
+- Deletes the user plus their jobs and events.
+
+### Organizations
+
+`GET /api/organizations`
+
+- Requires `nonprofit` or `spokes_admin`.
+- Returns distinct organization names from users, jobs, and events.
+
+`DELETE /api/organizations`
+
+- Requires `spokes_admin`.
+- Admins cannot delete their own organization.
+- Deletes all users, jobs, and events matching the organization name.
+- This is destructive and cannot be undone from the app.
+
+Organization helpers live in `src/lib/organizations.ts`.
+
+### Email
+
+Email routes use Resend:
+
+- `POST /api/send/new`: new job notification
+- `POST /api/send/update`: updated job notification
+- `POST /api/send/reject`: rejected job notification
+- `POST /api/send/event-new`: new event notification
+- `POST /api/send/event-reject`: rejected event notification
+
+Templates live in `src/components/EmailTemplates`.
+
+Admin links use `src/lib/url.ts`, which reads:
+
+- `NEXT_PUBLIC_ADMIN_URL`
+- `NEXT_PUBLIC_API_BASE_URL`
+
+## UI Workflows
+
+### Job Board
+
+Files:
+
+- `src/components/jobs/pages/JobsBoardPage.tsx`
+- `src/components/jobs/JobCard`
+- `src/components/jobs/JobGrid`
+- `src/components/ui/FilterCard.tsx`
+
+The public job board fetches approved jobs with pagination and filters. Recently viewed jobs are stored in browser storage and fetched through `/api/jobs/recent`.
+
+### Job Form
+
+Files:
+
+- `src/components/jobs/pages/ListJobPage.tsx`
+- `src/app/jobform/JobFormPage.client.tsx`
+
+The job form supports create and edit modes. Existing jobs are edited with a `jobId` query parameter. Nonprofit edits return jobs to pending review.
+
+### Job Organization Dashboard
+
+File: `src/components/jobs/pages/JobsManagePage.tsx`
+
+Shows the authenticated user's jobs. Organization users can:
+
+- Edit jobs
+- View rejection feedback
+- Renew expired jobs
+- Unpublish approved jobs
+
+### Job Admin Dashboard
+
+File: `src/components/jobs/pages/JobsAdminPage.tsx`
+
+Shows pending, approved, rejected, and expired jobs. Admins can:
+
+- Approve jobs
+- Reject jobs with a reason
+- Renew or expire jobs through status actions
+- Refresh dashboard data
+- Navigate to user management
+
+### Event Board
+
+Files:
+
+- `src/components/events/pages/EventsBoardPage.tsx`
+- `src/components/events/EventCard.tsx`
+- `src/components/events/EventCard/EventGrid.tsx`
+
+The event board shows approved events. Filters are based on event region and city.
+
+### Event Form
+
+File: `src/components/events/pages/ListEventPage.tsx`
+
+The event form supports create and edit modes. Existing events are edited with an `eventId` query parameter. Required fields are validated by `src/lib/events.ts`.
+
+The form requires confirmation that the event is one of the organization's major fundraising events of the year.
+
+### Event Organization Dashboard
+
+File: `src/components/events/pages/ManageEventsPage.tsx`
+
+Shows the authenticated user's events grouped into live and pending sections. Rejected events show feedback and can be edited.
+
+### Event Admin Dashboard
+
+File: `src/components/events/pages/AdminEventsPage.tsx`
+
+Shows pending, approved, and rejected events. Admins can:
+
+- Approve events
+- Reject events with a reason
+- Refresh dashboard data
+- Navigate to user management
+
+### User Management
+
+File: `src/components/users/AdminUsersPage.tsx`
+
+Admins can:
+
+- Search users by name, email, or organization
+- Filter users by member status
+- Export users as CSV or JSON
+- Toggle member status
+- Edit a user's organization
+- Delete a user and their jobs/events
+- Delete an organization and all related users/jobs/events
+
+## Navigation
+
+Files:
+
+- `src/components/NavBar/NavBar.tsx`
+- `src/components/NavBar/TopSection.tsx`
+- `src/components/NavBar/BottomSection.tsx`
+
+The top section shows the Spokes logo plus Clerk login/user controls. The bottom section changes labels and links based on whether the current path is under `/events` or `/jobs`.
+
+On the 404 page, the navbar hides board-specific links and user/login controls.
+
+## Environment Variables
+
+Expected variables include:
+
+- `MONGO_URI`: MongoDB connection string
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`: Clerk publishable key
+- `CLERK_SECRET_KEY`: Clerk secret key
+- `NEXT_PUBLIC_CLERK_SIGN_IN_URL`: Clerk sign-in route
+- `RESEND_API_KEY`: Resend API key
+- `SENDER_EMAIL`: email sender address
+- `ADMIN_EMAIL`: admin recipient for notification emails
+- `NEXT_PUBLIC_ADMIN_URL`: admin URL used in emails
+- `NEXT_PUBLIC_API_BASE_URL`: optional base URL used by some frontend API calls
+
+Never commit production secrets. Rotate keys if a secret is accidentally exposed.
+
+## Validation and Testing
+
+Useful commands:
+
+```sh
+npm run lint
+npm test
+npm run build
+```
+
+Targeted API tests live in `src/app/api/__test__`.
+
+Recent areas with tests:
+
+- Job API behavior
+- Event API behavior
+- Event validation
+- User API behavior
+- Organization API behavior
+- Job board local storage behavior
+
+## Known Caveats and Maintenance Notes
+
+- `middleware.ts` has legacy route matcher names. Review it before relying on middleware for current `/jobs/*` and `/events/*` protection.
+- Single-event deletion is supported by the API but not exposed as a visible owner-facing button.
+- Deleting a user also deletes that user's jobs and events.
+- Deleting an organization deletes all matching users, jobs, and events.
+- Event records no longer use `locationType`; old database documents may still contain that property, but the current app does not read or write it.
+- Job and event email delivery depends on Resend configuration.
+- The admin user page mutates real data. Be careful with destructive actions while testing.
+
+## Documentation Responsibilities
+
+Update this document when changing:
+
+- Route names or page responsibilities
+- API request/response behavior
+- Data schemas
+- Auth or role rules
+- Admin workflows
+- Email templates or email routing
+- Environment variables
