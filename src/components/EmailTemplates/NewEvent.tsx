@@ -7,17 +7,10 @@ interface NewEventProps {
   date: string;
   time: string;
   location: string;
-  locationType: string;
   contactName: string;
   contactEmail: string;
   adminURL: string;
 }
-
-const toTitleCase = (text: string): string =>
-  text
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join("-");
 
 export const NewEvent: React.FC<NewEventProps> = ({
   eventName,
@@ -26,7 +19,6 @@ export const NewEvent: React.FC<NewEventProps> = ({
   date,
   time,
   location,
-  locationType,
   contactName,
   contactEmail,
   adminURL,
@@ -134,15 +126,6 @@ export const NewEvent: React.FC<NewEventProps> = ({
           }}
         >
           <strong>Location:</strong> {location}
-        </p>
-        <p
-          style={{
-            fontSize: "14px",
-            color: "#000000",
-            marginBottom: "8px",
-          }}
-        >
-          <strong>Location Type:</strong> {toTitleCase(locationType)}
         </p>
       </div>
 

@@ -10,7 +10,6 @@ export interface EventRecord {
   eventLocationGeneralOther?: string;
   eventLocationCity?: string;
   eventLocationCityOther?: string;
-  locationType: "remote" | "in-person";
   organization: string;
   description: string;
   majorFundraisingEvent?: boolean;

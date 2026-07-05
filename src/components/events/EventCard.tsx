@@ -1,7 +1,6 @@
 import { formatDate } from "@/lib/utils";
 import { getEventInfoLink, getEventLocationLink } from "@/lib/eventLinks";
 import type { EventRecord } from "@/types/event";
-import JobBadge from "@/components/jobs/JobCard/JobBadge";
 
 type EventCardProps = {
   event: EventRecord;
@@ -144,12 +143,8 @@ export default function EventCard({ event, onEventView }: EventCardProps) {
 
         <div className="flex-grow"></div>
 
-        <div className="flex flex-row md:flex-col lg:flex-row gap-4 items-end lg:items-end md:items-start mt-5 max-[400px]:flex-col max-[400px]:items-start">
-          <div className="flex gap-2">{event.locationType && <JobBadge badgeType={event.locationType} />}</div>
-        </div>
-
         {hasActionLinks && (
-          <div className="flex lg:flex-row flex-col gap-4 my-5">
+          <div className="flex lg:flex-row flex-col gap-4 mt-5 mb-5">
             {eventInfoLink && (
               <a
                 href={eventInfoLink}
@@ -169,7 +164,7 @@ export default function EventCard({ event, onEventView }: EventCardProps) {
                 onClick={handleEventLinkClick}
                 className={`${actionLinkClassName} inline-flex min-h-10 items-center justify-center rounded-md border border-black bg-black px-4 text-center font-normal text-white transition-colors hover:bg-gray-800`}
               >
-                {event.locationType === "remote" ? "Join Meeting" : "View Location"}
+                Location Link
               </a>
             )}
           </div>

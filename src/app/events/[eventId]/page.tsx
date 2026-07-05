@@ -83,7 +83,7 @@ export default async function EventPage({ params }: EventPageProps) {
                   rel="noreferrer"
                   className="inline-flex min-h-10 items-center justify-center rounded-md border border-black bg-black px-4 text-white"
                 >
-                  {event.locationType === "remote" ? "Join Meeting" : "View Location"}
+                  Location Link
                 </a>
               )}
             </div>

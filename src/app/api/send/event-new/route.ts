@@ -32,7 +32,6 @@ export const POST = withApiAuth(
           date: new Date(eventData.date).toLocaleDateString(),
           time: eventData.time,
           location: eventData.location,
-          locationType: eventData.locationType,
           contactName: eventData.contactName,
           contactEmail: eventData.contactEmail,
           adminURL: getAdminUrl(),

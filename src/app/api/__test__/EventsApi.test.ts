@@ -57,7 +57,6 @@ const validEventPayload = {
   locationLink: "https://maps.example.com/innovation-hub",
   eventLocationGeneral: "San Luis Obispo Area",
   eventLocationCity: "San Luis Obispo",
-  locationType: "in-person",
   majorFundraisingEvent: true,
   eventLink: "https://example.com/community-workshop",
   description: "A useful workshop.",

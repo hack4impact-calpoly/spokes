@@ -20,7 +20,6 @@ export interface IEvent {
   eventLocationGeneralOther?: string;
   eventLocationCity?: string;
   eventLocationCityOther?: string;
-  locationType: "remote" | "in-person";
   description: string;
   majorFundraisingEvent?: boolean;
   eventLink?: string;
@@ -64,7 +63,6 @@ const EventSchema = new Schema<IEvent>(
       trim: true,
     },
     eventLocationCityOther: { type: String, required: false, trim: true },
-    locationType: { type: String, required: true, enum: ["remote", "in-person"], trim: true },
     description: { type: String, required: true, trim: true },
     majorFundraisingEvent: { type: Boolean, required: false },
     eventLink: { type: String, required: false, trim: true },
@@ -97,7 +95,8 @@ if (
   (!models.Event.schema.path("eventLink") ||
     !models.Event.schema.path("locationLink") ||
     !models.Event.schema.path("eventLocationGeneral") ||
-    !models.Event.schema.path("eventLocationCity"))
+    !models.Event.schema.path("eventLocationCity") ||
+    models.Event.schema.path("locationType"))
 ) {
   deleteModel("Event");
 }

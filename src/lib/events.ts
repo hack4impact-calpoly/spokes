@@ -7,7 +7,6 @@ const requiredEventFields = [
   "eventLocationGeneral",
   "eventLocationCity",
   "location",
-  "locationType",
   "description",
   "publicContactEmail",
   "publicContactPhoneNumber",
@@ -71,10 +70,6 @@ export function validateEventPayload(payload: Record<string, unknown>, options: 
 
   if (payload.date !== undefined && Number.isNaN(new Date(payload.date as string).getTime())) {
     return "date must be a valid date string.";
-  }
-
-  if (payload.locationType !== undefined && payload.locationType !== "remote" && payload.locationType !== "in-person") {
-    return "locationType must be either remote or in-person.";
   }
 
   if (payload.eventLocationGeneral !== undefined && !isEventLocationGeneral(payload.eventLocationGeneral)) {

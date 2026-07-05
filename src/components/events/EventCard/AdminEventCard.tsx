@@ -136,9 +136,6 @@ export default function AdminEventCard({ event, onUpdateEvent, innerRef }: Admin
             <span className="font-medium">Area:</span> {[eventCity, eventRegion].filter(Boolean).join(", ")}
           </div>
         )}
-        <div className="text-sm text-gray-600 mb-3">
-          <span className="font-medium">Type:</span> {event.locationType === "in-person" ? "In-Person" : "Remote"}
-        </div>
         {(event.publicContactEmail || event.publicContactPhoneNumber) && (
           <div className="text-sm text-gray-600 mb-3">
             <span className="font-medium">Public Contact:</span>{" "}
@@ -168,7 +165,7 @@ export default function AdminEventCard({ event, onUpdateEvent, innerRef }: Admin
                 rel="noreferrer"
                 className="inline-flex min-h-9 items-center justify-center rounded-md border border-black bg-black px-3 text-center font-medium text-white transition-colors hover:bg-gray-800"
               >
-                {event.locationType === "remote" ? "Join Meeting" : "View Location"}
+                Location Link
               </a>
             )}
           </div>

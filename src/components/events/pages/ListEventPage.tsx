@@ -14,12 +14,10 @@ import {
   Select,
   Stack,
   Textarea,
-  useRadioGroup,
   VStack,
   Spinner,
   Center,
 } from "@chakra-ui/react";
-import RadioCard from "@/components/ui/RadioCard";
 import { IEvent } from "@/database/eventSchema";
 import EventConfirmationModal from "@/components/events/EventModals/EventConfirmationModal";
 import EventFailModal from "@/components/events/EventModals/EventFailModal";
@@ -41,7 +39,6 @@ function EventFormContent() {
   const { isSignedIn, orgSlug } = useAuth();
   const isSpokesAdmin = orgSlug === "spokes-admin";
   const [serverError, setServerError] = useState<string | null>(null);
-  const [locationType, setLocationType] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingEvent, setIsLoadingEvent] = useState(false);
   const [eventData, setEventData] = useState<IEvent | null>(null);
@@ -56,18 +53,6 @@ function EventFormContent() {
   const eventInfoLink = getEventInfoLink(eventData);
   const eventLocationLink = getEventLocationLink(eventData);
 
-  const locationTypeColorMapping = {
-    Remote: "#F8B1B8",
-    "In-Person": "#C6D3FF",
-  };
-
-  const locationTypeOptions = ["Remote", "In-Person"];
-
-  const { getRootProps: getLocationTypeRootProps, getRadioProps: getLocationTypeRadioProps } = useRadioGroup({
-    name: "locationType",
-    onChange: (value) => setLocationType(value),
-  });
-
   // Load existing event if editing
   useEffect(() => {
     if (!eventId) return;
@@ -79,7 +64,6 @@ function EventFormContent() {
         if (!response.ok) throw new Error("Failed to fetch event");
         const data = await response.json();
         setEventData(data);
-        setLocationType(data.locationType);
         setMajorFundraisingEvent(data.majorFundraisingEvent === true);
         setEventLocationGeneral(data.eventLocationGeneral ?? "");
         setEventLocationCity(data.eventLocationCity ?? "");
@@ -125,7 +109,6 @@ function EventFormContent() {
       eventLocationCityOther: formData.get("eventLocationCityOther") as string,
       location: formData.get("location") as string,
       locationLink: ensureHttps((formData.get("locationLink") as string)?.trim()) || "",
-      locationType: formData.get("locationType") as string,
       eventLink: ensureHttps((formData.get("eventLink") as string)?.trim()) || "",
       publicContactEmail: formData.get("publicContactEmail") as string,
       publicContactPhoneNumber: formData.get("publicContactPhoneNumber") as string,
@@ -413,7 +396,7 @@ function EventFormContent() {
                 id="locationLink"
                 name="locationLink"
                 type="text"
-                placeholder="Google Maps or remote meeting link"
+                placeholder="Google Maps or event location link"
                 defaultValue={eventLocationLink ?? ""}
                 bg="#F6F6F6"
                 border="0"
@@ -431,26 +414,6 @@ function EventFormContent() {
                 bg="#F6F6F6"
                 border="0"
               />
-            </FormControl>
-
-            <FormControl isRequired>
-              <FormLabel>Location Type</FormLabel>
-              <Stack direction={{ base: "column", md: "row" }} spacing={2} {...getLocationTypeRootProps()}>
-                {locationTypeOptions.map((value) => {
-                  const radio = getLocationTypeRadioProps({ value: value.toLowerCase() });
-                  return (
-                    <RadioCard
-                      key={value}
-                      value={value.toLowerCase()}
-                      {...radio}
-                      isChecked={locationType === value.toLowerCase()}
-                      checkedColor={locationTypeColorMapping[value as keyof typeof locationTypeColorMapping]}
-                    >
-                      {value}
-                    </RadioCard>
-                  );
-                })}
-              </Stack>
             </FormControl>
 
             <FormControl isRequired>
