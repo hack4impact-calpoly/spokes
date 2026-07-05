@@ -46,3 +46,5 @@ The V2 Spokes team consists of 16 Cal Poly students. Over the course of about 9 
 Visit [getting-started.md](docs/getting-started.md) on info for how to set up this repo.
 
 Visit [contributing.md](docs/contributing.md) on info for how to contribute to this repo.
+
+Visit [owner-user-guide.md](docs/owner-user-guide.md) for a non-technical guide to managing the live website.
