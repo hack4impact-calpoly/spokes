@@ -1,5 +1,5 @@
 import DashboardLoginPage from "@/components/auth/DashboardLoginPage";
 
 export default function EventsLoginPage() {
-  return <DashboardLoginPage redirectUrl="/eventsDashboard/events" />;
+  return <DashboardLoginPage redirectUrl="/events" />;
 }
