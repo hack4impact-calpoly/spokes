@@ -37,7 +37,6 @@ const ensureHttps = (url: string | undefined): string | undefined => {
 };
 
 function EventFormContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { isSignedIn, orgSlug } = useAuth();
   const isSpokesAdmin = orgSlug === "spokes-admin";
@@ -213,19 +212,6 @@ function EventFormContent() {
         <Heading as="h2" size="md" mb={5}>
           Major Event Listing & Promotion
         </Heading>
-
-        <div className="mb-6 flex flex-col gap-3 rounded-md border border-[#E2E8F0] bg-[#F7F7F7] p-4 text-sm leading-relaxed text-gray-700">
-          <p>
-            With support from West Coast Community Bank, Spokes publishes a listing of nonprofit major fundraising
-            events and makes it available on the Spokes website. The primary goal is to serve as a point of reference to
-            help organizations avoid scheduling events that conflict with one another.
-          </p>
-          <p>
-            Unlike a general community calendar, this listing is reserved specifically for your organization&apos;s{" "}
-            <strong>major fundraising events</strong> such as an annual gala, walk-a-thon, festival, or signature
-            luncheon and does not include seminars, mixers, classes, or smaller gatherings.
-          </p>
-        </div>
 
         {serverError && (
           <div className="mb-4 bg-red-50 p-3 text-sm text-red-700 border border-red-200">{serverError}</div>
@@ -435,8 +421,7 @@ function EventFormContent() {
             </FormControl>
 
             <FormControl>
-              <FormLabel>Event Info Link</FormLabel>
-              <p className="mb-2 text-sm text-gray-600">To be published if available.</p>
+              <FormLabel>Event Link (If Available) </FormLabel>
               <Input
                 id="eventLink"
                 name="eventLink"
@@ -565,10 +550,6 @@ function EventFormContent() {
                 border="0"
               />
             </FormControl>
-
-            <div className="w-full rounded-md border border-[#E2E8F0] bg-[#F7F7F7] p-4 text-sm text-gray-700">
-              Thank you to West Coast Community Bank for support of this project.
-            </div>
 
             <div className="mt-8 flex justify-center">
               <Button
