@@ -43,7 +43,7 @@ export default function OnboardingForm({ onSubmit, isSubmitting }: OnboardingFor
         </FormControl>
 
         <FormControl isRequired mb={6}>
-          <FormLabel fontWeight="medium">Are you a paid member of Spokes?</FormLabel>
+          <FormLabel fontWeight="medium">Is your organization a paid member of Spokes?</FormLabel>
           <RadioGroup onChange={handleChange} value={formData.paidMember} name="paidMember">
             <Stack direction="column" spacing={4}>
               <Radio
@@ -54,7 +54,17 @@ export default function OnboardingForm({ onSubmit, isSubmitting }: OnboardingFor
                   borderColor: "#BDEABD",
                 }}
               >
-                Yes, I am a paid member
+                Yes, my organization is
+              </Radio>
+              <Radio
+                value="false"
+                bg="#F6F6F6"
+                _checked={{
+                  bg: "#eae6bd",
+                  borderColor: "#eae6bd",
+                }}
+              >
+                I am unsure if my organization is
               </Radio>
               <Radio
                 value="false"
@@ -64,7 +74,7 @@ export default function OnboardingForm({ onSubmit, isSubmitting }: OnboardingFor
                   borderColor: "#F8B1B8",
                 }}
               >
-                No, I am not a paid member
+                No, my organization is not
               </Radio>
             </Stack>
           </RadioGroup>
