@@ -2,7 +2,7 @@ import { NewJob } from "@/components/EmailTemplates/NewJob";
 import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
 import { withApiAuth } from "@/lib/auth";
-import { getAdminUrl } from "@/lib/url";
+import { getJobsAdminUrl } from "@/lib/url";
 
 const adminEmail = process.env.ADMIN_EMAIL || "";
 const senderEmail = process.env.SENDER_EMAIL || "onboarding@resend.dev";
@@ -36,7 +36,7 @@ export const POST = withApiAuth(
           contactEmail: jobData.contactEmail,
           detailURL: jobData.detailURL,
           applyNowURL: jobData.applyNowURL,
-          adminURL: getAdminUrl(),
+          adminURL: getJobsAdminUrl(),
         }),
       });
       if (error) {

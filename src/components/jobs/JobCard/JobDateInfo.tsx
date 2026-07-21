@@ -7,10 +7,8 @@ function formatDate(date: Date | undefined) {
     day: "numeric",
   };
   if (!date) {
-    console.log("INVALID DATE: ", date);
     return "Invalid Date";
   }
-  console.log("DATE: ", date);
   return new Date(date).toLocaleDateString(undefined, options);
 }
 

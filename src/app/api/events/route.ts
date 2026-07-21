@@ -7,13 +7,22 @@ import { resolveOrganizationName } from "@/lib/organizations";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = withApiAuth(
-  async (req: NextRequest) => {
+  async (req: NextRequest, { auth }) => {
     try {
       await connectDB();
 
       const { searchParams } = new URL(req.url);
       const isAdminRequest = searchParams.get("admin") === "true";
       const statusFilter = searchParams.get("eventStatus");
+      const isSpokesAdmin = auth.role === "spokes_admin";
+
+      if (isAdminRequest && !isSpokesAdmin) {
+        return NextResponse.json({ message: "Insufficient permissions" }, { status: 403 });
+      }
+
+      if (!isAdminRequest && statusFilter && statusFilter !== "approved") {
+        return NextResponse.json({ message: "Insufficient permissions" }, { status: 403 });
+      }
 
       // Build the filter object
       const filter: any = {};

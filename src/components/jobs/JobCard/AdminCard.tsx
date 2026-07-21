@@ -140,7 +140,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
   function handleEditApplicationButton(e: React.ChangeEvent<any>) {
     e.preventDefault();
     dismissNewIndicator();
-    router.push(`/jobform?jobId=${job._id}&returnURL=/admin`);
+    router.push(`/jobs/list?jobId=${job._id}&returnURL=/jobs/admin`);
   }
 
   return (

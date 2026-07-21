@@ -10,12 +10,17 @@ import { getThirtyDaysAgo } from "@/lib/utils";
 // filter by employment type: GET /api/jobs?employmentType=full-time&employment=part-time
 // combine filters w/ pagination: GET /api/jobs?employmentType=full-time&compensationType=paid&page=2&limit=10
 export const GET = withApiAuth(
-  async (req: NextRequest) => {
+  async (req: NextRequest, { auth }) => {
     try {
       await connectDB();
 
       const { searchParams } = new URL(req.url);
       const isAdminRequest = searchParams.get("admin") === "true";
+      const isSpokesAdmin = auth.role === "spokes_admin";
+
+      if (isAdminRequest && !isSpokesAdmin) {
+        return NextResponse.json({ message: "Insufficient permissions" }, { status: 403 });
+      }
 
       // Only apply pagination for non-admin requests
       const page = isAdminRequest ? 1 : Math.max(parseInt(searchParams.get("page") || "1", 10), 1);
@@ -27,6 +32,10 @@ export const GET = withApiAuth(
       const compensationFilters = searchParams.getAll("compensationType");
       const industryFilters = searchParams.getAll("organizationIndustry");
       const statusFilter = searchParams.get("jobStatus");
+
+      if (!isAdminRequest && statusFilter && statusFilter !== "approved") {
+        return NextResponse.json({ message: "Insufficient permissions" }, { status: 403 });
+      }
 
       // Build the filter object dynamically
       const filter: any = {};
@@ -67,6 +76,11 @@ export const GET = withApiAuth(
             $gte: getThirtyDaysAgo(),
           };
         }
+      } else if (!isAdminRequest) {
+        filter.jobStatus = "approved";
+        filter.approvedDate = {
+          $gte: getThirtyDaysAgo(),
+        };
       }
 
       if (statusFilter === "approved") {

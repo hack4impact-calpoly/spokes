@@ -8,13 +8,17 @@ import { resolveOrganizationName } from "@/lib/organizations";
 // Connect to the database before handling requests
 
 export const POST = withApiAuth(
-  async (req: NextRequest) => {
+  async (req: NextRequest, { auth }) => {
     try {
       await connectDB();
 
       const { userId, firstName, lastName, email, paidMember, organizationName } = await req.json();
       if (!userId || !email) {
         return NextResponse.json({ message: "Missing user data" }, { status: 400 });
+      }
+
+      if (userId !== auth.userId) {
+        return NextResponse.json({ message: "Cannot complete onboarding for another user" }, { status: 403 });
       }
 
       const name = `${firstName ?? ""} ${lastName ?? ""}`.trim() || email;

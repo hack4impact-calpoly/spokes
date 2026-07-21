@@ -1,7 +1,8 @@
 import Job from "@/database/jobSchema";
 import User from "@/database/userSchema";
 import { resolveOrganizationName } from "@/lib/organizations";
-import { POST } from "@/app/api/jobs/route";
+import { GET, POST } from "@/app/api/jobs/route";
+import { GET as GET_JOB, PUT } from "@/app/api/jobs/[jobId]/route";
 
 const mockAuth = {
   userId: "user-1",
@@ -15,7 +16,16 @@ jest.mock("@/database/db", () => ({
 
 jest.mock("@/database/jobSchema", () => ({
   __esModule: true,
+  JobStatus: {
+    pending: "pending",
+    approved: "approved",
+    rejected: "rejected",
+    expired: "expired",
+  },
   default: {
+    find: jest.fn(),
+    findById: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
     findOneAndUpdate: jest.fn(),
   },
 }));
@@ -38,12 +48,19 @@ jest.mock("@/lib/organizations", () => ({
 }));
 
 jest.mock("next/server", () => ({
-  NextResponse: {
-    json: (body: unknown, init?: { status?: number }) => ({
+  NextResponse: Object.assign(
+    jest.fn((body: string, init?: { status?: number; headers?: Record<string, string> }) => ({
       status: init?.status ?? 200,
-      json: async () => body,
-    }),
-  },
+      headers: init?.headers ?? {},
+      json: async () => JSON.parse(body),
+    })),
+    {
+      json: jest.fn((body: unknown, init?: { status?: number }) => ({
+        status: init?.status ?? 200,
+        json: async () => body,
+      })),
+    },
+  ),
 }));
 
 const validJobPayload = {
@@ -149,6 +166,95 @@ describe("Jobs API", () => {
         }),
       }),
       { new: true, upsert: true, setDefaultsOnInsert: true },
+    );
+  });
+
+  test("GET blocks non-admin requests for private job statuses", async () => {
+    mockAuth.userId = null as any;
+    mockAuth.role = "job_seeker";
+
+    const response = await GET(
+      {
+        url: "https://example.com/api/jobs?jobStatus=pending",
+      } as any,
+      {},
+    );
+    const result = await response.json();
+
+    expect(response.status).toBe(403);
+    expect(result.message).toBe("Insufficient permissions");
+    expect(Job.find).not.toHaveBeenCalled();
+  });
+
+  test("GET defaults public job listings to approved, unexpired jobs", async () => {
+    mockAuth.userId = null as any;
+    mockAuth.role = "job_seeker";
+    const limit = jest.fn().mockResolvedValue([]);
+    const skip = jest.fn(() => ({ limit }));
+    const sort = jest.fn(() => ({ skip }));
+    (Job.find as jest.Mock).mockReturnValue({ sort });
+
+    const response = await GET(
+      {
+        url: "https://example.com/api/jobs",
+      } as any,
+      {},
+    );
+
+    expect(response.status).toBe(200);
+    expect(Job.find).toHaveBeenCalledWith({
+      jobStatus: "approved",
+      approvedDate: { $gte: expect.any(Date) },
+    });
+  });
+
+  test("GET job detail hides private jobs from anonymous users", async () => {
+    mockAuth.userId = null as any;
+    mockAuth.role = "job_seeker";
+    (Job.findById as jest.Mock).mockResolvedValue({
+      _id: "job-1",
+      userId: "user-1",
+      jobStatus: "pending",
+    });
+
+    const response = await GET_JOB({ nextUrl: { pathname: "/api/jobs/job-1" } } as any, {});
+    const result = await response.json();
+
+    expect(response.status).toBe(404);
+    expect(result.message).toBe("Job not found");
+  });
+
+  test("PUT only writes whitelisted mutable job fields", async () => {
+    (Job.findById as jest.Mock).mockResolvedValue({
+      _id: "job-1",
+      userId: "user-1",
+      jobStatus: "approved",
+      rejectionMessage: "",
+    });
+    (Job.findByIdAndUpdate as jest.Mock).mockResolvedValue({ _id: "job-1" });
+
+    const response = await PUT(
+      jsonRequest("/api/jobs/job-1", {
+        title: "Updated Title",
+        organizationName: "Spoofed Org",
+        userId: "attacker",
+        memberJob: true,
+        previousStatus: "approved",
+        newStatus: "approved",
+      }),
+      {},
+    );
+
+    expect(response.status).toBe(200);
+    expect(Job.findByIdAndUpdate).toHaveBeenCalledWith(
+      "job-1",
+      {
+        title: "Updated Title",
+        jobStatus: "pending",
+        modifiedDate: expect.any(Date),
+        rejectionMessage: "",
+      },
+      { new: true },
     );
   });
 });

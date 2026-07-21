@@ -22,6 +22,10 @@ const isPublicPageRoute = createRouteMatcher([
   "/eventsDashboard/events",
 ]);
 const isEventRoute = createRouteMatcher(["/events(.*)", "/eventsDashboard(.*)"]);
+const isPublicEventDetailRoute = (req: Request) => {
+  const pathname = new URL(req.url).pathname;
+  return /^\/events\/[^/]+$/.test(pathname);
+};
 
 async function hasCompletedMongoProfile(req: Request, userId: string) {
   try {
@@ -45,7 +49,7 @@ async function hasCompletedMongoProfile(req: Request, userId: string) {
   }
 }
 
-export default clerkMiddleware(async (auth, req) => {
+export const proxy = clerkMiddleware(async (auth, req) => {
   const { userId, orgSlug } = await auth();
   const { role } = getAuthWithRole({ userId, orgSlug });
 
@@ -55,7 +59,7 @@ export default clerkMiddleware(async (auth, req) => {
   }
 
   if (!userId) {
-    if (isPublicPageRoute(req) || isOnboardingRoute(req)) {
+    if (isPublicPageRoute(req) || isPublicEventDetailRoute(req) || isOnboardingRoute(req)) {
       return NextResponse.next();
     }
 
@@ -93,6 +97,8 @@ export default clerkMiddleware(async (auth, req) => {
 
   return NextResponse.next();
 });
+
+export default proxy;
 
 export const config = {
   matcher: [

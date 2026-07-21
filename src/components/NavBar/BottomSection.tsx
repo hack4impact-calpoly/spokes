@@ -187,14 +187,15 @@ type ScrollDirection = "up" | "down" | null;
 function useScrollDirection() {
   const [scrollDirection, setScrollDirection] = useState<ScrollDirection>(null);
   const lastScrollY = useRef(0);
+  const scrollDirectionRef = useRef<ScrollDirection>(null);
 
   useEffect(() => {
     const updateScrollDirection = () => {
       const scrollY = window.scrollY;
       const direction = scrollY > lastScrollY.current ? "down" : "up";
 
-      if (direction !== scrollDirection && Math.abs(scrollY - lastScrollY.current) > 10) {
-        console.log(`Scroll direction changed to: ${direction}`);
+      if (direction !== scrollDirectionRef.current && Math.abs(scrollY - lastScrollY.current) > 10) {
+        scrollDirectionRef.current = direction;
         setScrollDirection(direction);
         lastScrollY.current = scrollY > 0 ? scrollY : 0;
       }

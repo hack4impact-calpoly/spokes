@@ -68,7 +68,6 @@ export default function OnboardingPage() {
           isClosable: true,
         });
 
-        console.log("returnUrl", returnUrl);
         router.push(returnUrl);
       } else {
         const error = await response.json();

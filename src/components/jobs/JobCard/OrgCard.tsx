@@ -64,7 +64,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
 
     function handleEditApplicationButton(e: React.ChangeEvent<any>) {
       e.preventDefault();
-      router.push(`/jobform?jobId=${job._id}&returnURL=/dashboard`);
+      router.push(`/jobs/list?jobId=${job._id}&returnURL=/jobs/manage`);
     }
 
     async function handleRenewJob() {
@@ -138,10 +138,8 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
         if (!response.ok) {
           throw new Error("Failed to unpublish job");
         }
-        console.log("response", response);
 
         const data = await response.json();
-        console.log("Unpublished job:", data);
         // Show success toast
         toast({
           title: "Job Unpublished",

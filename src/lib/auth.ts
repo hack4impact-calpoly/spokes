@@ -24,7 +24,6 @@ export interface ApiAuthOptions {
 export function getAuthWithRole({ userId, orgSlug }: { userId: string | null; orgSlug?: string | null }): AuthWithRole {
   //job-seekers will not be authenticated
   if (!userId) {
-    console.log("No user found, assigning job_seeker role");
     return { userId: null, role: "job_seeker" };
   }
 
@@ -32,12 +31,10 @@ export function getAuthWithRole({ userId, orgSlug }: { userId: string | null; or
   const isSpokesAdmin = orgSlug === "spokes-admin";
 
   if (isSpokesAdmin) {
-    console.log("User is", orgSlug);
     return { userId, role: "spokes_admin" };
   }
 
   // Default to nonprofit for logged-in users who aren't admins
-  console.log(`User ${userId} is a nonprofit`);
   return { userId, role: "nonprofit" };
 }
 
@@ -55,7 +52,11 @@ export function withApiAuth(
     }
 
     // Check if the user has the required role
-    if (options.allowedRoles && options.allowedRoles.length > 0 && authWithRole.userId) {
+    if (options.allowedRoles && options.allowedRoles.length > 0) {
+      if (!authWithRole.userId) {
+        return NextResponse.json({ message: "Authentication required" }, { status: 401 });
+      }
+
       if (!options.allowedRoles.includes(authWithRole.role)) {
         return NextResponse.json({ message: "Insufficient permissions" }, { status: 403 });
       }

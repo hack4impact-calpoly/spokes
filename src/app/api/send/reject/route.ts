@@ -2,6 +2,7 @@ import { RejectJob } from "@/components/EmailTemplates/RejectJob";
 import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
 import { withApiAuth } from "@/lib/auth";
+import { getJobsListUrl } from "@/lib/url";
 
 const senderEmail = process.env.SENDER_EMAIL || "onboarding@resend.dev";
 
@@ -27,6 +28,7 @@ export const POST = withApiAuth(
           organizationName: jobData.organizationName,
           contactName: jobData.contactName,
           rejectionReason: jobData.rejectionReason,
+          jobFormURL: getJobsListUrl(),
         }),
       });
 

@@ -14,7 +14,15 @@ interface JobCardProps {
 function JobCard({ job, onJobView, innerRef }: JobCardProps) {
   const [recentJobs, setRecentJobs] = useState<string[]>(() => {
     const storedJobs = localStorage.getItem("myJobs");
-    return storedJobs ? JSON.parse(storedJobs) : [];
+    if (!storedJobs) return [];
+
+    try {
+      const parsed = JSON.parse(storedJobs);
+      return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === "string") : [];
+    } catch {
+      localStorage.removeItem("myJobs");
+      return [];
+    }
   });
 
   useEffect(() => {

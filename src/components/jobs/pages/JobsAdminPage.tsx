@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ChakraCarousel from "@/components/ChakraCarousel/carousel";
 import AdminJobCard from "@/components/jobs/JobCard/AdminCard";
 import JobGrid from "@/components/jobs/JobGrid/JobGrid";
@@ -19,13 +19,13 @@ export default function AdminJobs() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isUpdatingJob, setIsUpdatingJob] = useState(false);
   const [lastUpdateTime, setLastUpdateTime] = useState<number>(0);
+  const fetchDataRef = useRef<() => Promise<void>>(async () => {});
 
   const setExpiredJobs = async (jobs: IJob[]) => {
     if (!Array.isArray(jobs)) {
       console.error("Expected jobs to be an array but received:", typeof jobs);
       return;
     }
-    console.log("Setting Expired");
     const jobsToExpire = jobs.filter(
       (job) => job.jobStatus !== "expired" && isExpired(job.jobStatus, job.approvedDate),
     );
@@ -33,8 +33,6 @@ export default function AdminJobs() {
     for (const job of jobsToExpire) {
       await updateJobStatus(job._id, "expired");
     }
-
-    console.log(`${jobsToExpire.length} jobs set to expired.`);
   };
 
   const fetchData = async () => {
@@ -74,10 +72,14 @@ export default function AdminJobs() {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchDataRef.current = fetchData;
+  });
+
+  useEffect(() => {
+    fetchDataRef.current();
 
     // Set up an interval to check for expired jobs every hour
-    const interval = setInterval(fetchData, 3600000);
+    const interval = setInterval(() => fetchDataRef.current(), 3600000);
 
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
@@ -204,7 +206,6 @@ export default function AdminJobs() {
     // check if we're within 2 seconds of the last update
     const timeSinceLastUpdate = Date.now() - lastUpdateTime; // down the road change this hard coded 2 seconds to a more scalable solution
     if (timeSinceLastUpdate < 2000) {
-      console.log("Waiting for database to sync...");
       // wait for the remaining time
       await new Promise((resolve) => setTimeout(resolve, 2000 - timeSinceLastUpdate));
     }

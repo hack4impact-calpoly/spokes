@@ -3,13 +3,14 @@ import Event from "@/database/eventSchema";
 import { withApiAuth } from "@/lib/auth";
 import { sanitizeEventPayload, validateEventPayload } from "@/lib/events";
 import { NextRequest, NextResponse } from "next/server";
+import { EventStatus } from "@/database/eventSchema";
 
 function getEventId(req: NextRequest) {
   return req.nextUrl.pathname.split("/").pop();
 }
 
 export const GET = withApiAuth(
-  async (req: NextRequest) => {
+  async (req: NextRequest, { auth }) => {
     try {
       await connectDB();
 
@@ -17,6 +18,14 @@ export const GET = withApiAuth(
       const event = await Event.findById(eventId);
 
       if (!event) {
+        return NextResponse.json({ message: "Event not found" }, { status: 404 });
+      }
+
+      const isPubliclyVisible = event.eventStatus === EventStatus.approved;
+      const canViewPrivateEvent =
+        auth.role === "spokes_admin" || (auth.userId && event.createdByUserId === auth.userId);
+
+      if (!isPubliclyVisible && !canViewPrivateEvent) {
         return NextResponse.json({ message: "Event not found" }, { status: 404 });
       }
 

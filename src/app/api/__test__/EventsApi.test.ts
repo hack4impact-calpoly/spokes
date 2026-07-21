@@ -1,8 +1,8 @@
 import Event from "@/database/eventSchema";
 import User from "@/database/userSchema";
 import { resolveOrganizationName } from "@/lib/organizations";
-import { POST } from "@/app/api/events/route";
-import { PUT } from "@/app/api/events/[eventId]/route";
+import { GET, POST } from "@/app/api/events/route";
+import { GET as GET_EVENT, PUT } from "@/app/api/events/[eventId]/route";
 
 const mockAuth = {
   userId: "user-1",
@@ -16,7 +16,14 @@ jest.mock("@/database/db", () => ({
 
 jest.mock("@/database/eventSchema", () => ({
   __esModule: true,
+  EventStatus: {
+    pending: "pending",
+    approved: "approved",
+    rejected: "rejected",
+    expired: "expired",
+  },
   default: {
+    find: jest.fn(),
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
     findOneAndUpdate: jest.fn(),
@@ -237,5 +244,55 @@ describe("Events API", () => {
       },
       { new: true, strict: false },
     );
+  });
+
+  test("GET blocks non-admin requests for private event statuses", async () => {
+    mockAuth.userId = null as any;
+    mockAuth.role = "job_seeker";
+
+    const response = await GET(
+      {
+        url: "https://example.com/api/events?eventStatus=pending",
+      } as any,
+      {},
+    );
+    const result = await response.json();
+
+    expect(response.status).toBe(403);
+    expect(result.message).toBe("Insufficient permissions");
+    expect(Event.find).not.toHaveBeenCalled();
+  });
+
+  test("GET defaults public event listings to approved events", async () => {
+    mockAuth.userId = null as any;
+    mockAuth.role = "job_seeker";
+    const sort = jest.fn().mockResolvedValue([]);
+    (Event.find as jest.Mock).mockReturnValue({ sort });
+
+    const response = await GET(
+      {
+        url: "https://example.com/api/events",
+      } as any,
+      {},
+    );
+
+    expect(response.status).toBe(200);
+    expect(Event.find).toHaveBeenCalledWith({ eventStatus: "approved" });
+  });
+
+  test("GET event detail hides private events from anonymous users", async () => {
+    mockAuth.userId = null as any;
+    mockAuth.role = "job_seeker";
+    (Event.findById as jest.Mock).mockResolvedValue({
+      _id: "event-1",
+      createdByUserId: "user-1",
+      eventStatus: "pending",
+    });
+
+    const response = await GET_EVENT({ nextUrl: { pathname: "/api/events/event-1" } } as any, {});
+    const result = await response.json();
+
+    expect(response.status).toBe(404);
+    expect(result.message).toBe("Event not found");
   });
 });

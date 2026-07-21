@@ -15,12 +15,13 @@ const JobFormParentPage: NextPage<JobFormParentPageProps> = async ({ searchParam
   const isSpokesAdmin = authWithRole.role === "spokes_admin";
 
   const resolvedSearchParams = await searchParams;
-  const returnURL =
+  const requestedReturnURL =
     typeof resolvedSearchParams.returnURL === "string"
       ? resolvedSearchParams.returnURL
       : Array.isArray(resolvedSearchParams.returnURL)
         ? resolvedSearchParams.returnURL[0]
-        : "/admin";
+        : undefined;
+  const returnURL = resolveJobReturnUrl(requestedReturnURL, isSpokesAdmin);
 
   return (
     <Suspense
@@ -36,3 +37,20 @@ const JobFormParentPage: NextPage<JobFormParentPageProps> = async ({ searchParam
 };
 
 export default JobFormParentPage;
+
+function resolveJobReturnUrl(returnURL: string | undefined, isSpokesAdmin: boolean) {
+  if (!returnURL) {
+    return isSpokesAdmin ? "/jobs/admin" : "/jobs/manage";
+  }
+
+  if (returnURL === "/admin") {
+    return "/jobs/admin";
+  }
+
+  if (returnURL === "/dashboard") {
+    return "/jobs/manage";
+  }
+
+  const allowedReturnUrls = new Set(["/jobs", "/jobs/admin", "/jobs/manage", "/jobs/list"]);
+  return allowedReturnUrls.has(returnURL) ? returnURL : isSpokesAdmin ? "/jobs/admin" : "/jobs/manage";
+}

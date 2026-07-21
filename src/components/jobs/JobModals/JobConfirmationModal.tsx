@@ -46,7 +46,7 @@ export default function JobConfirmationlModal({ isOpen, onClose }: JobComfirmati
                 Create New Job
               </Button>
               <Button
-                onClick={() => router.push("/dashboard")}
+                onClick={() => router.push("/jobs/manage")}
                 className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800"
               >
                 View Dashboard

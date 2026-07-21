@@ -1,6 +1,6 @@
 import Link from "next/link";
 import connectDB from "@/database/db";
-import Event, { type IEvent } from "@/database/eventSchema";
+import Event, { EventStatus, type IEvent } from "@/database/eventSchema";
 import { getEventInfoLink, getEventLocationLink } from "@/lib/eventLinks";
 import { formatDate } from "@/lib/utils";
 
@@ -13,7 +13,10 @@ type EventPageProps = {
 export default async function EventPage({ params }: EventPageProps) {
   await connectDB();
 
-  const event = (await Event.findById(params.eventId).lean()) as IEvent | null;
+  const event = (await Event.findOne({
+    _id: params.eventId,
+    eventStatus: EventStatus.approved,
+  }).lean()) as IEvent | null;
 
   if (!event) {
     return (

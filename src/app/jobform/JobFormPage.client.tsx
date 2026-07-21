@@ -103,8 +103,6 @@ async function sendUpdateEmail(jobData: FormDataType) {
       console.error("Failed to send update notification email:", await emailResponse.text());
       return;
     }
-
-    console.log("Update notification email sent successfully");
   } catch (error) {
     console.error("Error sending update notification email:", error);
   }
@@ -294,17 +292,6 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         applyNowURL: ensureHttps(formData.applyNowURL),
       };
 
-      const emailResponse = await fetch("/api/send/new", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formattedFormData),
-      });
-
-      if (!emailResponse.ok) {
-        const errorData = await emailResponse.json().catch(() => null);
-        throw new Error(errorData?.error || "Failed to send notification email. Job was not submitted.");
-      }
-
       const response = await fetch("/api/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -314,6 +301,28 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to submit job.");
+      }
+
+      const result = await response.json();
+      const savedJobData = result?.job ?? formattedFormData;
+
+      const emailResponse = await fetch("/api/send/new", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(savedJobData),
+      });
+
+      if (!emailResponse.ok) {
+        const errorData = await emailResponse.json().catch(() => null);
+        console.error("Failed to send new job notification email:", errorData?.error || emailResponse.statusText);
+        toast({
+          title: "Job submitted",
+          description: "The listing was saved, but the admin notification email could not be sent.",
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
       }
 
       toast({
@@ -431,11 +440,9 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
   };
 
   const handleAction = async () => {
-    console.log("handleAction called with action:", action);
     if (!jobId) return;
     setLoading(true);
     setMessage("");
-    console.log(action);
 
     if (action === "Reject") {
       const updatedFormData = {
@@ -484,7 +491,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         setAction("");
         setMessage("Successfully reject job");
         setLoading(false);
-        router.push("/admin");
+        router.push(returnURL);
       } catch (error) {
         console.error(`Error rejecting job: ${error}`);
         toast({
@@ -919,14 +926,14 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
           {isEditing &&
             (isSpokesAdmin ? (
               <Link
-                href="/admin"
+                href={returnURL}
                 className="mt-1 block text-center text-gray-500 text-sm hover:text-[#045F87] transition-colors duration-200"
               >
                 ← Return to Admin Dashboard
               </Link>
             ) : (
               <Link
-                href="/dashboard"
+                href={returnURL}
                 className="mt-1 block text-center text-gray-500 text-sm hover:text-[#045F87] transition-colors duration-200"
               >
                 ← Return to Dashboard

@@ -47,7 +47,15 @@ const useRecentJobs = (filters: FilterState) => {
   const [recentJobIds, setRecentJobIds] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
     const raw = localStorage.getItem("myJobs");
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === "string") : [];
+    } catch {
+      localStorage.removeItem("myJobs");
+      return [];
+    }
   });
 
   const {

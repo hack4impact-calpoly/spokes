@@ -2,6 +2,7 @@ import Event from "@/database/eventSchema";
 import Job from "@/database/jobSchema";
 import User from "@/database/userSchema";
 import { resolveOrganizationName } from "@/lib/organizations";
+import { POST } from "@/app/api/users/route";
 import { DELETE, PATCH } from "@/app/api/users/[id]/route";
 
 const mockAuth = {
@@ -32,16 +33,26 @@ jest.mock("@/database/jobSchema", () => ({
 
 jest.mock("@/database/userSchema", () => ({
   __esModule: true,
-  default: {
-    findById: jest.fn(),
-    findByIdAndDelete: jest.fn(),
-  },
+  default: Object.assign(
+    jest.fn(function UserMock(this: any, data: Record<string, unknown>) {
+      Object.assign(this, data);
+      this.save = jest.fn(() => Promise.resolve(this));
+    }),
+    {
+      findById: jest.fn(),
+      findByIdAndDelete: jest.fn(),
+    },
+  ),
 }));
 
 jest.mock("@/lib/auth", () => ({
   withApiAuth: (handler: Function) => {
     return async (req: Request, context: any = {}) => handler(req, { ...context, auth: mockAuth });
   },
+}));
+
+jest.mock("@/lib/clerk", () => ({
+  updateUserMetadata: jest.fn(() => Promise.resolve()),
 }));
 
 jest.mock("@/lib/organizations", () => ({
@@ -92,6 +103,25 @@ describe("Users API", () => {
     expect(Event.updateMany).toHaveBeenCalledWith({ createdByUserId: "user-1" }, { $set: { organization: "New Org" } });
     expect(user.save).toHaveBeenCalled();
     expect(result.organizationName).toBe("New Org");
+  });
+
+  test("POST blocks onboarding for a different authenticated user ID", async () => {
+    mockAuth.userId = "user-1";
+    mockAuth.role = "nonprofit";
+
+    const response = await POST(
+      jsonRequest("/api/users", {
+        userId: "user-2",
+        email: "user2@example.com",
+        organizationName: "Other Org",
+      }),
+      {},
+    );
+    const result = await response.json();
+
+    expect(response.status).toBe(403);
+    expect(result.message).toBe("Cannot complete onboarding for another user");
+    expect(User.findById).not.toHaveBeenCalled();
   });
 
   test("DELETE removes a user and their owned jobs/events", async () => {

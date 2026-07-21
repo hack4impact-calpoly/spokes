@@ -2,7 +2,7 @@ import { NewEvent } from "@/components/EmailTemplates/NewEvent";
 import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
 import { withApiAuth } from "@/lib/auth";
-import { getAdminUrl } from "@/lib/url";
+import { getEventsAdminUrl } from "@/lib/url";
 
 const adminEmail = process.env.ADMIN_EMAIL || "";
 const senderEmail = process.env.SENDER_EMAIL || "onboarding@resend.dev";
@@ -34,7 +34,7 @@ export const POST = withApiAuth(
           location: eventData.location,
           contactName: eventData.contactName,
           contactEmail: eventData.contactEmail,
-          adminURL: getAdminUrl(),
+          adminURL: getEventsAdminUrl(),
         }),
       });
       if (error) {

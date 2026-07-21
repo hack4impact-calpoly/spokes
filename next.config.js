@@ -11,6 +11,21 @@ const nextConfig = {
         permanent: false,
       },
       {
+        source: "/jobform",
+        destination: "/jobs/list",
+        permanent: false,
+      },
+      {
+        source: "/dashboard",
+        destination: "/jobs/manage",
+        permanent: false,
+      },
+      {
+        source: "/admin",
+        destination: "/jobs/admin",
+        permanent: false,
+      },
+      {
         source: "/jobsDashboard",
         destination: "/jobs",
         permanent: false,
