@@ -14,6 +14,20 @@ export default function BottomSection() {
   const { triggerReset } = useFormReset();
   const { orgSlug, isSignedIn } = useAuth();
   const isSpokesAdmin = orgSlug === "spokes-admin";
+  const isEventsDashboard = pathname?.startsWith("/events") || pathname?.startsWith("/eventsDashboard");
+  const dashboardLinks = isEventsDashboard
+    ? {
+        board: { title: "Event Board", href: "/events" },
+        list: { title: "List Event", href: "/events/list" },
+        manage: { title: "Dashboard", href: "/events/manage" },
+        admin: { title: "Admin", href: "/events/admin" },
+      }
+    : {
+        board: { title: "Job Board", href: "/jobs" },
+        list: { title: "List Job", href: "/jobs/list" },
+        manage: { title: "Dashboard", href: "/jobs/manage" },
+        admin: { title: "Admin", href: "/jobs/admin" },
+      };
 
   useEffect(() => {
     const handleScroll: EventListener = () => {
@@ -37,7 +51,7 @@ export default function BottomSection() {
   const handleListJobClick = () => {
     triggerReset();
     setIsMobileMenuOpen(false);
-    if (pathname === "/jobform") {
+    if (pathname === "/jobs/list") {
       window.location.replace(pathname);
     }
   };
@@ -57,10 +71,24 @@ export default function BottomSection() {
           <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />
           <NavBarLink title="Admin" href="/admin" /> */}
           {/* prod */}
-          <NavBarLink title="Job Board" href="/jobs" />
-          {isSignedIn && <NavBarLink title="List Job" href="/jobform" onClick={handleListJobClick} />}
-          {isSignedIn && <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />}
-          {isSignedIn && isSpokesAdmin && <NavBarLink title="Admin" href="/admin" />}
+          <NavBarLink title={dashboardLinks.board.title} href={dashboardLinks.board.href} />
+          {isSignedIn && (
+            <NavBarLink
+              title={dashboardLinks.list.title}
+              href={dashboardLinks.list.href}
+              onClick={isEventsDashboard ? () => setIsMobileMenuOpen(false) : handleListJobClick}
+            />
+          )}
+          {isSignedIn && (
+            <NavBarLink
+              title={dashboardLinks.manage.title}
+              href={dashboardLinks.manage.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+          )}
+          {isSignedIn && isSpokesAdmin && (
+            <NavBarLink title={dashboardLinks.admin.title} href={dashboardLinks.admin.href} />
+          )}
         </div>
         {showScrollToTop && (
           <div
@@ -113,11 +141,27 @@ export default function BottomSection() {
           <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />
           <NavBarLink title="Admin" href="/admin" onClick={() => setIsMobileMenuOpen(false)} /> */}
           {/* prod */}
-          <NavBarLink title="Job Board" href="/jobs" />
-          {isSignedIn && <NavBarLink title="List Job" href="/jobform" onClick={() => setIsMobileMenuOpen(false)} />}
-          {isSignedIn && <NavBarLink title="Dashboard" href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} />}
+          <NavBarLink title={dashboardLinks.board.title} href={dashboardLinks.board.href} />
+          {isSignedIn && (
+            <NavBarLink
+              title={dashboardLinks.list.title}
+              href={dashboardLinks.list.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+          )}
+          {isSignedIn && (
+            <NavBarLink
+              title={dashboardLinks.manage.title}
+              href={dashboardLinks.manage.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+          )}
           {isSignedIn && isSpokesAdmin && (
-            <NavBarLink title="Admin" href="/admin" onClick={() => setIsMobileMenuOpen(false)} />
+            <NavBarLink
+              title={dashboardLinks.admin.title}
+              href={dashboardLinks.admin.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
           )}
           {showScrollToTop && (
             <div
@@ -143,14 +187,15 @@ type ScrollDirection = "up" | "down" | null;
 function useScrollDirection() {
   const [scrollDirection, setScrollDirection] = useState<ScrollDirection>(null);
   const lastScrollY = useRef(0);
+  const scrollDirectionRef = useRef<ScrollDirection>(null);
 
   useEffect(() => {
     const updateScrollDirection = () => {
       const scrollY = window.scrollY;
       const direction = scrollY > lastScrollY.current ? "down" : "up";
 
-      if (direction !== scrollDirection && Math.abs(scrollY - lastScrollY.current) > 10) {
-        console.log(`Scroll direction changed to: ${direction}`);
+      if (direction !== scrollDirectionRef.current && Math.abs(scrollY - lastScrollY.current) > 10) {
+        scrollDirectionRef.current = direction;
         setScrollDirection(direction);
         lastScrollY.current = scrollY > 0 ? scrollY : 0;
       }

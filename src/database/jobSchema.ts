@@ -67,5 +67,7 @@ const JobSchema = new Schema({
   memberJob: { type: Boolean, required: true, default: false },
 });
 
+JobSchema.index({ userId: 1, organizationName: 1, title: 1, postDate: 1, detailURL: 1 }, { unique: true });
+
 const Job = models.Job || model("Job", JobSchema);
 export default Job;

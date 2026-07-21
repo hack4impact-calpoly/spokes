@@ -2,17 +2,25 @@ import { NewJob } from "@/components/EmailTemplates/NewJob";
 import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
 import { withApiAuth } from "@/lib/auth";
+import { getJobsAdminUrl } from "@/lib/url";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const adminEmail = process.env.ADMIN_EMAIL || "";
-const adminURL = process.env.NEXT_PUBLIC_ADMIN_URL || "/admin";
 const senderEmail = process.env.SENDER_EMAIL || "onboarding@resend.dev";
 
 export const POST = withApiAuth(
-  async (req: NextRequest, { auth }) => {
+  async (req: NextRequest) => {
     try {
+      if (!process.env.RESEND_API_KEY) {
+        return NextResponse.json({ error: "Email service is not configured" }, { status: 500 });
+      }
+
+      if (!adminEmail) {
+        return NextResponse.json({ error: "ADMIN_EMAIL is not configured" }, { status: 500 });
+      }
+
       const jobData = await req.json();
 
+      const resend = new Resend(process.env.RESEND_API_KEY);
       const { data, error } = await resend.emails.send({
         from: `Spokes Job Board <${senderEmail}>`,
         to: [adminEmail],
@@ -28,15 +36,15 @@ export const POST = withApiAuth(
           contactEmail: jobData.contactEmail,
           detailURL: jobData.detailURL,
           applyNowURL: jobData.applyNowURL,
-          adminURL: adminURL,
+          adminURL: getJobsAdminUrl(),
         }),
       });
       if (error) {
-        return NextResponse.json({ error }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: 500 });
       }
       return NextResponse.json({ success: true, data });
-    } catch (error) {
-      return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+    } catch (error: any) {
+      return NextResponse.json({ error: error?.message || "Failed to send email" }, { status: 500 });
     }
   },
   {

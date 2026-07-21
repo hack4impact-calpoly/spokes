@@ -2,15 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { withApiAuth } from "@/lib/auth";
 import { Resend } from "resend";
 import { UpdatedJob } from "@/components/EmailTemplates/UpdatedJob";
+import { getJobsAdminUrl } from "@/lib/url";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const adminEmail = process.env.ADMIN_EMAIL || "";
-const adminURL = process.env.NEXT_PUBLIC_ADMIN_URL || "/admin";
 const senderEmail = process.env.SENDER_EMAIL || "onboarding@resend.dev";
 
 export const POST = withApiAuth(
-  async (req: NextRequest, { auth }) => {
+  async (req: NextRequest) => {
     try {
+      if (!process.env.RESEND_API_KEY) {
+        return NextResponse.json({ error: "Email service is not configured" }, { status: 500 });
+      }
+
       const jobData = await req.json();
 
       // Validate required fields
@@ -18,6 +21,7 @@ export const POST = withApiAuth(
         return NextResponse.json({ error: "Missing required job data" }, { status: 400 });
       }
 
+      const resend = new Resend(process.env.RESEND_API_KEY);
       const { data, error } = await resend.emails.send({
         from: `Spokes Job Board <${senderEmail}>`,
         to: [adminEmail],
@@ -33,7 +37,7 @@ export const POST = withApiAuth(
           contactEmail: jobData.contactEmail || "Not provided",
           detailURL: jobData.detailURL,
           applyNowURL: jobData.applyNowURL,
-          adminURL: adminURL,
+          adminURL: getJobsAdminUrl(),
         }),
       });
 

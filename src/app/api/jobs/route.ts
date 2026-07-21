@@ -3,18 +3,24 @@ import { NextRequest, NextResponse } from "next/server";
 import Job from "@/database/jobSchema";
 import User from "@/database/userSchema";
 import { withApiAuth } from "@/lib/auth";
+import { resolveOrganizationName } from "@/lib/organizations";
 import { getThirtyDaysAgo } from "@/lib/utils";
 
 // no filters: GET /api/jobs?page=1&limit=10
 // filter by employment type: GET /api/jobs?employmentType=full-time&employment=part-time
 // combine filters w/ pagination: GET /api/jobs?employmentType=full-time&compensationType=paid&page=2&limit=10
 export const GET = withApiAuth(
-  async (req: NextRequest) => {
+  async (req: NextRequest, { auth }) => {
     try {
       await connectDB();
 
       const { searchParams } = new URL(req.url);
       const isAdminRequest = searchParams.get("admin") === "true";
+      const isSpokesAdmin = auth.role === "spokes_admin";
+
+      if (isAdminRequest && !isSpokesAdmin) {
+        return NextResponse.json({ message: "Insufficient permissions" }, { status: 403 });
+      }
 
       // Only apply pagination for non-admin requests
       const page = isAdminRequest ? 1 : Math.max(parseInt(searchParams.get("page") || "1", 10), 1);
@@ -26,6 +32,10 @@ export const GET = withApiAuth(
       const compensationFilters = searchParams.getAll("compensationType");
       const industryFilters = searchParams.getAll("organizationIndustry");
       const statusFilter = searchParams.get("jobStatus");
+
+      if (!isAdminRequest && statusFilter && statusFilter !== "approved") {
+        return NextResponse.json({ message: "Insufficient permissions" }, { status: 403 });
+      }
 
       // Build the filter object dynamically
       const filter: any = {};
@@ -66,6 +76,11 @@ export const GET = withApiAuth(
             $gte: getThirtyDaysAgo(),
           };
         }
+      } else if (!isAdminRequest) {
+        filter.jobStatus = "approved";
+        filter.approvedDate = {
+          $gte: getThirtyDaysAgo(),
+        };
       }
 
       if (statusFilter === "approved") {
@@ -100,10 +115,8 @@ export const POST = withApiAuth(
     try {
       await connectDB();
       const jobData = await req.json();
-      console.log("Job data", jobData);
       if (
         !jobData ||
-        !jobData.organizationName ||
         !jobData.organizationIndustry ||
         !jobData.title ||
         !jobData.postDate ||
@@ -120,14 +133,43 @@ export const POST = withApiAuth(
         return NextResponse.json({ message: "User not found in DB" }, { status: 404 });
       }
 
-      const newJob = await Job.create({
-        userId: auth.userId, // Set the userId from the auth context
-        memberJob: mongoUser.paidMember, // Set memberJob based on user's paid member status
-        ...jobData,
-        applyNowURL: jobData.applyNowURL || "",
-      });
+      const requestedOrganizationName =
+        typeof jobData.organizationName === "string" ? jobData.organizationName.trim() : "";
+      const userOrganizationName =
+        typeof mongoUser.organizationName === "string" ? mongoUser.organizationName.trim() : "";
+      const organizationName =
+        auth.role === "spokes_admin" && requestedOrganizationName
+          ? await resolveOrganizationName(requestedOrganizationName)
+          : userOrganizationName;
 
-      mongoUser.postedJobs.push(newJob._id);
+      if (!organizationName) {
+        return NextResponse.json({ message: "User organization is required to create a job" }, { status: 400 });
+      }
+
+      const jobSignature = {
+        userId: auth.userId,
+        organizationName,
+        title: jobData.title,
+        postDate: new Date(jobData.postDate),
+        detailURL: jobData.detailURL,
+      };
+
+      const newJob = await Job.findOneAndUpdate(
+        jobSignature,
+        {
+          $setOnInsert: {
+            ...jobData,
+            organizationName,
+            userId: auth.userId, // Set the userId from the auth context
+            memberJob: mongoUser.paidMember, // Set memberJob based on user's paid member status
+            jobStatus: "pending",
+            applyNowURL: jobData.applyNowURL || "",
+          },
+        },
+        { new: true, upsert: true, setDefaultsOnInsert: true },
+      );
+
+      mongoUser.postedJobs.addToSet(newJob._id);
       await mongoUser.save();
 
       return NextResponse.json({ message: "Job posted succesfully!", job: newJob }, { status: 201 });

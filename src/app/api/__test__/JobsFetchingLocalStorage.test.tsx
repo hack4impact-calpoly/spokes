@@ -1,7 +1,7 @@
 import React from "react";
 import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Jobs from "../../../app/jobs/page";
+import Jobs from "@/components/jobs/pages/JobsBoardPage";
 
 // needed because jobs page uses react-query hooks (like useInfiniteQuery) which expect a QueryClient
 const createWrapper = () => {

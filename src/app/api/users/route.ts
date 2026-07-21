@@ -3,11 +3,12 @@ import connectDB from "@/database/db";
 import User from "@/database/userSchema";
 import { updateUserMetadata } from "@/lib/clerk";
 import { withApiAuth } from "@/lib/auth";
+import { resolveOrganizationName } from "@/lib/organizations";
 
 // Connect to the database before handling requests
 
 export const POST = withApiAuth(
-  async (req: NextRequest) => {
+  async (req: NextRequest, { auth }) => {
     try {
       await connectDB();
 
@@ -16,12 +17,32 @@ export const POST = withApiAuth(
         return NextResponse.json({ message: "Missing user data" }, { status: 400 });
       }
 
-      const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
+      if (userId !== auth.userId) {
+        return NextResponse.json({ message: "Cannot complete onboarding for another user" }, { status: 403 });
+      }
+
+      const name = `${firstName ?? ""} ${lastName ?? ""}`.trim() || email;
+      const parsedPaidMember = paidMember === true || paidMember === "true";
+      const trimmedOrganizationName = typeof organizationName === "string" ? organizationName.trim() : "";
+
+      if (!trimmedOrganizationName) {
+        return NextResponse.json({ message: "Organization name is required" }, { status: 400 });
+      }
+
+      const canonicalOrganizationName = await resolveOrganizationName(trimmedOrganizationName);
 
       // Check if user already exists
       const existingUser = await User.findById(userId);
       if (existingUser) {
-        return NextResponse.json({ message: "User already exists" }, { status: 400 });
+        existingUser.paidMember = parsedPaidMember;
+        existingUser.organizationName = canonicalOrganizationName;
+        await existingUser.save();
+
+        await updateUserMetadata(userId, {
+          onboardingComplete: true,
+        });
+
+        return NextResponse.json(existingUser, { status: 200 });
       }
 
       // Create new user
@@ -30,8 +51,8 @@ export const POST = withApiAuth(
         name,
         email: email,
         postedJobs: [],
-        paidMember: paidMember,
-        organizationName: organizationName,
+        paidMember: parsedPaidMember,
+        organizationName: canonicalOrganizationName,
       });
       await newUser.save();
 
@@ -41,8 +62,16 @@ export const POST = withApiAuth(
       });
 
       return NextResponse.json(newUser, { status: 201 });
-    } catch (error) {
-      return NextResponse.json({ message: "Failed to connect user to database.", error }, { status: 500 });
+    } catch (error: any) {
+      console.error("Failed to complete onboarding:", error);
+
+      return NextResponse.json(
+        {
+          message: "Failed to connect user to database.",
+          error: error?.message ?? "Unknown onboarding error",
+        },
+        { status: 500 },
+      );
     }
   },
   {

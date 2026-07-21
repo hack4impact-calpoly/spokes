@@ -5,9 +5,16 @@ interface RejectJobProps {
   organizationName: string;
   contactName: string;
   rejectionReason: string;
+  jobFormURL: string;
 }
 
-export const RejectJob: React.FC<RejectJobProps> = ({ title, organizationName, contactName, rejectionReason }) => (
+export const RejectJob: React.FC<RejectJobProps> = ({
+  title,
+  organizationName,
+  contactName,
+  rejectionReason,
+  jobFormURL,
+}) => (
   <div
     style={{
       fontFamily: "Arial, sans-serif",
@@ -93,7 +100,7 @@ export const RejectJob: React.FC<RejectJobProps> = ({ title, organizationName, c
 
     <div style={{ textAlign: "center", marginTop: "24px" }}>
       <a
-        href="https://spokes-job-board.vercel.app/jobform"
+        href={jobFormURL}
         style={{
           backgroundColor: "#000000",
           color: "#ffffff",

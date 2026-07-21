@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFormReset } from "@/app/jobform/FormResetContext";
@@ -16,19 +16,21 @@ import {
   useRadioGroup,
   Link,
   Collapse,
+  Checkbox,
   useToast,
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import RadioCard from "@/components/RadioCard";
-import TagSelect from "@/components/TagSelect";
+import RadioCard from "@/components/ui/RadioCard";
+import TagSelect from "@/components/ui/TagSelect";
+import OrganizationSelect from "@/components/ui/OrganizationSelect";
 import { Option } from "@/components/TagsMultiselect/multiselect";
 import { cn } from "@/lib/utils";
-import JobConfirmationModal from "@/components/JobModals/JobConfirmationModal";
-import JobActionConfirmationModal from "@/components/JobModals/JobActionConfirmationModal";
-import JobCardModal from "@/components/JobCard/JobCardModal";
-import JobEditedModal from "@/components/JobModals/JobEditedModal";
-import JobFailModal from "@/components/JobModals/JobFailModal";
+import JobConfirmationModal from "@/components/jobs/JobModals/JobConfirmationModal";
+import JobActionConfirmationModal from "@/components/jobs/JobModals/JobActionConfirmationModal";
+import JobCardModal from "@/components/jobs/JobCard/JobCardModal";
+import JobEditedModal from "@/components/jobs/JobModals/JobEditedModal";
+import JobFailModal from "@/components/jobs/JobModals/JobFailModal";
 import { useUser } from "@clerk/nextjs";
 import { UserInterface as User } from "@/database/userSchema";
 
@@ -101,8 +103,6 @@ async function sendUpdateEmail(jobData: FormDataType) {
       console.error("Failed to send update notification email:", await emailResponse.text());
       return;
     }
-
-    console.log("Update notification email sent successfully");
   } catch (error) {
     console.error("Error sending update notification email:", error);
   }
@@ -158,6 +158,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
   });
 
   const [loading, setLoading] = useState(false);
+  const submitLockRef = useRef(false);
   const [loadingInfo, setLoadingInfo] = useState(isEditing);
   const [message, setMessage] = useState("");
   const [selectEmployment, setSelectEmployment] = useState("");
@@ -171,6 +172,8 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
+  const [createForAnotherOrganization, setCreateForAnotherOrganization] = useState(false);
+  const [selectedAdminOrganizationName, setSelectedAdminOrganizationName] = useState("");
 
   const employmentColorMapping = {
     "Full-Time": "#F8B1B8",
@@ -261,14 +264,29 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitLockRef.current) {
+      return;
+    }
+
+    submitLockRef.current = true;
     setLoading(true);
     setMessage("");
 
     try {
       if (!user) throw new Error("User not authenticated");
 
+      const organizationName =
+        isSpokesAdmin && !isEditing && createForAnotherOrganization
+          ? selectedAdminOrganizationName
+          : formData.organizationName;
+
+      if (isSpokesAdmin && !isEditing && createForAnotherOrganization && !organizationName) {
+        throw new Error("Please select or enter an organization.");
+      }
+
       const formattedFormData = {
         ...formData,
+        organizationName,
         expireDate: formData.expireDate || null,
         detailURL: ensureHttps(formData.detailURL),
         applyNowURL: ensureHttps(formData.applyNowURL),
@@ -285,16 +303,26 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         throw new Error(errorData.message || "Failed to submit job.");
       }
 
+      const result = await response.json();
+      const savedJobData = result?.job ?? formattedFormData;
+
       const emailResponse = await fetch("/api/send/new", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formattedFormData),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(savedJobData),
       });
 
       if (!emailResponse.ok) {
-        console.error("Failed to send notification email");
+        const errorData = await emailResponse.json().catch(() => null);
+        console.error("Failed to send new job notification email:", errorData?.error || emailResponse.statusText);
+        toast({
+          title: "Job submitted",
+          description: "The listing was saved, but the admin notification email could not be sent.",
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
       }
 
       toast({
@@ -325,6 +353,8 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       });
       setSelectEmployment("");
       setSelectCompensation("");
+      setCreateForAnotherOrganization(false);
+      setSelectedAdminOrganizationName("");
 
       setMessage("Job posted successfully!");
       setTimeout(() => {
@@ -333,10 +363,11 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
 
       setIsSubmitModalOpen(true);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to submit job. Please try again.";
       console.error("Error submitting job:", error);
       toast({
         title: "Error",
-        description: "Failed to submit job. Please try again.",
+        description: errorMessage,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -345,6 +376,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
       setIsFailModalOpen(true);
       setMessage("Error submitting job.");
     } finally {
+      submitLockRef.current = false;
       setLoading(false);
     }
   };
@@ -408,11 +440,9 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
   };
 
   const handleAction = async () => {
-    console.log("handleAction called with action:", action);
     if (!jobId) return;
     setLoading(true);
     setMessage("");
-    console.log(action);
 
     if (action === "Reject") {
       const updatedFormData = {
@@ -461,7 +491,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
         setAction("");
         setMessage("Successfully reject job");
         setLoading(false);
-        router.push("/admin");
+        router.push(returnURL);
       } catch (error) {
         console.error(`Error rejecting job: ${error}`);
         toast({
@@ -568,6 +598,9 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) {
+      return;
+    }
 
     if (!formData.organizationIndustry.length) {
       setMessage("Please select at least one industry");
@@ -598,6 +631,33 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
 
       <form onSubmit={onSubmit} noValidate>
         <VStack spacing={4}>
+          {isSpokesAdmin && !isEditing && (
+            <FormControl>
+              <Checkbox
+                isChecked={createForAnotherOrganization}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setCreateForAnotherOrganization(checked);
+                  if (!checked) {
+                    setSelectedAdminOrganizationName("");
+                  }
+                }}
+              >
+                Create for another organization
+              </Checkbox>
+            </FormControl>
+          )}
+          {isSpokesAdmin && !isEditing && createForAnotherOrganization && (
+            <FormControl isRequired className="w-full sm:max-w-md" alignSelf="flex-start">
+              <FormLabel>Organization Name</FormLabel>
+              <OrganizationSelect
+                value={selectedAdminOrganizationName}
+                onChange={setSelectedAdminOrganizationName}
+                bg="#F6F6F6"
+                border="0"
+              />
+            </FormControl>
+          )}
           <FormControl isRequired>
             <FormLabel>Job Title</FormLabel>
             <Input
@@ -851,6 +911,7 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
               <Button
                 isLoading={loading}
                 loadingText="Submitting..."
+                disabled={loading}
                 type="submit"
                 size="lg"
                 colorScheme="blackAlpha"
@@ -865,14 +926,14 @@ export default function JobFormPage({ isSpokesAdmin, returnURL }: JobFormPagePro
           {isEditing &&
             (isSpokesAdmin ? (
               <Link
-                href="/admin"
+                href={returnURL}
                 className="mt-1 block text-center text-gray-500 text-sm hover:text-[#045F87] transition-colors duration-200"
               >
                 ← Return to Admin Dashboard
               </Link>
             ) : (
               <Link
-                href="/dashboard"
+                href={returnURL}
                 className="mt-1 block text-center text-gray-500 text-sm hover:text-[#045F87] transition-colors duration-200"
               >
                 ← Return to Dashboard

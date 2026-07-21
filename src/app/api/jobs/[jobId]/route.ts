@@ -3,6 +3,33 @@ import { NextRequest, NextResponse } from "next/server";
 import Job from "@/database/jobSchema";
 import { withApiAuth } from "@/lib/auth";
 import { JobStatus } from "@/database/jobSchema";
+import { isExpired } from "@/lib/utils";
+
+const mutableJobFields = [
+  "organizationIndustry",
+  "title",
+  "jobDescription",
+  "employmentType",
+  "compensationType",
+  "detailURL",
+  "contactName",
+  "contactPhone",
+  "contactEmail",
+  "applyNowURL",
+  "rejectionMessage",
+] as const;
+
+function getMutableJobUpdate(jobData: Record<string, unknown>) {
+  const update: Record<string, unknown> = {};
+
+  for (const field of mutableJobFields) {
+    if (field in jobData) {
+      update[field] = jobData[field];
+    }
+  }
+
+  return update;
+}
 
 export const DELETE = withApiAuth(
   async (req: NextRequest, { auth }) => {
@@ -52,11 +79,6 @@ export const PUT = withApiAuth(
 
       // Handle both cases - with and without status transition data
       const hasStatusTransition = previousStatus !== undefined && newStatus !== undefined;
-      console.log("Has Status Transition:", hasStatusTransition);
-      if (hasStatusTransition) {
-        console.log("Previous Status:", previousStatus);
-        console.log("New Status:", newStatus);
-      }
 
       if (!jobId) {
         return NextResponse.json({ message: "Job ID is required" }, { status: 400 });
@@ -67,8 +89,6 @@ export const PUT = withApiAuth(
       if (!existingJob) {
         return NextResponse.json({ message: "Job not found" }, { status: 404 });
       }
-
-      console.log("Existing Job Status:", existingJob.jobStatus);
 
       // Check if nonprofit is the owner of the job
       if (auth.role === "nonprofit" && existingJob.userId !== auth.userId) {
@@ -104,7 +124,7 @@ export const PUT = withApiAuth(
       }
 
       const updatedJob = {
-        ...jobData,
+        ...getMutableJobUpdate(jobData),
         jobStatus: hasStatusTransition
           ? auth.role === "nonprofit" || previousStatus === "rejected"
             ? JobStatus.pending
@@ -115,7 +135,6 @@ export const PUT = withApiAuth(
         modifiedDate: new Date(),
         rejectionMessage: jobData.rejectionMessage ?? existingJob.rejectionMessage ?? "",
       };
-      console.log("Received Job Data:", updatedJob);
 
       await Job.findByIdAndUpdate(jobId, updatedJob, { new: true });
       return NextResponse.json({ message: "Job updated successfully" });
@@ -131,16 +150,21 @@ export const PUT = withApiAuth(
 );
 
 export const GET = withApiAuth(
-  async (req: NextRequest) => {
+  async (req: NextRequest, { auth }) => {
     try {
       await connectDB();
       const jobId = req.nextUrl.pathname.split("/").pop();
 
-      console.log("Received jobId:", jobId);
-
       const job = await Job.findById(jobId);
 
       if (!job) {
+        return NextResponse.json({ message: "Job not found" }, { status: 404 });
+      }
+
+      const isPubliclyVisible = job.jobStatus === JobStatus.approved && !isExpired(job.jobStatus, job.approvedDate);
+      const canViewPrivateJob = auth.role === "spokes_admin" || (auth.userId && job.userId === auth.userId);
+
+      if (!isPubliclyVisible && !canViewPrivateJob) {
         return NextResponse.json({ message: "Job not found" }, { status: 404 });
       }
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
-import JobCard from "../../../components/JobCard/JobCard"; // adjust the path as needed
+import JobCard from "@/components/jobs/JobCard/JobCard";
 
 // Dummy job object with organizationIndustry as an array
 const dummyJob = {

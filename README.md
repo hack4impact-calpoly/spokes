@@ -17,7 +17,7 @@ Spoke's has a mission to guide nonprofits to achieve their goals through support
 
 ### Team
 
-The Spokes team consists of 16 Cal Poly students. Over the course of about 9 months, we worked as a team to deploy this web application. The team members are listed below:
+The V1 Spokes team consists of 16 Cal Poly students. Over the course of about 9 months, they worked as a team to deploy the first version of this web application. The team members are listed below:
 
 - [James Tran](https://www.linkedin.com/in/jameskhaihoantran/) - Project Manager
 - [Jessica Yu](https://www.linkedin.com/in/jessicayuhope/) - Designer
@@ -36,8 +36,25 @@ The Spokes team consists of 16 Cal Poly students. Over the course of about 9 mon
 - [Vishnu Alachi](https://www.linkedin.com/in/vishnu-alachi/) - Software Developer
 - [Khushdip Singh](https://www.linkedin.com/in/deep-singh14/) - Software Developer
 
+The V2 Spokes team consists of 12 Cal Poly students. Over the course of about 9 months, they worked as a team to deploy the second version of this web application. The team members are listed below:
+
+- [Aidan Mawani](https://www.linkedin.com/in/aidanmawani/) - Project Manager
+- [Khushdip Singh](https://www.linkedin.com/in/deep-singh14/) - Tech Lead
+- [Kevin Beltran](https://www.linkedin.com/in/kevinbeltran23/) - Tech Lead
+- [Stella Daoud](https://www.linkedin.com/in/stella-daoud-b3129a246/) - Designer
+- [Waseem Zeid](https://www.linkedin.com/in/waseem-zeid-679048241/) - Designer
+- [Shayne Hopkins](www.linkedin.com/in/shayne-hopkins-b8ab2b3a7) - Software Developer
+- [Alan Mathew](www.linkedin.com/in/alan-mathew-6b14a7318) - Software Developer
+- [Joshua Panicker](https://www.linkedin.com/in/joshua-panicker-3) - Software Developer
+- [Rahul Thennarasu](https://www.linkedin.com/in/rahulthennarasu/) - Software Developer
+- [Henry Orisonte](https://www.linkedin.com/in/henry-orisonte-2aa7a4369/) - Software Developer
+- [Stearman Rubey](https://www.linkedin.com/in/stearmanrubey) - Software Developer
+- [Khoa Nguyen](https://www.linkedin.com/in/khoanguyen07/) - Software Developer
+
 ## Getting Started And Contributing
 
 Visit [getting-started.md](docs/getting-started.md) on info for how to set up this repo.
 
 Visit [contributing.md](docs/contributing.md) on info for how to contribute to this repo.
+
+Visit [owner-user-guide.md](docs/owner-user-guide.md) for a non-technical guide to managing the live website.

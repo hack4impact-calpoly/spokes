@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button, FormControl, FormLabel, Input, Radio, RadioGroup, Stack, Text, VStack } from "@chakra-ui/react";
+import { Button, FormControl, FormLabel, Radio, RadioGroup, Stack, Text, VStack } from "@chakra-ui/react";
+import OrganizationSelect from "@/components/ui/OrganizationSelect";
 
 interface OnboardingFormProps {
   onSubmit: (formData: { paidMember: string; organizationName: string }) => Promise<void>;
@@ -11,20 +12,16 @@ interface OnboardingFormProps {
 export default function OnboardingForm({ onSubmit, isSubmitting }: OnboardingFormProps) {
   const [formData, setFormData] = useState({
     paidMember: "",
-    organizationName: "",
   });
+  const [organizationName, setOrganizationName] = useState("");
 
   const handleChange = (value: string) => {
     setFormData((prev) => ({ ...prev, paidMember: value }));
   };
 
-  const handleOrganizationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, organizationName: e.target.value }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit(formData);
+    await onSubmit({ ...formData, organizationName });
   };
 
   return (
@@ -34,12 +31,11 @@ export default function OnboardingForm({ onSubmit, isSubmitting }: OnboardingFor
       <form onSubmit={handleSubmit}>
         <FormControl isRequired mb={6}>
           <FormLabel fontWeight="medium">Organization Name</FormLabel>
-          <Input
-            value={formData.organizationName}
-            onChange={handleOrganizationChange}
-            placeholder="Enter your organization name"
-            bg="#F6F6F6"
-            _focus={{
+          <OrganizationSelect
+            value={organizationName}
+            onChange={setOrganizationName}
+            placeholder="Select your organization"
+            selectFocusStyle={{
               borderColor: "#BDEABD",
               boxShadow: "0 0 0 1px #BDEABD",
             }}
@@ -47,7 +43,7 @@ export default function OnboardingForm({ onSubmit, isSubmitting }: OnboardingFor
         </FormControl>
 
         <FormControl isRequired mb={6}>
-          <FormLabel fontWeight="medium">Are you a paid member of Spokes?</FormLabel>
+          <FormLabel fontWeight="medium">Is your organization a paid member of Spokes?</FormLabel>
           <RadioGroup onChange={handleChange} value={formData.paidMember} name="paidMember">
             <Stack direction="column" spacing={4}>
               <Radio
@@ -58,7 +54,17 @@ export default function OnboardingForm({ onSubmit, isSubmitting }: OnboardingFor
                   borderColor: "#BDEABD",
                 }}
               >
-                Yes, I am a paid member
+                Yes, my organization is
+              </Radio>
+              <Radio
+                value="false"
+                bg="#F6F6F6"
+                _checked={{
+                  bg: "#eae6bd",
+                  borderColor: "#eae6bd",
+                }}
+              >
+                I am unsure if my organization is
               </Radio>
               <Radio
                 value="false"
@@ -68,7 +74,7 @@ export default function OnboardingForm({ onSubmit, isSubmitting }: OnboardingFor
                   borderColor: "#F8B1B8",
                 }}
               >
-                No, I am not a paid member
+                No, my organization is not
               </Radio>
             </Stack>
           </RadioGroup>
@@ -76,7 +82,7 @@ export default function OnboardingForm({ onSubmit, isSubmitting }: OnboardingFor
 
         <Button
           type="submit"
-          disabled={isSubmitting || !formData.paidMember || !formData.organizationName}
+          disabled={isSubmitting || !formData.paidMember || !organizationName}
           isLoading={isSubmitting}
           loadingText="Submitting..."
           w="full"

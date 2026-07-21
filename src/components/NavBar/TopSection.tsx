@@ -2,27 +2,32 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { UserResource } from "@clerk/types";
 import { Button, Tooltip, Box } from "@chakra-ui/react";
 import { UserButton, OrganizationSwitcher, useSession } from "@clerk/nextjs";
 import { useOrganizationList } from "@clerk/nextjs";
 
+const SPOKES_SITE_URL = "https://www.spokesfornonprofits.org/";
+
 interface TopSectionProps {
   user: UserResource | null | undefined;
+  hideControls?: boolean;
 }
 
-export default function TopSection({ user }: TopSectionProps) {
+export default function TopSection({ user, hideControls = false }: TopSectionProps) {
   const { session } = useSession();
+  const pathname = usePathname();
   const onboardingComplete = session?.user?.publicMetadata?.onboardingComplete === true;
-  const { isLoaded, userMemberships } = useOrganizationList({
-    userMemberships: true,
-  });
-  const hasOrgMembership = isLoaded && userMemberships.data?.length > 0;
+  const isEventsRoute = pathname?.startsWith("/events") || pathname?.startsWith("/eventsDashboard");
+  const loginUrl = isEventsRoute ? "/eventsLogin" : "/jobsLogin";
+
+  const afterSignOutUrl = isEventsRoute ? "/eventsLogin" : "/jobsLogin";
 
   return (
     <>
       <main className="flex items-center justify-between px-10 bg-white sm:px-14 py-7">
-        <Link href="/jobs" className="flex-shrink-0 max-[458px]:w-[115px] w-[200px] cursor-pointer">
+        <Link href={SPOKES_SITE_URL} className="flex-shrink-0 max-[458px]:w-[115px] w-[200px] cursor-pointer">
           <Image
             className="h-auto"
             alt="spokes logo"
@@ -31,38 +36,10 @@ export default function TopSection({ user }: TopSectionProps) {
             height={500}
           />
         </Link>
-        {user ? (
-          <div className="flex flex-col items-center gap-3">
-            <div className="flex items-center gap-4">
-              {!onboardingComplete && (
-                <Tooltip label="Complete your profile setup" placement="bottom">
-                  <Box
-                    w="2"
-                    h="2"
-                    borderRadius="full"
-                    bg="orange.400"
-                    position="relative"
-                    _after={{
-                      content: '""',
-                      position: "absolute",
-                      top: "-2px",
-                      left: "-2px",
-                      right: "-2px",
-                      bottom: "-2px",
-                      borderRadius: "full",
-                      border: "1px solid",
-                      borderColor: "orange.400",
-                      animation: "pulse 2s infinite",
-                    }}
-                  />
-                </Tooltip>
-              )}
-              <UserButton showName={true} />
-            </div>
-            {hasOrgMembership && <OrganizationSwitcher />}
-          </div>
+        {hideControls ? null : user ? (
+          <SignedInControls onboardingComplete={onboardingComplete} afterSignOutUrl={afterSignOutUrl} />
         ) : (
-          <Link href="/sign-in">
+          <Link href={loginUrl}>
             <Button
               className="flex flex-shrink-0 gap-2"
               fontWeight="medium"
@@ -83,5 +60,50 @@ export default function TopSection({ user }: TopSectionProps) {
         )}
       </main>
     </>
+  );
+}
+
+function SignedInControls({
+  onboardingComplete,
+  afterSignOutUrl,
+}: {
+  onboardingComplete: boolean;
+  afterSignOutUrl: string;
+}) {
+  const { isLoaded, userMemberships } = useOrganizationList({
+    userMemberships: true,
+  });
+  const hasOrgMembership = isLoaded && userMemberships.data?.length > 0;
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <div className="flex items-center gap-4">
+        {!onboardingComplete && (
+          <Tooltip label="Complete your profile setup" placement="bottom">
+            <Box
+              w="2"
+              h="2"
+              borderRadius="full"
+              bg="orange.400"
+              position="relative"
+              _after={{
+                content: '""',
+                position: "absolute",
+                top: "-2px",
+                left: "-2px",
+                right: "-2px",
+                bottom: "-2px",
+                borderRadius: "full",
+                border: "1px solid",
+                borderColor: "orange.400",
+                animation: "pulse 2s infinite",
+              }}
+            />
+          </Tooltip>
+        )}
+        <UserButton showName={true} afterSignOutUrl={afterSignOutUrl} />
+      </div>
+      {hasOrgMembership && <OrganizationSwitcher />}
+    </div>
   );
 }
