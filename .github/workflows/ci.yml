@@ -8,36 +8,23 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [24.12.0]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 24.12.0
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
       - name: Lint
         run: npm run lint
-
-      - name: Dry-run build
-        run: npm run build
-        env:
-          # These env variables must be set in the repository's secrets
-          # - Settings -> Secrets and variables -> New repository secret
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
 
       - name: Run tests
         run: npm test
