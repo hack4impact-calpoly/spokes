@@ -19,9 +19,10 @@ export default function TopSection({ user, hideControls = false }: TopSectionPro
   const { session } = useSession();
   const pathname = usePathname();
   const onboardingComplete = session?.user?.publicMetadata?.onboardingComplete === true;
-  const loginUrl = pathname?.startsWith("/events") ? "/eventsLogin" : "/jobsLogin";
+  const isEventsRoute = pathname?.startsWith("/events") || pathname?.startsWith("/eventsDashboard");
+  const loginUrl = isEventsRoute ? "/eventsLogin" : "/jobsLogin";
 
-  const afterSignOutUrl = pathname?.startsWith("/events") ? "/events" : "/jobs";
+  const afterSignOutUrl = isEventsRoute ? "/eventsLogin" : "/jobsLogin";
 
   return (
     <>

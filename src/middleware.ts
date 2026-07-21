@@ -2,8 +2,8 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { getAuthWithRole } from "@/lib/auth";
 
-const isJobAdminRoute = createRouteMatcher(["/admin(.*)", "/jobsDashboard/admin(.*)"]);
-const isEventAdminRoute = createRouteMatcher(["/eventsDashboard/admin(.*)"]);
+const isJobAdminRoute = createRouteMatcher(["/admin(.*)", "/jobs/admin(.*)", "/jobsDashboard/admin(.*)"]);
+const isEventAdminRoute = createRouteMatcher(["/events/admin(.*)", "/eventsDashboard/admin(.*)"]);
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
 const isAuthRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)", "/jobsLogin(.*)", "/eventsLogin(.*)"]);
 const isPublicApiRoute = createRouteMatcher([
@@ -14,12 +14,14 @@ const isPublicApiRoute = createRouteMatcher([
   "/api/events(.*)",
 ]);
 const isPublicPageRoute = createRouteMatcher([
+  "/jobs",
   "/jobsDashboard",
   "/jobsDashboard/jobs",
+  "/events",
   "/eventsDashboard",
   "/eventsDashboard/events",
 ]);
-const isEventDashboardRoute = createRouteMatcher(["/eventsDashboard(.*)"]);
+const isEventRoute = createRouteMatcher(["/events(.*)", "/eventsDashboard(.*)"]);
 
 async function hasCompletedMongoProfile(req: Request, userId: string) {
   try {
@@ -57,7 +59,7 @@ export default clerkMiddleware(async (auth, req) => {
       return NextResponse.next();
     }
 
-    const signInUrl = new URL(isEventDashboardRoute(req) ? "/eventsLogin" : "/jobsLogin", req.url);
+    const signInUrl = new URL(isEventRoute(req) ? "/eventsLogin" : "/jobsLogin", req.url);
     return NextResponse.redirect(signInUrl);
   }
 
@@ -74,18 +76,18 @@ export default clerkMiddleware(async (auth, req) => {
   // if user has completed onboarding but is trying to access the onboarding page, redirect to dashboard
   if (onboardingComplete && isOnboardingRoute(req)) {
     const returnUrl = new URL(req.url).searchParams.get("returnUrl");
-    const dashboardUrl = new URL(returnUrl || "/jobsDashboard/jobs", req.url);
+    const dashboardUrl = new URL(returnUrl || "/jobs", req.url);
     return NextResponse.redirect(dashboardUrl);
   }
 
   // if user trying to access admin, and is not spokes_admin
   if (isJobAdminRoute(req) && !(role === "spokes_admin")) {
-    const jobUrl = new URL("/jobsDashboard/jobs", req.url);
+    const jobUrl = new URL("/jobs", req.url);
     return NextResponse.redirect(jobUrl);
   }
 
   if (isEventAdminRoute(req) && !(role === "spokes_admin")) {
-    const eventsUrl = new URL("/eventsDashboard/events", req.url);
+    const eventsUrl = new URL("/events", req.url);
     return NextResponse.redirect(eventsUrl);
   }
 

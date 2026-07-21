@@ -14,7 +14,7 @@ export default function BottomSection() {
   const { triggerReset } = useFormReset();
   const { orgSlug, isSignedIn } = useAuth();
   const isSpokesAdmin = orgSlug === "spokes-admin";
-  const isEventsDashboard = pathname?.startsWith("/events");
+  const isEventsDashboard = pathname?.startsWith("/events") || pathname?.startsWith("/eventsDashboard");
   const dashboardLinks = isEventsDashboard
     ? {
         board: { title: "Event Board", href: "/events" },

@@ -17,7 +17,7 @@ export default function Page() {
       gap={10}
     >
       {!isAuthCallback && <WelcomeInfo />}
-      <SignUp forceRedirectUrl="/jobsDashboard/jobs" />
+      <SignUp forceRedirectUrl="/jobs" />
     </Center>
   );
 }

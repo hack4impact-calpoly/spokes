@@ -7,8 +7,38 @@ const nextConfig = {
     return [
       {
         source: "/",
-        destination: "/jobsDashboard/jobs",
-        permanent: true,
+        destination: "/jobs",
+        permanent: false,
+      },
+      {
+        source: "/jobsDashboard",
+        destination: "/jobs",
+        permanent: false,
+      },
+      {
+        source: "/jobsDashboard/jobs",
+        destination: "/jobs",
+        permanent: false,
+      },
+      {
+        source: "/jobsDashboard/admin",
+        destination: "/jobs/admin",
+        permanent: false,
+      },
+      {
+        source: "/eventsDashboard",
+        destination: "/events",
+        permanent: false,
+      },
+      {
+        source: "/eventsDashboard/events",
+        destination: "/events",
+        permanent: false,
+      },
+      {
+        source: "/eventsDashboard/admin",
+        destination: "/events/admin",
+        permanent: false,
       },
     ];
   },

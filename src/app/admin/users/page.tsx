@@ -8,8 +8,8 @@ export default async function UsersPage() {
   const authWithRole = getAuthWithRole({ userId, orgSlug });
 
   if (authWithRole.role !== "spokes_admin") {
-    redirect("/jobsDashboard/jobs");
+    redirect("/jobs");
   }
 
-  return <AdminUsersPage backHref="/jobsDashboard/admin" backLabel="Manage Jobs" />;
+  return <AdminUsersPage backHref="/jobs/admin" backLabel="Manage Jobs" />;
 }
