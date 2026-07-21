@@ -24,7 +24,7 @@ const isPublicPageRoute = createRouteMatcher([
 const isEventRoute = createRouteMatcher(["/events(.*)", "/eventsDashboard(.*)"]);
 const isPublicEventDetailRoute = (req: Request) => {
   const pathname = new URL(req.url).pathname;
-  return /^\/events\/[^/]+$/.test(pathname);
+  return /^\/events\/[a-f\d]{24}$/i.test(pathname);
 };
 
 async function hasCompletedMongoProfile(req: Request, userId: string) {
