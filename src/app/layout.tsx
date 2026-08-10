@@ -7,8 +7,8 @@ import Footer from "@/components/Footer/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Spokes Job Board",
-  description: "The job board is a place for nonprofit organizations to post their job openings.",
+  title: "Spokes Job & Event Board",
+  description: "A nonprofit job and event board from Spokes.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

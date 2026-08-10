@@ -20,7 +20,7 @@ export const POST = withApiAuth(
       }
       const resend = new Resend(process.env.RESEND_API_KEY);
       const { data, error } = await resend.emails.send({
-        from: `Spokes Job Board <${senderEmail}>`,
+        from: `Spokes Website <${senderEmail}>`,
         to: [`${jobData.contactEmail}`],
         subject: `Your job post for ${jobData.title} was rejected`,
         react: RejectJob({

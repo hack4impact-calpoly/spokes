@@ -15,6 +15,9 @@ export default function OnboardingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("returnUrl") || "/";
+  const isEventReturn = returnUrl.startsWith("/events");
+  const boardLabel = isEventReturn ? "Event Board" : "Job Board";
+  const boardReturnUrl = isEventReturn ? "/events" : "/jobs";
   const toast = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -71,11 +74,11 @@ export default function OnboardingPage() {
         router.push(returnUrl);
       } else {
         const error = await response.json();
-        setError("We couldn't complete your profile at this time. Please try again or return to the job board.");
+        setError(`We couldn't complete your profile at this time. Please try again or return to the ${boardLabel}.`);
         console.error("Failed to complete onboarding:", error);
       }
     } catch (error) {
-      setError("An unexpected error occurred. Please try again or return to the job board.");
+      setError(`An unexpected error occurred. Please try again or return to the ${boardLabel}.`);
       console.error("Error during onboarding:", error);
     } finally {
       setIsSubmitting(false);
@@ -86,8 +89,8 @@ export default function OnboardingPage() {
     setError(null);
   };
 
-  const handleReturnToJobBoard = () => {
-    router.push("/");
+  const handleReturnToBoard = () => {
+    router.push(boardReturnUrl);
   };
 
   return (
@@ -107,7 +110,12 @@ export default function OnboardingPage() {
           Complete Your Profile
         </Heading>
         {error ? (
-          <OnboardingError error={error} onRetry={handleRetry} onReturnToJobBoard={handleReturnToJobBoard} />
+          <OnboardingError
+            error={error}
+            onRetry={handleRetry}
+            boardLabel={boardLabel}
+            onReturnToBoard={handleReturnToBoard}
+          />
         ) : (
           <OnboardingForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
         )}

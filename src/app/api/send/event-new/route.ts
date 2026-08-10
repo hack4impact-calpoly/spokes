@@ -22,7 +22,7 @@ export const POST = withApiAuth(
 
       const resend = new Resend(process.env.RESEND_API_KEY);
       const { data, error } = await resend.emails.send({
-        from: `Spokes Events <${senderEmail}>`,
+        from: `Spokes Website <${senderEmail}>`,
         to: [adminEmail],
         subject: `${eventData.organization} submitted an event and is pending approval...`,
         react: NewEvent({

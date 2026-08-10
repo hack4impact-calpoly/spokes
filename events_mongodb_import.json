@@ -1,0 +1,817 @@
+[
+  {
+    "eventName": "Tunes at Tidelands",
+    "date": {
+      "$date": "2025-09-04T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "5:00 PM",
+    "description": "Tunes at Tidelands is a free concert series being hosted by the Morro Bay Active Adults 55+ and the City of Morro Bay. The 4-week concert package (TBD) runs every Thursday night through the month of September.\nMore info:\ncyndembaanl@gmail.com\n(805) 772-4421",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78081100/20250904170000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/mb-seniors_uomI.jpeg",
+    "organization": "Morro Bay Senior Citizens, Inc.",
+    "publicContactEmail": "cyndembaanl@gmail.com",
+    "publicContactPhoneNumber": "(805) 772-4421"
+  },
+  {
+    "eventName": "Creeks to Coast Cleanup",
+    "date": {
+      "$date": "2025-09-20T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "ECOSLO’s annual Creeks to Coast Cleanup is SLO County’s largest volunteer event as part of Coastal Cleanup Day! ECOSLO has served as the SLO County Coordinator since 2005. This annual volunteer event empowers community members in SLO County to come together to protect our waterways, communities, wildlife, and our neighbors.\nMore info:\nhttps://www.ecoslo.com/creeks-to-coast",
+    "eventLink": "https://events.timely.fun/kio519aj/event/77931854/20250920000000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/ecoslo_lanf.jpeg",
+    "organization": "ECOSLO"
+  },
+  {
+    "eventName": "Sip for Smiles",
+    "date": {
+      "$date": "2025-10-12T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "2:00 PM",
+    "description": "This event will take place at Filipponi Ranch Winery in SLO at 2 pm. Our event is another opportunity to raise money for our non-profit organization. Tolosa Children's Dental Center (TCDC) provides quality dental care for underserved children throughout SLO County.\nMore info:\nhttps://tolosachildrensdental.org/events/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/77931861/20251012140000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/TCDF_Logo_bS0G.png",
+    "organization": "Tolosa Children's Dental Center"
+  },
+  {
+    "eventName": "SLO Pickle Festival",
+    "date": {
+      "$date": "2025-10-04T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "We’re thrilled to announce the SLO Pickle Festival, happening this October! It’s going to be a jam-packed day filled with pickle-themed games, delicious food, live music, and so much more. Every ticket sold helps support the Meals That Connect program, providing nutritious meals to our beloved senior community. So, mark your calendars and get ready for a dill-lightful day!\nMore Info:\nwww.slopicklefestival.org",
+    "eventLink": "https://events.timely.fun/kio519aj/event/77945677/20251004000000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/Asset-1_HRPp.png",
+    "organization": "Meals That Connect"
+  },
+  {
+    "eventName": "Golf Tournament",
+    "date": {
+      "$date": "2025-10-17T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "8:00 AM",
+    "description": "Sign up starts May 15 for the best golf tournament on the Central Coast! We have tee sponsorships available and 36 foursomes. Your won't want to miss this FUNdraiser that supports our NAHB Student Chapters at Cal Poly and Paso Robles High School as well as our BITA program and Professional Women in Building.\nMore info:\nhttps://www.hbacc.org/events-and-meetings",
+    "eventLink": "https://events.timely.fun/kio519aj/event/77960130/20251017080000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/homebuilders_uACr.jpeg",
+    "organization": "Home Builders Association of the Central Coast"
+  },
+  {
+    "eventName": "The 6th Annual Butterfly Ball",
+    "date": {
+      "$date": "2025-09-27T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "4:00 PM",
+    "description": "The time has come for Central Coast State Parks Association’s (CCSPA) 6th Annual Butterfly Ball! Please join us for an evening of music, food & drink, inspiring presentations, and silent auction to support the 10 state parks in San Luis Obispo! This year’s gala will directly fund the educational, interpretive, and volunteer programs that inspire the current and future generations of environmental stewards! We hope to see you in your finest monarch attire for this elegant and inspirational evening!\nMore info:\nhttps://centralcoastparks.org/butterfly-ball/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/77988329/20250927160000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/CCSPA_Large_zsDB.jpg",
+    "organization": "Central Coast State Parks Association"
+  },
+  {
+    "eventName": "Live Oak Music Festival",
+    "date": {
+      "$date": "2026-06-19T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "The Live Oak Music Festival is three days of eclectic music, food, beverages, and family activities every Father's Day Weekend at El Chorro Regional Park. Tickets include full festival camping passes and single day tickets. World-class performers from around the globe play genres as diverse as funk, soul, folk, blues, Americana, jazz, roots rock, gospel, bluegrass, world music and more. Attendees can also enjoy yoga, jamming workshops, a kids' talent show, crafts, an ArtWalk, a beer & wine garden, food trucks and more. Live Oak benefits KCBX Central Coast Public Radio.\nMore info:\nhttps://www.liveoakfest.org/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/77989120/20260619000000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/kcbx_IuYK.png",
+    "organization": "KCBX"
+  },
+  {
+    "eventName": "Empty Bowls Community Luncheon",
+    "date": {
+      "$date": "2025-10-09T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "Join us for our Fourteenth Annual Empty Bowls! Empty Bowls benefits families who are homeless or are facing homelessness. We are happy to announce this year's luncheon will be back in person! Enjoy the afternoon picking out the very best bowl to eat the very best local soups. Community celebrity servers will be on hand to make your dining experience a sure delight. Don't miss out on the delectable raffle. You will be a winner, no matter what, when you take home your wonderfully artistic bowl and engage with other community-minded neighbors!\nMore info:\nerin.roullard@5chc.org\n805-458-3314\nwww.5chc.org/events/empty-bowls-community-luncheon-in-person-2025",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78014817/20251009000000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/5citieshomeless_a6IQ.jpeg",
+    "organization": "5 Cities Homeless Coalition",
+    "publicContactEmail": "erin.roullard@5chc.org",
+    "publicContactPhoneNumber": "805-458-3314"
+  },
+  {
+    "eventName": "Giving Tuesday Banquet",
+    "date": {
+      "$date": "2025-11-18T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "4:30 PM",
+    "description": "Come celebrate Giving Tuesday and “Dinner for a Cause” Banquet in the tent at Pismo Beach Golf Course, 9 Le Sage Dr, Grover Beach, CA 93433. From 4:30 pm to 8 pm, there will be dinner, dancing, and so many ways to support! 100% of all proceeds benefit the 5Cities Homeless Coalition. Seats are limited and tickets must be purchased in advance of this lovely, seated event.\nMore info:\nerin.roullard@5chc.org\n805-458-3314\nwww.5chc.org/events/giving-tuesday-banquet-2025",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78014818/20251118163000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/5citieshomeless_a6IQ.jpeg",
+    "organization": "5Cities Homeless Coalition",
+    "publicContactEmail": "erin.roullard@5chc.org",
+    "publicContactPhoneNumber": "805-458-3314"
+  },
+  {
+    "eventName": "2026 Dream Big Annual Gala Fundraiser",
+    "date": {
+      "$date": "2026-03-28T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "1:00 PM",
+    "description": "Join us for the 2026 Dream Big Annual Gala on Saturday, March 28, 2026, from 1–4 PM at the Pismo Beach Veterans Memorial Hall. We’re proud to honor Jack and Jayne Smith with the Betsey Kelton Changemakers Award for their inspiring commitment to youth. This special event supports the Boys & Girls Clubs of South SLO County and celebrates the impact of our programs. Your presence helps ensure more youth across South SLO have access to safe spaces, caring mentors, and life-changing opportunities.\nMore info:\nhttps://www.bgcslo.org/dreambig.html",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78036175/20260328130000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/club-logo-with-locations_QCEu.jpg",
+    "organization": "Boys & Girls Clubs of South San Luis Obispo County"
+  },
+  {
+    "eventName": "4th Annual Big Night Out at the Melodrama",
+    "date": {
+      "$date": "2025-10-30T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "3:00 PM",
+    "description": "Join us for the 4th Annual Big Night Out at the Great American Melodrama on October 30, 2025! Enjoy a night of laughter, costumes, and community as we support youth across South SLO County. Every ticket helps provide safe spaces, caring mentors, and life-changing programs at the Boys & Girls Clubs. Don’t miss the hilarious performance of Bonnie & Hyde, a spirited costume contest, and tasty treats—all for a great cause. It’s more than a show—it’s a night that gives back.\nMore info:\nhttps://www.bgcslo.org/bignightout.html",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78036178/20251030150000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/club-logo-with-locations_QCEu.jpg",
+    "organization": "Boys & Girls Clubs of South San Luis Obispo County"
+  },
+  {
+    "eventName": "Pops by the Sea: Hollywood Hits",
+    "date": {
+      "$date": "2025-08-30T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "4:00 PM",
+    "description": "Join the San Luis Obispo Symphony for Pops by the Sea: Hollywood Hits on August 30, 2025, at the Avila Beach Golf Resort. Enjoy iconic soundtracks from Star Wars, Harry Potter, Lord of the Rings, and Pirates of the Caribbean by legendary composers John Williams, Howard Shore, Hans Zimmer, and Klaus Badelt. Set by the sea, this outdoor concert is a fan-favorite summer tradition for movie and music lovers alike. Don’t miss this magical night under the stars! Tickets available now at slosymphony.org.\nMore info:\nhttps://my805tix.com/e/pops-2025",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78042480/20250830160000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/SLOsymphony_1IO4.jpeg",
+    "organization": "San Luis Obispo Symphony"
+  },
+  {
+    "eventName": "Bloody Mary Battle, Burritos and Bovine Bingo",
+    "date": {
+      "$date": "2025-08-23T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "Join the top mixologists on the Central Coast as they battle out for the coveted prize of the best Bloody Mary in Creston. Join us for a day of Bloody Mary tasting, burritos, live music and bovine bingo. This event benefits the Creston Women’s Club and Creston Men’s Club, both nonprofits serving our local community.\nMore info:\nhttps://www.crestonbloodymarybattle.com/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78055325/20250823000000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/crestonmensclub_oGx1.png",
+    "organization": "Creston Men's Club"
+  },
+  {
+    "eventName": "Swinging by the Sea",
+    "date": {
+      "$date": "2025-09-20T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "1:30 PM",
+    "description": "Enjoy wine, food, music, seaside views, ocean breezes, and live and silent auctions at the Chapman Estate in Shell Beach on Saturday, September 20, 2025, from 1:30 to 5 PM. Proceeds support the preservation, maintenance, and operation of the blufftop Chapman Estate—its iconic Tudor home, historic eclectic art collections, and gardens—as a community asset and public meeting place.\nMore info:\nhttps://event.auctria.com/db5d79a9-a513-421a-b1f9-8f03c91760dc/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78061211/20250920133000",
+    "organization": "Chapman Estate Foundation"
+  },
+  {
+    "eventName": "Lumina Days: Fashion, Fun, and Philanthropy",
+    "date": {
+      "$date": "2025-10-04T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "Step into a legacy of empowerment and elegance at Lumina Days, a reimagined celebration inspired by Fashions for a Purpose. Held each October at the Dana Adobe, this fashion show features curated looks modeled by local leaders, personalized guest service, and a vibrant community atmosphere. Guests enjoy shopping from Muse Markets, wines from South County, and a catered lunch with seasonal flavors. Radiant and rooted, Lumina Days is where style meets purpose—and showing up for one another never goes out of fashion.\nMore info:\nluminadays.org",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78074907/20251004000000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/lumina_TT92.png",
+    "organization": "Lumina Alliance"
+  },
+  {
+    "eventName": "Libations at the Lighthouse",
+    "date": {
+      "$date": "2025-09-20T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "3:00 PM",
+    "description": "Libations at the Lighthouse, the annual fundraiser for the Piedras Blancas Light Station, is a casual afternoon surrounded by history and natural beauty. This year’s event will be held on Saturday, September 20, 3 - 5:30 p.m. Guests can enjoy wine donated and poured by Harmony Cellars, appetizers and charcuterie by LouLou Cheese Girl, and sweet treats by Seabreeze Cupcakes, as well as music by Adrian Libertini and a silent auction. Early-bird tickets are $90 per person (plus $8 service fee) until August 13, then $100 per person (plus $8 service fee) until sold out.\nMore info:\nhttps://piedrasblancas.org/libations-at-the-lighthouse",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78077124/20250920150000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/piedras_T0GU.jpeg",
+    "organization": "Piedras Blancas Light Station Association"
+  },
+  {
+    "eventName": "Building Strong Foundations",
+    "date": {
+      "$date": "2025-09-24T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "7:30 AM",
+    "description": "This breakfast panel event will provide a real-world look at how affordable housing is created in San Luis Obispo County — from land acquisition to entitlement, financing, and construction — through the voices of those doing the work.\nMore info:\nwww.slochtf.org",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78101895/20250924073000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/htf-logo-square-original_8HMV.jpg",
+    "organization": "SLO County Housing Trust Fund"
+  },
+  {
+    "eventName": "Hearts & Hooves: First Annual Fundraising Gala",
+    "date": {
+      "$date": "2025-10-11T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "4:30 PM",
+    "description": "Join us under the stars at the first-ever “Hearts & Hooves Gala” at Rancho Burro Donkey Sanctuary! Celebrate the grand opening of our new 46-acre sanctuary with an unforgettable evening of gourmet BBQ, fine beverages, live and silent auctions featuring unique treasures, plus live music followed by a DJ and dancing—all wrapped in a festive “Western Glam” ambiance.\nMore info:\nhttps://ranchoburrodonkeysanctuary.org/hearts-%26-hooves-gala",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78106632/20251011163000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/rancho%20burro_tG5F.jpg",
+    "organization": "Rancho Burro Donkey Sanctuary"
+  },
+  {
+    "eventName": "Casino Night",
+    "date": {
+      "$date": "2025-09-27T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "6:30 PM",
+    "description": "Get ready for United Way of SLO County’s Casino Night Fundraiser—a 1960s Vegas-themed evening with casino games, local celebrity dealers, great food, a silent auction, dancing, and prizes for the best attire. Come play, bid, and celebrate, all while supporting our community!\nMore info:\nhttps://secure.qgiv.com/event/uwslo-casino-night/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78107969/20250927183000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/UWSLO-Icon-RGB_UD4O.png",
+    "organization": "United Way of SLO County"
+  },
+  {
+    "eventName": "ECOSLO's Holiday Party",
+    "date": {
+      "$date": "2025-12-04T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "5:30 PM",
+    "description": "Celebrate the season with fellow environmental enthusiasts at Timbre Winery and enjoy a raffle and live music! Lively tunes will fill the air, creating a warm and inviting atmosphere perfect for mingling and holiday cheer. This is a wonderful opportunity to connect with fellow supporters, share stories, and reflect on the positive impact we’ve made together throughout the year!\nBring your friends and family, and let’s make this holiday season a memorable one for our community and our planet. Feel free to wear festive attire if you'd like, but it's completely optional!\nMore info:\nhttps://app.dvforms.net/api/dv/jkp7yd",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78112374/20251204173000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/ecoslo_lanf.jpeg",
+    "organization": "ECOSLO"
+  },
+  {
+    "eventName": "Play It Forward",
+    "date": {
+      "$date": "2025-10-11T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "6:30 PM",
+    "description": "Join CAPSLO to celebrate its 60th Anniversary and support the 40 Prado Homeless Services Center by coming out to Play it Forward. Come and dance to the Zongo All Stars and Flannel 101. Doors open at 6:30 p.m. at SLO Brew Rod and Hammer. Ticket prices are on a sliding scale.\nMore info:\nwww.capslo.org/play-it-forward",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78122009/20251011183000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/capslo_zlDm.png",
+    "organization": "CAPSLO"
+  },
+  {
+    "eventName": "Monday Night Movie Fundraiser",
+    "date": {
+      "$date": "2025-10-06T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "5:00 PM",
+    "description": "Enjoy a screening of classic movie The Bad News Bears at the Bay Theatre in Morro Bay while supporting the Community Foundation of Estero Bay. Proceeds benefit scholarships for local kids’ sports, recreation, and enrichment programs. Hot dogs, beer, wine, and concessions will be available for purchase.\nMore info:\nhttps://my805tix.com/e/badnewsbears",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78126411/20251006170000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/esterobayCF_3KOB.jpg",
+    "organization": "Community Foundation of Estero Bay, Inc."
+  },
+  {
+    "eventName": "Oktoberfest",
+    "date": {
+      "$date": "2025-10-18T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "4:30 PM",
+    "description": "Prost! It’s time to dust off your lederhosen and dirndls for the 10th Annual FUNdraiser hosted by the San Luis Obispo Legal Assistance Foundation (SLOLAF)! Join us for a night of Oktoberfest-inspired fun, food, and festivity—all to support free legal aid for those in need in San Luis Obispo County.\nMore info: https://event.auctria.com/43772ea1-9008-4689-a670-d045f51357f7/aa6cd270-8751-11e9-a741-3fcfcb35cbb0",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78143468/20251018163000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/SLOLAF_7jaf.png",
+    "organization": "San Luis Obispo Legal Assistance Foundation"
+  },
+  {
+    "eventName": "Fresh Faces, Full Glasses",
+    "date": {
+      "$date": "2025-10-17T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "6:00 PM",
+    "description": "Join SLO Climate Coalition for a playful evening of wine, music, and climate action! Meet our new staff, discover bold new programs, and enjoy live music by Joy Polloi as we toast to a sustainable future together.\nMore info:\nhttps://my805tix.com/e/fresh-faces-full-glasses/tickets",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78156467/20251017180000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/SLOCCLogoHorizontal_hires%201_AtcX.png",
+    "organization": "SLO Climate Coalition"
+  },
+  {
+    "eventName": "Honoring our Ancestors ~ Celebrando Nuestros Antepasdos",
+    "date": {
+      "$date": "2025-11-02T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "2:00 PM",
+    "description": "With traditional stories, music and dance, and performances by Danza Azteca Tonantzin Arroyo Grande, Ballet Folklórico Corazón de la Costa, Ballet Folklórico de Sacramento and Mariachi Mexicanismo, this special Dia de Los Muertos (Day of the Dead) event celebrates and honors our ancestors through the exploration of Latin American culture and traditions.\nThis event highlights the work of the Promotores Collaborative of San Luis Obispo’s whose mission is to build, foster, and support a network of “Promotores” – trained community health workers, a program of the Center for Family Strengthening.\nMore info:\nhttps://clarkcenter.org/shows/celebrando-nuestros-antepasados/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78156469/20251102140000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/cffs_5LBK.png",
+    "organization": "Center for Family Strengthening"
+  },
+  {
+    "eventName": "SLO EarthFest 2026",
+    "date": {
+      "$date": "2026-04-18T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "A celebration of the collective power of our community to build a sustainable future!\nSLO EarthFest inspires and empowers our community to take bold climate action through education, connection, and celebration. By bringing together local leaders, sustainable innovators, and passionate individuals, we create a fun and engaging space to explore solutions, support climate-friendly initiatives, and build a more resilient future—right here in San Luis Obispo.\nMore info:\nhttps://sloclimatecoalition.org/earthfest/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78156472/20260418000000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/SLOCCLogoHorizontal_hires%201_AtcX.png",
+    "organization": "SLO Climate Coalition"
+  },
+  {
+    "eventName": "Spokes Symposium",
+    "date": {
+      "$date": "2025-11-06T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "2:00 PM",
+    "description": "Spokes’ annual Symposium brings together SLO County nonprofit leaders for an afternoon of connection, collaboration, and inspiration. Highlights include a keynote from Lindsay Kijewski of SeaChange Capital Partners, interactive activities, and a casual networking reception with appetizers and beverages.\nMore info:\nhttps://www.spokesfornonprofits.org/spokes-nonprofit-symposium-2025/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78156480/20251106140000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/Spokes%20Logo_ptvu.jpg",
+    "organization": "Spokes"
+  },
+  {
+    "eventName": "South County Chambers Annual Dinner Gala",
+    "date": {
+      "$date": "2026-02-27T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "Annual Dinner Gala. Awards and Philanthropy to support the South County Chambers of Commerce and South County Chambers Foundation for Advancement.\nwill update with link to event and more specific event details soon!",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78159253/20260227000000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/socochamber_qG6x.png",
+    "organization": "South County Chambers of Commerce"
+  },
+  {
+    "eventName": "Diamonds Are Forever: 2026 Annual Spring Auction & Gala",
+    "date": {
+      "$date": "2026-05-09T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "Boys & Girls Clubs of Mid Central Coast is hosting its annual Spring Auction & Gala, Diamonds are Forever, in celebration of its 60th anniversary! This dinner fundraiser will feature live and silent auctions, raffles, entertainment and so many more fun surprises. Join us for an evening of elegance and style, in support of thousands of young people across the Central Coast.",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78188828/20260509000000",
+    "organization": "Boys & Girls Clubs of Mid Central Coast"
+  },
+  {
+    "eventName": "Standing With Youth: An Advocacy Event",
+    "date": {
+      "$date": "2026-01-27T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "7:30 AM",
+    "description": "Standing With Youth: An Advocacy Event is set to amplify local youth voices, identify recent trends impacting kids in our region and celebrate our Youth of the Year and Jr. Youth of the Year at our inaugural celebration hosted at our very own Railroad Clubhouse in Santa Maria. This event is free to the public in hopes to empower the community around our young people across the Central Coast and to recognize the many ways in which we can inspire our kids to their Great Futures.\nMore info:\nhttps://StandWithYouth.givesmart.com",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78188829/20260127073000",
+    "organization": "Boys & Girls Clubs of Mid Central Coast"
+  },
+  {
+    "eventName": "Seeds of the Future - A Fundraiser for the Community Foundation of Estero Bay",
+    "date": {
+      "$date": "2026-05-17T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "2:00 PM",
+    "description": "The Community Foundation of Estero Bay presents Seeds of the Future - A Fundraiser . Join us for small bites, a no-host bar, silent auction and live entertainment! This event will feature your favorite things from Morro Bay Sings and give you even more reasons to love CFEB and its mission of supporting Estero Bay kids.\nMore info and tickets (coming soon):\nhttps://www. communityfoundationesterobay. org/events",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78192377/20260517140000",
+    "organization": "Community Foundation of Estero Bay"
+  },
+  {
+    "eventName": "4th Annual Golf Tournament",
+    "date": {
+      "$date": "2026-05-30T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "8:00 AM",
+    "description": "Join us at Pismo Beach Golf Course for fun on the green, a catered lunch, prizes, raffle and an auction.\nSponsorship opportunities available!\nMore info:\nwww.casasolanainc.org",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78200903/20260530080000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/casasolana_EikV.gif",
+    "organization": "Casa Solana"
+  },
+  {
+    "eventName": "Lumina Nights Presents Dancing With Our Stars",
+    "date": {
+      "$date": "2026-05-01T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "Join us for Lumina Nights: Illuminate, a two-night gala celebrating community, courage, and the power to light the way for survivors. Set against the elegant backdrop of the *new* Vina Robles tasting room in Paso Robles, this unforgettable evening features local leaders performing as star dancers, shining their inner light on the dance floor, all to illuminate the path to healing for survivors of sexual assault and intimate partner violence. May 1st & 2nd 2026.\nMore info:\nluminanights.org",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78205183/20260501000000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/lumina_TT92.png",
+    "organization": "Lumina Alliance"
+  },
+  {
+    "eventName": "Lumina Days",
+    "date": {
+      "$date": "2026-10-03T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "Step into a legacy of empowerment and elegance at Lumina Days, a reimagined celebration inspired by the beloved Fashions for a Purpose event. Guests will take in the latest trends on the runway, with local dignitaries and community leaders modeling curated looks from South County boutiques. Personalized concierge service provided by notable local figures will make each guest feel welcomed and celebrated. Radiant, rooted, and full of heart, Lumina Days is where style meets purpose—and where showing up for one another never goes out of fashion.\nMore info:\nluminadays.org",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78205184/20261003000000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/lumina_TT92.png",
+    "organization": "Lumina Alliance"
+  },
+  {
+    "eventName": "27th Annual Ag For Youth Golf Tournament",
+    "date": {
+      "$date": "2026-07-31T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "The 27th Annual Ag For Youth Golf Tournament is a yearly fundraiser full of fun, benefiting Boys & Girls Clubs of Mid Central Coast. Enjoy a beautiful day of golf at the Santa Maria Country Club that includes on-course games and challenges, delicious food, drinks galore and lots of excitement. This annual golf tournament is one of the premier charity golf tournaments in the area and has been bringing in players from all over the Santa Maria Valley since it started 27 years ago. You don’t want to miss it!\nMore info:\nkelly.brickey@centralcoastkids.org",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78214635/20260731000000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/bgccentral_logo%202_Iy0N.png",
+    "organization": "Boys & Girls Clubs of Mid Central Coast",
+    "publicContactEmail": "kelly.brickey@centralcoastkids.org"
+  },
+  {
+    "eventName": "CASA's Hope for the Future 2026",
+    "date": {
+      "$date": "2026-04-18T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "4:00 PM",
+    "description": "A Spring benefit for CASA of San Luis Obispo County at the Carrisa in Downtown SLO\nSaturday, April 18th, 2026 from 4:00pm-6:30pm\nPlease join us for an afternoon at Hope for the Future, to benefit for CASA of San Luis Obispo County. Your $50 ticket will include drinks, appetizers, live music, inspirational speakers, and more. All proceeds will directly benefit SLO CASA's mission to advocate for local children in foster care.\nTickets will be available for purchase starting in February!\nFor more information, please contact Rhonda Sims at rsims@slocasa.org\nhttps://slocasa.org/casa-events/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78215528/20260418160000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/cropped-Casa-Logo-680x386-1_nsht.png",
+    "organization": "CASA of San Luis Obispo County",
+    "publicContactEmail": "rsims@slocasa.org"
+  },
+  {
+    "eventName": "Rendezvous Gala",
+    "date": {
+      "$date": "2026-09-12T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "CASA's annual gala, Rendezvous, will take place on September 12th, 2026, at The White Barn in San Luis Obispo. There will be approximately 160 guests who will raise critical funding for CASA. This event includes a cocktail hour, silent and live auction, dinner, famous cake auction, and inspirational program where we will honor a few of our amazing volunteer advocates. Tickets will be available for purchase in June.\nFor more info, please contact Rhonda Sims at rsims@slocasa.org\nhttps://slocasa.org/casa-events/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78215531/20260912000000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/cropped-Casa-Logo-680x386-1_nsht.png",
+    "organization": "CASA",
+    "publicContactEmail": "rsims@slocasa.org"
+  },
+  {
+    "eventName": "Women's Legacy Fund Luncheon",
+    "date": {
+      "$date": "2026-09-23T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "The Women's Legacy Fund invites you to join us for lunch and conversation about real change for women and girls in SLO County. Connect with local leaders, hear powerful stories from our grantees, and learn how we’re tackling the most urgent issues facing our community - and how you can support the cause!\nMore info:\nhttps://cfsloco.fcsuite.com/erp/donate/list/event?event_date_id=1660",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78218773/20260923000000",
+    "organization": "The Community Foundation San Luis Obispo County"
+  },
+  {
+    "eventName": "Growing Together Fund: Pride Brunch, Celebrating Diversity",
+    "date": {
+      "$date": "2026-06-07T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "Come to connect with the community, learn about the work of Growing Together: An LGBTQ+ Fund, and celebrate Pride!\nMore info:\ninfo@cfsloco.org",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78218775/20260607000000",
+    "organization": "The Community Foundation San Luis Obispo County",
+    "publicContactEmail": "info@cfsloco.org"
+  },
+  {
+    "eventName": "SLO Climate Kickoff Party",
+    "date": {
+      "$date": "2026-01-28T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "6:00 PM",
+    "description": "Join us for an evening of celebration, community, and climate action at SLO Climate Coalition’s Climate Kickoff Party! This lively event will feature a special performance by the Joi Polloi Trio, the presentation of our annual Climate Champion Award, and a chance to win exciting prizes through our Wine Raffle and General Raffle. Come mingle, celebrate, and kick off 2026 with climate inspiration!\nMore info:\nhttps://www.zeffy.com/en-US/ticketing/2025-climate-kickoff",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78227894/20260128180000",
+    "organization": "SLO Climate Coalition"
+  },
+  {
+    "eventName": "Spokes Symposium 2026",
+    "date": {
+      "$date": "2026-11-05T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "2:00 PM",
+    "description": "Our annual gathering of SLO County nonprofit leaders, featuring a live presentation, interactive sessions and a networking mixer.\nMore details to come here .",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78227899/20261105140000",
+    "organization": "Spokes"
+  },
+  {
+    "eventName": "5th Annual Sheep Shearing Shindig",
+    "date": {
+      "$date": "2026-05-16T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "It’s baaaa-ck! Join us for City Farm SLO’s 5th Annual Sheep Shearing Shindig!\nWatch expert shearers in action, learn about Navajo-Churro sheep, and try your hand at wool processing activities like washing, carding, spinning, and felting.\nEnjoy farm tours, hayrides, kids’ activities, live music, local artisan vendors, delicious food, and a beer & wine garden. All proceeds support City Farm SLO’s youth education programs.\nMore info:\ncityfarmslo.org/events",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78237725/20260516000000",
+    "eventImage": "https://timelyapp-prod.s3.us-west-2.amazonaws.com/images/54752629/cityfarmslo_7ex3.jpeg",
+    "organization": "City Farm SLO"
+  },
+  {
+    "eventName": "Immediate Family: An Award-Winning Film Screening Benefiting Infinite Music",
+    "date": {
+      "$date": "2026-01-26T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "6:00 PM",
+    "description": "Enjoy a special screening of the award-winning documentary, Immediate Family, followed by an exclusive Q&A with Director/Producer Denny Tedesco and legendary bassist Leland Sklar . This event is a fundraiser benefiting Infinite Music , whose mission is to ensure every child—regardless of socioeconomic status—has access to the life-changing power of music through education, appreciation, and performance.\nMore info:\nhttps://my805tix.com/e/infinite-music-immediate-family",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78239596/20260126180000",
+    "organization": "Infinite Music"
+  },
+  {
+    "eventName": "Plant Sale",
+    "date": {
+      "$date": "2026-03-28T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "8:00 AM",
+    "description": "Come by on Saturday, March 28th from 8 am-1 pm at Center of Effort Winery. Purchase beautiful plant and flower arrangements that are up to 50-80% off retail prices. This is a one day only event benefiting olosa Children's Dental Center ! Follow us on social media or visit our website for more information.\nMore info:\nhttps://tolosachildrensdental.org/events/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78250200/20260328080000",
+    "organization": "Tolosa Children's Dental Center"
+  },
+  {
+    "eventName": "Sip for Smiles",
+    "date": {
+      "$date": "2026-05-31T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "2:00 PM",
+    "description": "Come sip, snack and support at Filipponi Ranch Winery at 2 pm. Enjoy a beautiful afternoon with a silent auction, wine pull and delicious wine from Filipponi. Follow us on social media and visit our website for more information.\nMore info:\nhttps://tolosachildrensdental.org/events/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78250204/20260531140000",
+    "organization": "Tolosa Children's Dental Center"
+  },
+  {
+    "eventName": "Sunset BBQ",
+    "date": {
+      "$date": "2026-10-24T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "5:00 PM",
+    "description": "Join us for a fun evening at the Octagon Barn on Saturday, Oct. 24 at 5 pm. Enjoy a delicious bbq dinner, live and silent auction, raffle and live music! Please visit our website for more information.\nMore info:\nhttps://tolosachildrensdental.org/events/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78250208/20261024170000",
+    "organization": "Tolosa Children's Dental Center"
+  },
+  {
+    "eventName": "SLOstice",
+    "date": {
+      "$date": "2026-06-27T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "5:00 PM",
+    "description": "Join us at SLOstice at the iconic Octagon Barn for a celebration of environmental impact and community spirit! This is more than just a fundraiser - it’s a chance to honor decades of dedication to our cause, including:\n✨ Tens of thousands of pounds of trash cleaned up\n🌳 Hundreds of trees planted\n🤝 Thousands of volunteers\n🌱 Dozens of inspiring Green Businesses\nYour support helps us continue this important work right here in SLO County.\nMore info:\nhttps://www.ecoslo.com/events",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78270463/20260627170000",
+    "organization": "ECOSLO"
+  },
+  {
+    "eventName": "2026 Strong Foundation Awards",
+    "date": {
+      "$date": "2026-05-28T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "4:30 PM",
+    "description": "The SLO County Housing Trust Fund (HTF) is pleased to present the inaugural Strong Foundation Awards to be held May 28, 2026 at the SLO Brew Cocktail Garden from 4:30–6:00 PM.\nThe Strong Foundation Awards are presented to individuals who have demonstrated exemplary leadership in the affordable housing industry in SLO County.\nMore info:\nslochtf.org",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78275346/20260528163000",
+    "organization": "SLO County Housing Trust Fund"
+  },
+  {
+    "eventName": "Big Little Benefit",
+    "date": {
+      "$date": "2026-05-08T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "Join us in the Emerald City for an evening of generosity, joy, and a little bit of magic. Guests will enjoy a barbecue dinner, live entertainment, and inspiring stories filled with courage and heart. Participate in the silent and live auction, and the fund-a-need, helping to defy gravity and lift our Littles and their Bigs to new heights.\nMore info:\nbiglittlebenefit.org",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78276081/20260508000000",
+    "organization": "Big Brothers Big Sisters of SLO County"
+  },
+  {
+    "eventName": "Wild at Heart",
+    "date": {
+      "$date": "2026-09-26T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "Join us for Pacific Wildlife Care’s annual Wild at Heart celebration—a lively evening of food, fun, and fundraising, all in support of our mission to protect San Luis Obispo County wildlife through rehabilitation and educational outreach.\nMore info:\ninfo@pacificwildlifecare.org",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78277339/20260926000000",
+    "organization": "Pacific Wildlife Care",
+    "publicContactEmail": "info@pacificwildlifecare.org"
+  },
+  {
+    "eventName": "Walk to End Alzheimer's",
+    "date": {
+      "$date": "2026-11-07T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "9:00 AM",
+    "description": "Held annually, the Alzheimer's Association Walk to End Alzheimer's raises funds for Alzheimer's and dementia care, support and research. This event, taking place in SLO Mission Plaza, calls on participants of all ages and abilities to join the fight against the disease.\nMore info:\nhttps://www.alz.org/slowalk",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78297835/20261107090000",
+    "organization": "Alzheimer's Association"
+  },
+  {
+    "eventName": "Swingin’ by the Sea",
+    "date": {
+      "$date": "2026-08-15T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "Come join a garden party by the sea, with exquisite wine, food, music and ocean views at the beautiful Chapman Estate in Shell Beach. Live and silent auctions. Proceeds go to support the preservation of, operations and maintenance of the Estate for charitable, community, and cultural events. Help save the Estate and have a great day in this beautiful setting!\nMore info:\nhttps://chapmanestatefoundation.org/#sc",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78302412/20260815000000",
+    "organization": "Chapman Estate Foundation"
+  },
+  {
+    "eventName": "Pickle Festival",
+    "date": {
+      "$date": "2026-10-10T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "A pickle-themed fundraiser with food, drinks, vendors and fun activities for all ages. Live music featuring Brass Mash and guests. Get your pickle on!\nMore info:\ninfo@mealsthatconnect.org",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78316497/20261010000000",
+    "organization": "Meals That Connect",
+    "publicContactEmail": "info@mealsthatconnect.org"
+  },
+  {
+    "eventName": "Libations at the Lighthouse",
+    "date": {
+      "$date": "2026-09-19T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "The annual fundraiser for the Piedras Blancas Light Station is a casual afternoon surrounded by history and natural beauty. Guests can enjoy pours of Harmony Cellars and Moonstone Cellars wine while wandering the grounds of beautiful Piedras Blancas and learning about the light station.\nMore info:\nhttps://piedrasblancas.org/libations-at-the-lighthouse",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78316499/20260919000000",
+    "organization": "Piedras Blancas Light Station Association"
+  },
+  {
+    "eventName": "Pinot and Paella Festival",
+    "date": {
+      "$date": "2026-06-07T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "2:00 PM",
+    "description": "Spend an afternoon sipping outstanding Pinot Noir, enjoying creative paellas prepared by local chefs, and dancing to live music at the annual Pinot & Paella Festival. This 21+ event celebrates the best of our region’s wine and food in a fun, welcoming outdoor setting.\nThe festival benefits Paso Robles Youth Arts, a nonprofit dedicated to providing accessible, high-quality arts education for local youth. By attending, you're not only enjoying great wine, and food, but also supporting programs that inspire creativity, confidence, and opportunity for children in our community.\nMore info:\nwww.pinotandpaella.com",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78317643/20260607140000",
+    "organization": "Paso Robles Youth Arts"
+  },
+  {
+    "eventName": "Central Coast Move-a-Thon",
+    "date": {
+      "$date": "2026-05-01T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "Step outside and turn movement into impact this May. One Cool Earth and Central Coast State Parks Association are coming together to invite individuals and families to get outside, log miles, and raise funds in support of outdoor education and environmental stewardship across the Central Coast. By participating, you are helping us unlock funds from business sponsors so choose your trails, set your goal, and let every mile you walk help care for the places we love.\n​Cost to participate: $20 for individuals, $35 for families\n​All proceeds will be evenly split between OCE and CCSPA\nMore info: https://www.onecoolearth.org/2026-move-athon.html",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78320686/20260501000000",
+    "organization": "One Cool Earth and Central Coast Parks Association"
+  },
+  {
+    "eventName": "Midnight at Magnolia Manor",
+    "date": {
+      "$date": "2026-10-10T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "SLOLAF's annual fundraiser features a lively cocktail hour with a hosted bar, appetizers, raffles and entertainment, followed by a sit-down dinner catered by Taste!, presentation of the Ambassador Award, and live auction with some surprises along the way. Sponsorships are available for Midnight at Magnolia Manor, where every key opens a door to justice.\nMore info:\nhttps://www.slolaf.org/events",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78347481/20261010000000",
+    "organization": "San Luis Obispo Legal Assistance Foundation"
+  },
+  {
+    "eventName": "2026 Live at the Lighthouse Concert Series",
+    "date": {
+      "$date": "2026-06-27T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "Announcing the 2026 Concert Series at Point San Luis Lighthouse! Enjoy 8 intimate concerts while supporting the arts on the Central Coast. Tickets will sell out fast. Lineup: June 27—Mother Corn Shuckers; July 11—Alex Lucero Band; July 18—Miss Leo; Aug. 8—One Love Bomb ft. Eric Cotton; Aug. 22—Josh Rosenblum; Sept. 12—Damon Castillo Band; Sept. 26—Zongo All-Stars; Oct. 10—Hot 45. Sponsorship opportunities are available for businesses and individuals interested in supporting the 2026 season.\nMore info:\nhttps://www.pointsanluislighthouse.org/concerts",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78358880/20260627000000",
+    "organization": "Point San Luis Lighthouse"
+  },
+  {
+    "eventName": "Brighter Days For Donkeys: Annual Fundraiser",
+    "date": {
+      "$date": "2026-09-26T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "description": "The 2nd Annual 'Brighter Days for Donkeys' Fundraiser is an evening benefit dedicated to supporting the rescue, rehabilitation, and lifelong care of the donkeys and mules at Rancho Burro Donkey Sanctuary. This event brings community members together to raise vital operational funds for specialized veterinary care, feed, and facility maintenance. The night will be filled with music, dance, food, auctions, and stories.\nMore info:\nhttps://ranchoburrodonkeysanctuary.org/annual-fundraiser",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78399028/20260926000000",
+    "organization": "Rancho Burro Donkey Sanctuary"
+  },
+  {
+    "eventName": "Tent City Limits Concert Series",
+    "date": {
+      "$date": "2026-08-14T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "6:00 PM",
+    "description": "Experience the first concert in a three-part summer series featuring live bluegrass, folk, and Americana under the stars at the historic Atascadero Printery. Enjoy touring artists, local food and drinks, and a family-friendly atmosphere—all while supporting the restoration of this treasured community landmark. The series continues September 18 and October 9.\nMore info:\nhttps://atascaderoprintery.org/",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78404401/20260814180000",
+    "organization": "Atascadero Printery"
+  },
+  {
+    "eventName": "Morro Bay Chamber of Commerce Annual Awards Gala",
+    "date": {
+      "$date": "2026-11-07T00:00:00.000Z"
+    },
+    "eventStatus": "approved",
+    "majorFundraisingEvent": true,
+    "createdByUserId": "csv-import",
+    "time": "4:30 PM",
+    "location": "Morro Bay Community Center @ 1008 Kennedy Way, Morro Bay, CA",
+    "description": "The Morro Bay Chamber's Seaside Soirée: Celebrating Seventy Years Gala will celebrate the Chamber's 70th anniversary while recognizing individuals and organizations that have made outstanding contributions to the Morro Bay community from January 2025 through June 2026.\nAwards will be presented in four categories: Business of the Year, Citizen of the Year, Living Treasure, and Nonprofit of the Year.",
+    "eventLink": "https://events.timely.fun/kio519aj/event/78419443/20261107163000",
+    "organization": "Morro Bay Chamber of Commerce"
+  }
+]

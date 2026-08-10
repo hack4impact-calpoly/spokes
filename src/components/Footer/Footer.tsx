@@ -55,6 +55,22 @@ const Footer: React.FC = () => {
             )}
           </div>
 
+          <div className="flex flex-col items-center md:items-start gap-[8px] md:gap-[10px] md:w-[135px] mt-4 md:mt-0 md:ml-[40px]">
+            <Link href="/events" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
+              Event Board
+            </Link>
+            {user && (
+              <>
+                <Link href="/events/list" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
+                  List Event
+                </Link>
+                <Link href="/events/manage" className="text-[14px] md:text-[16px] text-gray-600 hover:underline">
+                  Dashboard
+                </Link>
+              </>
+            )}
+          </div>
+
           <div className="flex space-x-[10px] md:space-x-[14px] mt-4 md:mt-0 md:ml-[40px]">
             <Link href="https://www.instagram.com/spokes.for.nonprofits/" target="_blank" rel="noopener noreferrer">
               <FaInstagram width={30} height={30} className="w-[30px] h-[30px] md:w-[35px] md:h-[35px]" />

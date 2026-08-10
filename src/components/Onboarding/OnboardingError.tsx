@@ -5,10 +5,11 @@ import { Button, Stack, Alert, AlertIcon, AlertTitle, AlertDescription } from "@
 interface OnboardingErrorProps {
   error: string;
   onRetry: () => void;
-  onReturnToJobBoard: () => void;
+  boardLabel: string;
+  onReturnToBoard: () => void;
 }
 
-export default function OnboardingError({ error, onRetry, onReturnToJobBoard }: OnboardingErrorProps) {
+export default function OnboardingError({ error, onRetry, boardLabel, onReturnToBoard }: OnboardingErrorProps) {
   return (
     <Alert
       status="error"
@@ -30,8 +31,8 @@ export default function OnboardingError({ error, onRetry, onReturnToJobBoard }: 
         <Button onClick={onRetry} colorScheme="blackAlpha" bg="black" _hover={{ bg: "#5E5E5E" }}>
           Try Again
         </Button>
-        <Button onClick={onReturnToJobBoard} variant="outline" colorScheme="blackAlpha" textColor="black">
-          Return to Job Board
+        <Button onClick={onReturnToBoard} variant="outline" colorScheme="blackAlpha" textColor="black">
+          Return to {boardLabel}
         </Button>
       </Stack>
     </Alert>
