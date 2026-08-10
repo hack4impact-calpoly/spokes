@@ -2,7 +2,7 @@ function getAdminUrl(path: string) {
   const configuredUrl = process.env.NEXT_PUBLIC_ADMIN_URL?.trim();
 
   if (configuredUrl) {
-    return configuredUrl;
+    return new URL(path, configuredUrl).toString();
   }
 
   const appUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();

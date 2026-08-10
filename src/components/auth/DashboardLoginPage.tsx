@@ -6,7 +6,13 @@ import { Center } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
 import WelcomeInfo from "@/components/ui/WelcomeInfo";
 
-export default function DashboardLoginPage({ redirectUrl }: { redirectUrl: string }) {
+export default function DashboardLoginPage({
+  redirectUrl,
+  board = "jobs",
+}: {
+  redirectUrl: string;
+  board?: "jobs" | "events";
+}) {
   const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
   const isAuthCallback = pathname.includes("sso-callback");
@@ -26,7 +32,7 @@ export default function DashboardLoginPage({ redirectUrl }: { redirectUrl: strin
       gap={10}
       minH="65vh"
     >
-      {!isAuthCallback && <WelcomeInfo />}
+      {!isAuthCallback && <WelcomeInfo board={board} />}
       <SignIn forceRedirectUrl={redirectUrl} />
     </Center>
   );
