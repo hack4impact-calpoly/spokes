@@ -257,4 +257,69 @@ describe("Jobs API", () => {
       { new: true },
     );
   });
+
+  test("PUT assigns the approval date on the server when approving a job", async () => {
+    mockAuth.role = "spokes_admin";
+    (Job.findById as jest.Mock).mockResolvedValue({
+      _id: "job-1",
+      userId: "user-1",
+      jobStatus: "pending",
+      rejectionMessage: "",
+    });
+    (Job.findByIdAndUpdate as jest.Mock).mockResolvedValue({ _id: "job-1" });
+
+    const response = await PUT(
+      jsonRequest("/api/jobs/job-1", {
+        previousStatus: "pending",
+        newStatus: "approved",
+        // A client-provided date must not control the approval timestamp.
+        approvedDate: "2020-01-01T00:00:00.000Z",
+      }),
+      {},
+    );
+
+    expect(response.status).toBe(200);
+    expect(Job.findByIdAndUpdate).toHaveBeenCalledWith(
+      "job-1",
+      {
+        jobStatus: "approved",
+        approvedDate: expect.any(Date),
+        modifiedDate: expect.any(Date),
+        rejectionMessage: "",
+      },
+      { new: true },
+    );
+
+    const update = (Job.findByIdAndUpdate as jest.Mock).mock.calls[0][1];
+    expect(update.approvedDate).not.toEqual(new Date("2020-01-01T00:00:00.000Z"));
+  });
+
+  test("PUT repairs an approved job that is missing its approval date", async () => {
+    mockAuth.role = "spokes_admin";
+    (Job.findById as jest.Mock).mockResolvedValue({
+      _id: "job-1",
+      userId: "user-1",
+      jobStatus: "approved",
+      rejectionMessage: "",
+    });
+    (Job.findByIdAndUpdate as jest.Mock).mockResolvedValue({ _id: "job-1" });
+
+    const response = await PUT(
+      jsonRequest("/api/jobs/job-1", {
+        previousStatus: "approved",
+        newStatus: "approved",
+      }),
+      {},
+    );
+
+    expect(response.status).toBe(200);
+    expect(Job.findByIdAndUpdate).toHaveBeenCalledWith(
+      "job-1",
+      expect.objectContaining({
+        jobStatus: "approved",
+        approvedDate: expect.any(Date),
+      }),
+      { new: true },
+    );
+  });
 });

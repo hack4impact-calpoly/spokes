@@ -21,11 +21,42 @@ export default function AdminJobs() {
   const [lastUpdateTime, setLastUpdateTime] = useState<number>(0);
   const fetchDataRef = useRef<() => Promise<void>>(async () => {});
 
+  const repairMissingApprovalDates = async (jobs: IJob[]) => {
+    const jobsMissingApprovalDate = jobs.filter((job) => job.jobStatus === "approved" && !job.approvedDate);
+
+    await Promise.all(
+      jobsMissingApprovalDate.map(async (job) => {
+        try {
+          const response = await fetch(`/api/jobs/${job._id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              previousStatus: "approved",
+              newStatus: "approved",
+            }),
+          });
+
+          if (!response.ok) {
+            console.error(`Failed to repair approved date for job ${job._id}`);
+          }
+        } catch (error) {
+          console.error(`Failed to repair approved date for job ${job._id}:`, error);
+        }
+      }),
+    );
+  };
+
   const setExpiredJobs = async (jobs: IJob[]) => {
     if (!Array.isArray(jobs)) {
       console.error("Expected jobs to be an array but received:", typeof jobs);
       return;
     }
+
+    // Repair approved jobs created before the API started persisting
+    // approvedDate. The API assigns the timestamp on this approved ->
+    // approved update, so the public listing can use its normal 30-day rule.
+    await repairMissingApprovalDates(jobs);
+
     const jobsToExpire = jobs.filter(
       (job) => job.jobStatus !== "expired" && isExpired(job.jobStatus, job.approvedDate),
     );
