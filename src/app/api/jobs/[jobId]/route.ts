@@ -123,15 +123,25 @@ export const PUT = withApiAuth(
         return NextResponse.json({ message: "Job unpublished successfully", job: updatedJob });
       }
 
+      const nextJobStatus = hasStatusTransition
+        ? auth.role === "nonprofit" || previousStatus === "rejected"
+          ? JobStatus.pending
+          : newStatus
+        : auth.role === "nonprofit"
+          ? JobStatus.pending
+          : jobData.jobStatus;
+
+      // The approval timestamp must be assigned by the server. The admin UI
+      // used to send this field, but it was not part of the writable field
+      // allowlist, leaving approved jobs invisible to public listings.
+      const shouldSetApprovedDate =
+        nextJobStatus === JobStatus.approved &&
+        (!existingJob.approvedDate || existingJob.jobStatus !== JobStatus.approved);
+
       const updatedJob = {
         ...getMutableJobUpdate(jobData),
-        jobStatus: hasStatusTransition
-          ? auth.role === "nonprofit" || previousStatus === "rejected"
-            ? JobStatus.pending
-            : newStatus
-          : auth.role === "nonprofit"
-            ? JobStatus.pending
-            : jobData.jobStatus,
+        jobStatus: nextJobStatus,
+        ...(shouldSetApprovedDate ? { approvedDate: new Date() } : {}),
         modifiedDate: new Date(),
         rejectionMessage: jobData.rejectionMessage ?? existingJob.rejectionMessage ?? "",
       };
