@@ -4,7 +4,6 @@ import Job from "@/database/jobSchema";
 import User from "@/database/userSchema";
 import { withApiAuth } from "@/lib/auth";
 import { resolveOrganizationName } from "@/lib/organizations";
-import { getThirtyDaysAgo } from "@/lib/utils";
 
 // no filters: GET /api/jobs?page=1&limit=10
 // filter by employment type: GET /api/jobs?employmentType=full-time&employment=part-time
@@ -69,18 +68,8 @@ export const GET = withApiAuth(
         filter.jobStatus = {
           $in: statusFilter,
         };
-
-        // Filter out expired jobs that are already approved
-        if (statusFilter == "approved" && !isAdminRequest) {
-          filter.approvedDate = {
-            $gte: getThirtyDaysAgo(),
-          };
-        }
       } else if (!isAdminRequest) {
         filter.jobStatus = "approved";
-        filter.approvedDate = {
-          $gte: getThirtyDaysAgo(),
-        };
       }
 
       if (statusFilter === "approved") {

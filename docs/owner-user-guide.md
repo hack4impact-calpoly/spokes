@@ -62,17 +62,17 @@ Approved jobs appear on the public job board. Rejected jobs stay available to th
 - Pending: waiting for Spokes admin review.
 - Approved: visible on the public job board.
 - Rejected: not public; the organization can view feedback.
-- Expired: no longer active.
+- Resolved: no longer active or visible on the public job board.
 
-Approved jobs expire after their active period. The admin dashboard checks for expired jobs when it loads and periodically while open.
+Jobs stay active until the posting organization resolves or deletes them.
 
-### Edit, Renew, or Unpublish Jobs
+### Edit, Reopen, or Resolve Jobs
 
 Organizations can use `/jobs/manage` to manage their own jobs.
 
 - Edit: updates the job and sends it back to pending review.
-- Renew: restarts an expired job.
-- Unpublish: marks an approved job as expired so it is no longer active.
+- Reopen: sends a resolved job back for review.
+- Resolve Job: marks an approved job as resolved so it is no longer active.
 - View Feedback: shows the admin's rejection reason.
 
 ## Managing Events
@@ -193,7 +193,7 @@ Check its status:
 
 - Pending items are waiting for approval.
 - Rejected items are not public.
-- Expired jobs are not active.
+- Resolved jobs are not active.
 - Approved items should appear publicly.
 
 Also try refreshing the admin page with the refresh button.
@@ -236,7 +236,7 @@ Owners can usually handle:
 - Updating user organizations
 - Deleting users
 - Deleting organizations
-- Renewing or unpublishing jobs from the organization dashboard
+- Reopening or resolving jobs from the organization dashboard
 
 Owners should ask a technical maintainer for:
 

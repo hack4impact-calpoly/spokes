@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
+import Link from "next/link";
 import {
   Box,
   Button,
@@ -17,6 +18,14 @@ import {
   VStack,
   Spinner,
   Center,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useToast,
 } from "@chakra-ui/react";
 import { IEvent } from "@/database/eventSchema";
 import EventConfirmationModal from "@/components/events/EventModals/EventConfirmationModal";
@@ -36,6 +45,8 @@ const ensureHttps = (url: string | undefined): string | undefined => {
 
 function EventFormContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const toast = useToast();
   const { isSignedIn, orgSlug } = useAuth();
   const isSpokesAdmin = orgSlug === "spokes-admin";
   const [serverError, setServerError] = useState<string | null>(null);
@@ -49,13 +60,26 @@ function EventFormContent() {
   const [isFailModalOpen, setIsFailModalOpen] = useState(false);
   const [createForAnotherOrganization, setCreateForAnotherOrganization] = useState(false);
   const [selectedAdminOrganizationName, setSelectedAdminOrganizationName] = useState("");
+  const [formVersion, setFormVersion] = useState(0);
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isRejectConfirmationOpen, setIsRejectConfirmationOpen] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
   const eventId = searchParams.get("eventId");
+  const returnURL = searchParams.get("returnURL") || "/events/manage";
   const eventInfoLink = getEventInfoLink(eventData);
   const eventLocationLink = getEventLocationLink(eventData);
 
   // Load existing event if editing
   useEffect(() => {
-    if (!eventId) return;
+    if (!eventId) {
+      setEventData(null);
+      setMajorFundraisingEvent(false);
+      setEventLocationGeneral("");
+      setEventLocationCity("");
+      return;
+    }
 
     const fetchEvent = async () => {
       setIsLoadingEvent(true);
@@ -77,6 +101,19 @@ function EventFormContent() {
     fetchEvent();
   }, [eventId]);
 
+  const createAnotherEvent = () => {
+    setIsConfirmationModalOpen(false);
+    setServerError(null);
+    setEventData(null);
+    setMajorFundraisingEvent(false);
+    setEventLocationGeneral("");
+    setEventLocationCity("");
+    setCreateForAnotherOrganization(false);
+    setSelectedAdminOrganizationName("");
+    setFormVersion((current) => current + 1);
+    router.push("/events/list");
+  };
+
   const sendNewEventEmail = async (event: IEvent) => {
     try {
       await fetch("/api/send/event-new", {
@@ -86,6 +123,78 @@ function EventFormContent() {
       });
     } catch (error) {
       console.error("Error sending event notification email:", error);
+    }
+  };
+
+  const deleteEvent = async () => {
+    if (!eventId || isDeleting) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/events/${eventId}`, { method: "DELETE" });
+      if (!response.ok) {
+        const result = await response.json().catch(() => null);
+        throw new Error(result?.message || "Failed to delete event");
+      }
+
+      toast({
+        title: "Event Deleted",
+        description: "The event has been removed.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+      router.push(returnURL);
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      setServerError(error instanceof Error ? error.message : "Failed to delete event.");
+      setIsDeleteConfirmationOpen(false);
+      setIsFailModalOpen(true);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const rejectEvent = async () => {
+    if (!eventId || isRejecting) return;
+
+    setIsRejecting(true);
+    try {
+      const response = await fetch(`/api/events/${eventId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ eventStatus: "rejected", rejectionMessage: rejectionReason }),
+      });
+      if (!response.ok) {
+        const result = await response.json().catch(() => null);
+        throw new Error(result?.message || "Failed to reject event");
+      }
+
+      if (eventData) {
+        await fetch("/api/send/event-reject", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...eventData, rejectionReason }),
+        });
+      }
+
+      toast({
+        title: "Event Rejected",
+        description: `Successfully rejected \"${eventData?.eventName ?? "event"}\"`,
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+      router.push(returnURL);
+    } catch (error) {
+      console.error("Error rejecting event:", error);
+      setServerError(error instanceof Error ? error.message : "Failed to reject event.");
+      setIsRejectConfirmationOpen(false);
+      setIsFailModalOpen(true);
+    } finally {
+      setIsRejecting(false);
     }
   };
 
@@ -200,7 +309,7 @@ function EventFormContent() {
           <div className="mb-4 bg-red-50 p-3 text-sm text-red-700 border border-red-200">{serverError}</div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form key={formVersion} onSubmit={handleSubmit}>
           <VStack spacing={4}>
             {isSpokesAdmin && !eventId && (
               <FormControl>
@@ -252,12 +361,12 @@ function EventFormContent() {
               </Checkbox>
             </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel>Event Date</FormLabel>
-              <p className="mb-2 text-sm text-gray-600">
-                Events should be scheduled a minimum of three months out. The more advance notice, the better.
-              </p>
-              <Stack w="full" direction={{ base: "column", md: "row" }} spacing={4}>
+            <Stack w="full" direction={{ base: "column", md: "row" }} spacing={4} align="flex-start">
+              <FormControl isRequired>
+                <FormLabel>Event Date</FormLabel>
+                <p className="mb-2 min-h-10 text-sm text-gray-600">
+                  Events should be scheduled a minimum of three months out. The more advance notice, the better.
+                </p>
                 <Input
                   id="date"
                   name="date"
@@ -267,18 +376,21 @@ function EventFormContent() {
                   bg="#F6F6F6"
                   border="0"
                 />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Event Time (if known)</FormLabel>
+                <p className="mb-2 min-h-10 text-sm text-gray-600">Leave blank when the time has not been confirmed.</p>
                 <Input
                   id="time"
                   name="time"
                   type="text"
                   placeholder="5:30 - 8:30"
                   defaultValue={eventData?.time ?? ""}
-                  required
                   bg="#F6F6F6"
                   border="0"
                 />
-              </Stack>
-            </FormControl>
+              </FormControl>
+            </Stack>
 
             <FormControl isRequired>
               <FormLabel>Event Description</FormLabel>
@@ -373,10 +485,11 @@ function EventFormContent() {
               </FormControl>
             )}
 
-            <FormControl isRequired>
-              <FormLabel>Event Venue</FormLabel>
+            <FormControl>
+              <FormLabel>Event Venue (if known)</FormLabel>
               <p className="mb-2 text-sm text-gray-600">
-                Ex. Octagon Barn, La Lomita Ranch, Morro Bay Community Center.
+                Ex. Octagon Barn, La Lomita Ranch, Morro Bay Community Center. You may leave this blank until details
+                are confirmed.
               </p>
               <Input
                 id="location"
@@ -384,7 +497,6 @@ function EventFormContent() {
                 type="text"
                 placeholder="Enter venue"
                 defaultValue={eventData?.location ?? ""}
-                required
                 bg="#F6F6F6"
                 border="0"
               />
@@ -514,27 +626,165 @@ function EventFormContent() {
               />
             </FormControl>
 
-            <div className="mt-8 flex justify-center">
-              <Button
-                type="submit"
-                isLoading={isSubmitting}
-                loadingText={eventId ? "Updating..." : "Submitting..."}
-                disabled={isSubmitting || !majorFundraisingEvent}
-                size="lg"
-                colorScheme="blackAlpha"
-                bg="#045F87"
-                _hover={{ bg: "#2A80A8" }}
-                className="w-full sm:w-auto min-w-[200px]"
-              >
-                {eventId ? "Update Event" : "Submit Event"}
-              </Button>
-            </div>
+            {eventId ? (
+              <>
+                <div className="mt-10 w-full rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                  <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+                    <Button
+                      type="submit"
+                      isLoading={isSubmitting}
+                      loadingText="Updating..."
+                      disabled={isSubmitting || !majorFundraisingEvent}
+                      size="lg"
+                      colorScheme="blackAlpha"
+                      bg="#045F87"
+                      _hover={{ bg: "#2A80A8" }}
+                      className="w-full min-w-[120px] sm:w-auto shadow-sm"
+                    >
+                      Update
+                    </Button>
+                    {isSpokesAdmin && (
+                      <Button
+                        type="button"
+                        size="lg"
+                        colorScheme="blackAlpha"
+                        bg="#FFF3E0"
+                        color="#C2410C"
+                        _hover={{ bg: "#FFE0B2" }}
+                        className="w-full min-w-[120px] sm:w-auto shadow-sm"
+                        onClick={() => setIsRejectConfirmationOpen(true)}
+                      >
+                        Reject
+                      </Button>
+                    )}
+                    <Button
+                      type="button"
+                      size="lg"
+                      colorScheme="blackAlpha"
+                      bg="#FEE2E2"
+                      color="#991B1B"
+                      _hover={{ bg: "#FECACA" }}
+                      className="w-full min-w-[120px] sm:w-auto shadow-sm"
+                      onClick={() => setIsDeleteConfirmationOpen(true)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+                <Link
+                  href={returnURL}
+                  className="mt-1 block text-center text-sm text-gray-500 transition-colors duration-200 hover:text-[#045F87]"
+                >
+                  ← Return to {isSpokesAdmin ? "Admin Dashboard" : "Dashboard"}
+                </Link>
+              </>
+            ) : (
+              <div className="mt-8 flex justify-center">
+                <Button
+                  type="submit"
+                  isLoading={isSubmitting}
+                  loadingText="Submitting..."
+                  disabled={isSubmitting || !majorFundraisingEvent}
+                  size="lg"
+                  colorScheme="blackAlpha"
+                  bg="#045F87"
+                  _hover={{ bg: "#2A80A8" }}
+                  className="w-full sm:w-auto min-w-[200px]"
+                >
+                  Submit Event
+                </Button>
+              </div>
+            )}
           </VStack>
         </form>
       </Box>
 
-      <EventConfirmationModal isOpen={isConfirmationModalOpen} onClose={() => setIsConfirmationModalOpen(false)} />
+      <EventConfirmationModal
+        isOpen={isConfirmationModalOpen}
+        onClose={() => setIsConfirmationModalOpen(false)}
+        onCreateAnother={createAnotherEvent}
+        submittedForReview={!eventId || !isSpokesAdmin}
+      />
       <EventFailModal isOpen={isFailModalOpen} onClose={() => setIsFailModalOpen(false)} />
+      <Modal isOpen={isDeleteConfirmationOpen} onClose={() => setIsDeleteConfirmationOpen(false)} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Confirm Delete</ModalHeader>
+          <ModalCloseButton isDisabled={isDeleting} />
+          <ModalBody>Are you sure you would like to delete this event?</ModalBody>
+          <ModalFooter className="flex flex-wrap justify-end gap-2">
+            <Button
+              px="10"
+              width="120px"
+              fontSize="small"
+              fontWeight="normal"
+              borderColor="black"
+              onClick={deleteEvent}
+              isLoading={isDeleting}
+              loadingText="Deleting..."
+              _hover={{ backgroundColor: "red.300" }}
+            >
+              Delete
+            </Button>
+            <Button
+              px="10"
+              width="120px"
+              fontSize="small"
+              fontWeight="normal"
+              borderColor="black"
+              onClick={() => setIsDeleteConfirmationOpen(false)}
+              isDisabled={isDeleting}
+              _hover={{ backgroundColor: "gray.200" }}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={isRejectConfirmationOpen} onClose={() => setIsRejectConfirmationOpen(false)} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Confirm Rejection</ModalHeader>
+          <ModalCloseButton isDisabled={isRejecting} />
+          <ModalBody>
+            Are you sure you would like to reject this event?
+            <Textarea
+              value={rejectionReason}
+              onChange={(event) => setRejectionReason(event.target.value)}
+              placeholder="Enter reason for rejection..."
+              size="sm"
+              mt={2}
+            />
+          </ModalBody>
+          <ModalFooter className="flex flex-wrap justify-end gap-2">
+            <Button
+              px="10"
+              width="120px"
+              fontSize="small"
+              fontWeight="normal"
+              borderColor="black"
+              onClick={rejectEvent}
+              isLoading={isRejecting}
+              loadingText="Rejecting..."
+              _hover={{ backgroundColor: "orange.300" }}
+            >
+              Reject
+            </Button>
+            <Button
+              px="10"
+              width="120px"
+              fontSize="small"
+              fontWeight="normal"
+              borderColor="black"
+              onClick={() => setIsRejectConfirmationOpen(false)}
+              isDisabled={isRejecting}
+              _hover={{ backgroundColor: "gray.200" }}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 }

@@ -139,16 +139,13 @@ export default function DashboardPage({ organizationName, membershipStatus }: Da
     );
   }
 
-  const liveJobs = userJobs.filter(
-    (job) => job.jobStatus.toLowerCase() === "approved" && !isExpired(job.jobStatus, job.approvedDate),
-  );
+  const liveJobs = userJobs.filter((job) => job.jobStatus.toLowerCase() === "approved" && !isExpired(job.jobStatus));
 
   const pendingJobs = userJobs.filter(
     (job) => job.jobStatus.toLowerCase() === "pending" || job.jobStatus.toLowerCase() === "rejected",
   );
 
-  // Filter expired jobs by if the approval date is greater than 30 days ago or if the job status is "expired"
-  const expiredJobs = userJobs.filter((job) => isExpired(job.jobStatus, job.approvedDate));
+  const resolvedJobs = userJobs.filter((job) => isExpired(job.jobStatus));
 
   return (
     <div className="w-full relative">
@@ -173,7 +170,7 @@ export default function DashboardPage({ organizationName, membershipStatus }: Da
                       <OrgCard
                         key={index}
                         job={job}
-                        types={["posted", "updated", "expires"]}
+                        types={["posted", "updated"]}
                         onJobStatusUpdate={handleJobUpdate}
                       />
                     ))
@@ -195,14 +192,14 @@ export default function DashboardPage({ organizationName, membershipStatus }: Da
                 </div>
               </div>
               <div className="flex flex-col mb-12">
-                <div className="text-2xl font-semibold mb-4">Expired Jobs</div>
+                <div className="text-2xl font-semibold mb-4">Resolved Jobs</div>
                 <div className="flex flex-col gap-4">
-                  {expiredJobs.length > 0 ? (
-                    expiredJobs.map((job, index) => (
-                      <OrgCard key={index} job={job} types={["expired"]} onJobStatusUpdate={handleJobUpdate} />
+                  {resolvedJobs.length > 0 ? (
+                    resolvedJobs.map((job, index) => (
+                      <OrgCard key={index} job={job} types={["resolved"]} onJobStatusUpdate={handleJobUpdate} />
                     ))
                   ) : (
-                    <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">No expired jobs available</div>
+                    <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">No resolved jobs available</div>
                   )}
                 </div>
               </div>

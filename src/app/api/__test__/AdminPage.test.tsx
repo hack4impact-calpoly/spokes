@@ -190,8 +190,8 @@ describe("Admin Jobs Page", () => {
     });
     expect(screen.getByText("Org2")).toBeInTheDocument();
 
-    // Click on Expired Jobs tab
-    fireEvent.click(screen.getByText(/Expired Jobs/i));
+    // Click on Resolved Jobs tab
+    fireEvent.click(screen.getByText(/Resolved Jobs/i));
 
     // Check for expired jobs
     await waitFor(() => {

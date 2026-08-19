@@ -39,14 +39,8 @@ function getJobDate(job: IJob, type: JobDateKind) {
     case "updated":
       return job.modifiedDate ? new Date(job.modifiedDate) : undefined;
 
-    case "expires":
-
-    case "expired":
-      let date = job.approvedDate ? new Date(job.approvedDate) : undefined;
-      if (date) {
-        date.setDate(date.getDate() + 30);
-      }
-      return date;
+    case "resolved":
+      return job.modifiedDate ? new Date(job.modifiedDate) : undefined;
 
     default:
       return undefined;
@@ -58,7 +52,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
     const [actionText, setActionText] = useState("");
-    const isActuallyExpired = isExpired(job.jobStatus, job.approvedDate);
+    const isActuallyExpired = isExpired(job.jobStatus);
     const router = useRouter();
     const toast = useToast();
 
@@ -89,8 +83,8 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
 
         // Show success toast
         toast({
-          title: "Job Renewed",
-          description: `Successfully renewed "${job.title}"`,
+          title: "Job Reopened",
+          description: `Successfully reopened "${job.title}"`,
           status: "success",
           duration: 5000,
           isClosable: true,
@@ -108,7 +102,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
         console.error("Error renewing job:", error);
         toast({
           title: "Error",
-          description: "Failed to renew job. Please try again.",
+          description: "Failed to reopen job. Please try again.",
           status: "error",
           duration: 5000,
           isClosable: true,
@@ -117,12 +111,12 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
       }
     }
 
-    function handleConfirmationModal(action: "unpublish" | "renew") {
-      setActionText(action === "unpublish" ? "Unpublish" : "Renew");
+    function handleConfirmationModal(action: "resolve" | "renew") {
+      setActionText(action === "resolve" ? "Resolve" : "Reopen");
       setIsConfirmationModalOpen(true);
     }
 
-    async function handleUnpublishJob() {
+    async function handleResolveJob() {
       try {
         const response = await fetch(`/api/jobs/${job._id}`, {
           method: "PUT",
@@ -130,20 +124,20 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            isUnpublish: true,
+            isResolve: true,
             previousStatus: job.jobStatus,
             newStatus: "expired",
           }),
         });
         if (!response.ok) {
-          throw new Error("Failed to unpublish job");
+          throw new Error("Failed to resolve job");
         }
 
         const data = await response.json();
         // Show success toast
         toast({
-          title: "Job Unpublished",
-          description: `Successfully unpublished "${job.title}"`,
+          title: "Job Resolved",
+          description: `Successfully resolved "${job.title}"`,
           status: "success",
           duration: 5000,
           isClosable: true,
@@ -158,10 +152,10 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
           window.location.reload();
         }
       } catch (error) {
-        console.error("Error unpublishing job:", error);
+        console.error("Error resolving job:", error);
         toast({
           title: "Error",
-          description: "Failed to unpublish job. Please try again.",
+          description: "Failed to resolve job. Please try again.",
           status: "error",
           duration: 5000,
           isClosable: true,
@@ -223,12 +217,12 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
                   variant="outline"
                   colorScheme="blue"
                   size={{ base: "xs", md: "sm" }}
-                  onClick={() => handleConfirmationModal("unpublish")}
+                  onClick={() => handleConfirmationModal("resolve")}
                   className="flex flex-row items-center gap-1 sm:gap-2"
                 >
                   <FiEyeOff className="text-sm sm:text-base" />
-                  <span className="hidden sm:inline">Unpublish Job</span>
-                  <span className="sm:hidden">Unpublish</span>
+                  <span className="hidden sm:inline">Resolve Job</span>
+                  <span className="sm:hidden">Resolve</span>
                 </Button>
               )}
             </div>
@@ -256,17 +250,17 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
                       variant="outline"
                       colorScheme="blue"
                       size={{ base: "xs", md: "sm" }}
-                      onClick={() => handleConfirmationModal("unpublish")}
+                      onClick={() => handleConfirmationModal("resolve")}
                       className="hidden md:flex flex-row items-center gap-1 sm:gap-2"
                     >
                       <FiEyeOff className="text-sm sm:text-base" />
-                      <span>Unpublish Job</span>
+                      <span>Resolve Job</span>
                     </Button>
                   )}
                 </div>
                 {isActuallyExpired && (
                   <Button
-                    aria-label="Renew Job"
+                    aria-label="Reopen Job"
                     size={{ base: "xs", md: "sm" }}
                     colorScheme="green"
                     variant="outline"
@@ -274,7 +268,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
                     className="flex flex-row items-center gap-1 sm:gap-2"
                   >
                     <FiRefreshCw className="text-sm sm:text-base" />
-                    Renew
+                    Reopen
                   </Button>
                 )}
                 <Button
@@ -321,7 +315,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
             <ModalCloseButton />
             <ModalBody>
               Are you sure you would like to {actionText.toLowerCase()} this job posting?
-              {actionText == "Unpublish" && " Unpublishing a job will mark it as expired, you can renew it later"}
+              {actionText == "Resolve" && " Resolving a job will remove it from the public job board."}
             </ModalBody>
             <ModalFooter className="flex flex-wrap gap-2 mt-4 justify-end">
               <Button
@@ -331,9 +325,9 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
                 fontWeight="normal"
                 borderColor="black"
                 onClick={() => {
-                  if (actionText === "Unpublish") {
-                    handleUnpublishJob();
-                  } else if (actionText === "Renew") {
+                  if (actionText === "Resolve") {
+                    handleResolveJob();
+                  } else if (actionText === "Reopen") {
                     handleRenewJob();
                   }
                   setIsConfirmationModalOpen(false);

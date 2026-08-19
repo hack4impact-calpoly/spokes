@@ -14,7 +14,6 @@ import {
   ModalCloseButton,
   useDisclosure,
   Text,
-  useToast,
 } from "@chakra-ui/react";
 import { FiEdit, FiMessageSquare } from "react-icons/fi";
 import { useRouter } from "next/navigation";
@@ -22,14 +21,12 @@ import { useRouter } from "next/navigation";
 export interface OrgEventCardProps extends ComponentProps<"div"> {
   className?: string;
   event: IEvent;
-  onEventStatusUpdate?: (event: IEvent) => void;
 }
 
 export const OrgEventCard = forwardRef<HTMLDivElement, OrgEventCardProps>(
-  ({ children, className, event, onEventStatusUpdate, ...props }, ref) => {
+  ({ children, className, event, ...props }, ref) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const router = useRouter();
-    const toast = useToast();
 
     const eventDate = new Date(event.date).toLocaleDateString("en-US", {
       month: "short",
@@ -40,9 +37,9 @@ export const OrgEventCard = forwardRef<HTMLDivElement, OrgEventCardProps>(
       event.eventLocationGeneral === "Other" ? event.eventLocationGeneralOther : event.eventLocationGeneral;
     const eventCity = event.eventLocationCity === "Other" ? event.eventLocationCityOther : event.eventLocationCity;
 
-    function handleEditButton(e: React.ChangeEvent<any>) {
+    function handleEditButton(e: React.MouseEvent<HTMLButtonElement>) {
       e.preventDefault();
-      router.push(`/events/list?eventId=${event._id}`);
+      router.push(`/events/list?eventId=${event._id}&returnURL=/events/manage`);
     }
 
     return (
@@ -61,7 +58,7 @@ export const OrgEventCard = forwardRef<HTMLDivElement, OrgEventCardProps>(
           </div>
 
           <div className="text-sm text-gray-500">
-            {eventDate} · {event.time} · {event.location}
+            {[eventDate, event.time || "Time TBD", event.location || "Location TBD"].join(" · ")}
           </div>
           {(eventCity || eventRegion) && (
             <div className="text-sm text-gray-500">{[eventCity, eventRegion].filter(Boolean).join(", ")}</div>
@@ -84,18 +81,16 @@ export const OrgEventCard = forwardRef<HTMLDivElement, OrgEventCardProps>(
                     <span className="sm:hidden">Feedback</span>
                   </Button>
                 )}
-                {(event.eventStatus === "pending" || event.eventStatus === "rejected") && (
-                  <Button
-                    aria-label="Edit Event"
-                    size={{ base: "xs", md: "sm" }}
-                    borderColor="black"
-                    onClick={handleEditButton}
-                    className="flex flex-row items-center gap-1 sm:gap-2"
-                  >
-                    <FiEdit className="text-sm sm:text-base" />
-                    Edit
-                  </Button>
-                )}
+                <Button
+                  aria-label="Edit Event"
+                  size={{ base: "xs", md: "sm" }}
+                  borderColor="black"
+                  onClick={handleEditButton}
+                  className="flex flex-row items-center gap-1 sm:gap-2"
+                >
+                  <FiEdit className="text-sm sm:text-base" />
+                  Edit
+                </Button>
               </div>
             </div>
           </div>

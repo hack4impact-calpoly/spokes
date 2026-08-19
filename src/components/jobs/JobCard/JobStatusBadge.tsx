@@ -28,7 +28,7 @@ export default function JobStatusBadge({ jobStatus, className }: JobStatusBadgeP
     case "expired":
       badgeColor = "#FFE5E5"; // red
       textColor = "#D45959";
-      tooltipText = "This job posting is no longer active. Renew to make it visible to potential applicants again.";
+      tooltipText = "This job listing has been resolved and is no longer visible to potential applicants.";
       break;
     case "rejected":
       badgeColor = "#FFE5E5"; // red
@@ -42,7 +42,7 @@ export default function JobStatusBadge({ jobStatus, className }: JobStatusBadgeP
       break;
   }
 
-  const badgeName = formatBadgeName(jobStatus.toString());
+  const badgeName = jobStatus === "expired" ? "Resolved" : formatBadgeName(jobStatus.toString());
 
   return (
     <ChakraTooltip

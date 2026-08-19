@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import ChakraCarousel from "@/components/ChakraCarousel/carousel";
 import AdminEventCard from "@/components/events/EventCard/AdminEventCard";
 import { IEvent } from "@/database/eventSchema";
 import { twMerge } from "tailwind-merge";
@@ -125,6 +124,14 @@ export default function AdminEvents() {
     setTimeout(() => setIsRefreshing(false), 1000);
   };
 
+  const eventList = (events: IEvent[]) => (
+    <div className="flex flex-col gap-4">
+      {events.map((event) => (
+        <AdminEventCard key={event._id} event={event} onUpdateEvent={updateEventStatus} />
+      ))}
+    </div>
+  );
+
   return (
     <div className="w-full">
       <div className="mt-[50px] px-8 md:px-16 lg:px-20 flex flex-col gap-8 text-black">
@@ -180,11 +187,7 @@ export default function AdminEvents() {
             ) : incomingEventData.length === 0 ? (
               <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">No pending events</div>
             ) : (
-              <ChakraCarousel gap={20}>
-                {incomingEventData.map((event) => (
-                  <AdminEventCard key={event._id} event={event} onUpdateEvent={updateEventStatus} />
-                ))}
-              </ChakraCarousel>
+              eventList(incomingEventData)
             )}
           </div>
 
@@ -279,22 +282,14 @@ export default function AdminEvents() {
               ) : approvedEventData.length === 0 ? (
                 <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">No approved events</div>
               ) : (
-                <ChakraCarousel gap={20}>
-                  {approvedEventData.map((event) => (
-                    <AdminEventCard key={event._id} event={event} onUpdateEvent={updateEventStatus} />
-                  ))}
-                </ChakraCarousel>
+                eventList(approvedEventData)
               )
             ) : !rejectedEventData ? (
               <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500 animate-pulse">Loading...</div>
             ) : rejectedEventData.length === 0 ? (
               <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">No rejected events</div>
             ) : (
-              <ChakraCarousel gap={20}>
-                {rejectedEventData.map((event) => (
-                  <AdminEventCard key={event._id} event={event} onUpdateEvent={updateEventStatus} />
-                ))}
-              </ChakraCarousel>
+              eventList(rejectedEventData)
             )}
           </div>
         </div>

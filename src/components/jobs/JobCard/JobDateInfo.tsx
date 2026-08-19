@@ -12,7 +12,7 @@ function formatDate(date: Date | undefined) {
   return new Date(date).toLocaleDateString(undefined, options);
 }
 
-export type JobDateKind = "submitted" | "posted" | "updated" | "expires" | "expired";
+export type JobDateKind = "submitted" | "posted" | "updated" | "resolved";
 
 export default function JobDateInfo({
   date,
@@ -35,11 +35,8 @@ export default function JobDateInfo({
     case "updated":
       label = "Updated: ";
       break;
-    case "expires":
-      label = "Expires: ";
-      break;
-    case "expired":
-      label = "Expired: ";
+    case "resolved":
+      label = "Resolved: ";
       break;
   }
 
