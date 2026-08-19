@@ -7,7 +7,6 @@ import { IJob } from "@/database/jobSchema";
 import { twMerge } from "tailwind-merge";
 import JobGridSkeleton from "@/components/jobs/JobGrid/JobGridSkeleton";
 import Link from "next/link";
-import { isExpired } from "@/lib/utils";
 import { Tooltip, useToast } from "@chakra-ui/react";
 
 export default function AdminJobs() {
@@ -21,63 +20,8 @@ export default function AdminJobs() {
   const [lastUpdateTime, setLastUpdateTime] = useState<number>(0);
   const fetchDataRef = useRef<() => Promise<void>>(async () => {});
 
-  const repairMissingApprovalDates = async (jobs: IJob[]) => {
-    const jobsMissingApprovalDate = jobs.filter((job) => job.jobStatus === "approved" && !job.approvedDate);
-
-    await Promise.all(
-      jobsMissingApprovalDate.map(async (job) => {
-        try {
-          const response = await fetch(`/api/jobs/${job._id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              previousStatus: "approved",
-              newStatus: "approved",
-            }),
-          });
-
-          if (!response.ok) {
-            console.error(`Failed to repair approved date for job ${job._id}`);
-          }
-        } catch (error) {
-          console.error(`Failed to repair approved date for job ${job._id}:`, error);
-        }
-      }),
-    );
-  };
-
-  const setExpiredJobs = async (jobs: IJob[]) => {
-    if (!Array.isArray(jobs)) {
-      console.error("Expected jobs to be an array but received:", typeof jobs);
-      return;
-    }
-
-    // Repair approved jobs created before the API started persisting
-    // approvedDate. The API assigns the timestamp on this approved ->
-    // approved update, so the public listing can use its normal 30-day rule.
-    await repairMissingApprovalDates(jobs);
-
-    const jobsToExpire = jobs.filter(
-      (job) => job.jobStatus !== "expired" && isExpired(job.jobStatus, job.approvedDate),
-    );
-
-    for (const job of jobsToExpire) {
-      await updateJobStatus(job._id, "expired");
-    }
-  };
-
   const fetchData = async () => {
     try {
-      const response = await fetch("/api/jobs?jobStatus=approved&admin=true");
-      if (!response.ok) {
-        console.error("Failed to fetch jobs:", response.status, response.statusText);
-        return;
-      }
-      const result: IJob[] = await response.json();
-
-      // Check and update expired jobs
-      await setExpiredJobs(result);
-
       // Fetch all job statuses in parallel
       const jobStatuses = ["pending", "approved", "rejected", "expired"];
       const responses = await Promise.all(
@@ -109,7 +53,7 @@ export default function AdminJobs() {
   useEffect(() => {
     fetchDataRef.current();
 
-    // Set up an interval to check for expired jobs every hour
+    // Refresh job data every hour while the dashboard is open.
     const interval = setInterval(() => fetchDataRef.current(), 3600000);
 
     // Cleanup interval on component unmount
@@ -200,8 +144,8 @@ export default function AdminJobs() {
         setRejectedJobData((prev) => [...(prev ?? []), updatedJob]);
       } else if (status === "expired") {
         toast({
-          title: "Job Expired",
-          description: `"${currentJob.title}" has been marked as expired`,
+          title: "Job Resolved",
+          description: `"${currentJob.title}" has been resolved`,
           status: "warning",
           duration: 5000,
           isClosable: true,
@@ -339,8 +283,8 @@ export default function AdminJobs() {
                     setTab(2);
                   }}
                 >
-                  <span className="hidden sm:inline">Expired Jobs</span>
-                  <span className="sm:hidden">Expired</span>
+                  <span className="hidden sm:inline">Resolved Jobs</span>
+                  <span className="sm:hidden">Resolved</span>
                 </div>
                 <div
                   className={twMerge(

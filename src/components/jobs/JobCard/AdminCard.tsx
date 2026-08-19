@@ -135,7 +135,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
     }
   }
 
-  const isActuallyExpired = isExpired(job.jobStatus, job.approvedDate);
+  const isActuallyExpired = isExpired(job.jobStatus);
 
   function handleEditApplicationButton(e: React.ChangeEvent<any>) {
     e.preventDefault();

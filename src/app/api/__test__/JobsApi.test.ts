@@ -186,7 +186,7 @@ describe("Jobs API", () => {
     expect(Job.find).not.toHaveBeenCalled();
   });
 
-  test("GET defaults public job listings to approved, unexpired jobs", async () => {
+  test("GET defaults public job listings to all approved jobs", async () => {
     mockAuth.userId = null as any;
     mockAuth.role = "job_seeker";
     const limit = jest.fn().mockResolvedValue([]);
@@ -202,10 +202,7 @@ describe("Jobs API", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(Job.find).toHaveBeenCalledWith({
-      jobStatus: "approved",
-      approvedDate: { $gte: expect.any(Date) },
-    });
+    expect(Job.find).toHaveBeenCalledWith({ jobStatus: "approved" });
   });
 
   test("GET job detail hides private jobs from anonymous users", async () => {
@@ -222,6 +219,34 @@ describe("Jobs API", () => {
 
     expect(response.status).toBe(404);
     expect(result.message).toBe("Job not found");
+  });
+
+  test("GET job detail keeps an approved legacy job public without an approval date", async () => {
+    mockAuth.userId = null as any;
+    mockAuth.role = "job_seeker";
+    (Job.findById as jest.Mock).mockResolvedValue({
+      _id: "job-1",
+      userId: "user-1",
+      jobStatus: "approved",
+    });
+
+    const response = await GET_JOB({ nextUrl: { pathname: "/api/jobs/job-1" } } as any, {});
+
+    expect(response.status).toBe(200);
+  });
+
+  test("allows an organization to resolve its job", async () => {
+    (Job.findById as jest.Mock).mockResolvedValue({ _id: "job-1", userId: "user-1", jobStatus: "approved" });
+    (Job.findByIdAndUpdate as jest.Mock).mockResolvedValue({ _id: "job-1", jobStatus: "expired" });
+
+    const response = await PUT(jsonRequest("/api/jobs/job-1", { isResolve: true }), {});
+
+    expect(response.status).toBe(200);
+    expect(Job.findByIdAndUpdate).toHaveBeenCalledWith(
+      "job-1",
+      { jobStatus: "expired", modifiedDate: expect.any(Date) },
+      { new: true },
+    );
   });
 
   test("PUT only writes whitelisted mutable job fields", async () => {

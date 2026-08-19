@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import Job from "@/database/jobSchema";
 import { withApiAuth } from "@/lib/auth";
 import { JobStatus } from "@/database/jobSchema";
-import { isExpired } from "@/lib/utils";
 
 const mutableJobFields = [
   "organizationIndustry",
@@ -75,7 +74,7 @@ export const PUT = withApiAuth(
       const jobId = req.nextUrl.pathname.split("/").pop();
 
       const requestData = await req.json();
-      const { previousStatus, newStatus, isRenewal, isUnpublish, ...jobData } = requestData;
+      const { previousStatus, newStatus, isRenewal, isResolve, isUnpublish, ...jobData } = requestData;
 
       // Handle both cases - with and without status transition data
       const hasStatusTransition = previousStatus !== undefined && newStatus !== undefined;
@@ -110,8 +109,9 @@ export const PUT = withApiAuth(
         return NextResponse.json({ message: "Job renewed successfully", job: updatedJob });
       }
 
-      // Handle job unpublishing
-      if (isUnpublish) {
+      // Resolve removes a listing from the public board while retaining it for
+      // the organization and admins. Keep isUnpublish for older clients.
+      if (isResolve || isUnpublish) {
         const updatedJob = await Job.findByIdAndUpdate(
           jobId,
           {
@@ -120,7 +120,7 @@ export const PUT = withApiAuth(
           },
           { new: true },
         );
-        return NextResponse.json({ message: "Job unpublished successfully", job: updatedJob });
+        return NextResponse.json({ message: "Job resolved successfully", job: updatedJob });
       }
 
       const nextJobStatus = hasStatusTransition
@@ -171,7 +171,7 @@ export const GET = withApiAuth(
         return NextResponse.json({ message: "Job not found" }, { status: 404 });
       }
 
-      const isPubliclyVisible = job.jobStatus === JobStatus.approved && !isExpired(job.jobStatus, job.approvedDate);
+      const isPubliclyVisible = job.jobStatus === JobStatus.approved;
       const canViewPrivateJob = auth.role === "spokes_admin" || (auth.userId && job.userId === auth.userId);
 
       if (!isPubliclyVisible && !canViewPrivateJob) {
