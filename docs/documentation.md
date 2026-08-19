@@ -184,7 +184,7 @@ Event region and city options live in `src/lib/eventOptions.ts`.
 - Supports filters for `employmentType`, `compensationType`, `organizationIndustry`, and `jobStatus`.
 - Non-admin requests are paginated with `page` and `limit`.
 - Admin requests use `admin=true` and return all matching records.
-- Approved non-admin results include all approved jobs, regardless of approval date.
+- Approved non-admin results include only jobs approved within the last 30 days.
 - Sorting prioritizes `memberJob` first, then approved date or post date.
 
 `POST /api/jobs`
@@ -362,18 +362,18 @@ Shows the authenticated user's jobs. Organization users can:
 
 - Edit jobs
 - View rejection feedback
-- Reopen resolved jobs
+- Renew expired jobs
 - Resolve approved jobs
 
 ### Job Admin Dashboard
 
 File: `src/components/jobs/pages/JobsAdminPage.tsx`
 
-Shows pending, approved, rejected, and resolved jobs. Admins can:
+Shows pending, approved, rejected, and expired jobs. Admins can:
 
 - Approve jobs
 - Reject jobs with a reason
-- Reopen or resolve jobs through status actions
+- Renew expired jobs or resolve approved jobs through status actions
 - Refresh dashboard data
 - Navigate to user management
 

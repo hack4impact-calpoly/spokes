@@ -15,6 +15,7 @@ export default function AdminEvents() {
   const [isUpdatingEvent, setIsUpdatingEvent] = useState(false);
   const [lastUpdateTime, setLastUpdateTime] = useState<number>(0);
   const [tab, setTab] = useState(1);
+  const [sortNewestFirst, setSortNewestFirst] = useState(true);
 
   const fetchData = async () => {
     try {
@@ -124,9 +125,15 @@ export default function AdminEvents() {
     setTimeout(() => setIsRefreshing(false), 1000);
   };
 
-  const eventList = (events: IEvent[]) => (
+  const eventList = (events: IEvent[], sortByEventDate = false) => (
     <div className="flex flex-col gap-4">
-      {events.map((event) => (
+      {(sortByEventDate
+        ? [...events].sort((a, b) => {
+            const dateDifference = new Date(a.date).getTime() - new Date(b.date).getTime();
+            return sortNewestFirst ? -dateDifference : dateDifference;
+          })
+        : events
+      ).map((event) => (
         <AdminEventCard key={event._id} event={event} onUpdateEvent={updateEventStatus} />
       ))}
     </div>
@@ -217,63 +224,77 @@ export default function AdminEvents() {
                 </div>
               </div>
 
-              <Tooltip
-                label="Refresh event data"
-                hasArrow
-                placement="top"
-                bg="#2B2B2B"
-                color="white"
-                fontSize="sm"
-                borderRadius="md"
-                padding="2"
-                boxShadow="md"
-                offset={[0, 5]}
-                maxW="220px"
-                openDelay={600}
-              >
+              <div className="ml-auto flex items-center gap-2">
                 <button
-                  onClick={handleRefresh}
-                  disabled={isRefreshing || isUpdatingEvent}
-                  className={twMerge(
-                    "p-2 hover:bg-gray-100 rounded-full transition-colors group",
-                    (isRefreshing || isUpdatingEvent) && "cursor-not-allowed opacity-70",
-                  )}
+                  type="button"
+                  onClick={() => setSortNewestFirst((current) => !current)}
+                  aria-pressed={sortNewestFirst}
+                  title={
+                    sortNewestFirst ? "Newest first — click for oldest first" : "Oldest first — click for newest first"
+                  }
+                  className="flex items-center gap-1.5 rounded-md px-2 py-1 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
                 >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+                  <span>{sortNewestFirst ? "↓" : "↑"}</span>
+                  <span>{sortNewestFirst ? "Newest first" : "Oldest first"}</span>
+                </button>
+                <Tooltip
+                  label="Refresh event data"
+                  hasArrow
+                  placement="top"
+                  bg="#2B2B2B"
+                  color="white"
+                  fontSize="sm"
+                  borderRadius="md"
+                  padding="2"
+                  boxShadow="md"
+                  offset={[0, 5]}
+                  maxW="220px"
+                  openDelay={600}
+                >
+                  <button
+                    onClick={handleRefresh}
+                    disabled={isRefreshing || isUpdatingEvent}
                     className={twMerge(
-                      "text-gray-600 transition-transform duration-300 ease-in-out",
-                      isRefreshing && "animate-spin-once",
+                      "p-2 hover:bg-gray-100 rounded-full transition-colors group",
+                      (isRefreshing || isUpdatingEvent) && "cursor-not-allowed opacity-70",
                     )}
                   >
-                    <path
-                      d="M23 4V10H17"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M1 20V14H7"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M3.51 9.00001C3.84797 7.58631 4.53047 6.28871 5.49997 5.20001C6.46947 4.11131 7.70047 3.26141 9.07097 2.71901C10.4415 2.17661 11.9075 1.95681 13.3745 2.07801C14.8415 2.19921 16.2645 2.65821 17.515 3.42001L23 8.00001M1 16L6.485 20.58C7.73547 21.3418 9.15847 21.8008 10.6255 21.922C12.0925 22.0432 13.5585 21.8234 14.929 21.281C16.2995 20.7386 17.5305 19.8887 18.5 18.8C19.4695 17.7113 20.152 16.4137 20.49 15"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-              </Tooltip>
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className={twMerge(
+                        "text-gray-600 transition-transform duration-300 ease-in-out",
+                        isRefreshing && "animate-spin-once",
+                      )}
+                    >
+                      <path
+                        d="M23 4V10H17"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M1 20V14H7"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M3.51 9.00001C3.84797 7.58631 4.53047 6.28871 5.49997 5.20001C6.46947 4.11131 7.70047 3.26141 9.07097 2.71901C10.4415 2.17661 11.9075 1.95681 13.3745 2.07801C14.8415 2.19921 16.2645 2.65821 17.515 3.42001L23 8.00001M1 16L6.485 20.58C7.73547 21.3418 9.15847 21.8008 10.6255 21.922C12.0925 22.0432 13.5585 21.8234 14.929 21.281C16.2995 20.7386 17.5305 19.8887 18.5 18.8C19.4695 17.7113 20.152 16.4137 20.49 15"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                </Tooltip>
+              </div>
             </div>
 
             {tab === 1 ? (
@@ -282,14 +303,14 @@ export default function AdminEvents() {
               ) : approvedEventData.length === 0 ? (
                 <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">No approved events</div>
               ) : (
-                eventList(approvedEventData)
+                eventList(approvedEventData, true)
               )
             ) : !rejectedEventData ? (
               <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500 animate-pulse">Loading...</div>
             ) : rejectedEventData.length === 0 ? (
               <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">No rejected events</div>
             ) : (
-              eventList(rejectedEventData)
+              eventList(rejectedEventData, true)
             )}
           </div>
         </div>

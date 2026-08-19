@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Job from "@/database/jobSchema";
 import { ObjectId } from "mongodb";
 import { withApiAuth } from "@/lib/auth";
+import { getThirtyDaysAgo } from "@/lib/utils";
 
 export const POST = withApiAuth(
   async (req: NextRequest) => {
@@ -21,6 +22,7 @@ export const POST = withApiAuth(
       const recentJobs = await Job.find({
         _id: { $in: jobIdArray },
         jobStatus: "approved",
+        approvedDate: { $gte: getThirtyDaysAgo() },
       });
       return NextResponse.json(recentJobs, { status: 200 });
     } catch (error) {

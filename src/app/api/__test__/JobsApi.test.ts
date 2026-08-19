@@ -186,7 +186,7 @@ describe("Jobs API", () => {
     expect(Job.find).not.toHaveBeenCalled();
   });
 
-  test("GET defaults public job listings to all approved jobs", async () => {
+  test("GET defaults public job listings to approved jobs from the last 30 days", async () => {
     mockAuth.userId = null as any;
     mockAuth.role = "job_seeker";
     const limit = jest.fn().mockResolvedValue([]);
@@ -202,7 +202,10 @@ describe("Jobs API", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(Job.find).toHaveBeenCalledWith({ jobStatus: "approved" });
+    expect(Job.find).toHaveBeenCalledWith({
+      jobStatus: "approved",
+      approvedDate: { $gte: expect.any(Date) },
+    });
   });
 
   test("GET job detail hides private jobs from anonymous users", async () => {
@@ -221,7 +224,7 @@ describe("Jobs API", () => {
     expect(result.message).toBe("Job not found");
   });
 
-  test("GET job detail keeps an approved legacy job public without an approval date", async () => {
+  test("GET job detail hides an approved job without an approval date", async () => {
     mockAuth.userId = null as any;
     mockAuth.role = "job_seeker";
     (Job.findById as jest.Mock).mockResolvedValue({
@@ -232,7 +235,7 @@ describe("Jobs API", () => {
 
     const response = await GET_JOB({ nextUrl: { pathname: "/api/jobs/job-1" } } as any, {});
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(404);
   });
 
   test("allows an organization to resolve its job", async () => {

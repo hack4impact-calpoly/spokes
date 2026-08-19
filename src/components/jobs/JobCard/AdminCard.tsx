@@ -26,8 +26,6 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
   const [isNewIndicatorDismissed, setIsNewIndicatorDismissed] = useState(false);
   const [isLoading, setIsLoading] = useState<"approve" | "reject" | null>(null);
   const router = useRouter();
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
   const toast = useToast();
 
   // Check localStorage for dismissed state on component mount
@@ -135,7 +133,7 @@ export default function AdminCard({ job, onUpdateJob, innerRef }: JobCardProps) 
     }
   }
 
-  const isActuallyExpired = isExpired(job.jobStatus);
+  const isActuallyExpired = isExpired(job.jobStatus, job.approvedDate);
 
   function handleEditApplicationButton(e: React.ChangeEvent<any>) {
     e.preventDefault();

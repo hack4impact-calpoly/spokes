@@ -89,6 +89,7 @@ describe("Admin Jobs Page", () => {
       detailURL: "http://example.com/live",
       userId: "user2",
       modifiedDate: new Date().toISOString(),
+      approvedDate: new Date().toISOString(),
     },
     {
       _id: "3",
@@ -190,8 +191,8 @@ describe("Admin Jobs Page", () => {
     });
     expect(screen.getByText("Org2")).toBeInTheDocument();
 
-    // Click on Resolved Jobs tab
-    fireEvent.click(screen.getByText(/Resolved Jobs/i));
+    // Click on Expired Jobs tab
+    fireEvent.click(screen.getByText(/Expired Jobs/i));
 
     // Check for expired jobs
     await waitFor(() => {
