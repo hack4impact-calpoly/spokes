@@ -49,4 +49,16 @@ describe("event validation service", () => {
 
     expect(validateEventPayload({ majorFundraisingEvent: false }, { partial: true })).toBeNull();
   });
+
+  test("allows a new event without a time or venue", () => {
+    const payload = { ...validPayload, time: "", location: "" };
+
+    expect(validateEventPayload(payload)).toBeNull();
+    expect(sanitizeEventPayload(payload)).toEqual(
+      expect.objectContaining({
+        time: "",
+        location: "",
+      }),
+    );
+  });
 });

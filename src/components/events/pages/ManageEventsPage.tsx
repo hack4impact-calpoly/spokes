@@ -123,7 +123,7 @@ export default function EventsDashboardPage() {
                 <div className="text-2xl font-semibold mb-4">Live Events</div>
                 <div className="flex flex-col gap-4">
                   {liveEvents.length > 0 ? (
-                    liveEvents.map((event, index) => <OrgEventCard key={index} event={event} />)
+                    liveEvents.map((event) => <OrgEventCard key={event._id} event={event} />)
                   ) : (
                     <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">No live events available</div>
                   )}
@@ -133,7 +133,7 @@ export default function EventsDashboardPage() {
                 <div className="text-2xl font-semibold mb-4">Pending Events</div>
                 <div className="flex flex-col gap-4">
                   {pendingEvents.length > 0 ? (
-                    pendingEvents.map((event, index) => <OrgEventCard key={index} event={event} />)
+                    pendingEvents.map((event) => <OrgEventCard key={event._id} event={event} />)
                   ) : (
                     <div className="py-4 px-5 rounded-md bg-[#f7f7f7] text-gray-500">No pending events available</div>
                   )}

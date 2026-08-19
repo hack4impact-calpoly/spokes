@@ -46,8 +46,8 @@ const EventSchema = new Schema<IEvent>(
   {
     date: { type: Date, required: true },
     eventName: { type: String, required: true, trim: true },
-    time: { type: String, required: true, trim: true },
-    location: { type: String, required: true, trim: true },
+    time: { type: String, required: false, trim: true, default: "" },
+    location: { type: String, required: false, trim: true, default: "" },
     locationLink: { type: String, required: false, trim: true },
     eventLocationGeneral: {
       type: String,

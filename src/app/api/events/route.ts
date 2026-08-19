@@ -94,8 +94,8 @@ export const POST = withApiAuth(
         organization,
         date: new Date(sanitizedEventData.date as string),
         eventName: sanitizedEventData.eventName as string,
-        time: sanitizedEventData.time as string,
-        location: sanitizedEventData.location as string,
+        time: (sanitizedEventData.time as string) || "",
+        location: (sanitizedEventData.location as string) || "",
       };
       const duplicateUpdateFields: Record<string, string | boolean> = {};
       const insertEventData = { ...sanitizedEventData };

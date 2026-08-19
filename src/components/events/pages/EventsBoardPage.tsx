@@ -56,9 +56,14 @@ function filterEvents(
   });
 }
 
-function getMonthYearOptions(events: EventRecord[]): string[] {
-  const monthYears = new Set(events.map(getEventMonthYearValue));
-  return [...monthYears].sort();
+function getMonthYearOptions(): string[] {
+  const now = new Date();
+  // Always offer the current month plus the next twelve months, even when
+  // there are no listings in a particular month yet.
+  return Array.from({ length: 13 }, (_, offset) => {
+    const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + offset, 1));
+    return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
+  });
 }
 
 export default function EventsPage() {
@@ -122,12 +127,12 @@ export default function EventsPage() {
   }, []);
 
   const filteredEvents = useMemo(
-    () => filterEvents(events, selectedLocationGeneral, cityFilter, monthYearFilter),
-    [events, selectedLocationGeneral, cityFilter, monthYearFilter],
+    () => filterEvents(events, selectedLocationGeneral, cityFilter, activeTab === "past" ? "" : monthYearFilter),
+    [activeTab, events, selectedLocationGeneral, cityFilter, monthYearFilter],
   );
 
   const recentEventIdSet = useMemo(() => new Set(recentEventIds), [recentEventIds]);
-  const monthYearOptions = useMemo(() => getMonthYearOptions(events), [events]);
+  const monthYearOptions = useMemo(() => getMonthYearOptions(), []);
 
   const displayedEvents = useMemo(() => {
     const now = new Date();
@@ -233,11 +238,13 @@ export default function EventsPage() {
                 <select
                   value={monthYearFilter}
                   onChange={(event) => setMonthYearFilter(event.target.value)}
+                  disabled={activeTab === "past"}
                   onFocus={() => setMonthSelectOpen(true)}
                   onBlur={() => setMonthSelectOpen(false)}
                   className={twMerge(
                     "h-10 w-full rounded-md px-3 text-sm text-black bg-[#F7F7F7] outline-none appearance-none cursor-pointer transition-colors",
                     monthSelectOpen ? "bg-gray-200" : "hover:bg-gray-200",
+                    activeTab === "past" && "cursor-not-allowed opacity-50",
                   )}
                 >
                   <option value="" style={{ backgroundColor: "#F7F7F7" }}>
@@ -331,6 +338,7 @@ export default function EventsPage() {
                 )}
                 onClick={() => {
                   setActiveTab("past");
+                  setMonthYearFilter("");
                   setSortAscending(true);
                 }}
               >

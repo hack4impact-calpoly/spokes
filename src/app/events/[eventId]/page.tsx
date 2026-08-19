@@ -49,10 +49,10 @@ export default async function EventPage({ params }: EventPageProps) {
               <strong>Date:</strong> {formatDate(event.date)}
             </p>
             <p>
-              <strong>Time:</strong> {event.time}
+              <strong>Time:</strong> {event.time || "TBD"}
             </p>
             <p>
-              <strong>Location:</strong> {event.location}
+              <strong>Location:</strong> {event.location || "TBD"}
             </p>
             {(eventCity || eventRegion) && (
               <p>

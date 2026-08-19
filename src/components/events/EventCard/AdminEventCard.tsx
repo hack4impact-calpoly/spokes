@@ -6,7 +6,9 @@ import JobCardModal from "@/components/jobs/JobCard/JobCardModal";
 import ActionButton from "@/components/jobs/JobCard/ActionButton";
 import JobPostedDate from "@/components/jobs/JobCard/JobPostedDate";
 import { getEventInfoLink, getEventLocationLink } from "@/lib/eventLinks";
-import { useToast } from "@chakra-ui/react";
+import { IconButton } from "@chakra-ui/react";
+import { FiEdit } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 
 interface AdminEventCardProps {
   event: IEvent;
@@ -25,7 +27,7 @@ export default function AdminEventCard({ event, onUpdateEvent, innerRef }: Admin
   const [rejectionReason, setRejectionReason] = useState("");
   const [isNewIndicatorDismissed, setIsNewIndicatorDismissed] = useState(false);
   const [isLoading, setIsLoading] = useState<"approve" | "reject" | null>(null);
-  const toast = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     const dismissedState = localStorage.getItem(`new-event-indicator-${event._id}`);
@@ -101,6 +103,15 @@ export default function AdminEventCard({ event, onUpdateEvent, innerRef }: Admin
   return (
     <div className="w-full h-full" ref={innerRef}>
       <div className="relative bg-[#f7f7f7] rounded-3xl px-8 py-5 shadow-sm h-full flex flex-col">
+        <IconButton
+          aria-label="Edit Event"
+          icon={<FiEdit />}
+          size="sm"
+          borderColor="black"
+          position="absolute"
+          className="absolute top-4 right-[1rem]"
+          onClick={() => router.push(`/events/list?eventId=${event._id}&returnURL=/events/admin`)}
+        />
         {/* New indicator dot */}
         {new Date(event.createdAt ?? event.date).getTime() > Date.now() - 24 * 60 * 60 * 1000 &&
           !isNewIndicatorDismissed && (
@@ -126,10 +137,10 @@ export default function AdminEventCard({ event, onUpdateEvent, innerRef }: Admin
           <span className="font-medium">Date:</span> {formattedDate}
         </div>
         <div className="text-sm text-gray-600 mb-1">
-          <span className="font-medium">Time:</span> {event.time}
+          <span className="font-medium">Time:</span> {event.time || "TBD"}
         </div>
         <div className="text-sm text-gray-600 mb-1">
-          <span className="font-medium">Location:</span> {event.location}
+          <span className="font-medium">Location:</span> {event.location || "TBD"}
         </div>
         {(eventCity || eventRegion) && (
           <div className="text-sm text-gray-600 mb-1">

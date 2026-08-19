@@ -2,7 +2,7 @@ import Event from "@/database/eventSchema";
 import User from "@/database/userSchema";
 import { resolveOrganizationName } from "@/lib/organizations";
 import { GET, POST } from "@/app/api/events/route";
-import { GET as GET_EVENT, PUT } from "@/app/api/events/[eventId]/route";
+import { DELETE, GET as GET_EVENT, PUT } from "@/app/api/events/[eventId]/route";
 
 const mockAuth = {
   userId: "user-1",
@@ -26,6 +26,7 @@ jest.mock("@/database/eventSchema", () => ({
     find: jest.fn(),
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
+    findByIdAndDelete: jest.fn(),
     findOneAndUpdate: jest.fn(),
   },
 }));
@@ -241,9 +242,57 @@ describe("Events API", () => {
         locationLink: "https://maps.example.com/updated-event",
         eventLocationGeneral: "North Coast",
         eventLocationCity: "Morro Bay",
+        eventStatus: "pending",
+        rejectionMessage: "",
       },
       { new: true, strict: false },
     );
+  });
+
+  test("resubmits an owned approved event for review after editing", async () => {
+    (Event.findById as jest.Mock).mockResolvedValue({
+      _id: "event-1",
+      createdByUserId: "user-1",
+      eventStatus: "approved",
+    });
+    (Event.findByIdAndUpdate as jest.Mock).mockResolvedValue({ _id: "event-1", eventStatus: "pending" });
+
+    const response = await PUT(jsonRequest("/api/events/event-1", { eventName: "Updated Event" }), {});
+
+    expect(response.status).toBe(200);
+    expect(Event.findByIdAndUpdate).toHaveBeenCalledWith(
+      "event-1",
+      { eventName: "Updated Event", eventStatus: "pending", rejectionMessage: "" },
+      { new: true, strict: false },
+    );
+  });
+
+  test("allows an admin to reject an event with feedback", async () => {
+    mockAuth.role = "spokes_admin";
+    (Event.findById as jest.Mock).mockResolvedValue({ _id: "event-1", createdByUserId: "user-1" });
+    (Event.findByIdAndUpdate as jest.Mock).mockResolvedValue({ _id: "event-1", eventStatus: "rejected" });
+
+    const response = await PUT(
+      jsonRequest("/api/events/event-1", { eventStatus: "rejected", rejectionMessage: "Missing event details" }),
+      {},
+    );
+
+    expect(response.status).toBe(200);
+    expect(Event.findByIdAndUpdate).toHaveBeenCalledWith(
+      "event-1",
+      { eventStatus: "rejected", rejectionMessage: "Missing event details" },
+      { new: true },
+    );
+  });
+
+  test("allows an owner to delete an event", async () => {
+    (Event.findById as jest.Mock).mockResolvedValue({ _id: "event-1", createdByUserId: "user-1" });
+    (Event.findByIdAndDelete as jest.Mock).mockResolvedValue({ _id: "event-1" });
+
+    const response = await DELETE({ nextUrl: { pathname: "/api/events/event-1" } } as any, {});
+
+    expect(response.status).toBe(200);
+    expect(Event.findByIdAndDelete).toHaveBeenCalledWith("event-1");
   });
 
   test("GET blocks non-admin requests for private event statuses", async () => {

@@ -3,10 +3,8 @@ import { isEventLocationCity, isEventLocationGeneral } from "@/lib/eventOptions"
 const requiredEventFields = [
   "eventName",
   "date",
-  "time",
   "eventLocationGeneral",
   "eventLocationCity",
-  "location",
   "description",
   "publicContactEmail",
   "publicContactPhoneNumber",
@@ -18,6 +16,8 @@ const requiredEventFields = [
 
 const mutableEventFields = [
   ...requiredEventFields,
+  "time",
+  "location",
   "eventLink",
   "locationLink",
   "eventLocationGeneralOther",
@@ -27,6 +27,7 @@ const mutableEventFields = [
 ] as const;
 
 const booleanEventFields = ["majorFundraisingEvent"] as const;
+const optionalTextEventFields = ["time", "location"] as const;
 
 function ensureHttps(url: string) {
   return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
@@ -40,7 +41,7 @@ export function sanitizeEventPayload(payload: Record<string, unknown>) {
 
     if (typeof value === "string") {
       const trimmedValue = value.trim();
-      if (trimmedValue) {
+      if (trimmedValue || optionalTextEventFields.includes(field as (typeof optionalTextEventFields)[number])) {
         sanitized[field] = field === "eventLink" || field === "locationLink" ? ensureHttps(trimmedValue) : trimmedValue;
       }
     }

@@ -80,11 +80,6 @@ export const PUT = withApiAuth(
         return NextResponse.json({ message: "Event status updated successfully", event: updatedEvent });
       }
 
-      // Handle regular updates (nonprofit can update their own pending events)
-      if (auth.role === "nonprofit" && existingEvent.eventStatus !== "pending") {
-        return NextResponse.json({ message: "Can only edit pending events" }, { status: 403 });
-      }
-
       const validationError = validateEventPayload(eventData, { partial: true });
       if (validationError) {
         return NextResponse.json({ message: validationError }, { status: 400 });
@@ -95,7 +90,13 @@ export const PUT = withApiAuth(
         return NextResponse.json({ message: "No valid event fields provided" }, { status: 400 });
       }
 
-      const updatedEvent = await Event.findByIdAndUpdate(eventId, sanitizedEventData, { new: true, strict: false });
+      // Organization changes must be reviewed again. Admin edits remain live because
+      // they are already made by the reviewing role.
+      const updateData =
+        auth.role === "nonprofit"
+          ? { ...sanitizedEventData, eventStatus: EventStatus.pending, rejectionMessage: "" }
+          : sanitizedEventData;
+      const updatedEvent = await Event.findByIdAndUpdate(eventId, updateData, { new: true, strict: false });
       return NextResponse.json({ message: "Event updated successfully", event: updatedEvent });
     } catch (error) {
       return NextResponse.json({ message: "Error updating event", error }, { status: 500 });
