@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Job from "@/database/jobSchema";
 import { withApiAuth } from "@/lib/auth";
 import { JobStatus } from "@/database/jobSchema";
+import { isExpired } from "@/lib/utils";
 
 const mutableJobFields = [
   "organizationIndustry",
@@ -171,7 +172,7 @@ export const GET = withApiAuth(
         return NextResponse.json({ message: "Job not found" }, { status: 404 });
       }
 
-      const isPubliclyVisible = job.jobStatus === JobStatus.approved;
+      const isPubliclyVisible = job.jobStatus === JobStatus.approved && !isExpired(job.jobStatus, job.approvedDate);
       const canViewPrivateJob = auth.role === "spokes_admin" || (auth.userId && job.userId === auth.userId);
 
       if (!isPubliclyVisible && !canViewPrivateJob) {

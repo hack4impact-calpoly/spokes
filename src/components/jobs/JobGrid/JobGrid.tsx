@@ -78,8 +78,8 @@ function NoJobsFound({ isPending, isJobBoard, isLive, isExpired, isRejected }: N
     }
     if (isExpired) {
       return {
-        title: "No Resolved Jobs",
-        message: "There are no resolved job listings.",
+        title: "No Expired Jobs",
+        message: "There are no expired job listings. Jobs will automatically move here after 30 days.",
       };
     }
     if (isRejected) {

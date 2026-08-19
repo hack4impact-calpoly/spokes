@@ -36,8 +36,27 @@ export function timeAgo(date: Date): string {
   return formatTime(years, "year") + " ago";
 }
 
-export function isExpired(jobStatus: string): boolean {
-  return jobStatus.toLowerCase() === "expired";
+export function getThirtyDaysAgo(): Date {
+  const date = new Date();
+  date.setDate(date.getDate() - 30);
+  return date;
+}
+
+export function isExpired(jobStatus: string, approvedDate?: Date | string): boolean {
+  if (jobStatus.toLowerCase() === "expired") {
+    return true;
+  }
+
+  if (jobStatus.toLowerCase() !== "approved") {
+    return false;
+  }
+
+  if (!approvedDate) {
+    return true;
+  }
+
+  const approvalDate = new Date(approvedDate);
+  return Number.isNaN(approvalDate.getTime()) || approvalDate < getThirtyDaysAgo();
 }
 
 function toDate(input: string | Date | undefined): Date | undefined {

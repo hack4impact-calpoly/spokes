@@ -39,8 +39,12 @@ function getJobDate(job: IJob, type: JobDateKind) {
     case "updated":
       return job.modifiedDate ? new Date(job.modifiedDate) : undefined;
 
-    case "resolved":
-      return job.modifiedDate ? new Date(job.modifiedDate) : undefined;
+    case "expires":
+    case "expired": {
+      const date = job.approvedDate ? new Date(job.approvedDate) : undefined;
+      if (date) date.setDate(date.getDate() + 30);
+      return date;
+    }
 
     default:
       return undefined;
@@ -52,7 +56,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
     const [actionText, setActionText] = useState("");
-    const isActuallyExpired = isExpired(job.jobStatus);
+    const isActuallyExpired = isExpired(job.jobStatus, job.approvedDate);
     const router = useRouter();
     const toast = useToast();
 
@@ -83,8 +87,8 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
 
         // Show success toast
         toast({
-          title: "Job Reopened",
-          description: `Successfully reopened "${job.title}"`,
+          title: "Job Renewed",
+          description: `Successfully renewed "${job.title}"`,
           status: "success",
           duration: 5000,
           isClosable: true,
@@ -102,7 +106,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
         console.error("Error renewing job:", error);
         toast({
           title: "Error",
-          description: "Failed to reopen job. Please try again.",
+          description: "Failed to renew job. Please try again.",
           status: "error",
           duration: 5000,
           isClosable: true,
@@ -112,7 +116,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
     }
 
     function handleConfirmationModal(action: "resolve" | "renew") {
-      setActionText(action === "resolve" ? "Resolve" : "Reopen");
+      setActionText(action === "resolve" ? "Resolve" : "Renew");
       setIsConfirmationModalOpen(true);
     }
 
@@ -260,7 +264,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
                 </div>
                 {isActuallyExpired && (
                   <Button
-                    aria-label="Reopen Job"
+                    aria-label="Renew Job"
                     size={{ base: "xs", md: "sm" }}
                     colorScheme="green"
                     variant="outline"
@@ -268,7 +272,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
                     className="flex flex-row items-center gap-1 sm:gap-2"
                   >
                     <FiRefreshCw className="text-sm sm:text-base" />
-                    Reopen
+                    Renew
                   </Button>
                 )}
                 <Button
@@ -327,7 +331,7 @@ export const OrgCard = forwardRef<HTMLDivElement, OrgCardProps>(
                 onClick={() => {
                   if (actionText === "Resolve") {
                     handleResolveJob();
-                  } else if (actionText === "Reopen") {
+                  } else if (actionText === "Renew") {
                     handleRenewJob();
                   }
                   setIsConfirmationModalOpen(false);

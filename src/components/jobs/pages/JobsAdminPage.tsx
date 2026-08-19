@@ -8,6 +8,7 @@ import { twMerge } from "tailwind-merge";
 import JobGridSkeleton from "@/components/jobs/JobGrid/JobGridSkeleton";
 import Link from "next/link";
 import { Tooltip, useToast } from "@chakra-ui/react";
+import { isExpired } from "@/lib/utils";
 
 export default function AdminJobs() {
   const toast = useToast();
@@ -22,6 +23,15 @@ export default function AdminJobs() {
 
   const fetchData = async () => {
     try {
+      const approvedResponse = await fetch("/api/jobs?jobStatus=approved&admin=true");
+      if (!approvedResponse.ok) {
+        throw new Error("Failed to fetch approved jobs");
+      }
+
+      const approvedJobs: IJob[] = await approvedResponse.json();
+      const jobsToExpire = approvedJobs.filter((job) => isExpired(job.jobStatus, job.approvedDate));
+      await Promise.all(jobsToExpire.map((job) => updateJobStatus(job._id, "expired")));
+
       // Fetch all job statuses in parallel
       const jobStatuses = ["pending", "approved", "rejected", "expired"];
       const responses = await Promise.all(
@@ -53,7 +63,7 @@ export default function AdminJobs() {
   useEffect(() => {
     fetchDataRef.current();
 
-    // Refresh job data every hour while the dashboard is open.
+    // Check for expired jobs every hour while the dashboard is open.
     const interval = setInterval(() => fetchDataRef.current(), 3600000);
 
     // Cleanup interval on component unmount
@@ -144,8 +154,8 @@ export default function AdminJobs() {
         setRejectedJobData((prev) => [...(prev ?? []), updatedJob]);
       } else if (status === "expired") {
         toast({
-          title: "Job Resolved",
-          description: `"${currentJob.title}" has been resolved`,
+          title: "Job Expired",
+          description: `"${currentJob.title}" has expired`,
           status: "warning",
           duration: 5000,
           isClosable: true,
@@ -283,8 +293,8 @@ export default function AdminJobs() {
                     setTab(2);
                   }}
                 >
-                  <span className="hidden sm:inline">Resolved Jobs</span>
-                  <span className="sm:hidden">Resolved</span>
+                  <span className="hidden sm:inline">Expired Jobs</span>
+                  <span className="sm:hidden">Expired</span>
                 </div>
                 <div
                   className={twMerge(
